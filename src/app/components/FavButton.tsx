@@ -1,13 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import Heart from "../icons/Heart";
 
 interface HomeProps {
    favorited: boolean;
 }
 
 export default function FavButton({ favorited }: HomeProps) {
-   const [isFav, setIsFav] = useState(favorited);
+   const handleChangeFav = () => {
+      favorited = !favorited;
+   };
 
-   return <div>{isFav && <button>teste</button>}</div>;
+   return (
+      <button
+         className="flex items-center justify-center"
+         onClick={handleChangeFav}
+      >
+         {<Heart favorited={favorited} />}
+      </button>
+   );
 }
