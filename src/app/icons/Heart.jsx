@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 
 function Heart({ favorited }) {
    const [color, setColor] = useState(favorited ? "#702632" : "transparent");
-   const [stroke, setStroke] = useState(color == "transparent" ? "#000000" : "transparent")
+   const [stroke, setStroke] = useState(
+      color == "transparent" ? "#000000" : "transparent"
+   );
 
    return (
       <svg
