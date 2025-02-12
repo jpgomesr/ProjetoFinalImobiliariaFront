@@ -20,7 +20,9 @@ export default function Home() {
          1,
          1,
          1,
-         32
+         32,
+         true,
+         "PROMOÇÃO"
       )
    );
 
