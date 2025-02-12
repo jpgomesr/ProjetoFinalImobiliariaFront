@@ -1,6 +1,6 @@
 "use client";
 
-import Heart from "../icons/Heart";
+import Heart from "../icons/CoracaoIcon";
 
 interface HomeProps {
    favorited: boolean;
