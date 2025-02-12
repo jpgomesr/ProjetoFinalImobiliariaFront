@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-function Heart({ favorited }) {
+export default function Heart({ favorited }) {
    const [color] = useState(favorited ? "#702632" : "transparent");
    const [stroke] = useState(
       color == "transparent" ? "#000000" : "transparent"
@@ -22,5 +22,3 @@ function Heart({ favorited }) {
       </svg>
    );
 }
-
-export default Heart;

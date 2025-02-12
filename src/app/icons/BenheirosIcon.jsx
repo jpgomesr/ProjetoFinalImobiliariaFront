@@ -1,4 +1,4 @@
-function Shower() {
+export default function Shower() {
    return (
       <svg
          xmlns="http://www.w3.org/2000/svg"
@@ -13,5 +13,3 @@ function Shower() {
       </svg>
    );
 }
-
-export default Shower;
