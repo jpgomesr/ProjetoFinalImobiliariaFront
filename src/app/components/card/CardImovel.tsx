@@ -3,14 +3,19 @@ import ObjetivoImovel from "./ObjetivoImovel";
 import CardInfo from "./CardInfo";
 import SaibaMaisBotao from "./SaibaMaisBotao";
 import ModelImovel from "../../models/ModelImovel";
+import { useState } from "react";
+import CardBanner from "./CardBanner";
 
 interface HomeProps {
    imovel: ModelImovel;
 }
 
 export default function CardImovel(props: HomeProps) {
+   const [isBannerVisible] = useState(props.imovel.banner);
+
    return (
-      <div className="w-[70%] h-[515px] max-w-[305px] bg-begepadrao rounded-2xl shadow-[4px_4px_4px_rgba(0,0,0,0.2)]">
+      <div className="w-[70%] h-[515px] max-w-[305px] bg-begepadrao rounded-2xl shadow-[4px_4px_4px_rgba(0,0,0,0.2)] relative">
+         {isBannerVisible && <CardBanner tipo={props.imovel.tipoBanner} />}
          <div>
             <img
                src="https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
@@ -21,18 +26,18 @@ export default function CardImovel(props: HomeProps) {
          <div className="mx-6 mt-4 flex flex-col gap-3">
             <div className="flex flex-col">
                <div className="flex flex-row justify-between w-full pr-1 items-center">
-                  <h3 className="text-havprincipal text-fontcard1">{props.imovel.tipo}</h3>
+                  <h3 className="text-havprincipal text-fontcard1">
+                     {props.imovel.tipo}
+                  </h3>
                   <FavButton favorited={props.imovel.favoritado} />
                </div>
                <div className="flex flex-row justify-between w-full">
                   <div className="flex flex-row gap-1 items-center">
                      <ObjetivoImovel objImovel={props.imovel.objImovel} />
                      <div className="flex flex-row gap-1 items-center justify-center">
-                        <p className="text-xs">
-                           <strong>R$</strong>
-                        </p>
-                        <p className="text-xs">
-                           <strong>{props.imovel.valor.toFixed(2)}</strong>
+                        <p className="text-xs font-semibold">R$</p>
+                        <p className="text-xs font-semibold">
+                           {props.imovel.valor.toFixed(2)}
                         </p>
                      </div>
                   </div>
