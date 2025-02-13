@@ -1,7 +1,7 @@
-import Shower from "../../icons/BenheirosIcon";
-import Bedroom from "../../icons/QuartoIcon";
-import Car from "../../icons/VagasIcon";
-import Ruler from "../../icons/MetragemIcon";
+import Shower from "../../svg/icons/BenheirosIcon";
+import Bedroom from "../../svg/icons/QuartoIcon";
+import Car from "../../svg/icons/VagasIcon";
+import Ruler from "../../svg/icons/MetragemIcon";
 
 interface HomeProps {
    qtdBanheiros: number;
