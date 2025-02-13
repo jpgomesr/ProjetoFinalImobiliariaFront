@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import CardImovel from "./components/card/CardImovel";
+import HeaderVermelho from "./components/headers/HeaderVermelho";
 import ModelImovel from "./models/ModelImovel";
 
 export default function Home() {
@@ -22,12 +23,13 @@ export default function Home() {
          1,
          32,
          true,
-         "PROMOÇÃO"
+         "MELHOR PREÇO"
       )
    );
 
    return (
-      <div>
+      <div className="flex flex-col gap-4">
+         <HeaderVermelho />
          <CardImovel imovel={imovel} />
       </div>
    );
