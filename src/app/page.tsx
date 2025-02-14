@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import CardImovel from "./components/card/CardImovel";
-import HeaderVermelho from "./components/headers/HeaderVermelho";
-import ModelImovel from "./models/ModelImovel";
+import CardImovel from "../components/card/CardImovel";
+import HeaderVermelho from "../components/headers/HeaderVermelho";
+import ModelImovel from "../models/ModelImovel";
 
 export default function Home() {
    const [imovel] = useState(
