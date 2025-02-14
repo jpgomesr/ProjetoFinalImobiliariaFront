@@ -8,8 +8,7 @@ interface BotaoProps {
 const BotaoPadrao = (props: BotaoProps) => {
    return (
       <button
-         className="px-3 py-2 bg-havprincipal opacity-90 rounded-md text-xs
-          text-white lg:hover:opacity-100"
+         className="botao bg-havprincipal text-white"
          onClick={props.handler}
       >
          {props.texto}
