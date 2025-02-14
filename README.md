@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Utilização de Prefixos no GitHub
 
-## Getting Started
+Este repositório utiliza uma convenção de prefixos para organizar e categorizar issues, pull requests e commits. A adoção desses prefixos ajuda a manter o projeto organizado, facilita a identificação do tipo de tarefa e melhora a clareza durante o desenvolvimento.
 
-First, run the development server:
+## Prefixos Comuns
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Aqui estão os prefixos mais utilizados e seus significados:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **feat**: Indica a adição de uma nova funcionalidade ao projeto.
+  - Exemplo: `feat: adiciona suporte a autenticação via OAuth`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **fix**: Corrige um bug ou problema no código.
+  - Exemplo: `fix: resolve erro de validação no formulário`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **docs**: Atualizações ou adições na documentação.
+  - Exemplo: `docs: atualiza guia de instalação`
 
-## Learn More
+- **style**: Alterações relacionadas à formatação do código (espaçamento, indentação, etc.) que não afetam a funcionalidade.
+  - Exemplo: `style: ajusta indentação no arquivo principal`
 
-To learn more about Next.js, take a look at the following resources:
+- **refactor**: Refatoração de código que não adiciona novas funcionalidades nem corrige bugs.
+  - Exemplo: `refactor: melhora estrutura do módulo de autenticação`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **test**: Adição ou modificação de testes.
+  - Exemplo: `test: adiciona testes para o módulo de usuários`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **chore**: Tarefas de manutenção, como atualizações de dependências ou configurações.
+  - Exemplo: `chore: atualiza dependências do projeto`
 
-## Deploy on Vercel
+- **ci**: Alterações relacionadas à integração contínua (CI).
+  - Exemplo: `ci: configura GitHub Actions para testes automatizados`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **perf**: Melhorias de desempenho.
+  - Exemplo: `perf: otimiza consultas ao banco de dados`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **build**: Alterações que afetam o sistema de build ou dependências externas.
+  - Exemplo: `build: atualiza configuração do Webpack`
+
+## Como Usar
+
+1. Ao criar uma **issue**, utilize o prefixo correspondente ao tipo de tarefa.
+   - Exemplo: `[feat] Adicionar suporte a temas escuros`
+
+2. Ao abrir um **pull request**, utilize o prefixo no título.
+   - Exemplo: `fix: corrige erro de cálculo na função de desconto`
+
+3. Ao fazer um **commit**, utilize o prefixo na mensagem.
+   - Exemplo: `docs: atualiza README com instruções de instalação`
+
+## Benefícios
+
+- **Organização**: Facilita a categorização e filtragem de tarefas.
+- **Clareza**: Torna o propósito de cada alteração mais evidente.
+- **Consistência**: Mantém um padrão em todo o projeto.
