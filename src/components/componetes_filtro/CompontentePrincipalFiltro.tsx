@@ -75,88 +75,82 @@ const CompontentePrincipalFiltro = () => {
             </div>
 
             {filtroAberto && (
-               <div className="flex flex-wrap flex-row justify-between">
-                     {/* <p className="mb-2 text-sm">Preço</p> */}
-                     <div className="flex justify-center gap-6 w-full">
-                        <ComponenteInputFiltro
-                           tipoInput="number"
-                           onChange={setPrecoMinimo}
-                           valor={precoMinimo}
-                           placeholder="mínimo"
-                           htmlFor="preco-minimo"
-                           label="R$"
-                        />
-                        <ComponenteInputFiltro
-                           tipoInput="number"
-                           onChange={setPrecoMaximo}
-                           valor={precoMaximo}
-                           placeholder="mínimo"
-                           htmlFor="preco-maximo"
-                           label="R$"
-                        />
-                     </div>
-                     {/* <p className="my-2 text-sm">Area</p> */}
-                     <div className="flex justify-center gap-6 mb-3 w-full">
-                        <ComponenteInputFiltro
-                           tipoInput="number"
-                           onChange={setMetrosQuadradosMinimo}
-                           valor={metrosQuadradosMinimo}
-                           placeholder="mínimo"
-                           htmlFor="preco minimo"
-                           label="m²"
-                        />
-                        <ComponenteInputFiltro
-                           tipoInput="number"
-                           onChange={setMetrosQuadradosMaximo}
-                           valor={metrosQuadradosMaximo}
-                           placeholder="mínimo"
-                           htmlFor="preco minimo"
-                           label="m²"
-                        />
-                     </div>
-                     <div className="flex flex-col gap-2 md:gap-4 justify-start items-start max-w-40">
-                        <ComponenteRadioFiltro
-                           titulo="Vagas"
-                           onChange={setQuantidadeVagas}
-                           selecionados={quantidadeDeVagas}
-                        />
-                        <ComponenteRadioFiltro
-                           titulo="Dormitório"
-                           onChange={setQuantidadeQuartos}
-                           selecionados={quantidadeDeQuartos}
-                        />
-                     </div>
-                
+               <div className="flex flex-col justify-center gap-3 mt-3">
+                  <p className="mb-2 text-sm text-center">Preço</p>
+                  <div className="flex justify-center gap-6 w-full">
+                     <ComponenteInputFiltro
+                        tipoInput="number"
+                        onChange={setPrecoMinimo}
+                        valor={precoMinimo}
+                        placeholder="mínimo"
+                        htmlFor="preco-minimo"
+                        label="R$"
+                     />
+                     <ComponenteInputFiltro
+                        tipoInput="number"
+                        onChange={setPrecoMaximo}
+                        valor={precoMaximo}
+                        placeholder="mínimo"
+                        htmlFor="preco-maximo"
+                        label="R$"
+                     />
+                  </div>
+                  <p className="my-2 text-sm text-center">Area</p>
+                  <div className="flex justify-center gap-6 mb-3 w-full">
+                     <ComponenteInputFiltro
+                        tipoInput="number"
+                        onChange={setMetrosQuadradosMinimo}
+                        valor={metrosQuadradosMinimo}
+                        placeholder="mínimo"
+                        htmlFor="preco minimo"
+                        label="m²"
+                     />
+                     <ComponenteInputFiltro
+                        tipoInput="number"
+                        onChange={setMetrosQuadradosMaximo}
+                        valor={metrosQuadradosMaximo}
+                        placeholder="mínimo"
+                        htmlFor="preco minimo"
+                        label="m²"
+                     />
+                  </div>
+                  <div className="flex gap-8 w-full">
+                     <ComponenteRadioFiltro
+                        titulo="Vagas"
+                        onChange={setQuantidadeVagas}
+                        selecionados={quantidadeDeVagas}
+                     />
+                     <ComponenteRadioFiltro
+                        titulo="Dormitório"
+                        onChange={setQuantidadeQuartos}
+                        selecionados={quantidadeDeQuartos}
+                     />
+                  </div>
 
-                
-                     <div className="flex flex-col justify-end items-end w-2/4 text-xs">
-                     <p className="">Filtros</p>
-                        <div className="flex flex-col gap-4 justify-start items-start">
-                           <ComponenteSelectFiltro
-                              onChange={setCidade}
-                              opcoes={cidadesExemplo}
-                              placeholder="Cidade"
-                              selecionado={cidade}
-                           />
-                           <ComponenteSelectFiltro
-                              onChange={setBairro}
-                              opcoes={bairrosExemplo}
-                              placeholder="Bairro"
-                              selecionado={bairro}
-                           />
-                        </div>
+                  <div className="flex flex-col w-full justify-center items-center text-xs gap-3">
+                     <div className="flex gap-4 w-full justify-center items-center">
+                        <ComponenteSelectFiltro
+                           onChange={setCidade}
+                           opcoes={cidadesExemplo}
+                           placeholder="Cidade"
+                           selecionado={cidade}
+                        />
+                        <ComponenteSelectFiltro
+                           onChange={setBairro}
+                           opcoes={bairrosExemplo}
+                           placeholder="Bairro"
+                           selecionado={bairro}
+                        />
                      </div>
                      <div className="flex justify-center items-center w-full">
                         <ComponenteSelectFiltro
-                              onChange={setBairro}
-                              opcoes={tipoImovelExemplo}
-                              placeholder="Tipo imóvel"
-                              selecionado={tipoImovel}
-                           />
+                           onChange={setTipoImovel}
+                           opcoes={tipoImovelExemplo}
+                           placeholder="Casa"
+                           selecionado={tipoImovel}
+                        />
                      </div>
-                  
-
-                
+                  </div>
                </div>
             )}
 
