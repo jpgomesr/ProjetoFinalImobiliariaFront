@@ -12,7 +12,6 @@ export default function Home() {
          false,
          "Venda",
          99999,
-         9999,
          12345,
          "Rua Arthur Gonçalves de Araujo",
          "João Pessoa",
