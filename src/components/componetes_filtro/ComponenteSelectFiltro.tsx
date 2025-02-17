@@ -10,7 +10,6 @@ interface ComponenteInputFiltro {
 const ComponenteSelectFiltro = (props: ComponenteInputFiltro) => {
    // Estado para controlar o valor selecionado
    const [selecionado, setSelecionado] = useState("");
-
    // Função de mudança de seleção
    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       const valorSelecionado = e.target.value;

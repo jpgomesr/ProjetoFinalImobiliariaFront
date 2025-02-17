@@ -11,16 +11,14 @@ const ComponenteRadioFiltro = (props: ComponenteRadioFiltroProps) => {
       props.selecionados
    );
    const opcoes = [1, 2, 3, 4];
-   console.log(selecionados);
-   console.log("via props" + props.selecionados);
+
    const toggleSelecao = (valor: number) => {
-      setSelecionados(props.selecionados);
 
       let novosSelecionados = [];
       if (selecionados.includes(valor)) {
-         novosSelecionados = selecionados.filter((item) => item !== valor);
+         novosSelecionados = props.selecionados.filter((item) => item !== valor);
       } else {
-         novosSelecionados = [...selecionados, valor];
+         novosSelecionados = [...props.selecionados, valor];
       }
       setSelecionados(novosSelecionados);
       props.onChange(novosSelecionados);
