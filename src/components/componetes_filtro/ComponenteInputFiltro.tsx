@@ -13,7 +13,7 @@ interface ComponenteInputFiltroProps{
 
 const ComponenteInputFiltro = (props : ComponenteInputFiltroProps) => {
   return (
-    <div className='flex border-b-2 gap-2 text-xs'>
+    <div className='flex border-b-2 gap-2 text-xs flex-1'>
         <label htmlFor={props.htmlFor}>{props.label}</label>
         <InputFiltro placeholder={props.placeholder} tipo={props.tipoInput} onChange={props.onChange} valor={props.valor}/>
     </div>

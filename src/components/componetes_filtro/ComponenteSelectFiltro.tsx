@@ -4,6 +4,7 @@ interface ComponenteInputFiltro {
   opcoes: string[];
   onChange: (selecionado: string) => void;
   placeholder : string
+  selecionado : string
 }
 
 const ComponenteSelectFiltro = (props: ComponenteInputFiltro) => {
@@ -19,9 +20,9 @@ const ComponenteSelectFiltro = (props: ComponenteInputFiltro) => {
 
   return (
     <select
-      className="w-full p-1.5 border border-black rounded-md text-[10px]"
+      className="w-full p-1.5 border border-black rounded-md text-[10px] max-w-28 "
       onChange={handleChange}
-      value={selecionado}
+      value={props.selecionado}
     >
       <option value="" disabled hidden>
         {props.placeholder}
