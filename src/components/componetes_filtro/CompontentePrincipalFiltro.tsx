@@ -38,10 +38,10 @@ const CompontentePrincipalFiltro = () => {
 
    return (
       <div className={`bg-white w-3/4 rounded-2xl`}>
-         <div className={`flex flex-col items-center  p-4`}>
+         <div className={`flex flex-col items-center p-4 2xl:p-8`}>
             <div className="flex items-center justify-center gap-16">
                <p
-                  className={`hover:cursor-pointer text-mobilePadrao
+                  className={`hover:cursor-pointer text-mobilePadrao md:text-1xl xl:text-2xl
                ${
                   tipoVenda === "Compra"
                      ? "text-havprincipal"
@@ -52,7 +52,7 @@ const CompontentePrincipalFiltro = () => {
                   Comprar
                </p>
                <p
-                  className={`hover:cursor-pointer text-mobilePadrao ${
+                  className={`hover:cursor-pointer text-mobilePadrao md:text-1xl xl:text-2xl ${
                      tipoVenda === "Aluguel"
                         ? "text-havprincipal"
                         : "text-cinzaNeutro"
@@ -63,58 +63,81 @@ const CompontentePrincipalFiltro = () => {
                </p>
             </div>
 
-            <div className="w-full h-[1px] bg-gray-400 my-2"></div>
+            <div className="w-full h-[1px] bg-gray-400 my-2 lg:my-4 xl:mb-8"></div>
 
-            <div className="flex px-2 border-b mt-2  pb-1 w-full">
+            <div
+               className="flex px-2 border-b mt-2 pb-1 w-full
+            md:border md:border-black md:p-3 md:items-center md:justify-start md:rounded-xl md:w-11/12
+            2xl:w-10/12"
+            >
                <LupaIcon width={16} height={16} />
                <input
                   type="text"
-                  className="ml-2 placeholder:text-mobilePadrao text-xs"
+                  className="ml-2 placeholder:text-mobilePadrao text-xs
+                  md:p-1"
                   placeholder="Fale um pouco sobre o imóvel"
                />
             </div>
 
             {filtroAberto && (
-               <div className="flex flex-col justify-center gap-3 mt-3">
-                  <p className="mb-2 text-sm text-center">Preço</p>
-                  <div className="flex justify-center gap-6 w-full">
-                     <ComponenteInputFiltro
-                        tipoInput="number"
-                        onChange={setPrecoMinimo}
-                        valor={precoMinimo}
-                        placeholder="mínimo"
-                        htmlFor="preco-minimo"
-                        label="R$"
-                     />
-                     <ComponenteInputFiltro
-                        tipoInput="number"
-                        onChange={setPrecoMaximo}
-                        valor={precoMaximo}
-                        placeholder="mínimo"
-                        htmlFor="preco-maximo"
-                        label="R$"
-                     />
+               <div
+                  className="flex flex-wrap justify-center max-w-full md:justify-center md:gap-3 mt-3 
+               md:mt-5 md:w-10/12 "
+               >
+                  <div>
+                     <p className="mb-2 text-sm text-center xl:text-xl">
+                        Preço
+                     </p>
+                     <div className="flex justify-center gap-6 w-full">
+                        <ComponenteInputFiltro
+                           tipoInput="number"
+                           onChange={setPrecoMinimo}
+                           valor={precoMinimo}
+                           placeholder="mínimo"
+                           htmlFor="preco-minimo"
+                           label="R$"
+                        />
+                        <ComponenteInputFiltro
+                           tipoInput="number"
+                           onChange={setPrecoMaximo}
+                           valor={precoMaximo}
+                           placeholder="mínimo"
+                           htmlFor="preco-maximo"
+                           label="R$"
+                        />
+                     </div>
                   </div>
-                  <p className="my-2 text-sm text-center">Area</p>
-                  <div className="flex justify-center gap-6 mb-3 w-full">
-                     <ComponenteInputFiltro
-                        tipoInput="number"
-                        onChange={setMetrosQuadradosMinimo}
-                        valor={metrosQuadradosMinimo}
-                        placeholder="mínimo"
-                        htmlFor="preco minimo"
-                        label="m²"
-                     />
-                     <ComponenteInputFiltro
-                        tipoInput="number"
-                        onChange={setMetrosQuadradosMaximo}
-                        valor={metrosQuadradosMaximo}
-                        placeholder="mínimo"
-                        htmlFor="preco minimo"
-                        label="m²"
-                     />
+                  <div>
+                     <p
+                        className="mb-2 text-sm text-center
+                     xl:text-xl"
+                     >
+                        Area
+                     </p>
+
+                     <div className="flex justify-center gap-6 mb-3 w-full">
+                        <ComponenteInputFiltro
+                           tipoInput="number"
+                           onChange={setMetrosQuadradosMinimo}
+                           valor={metrosQuadradosMinimo}
+                           placeholder="mínimo"
+                           htmlFor="preco minimo"
+                           label="m²"
+                        />
+                        <ComponenteInputFiltro
+                           tipoInput="number"
+                           onChange={setMetrosQuadradosMaximo}
+                           valor={metrosQuadradosMaximo}
+                           placeholder="mínimo"
+                           htmlFor="preco minimo"
+                           label="m²"
+                        />
+                     </div>
                   </div>
-                  <div className="flex gap-8 w-full">
+                  <div
+                     className="flex gap-6 max-w-76 justify-center items-center mb-3
+                  md:max-w-96 w-72 lg:max-w-fit"
+                  >
                      <ComponenteRadioFiltro
                         titulo="Vagas"
                         onChange={setQuantidadeVagas}
@@ -127,8 +150,11 @@ const CompontentePrincipalFiltro = () => {
                      />
                   </div>
 
-                  <div className="flex flex-col w-full justify-center items-center text-xs gap-3">
-                     <div className="flex gap-4 w-full justify-center items-center">
+                  <div
+                     className="flex flex-col w-full justify-center items-center text-xs gap-3 
+                  md:flex-row"
+                  >
+                     <div className="flex gap-4  justify-center items-center">
                         <ComponenteSelectFiltro
                            onChange={setCidade}
                            opcoes={cidadesExemplo}
@@ -142,7 +168,7 @@ const CompontentePrincipalFiltro = () => {
                            selecionado={bairro}
                         />
                      </div>
-                     <div className="flex justify-center items-center w-full">
+                     <div className="flex justify-center items-center ">
                         <ComponenteSelectFiltro
                            onChange={setTipoImovel}
                            opcoes={tipoImovelExemplo}
@@ -154,7 +180,7 @@ const CompontentePrincipalFiltro = () => {
                </div>
             )}
 
-            <div className="flex items-center justify-center gap-4 mt-3">
+            <div className="flex items-center justify-center gap-4 mt-3 lg:mt-4">
                <BotaoPadrao texto="BUSCAR" />
                <div
                   className="botao bg-gray-100 text-black drop-shadow-xl flex items-center justify-center"
@@ -166,8 +192,11 @@ const CompontentePrincipalFiltro = () => {
          </div>
 
          {filtroAberto && (
-            <div className="border-t w-full flex items-center justify-center p-2">
-               <p className="cursor-pointer" onClick={limparFiltro}>
+            <div className="border-t w-full flex items-center justify-center p-2 lg:p-4">
+               <p
+                  className="cursor-pointer lg:text-xl 2xl:text-2xl"
+                  onClick={limparFiltro}
+               >
                   Limpar filtros
                </p>
             </div>
