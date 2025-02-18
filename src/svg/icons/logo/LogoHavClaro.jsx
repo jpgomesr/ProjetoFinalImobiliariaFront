@@ -1,16 +1,15 @@
 import { useState } from "react";
 
-export default function LogoHav({ width, height, visible }) {
+export default function LogoHav({ className, visible }) {
    const [letras] = useState(visible ? "#CFC3BC" : "transparent");
 
    return (
       <div data-svg-wrapper>
          <svg
-            width={width}
-            height={height}
             viewBox="0 0 63 55"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            className={className}
          >
             <g filter="url(#filter0_d_2201_5941)">
                <path
@@ -95,8 +94,6 @@ export default function LogoHav({ width, height, visible }) {
                   id="filter0_d_2201_5941"
                   x="0"
                   y="0"
-                  width={width}
-                  height={height}
                   filterUnits="userSpaceOnUse"
                   colorInterpolationFilters="sRGB"
                >

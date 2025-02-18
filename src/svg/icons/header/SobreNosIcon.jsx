@@ -1,14 +1,13 @@
 import React from "react";
 
-const SobreNosIcon = ({ width, height }) => {
+const SobreNosIcon = ({ className }) => {
    return (
       <div data-svg-wrapper>
          <svg
-            width={width}
-            height={height}
             viewBox="0 0 20 15"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            className={className}
          >
             <path
                fillRule="evenodd"
