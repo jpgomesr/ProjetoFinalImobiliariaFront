@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.botao {
+   @apply px-3 py-2  rounded-md text-xs md:px-4 md:py-3 2xl:px-6 2xl:py-3 2xl:text-sm;
+}
+
 :root {
    --background: #ffffff;
    --foreground: #171717;
