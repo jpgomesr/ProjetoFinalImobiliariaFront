@@ -5,7 +5,7 @@ interface HomeProps {
 export default function SaibaMaisBotao({ codigo }: HomeProps) {
    return (
       <button className="bg-havprincipal rounded-md">
-         <p className="py-3 px-4 text-white text-sm">Saiba Mais</p>
+         <p className="py-2 px-4 text-white text-sm">Saiba Mais</p>
       </button>
    );
 }

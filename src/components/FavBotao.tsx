@@ -16,7 +16,7 @@ export default function FavButton({ favorited }: HomeProps) {
          className="flex items-center justify-center"
          onClick={handleChangeFav}
       >
-         {<Heart favorited={favorited} />}
+         {<Heart favorited={favorited} height={15} width={15} />}
       </button>
    );
 }

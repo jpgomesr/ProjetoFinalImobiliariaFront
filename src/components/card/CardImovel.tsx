@@ -1,5 +1,4 @@
 import FavButton from "../FavBotao";
-import ObjetivoImovel from "./ObjetivoImovel";
 import CardInfo from "./CardInfo";
 import SaibaMaisBotao from "./SaibaMaisBotao";
 import ModelImovel from "../../models/ModelImovel";
@@ -14,7 +13,7 @@ export default function CardImovel(props: HomeProps) {
    const [isBannerVisible] = useState(props.imovel.banner);
 
    return (
-      <div className="w-[70%] h-[515px] max-w-[305px] bg-begepadrao rounded-2xl shadow-[4px_4px_4px_rgba(0,0,0,0.2)] relative">
+      <div className="w-[70%] h-full max-w-[305px] bg-begepadrao rounded-2xl shadow-[4px_4px_4px_rgba(0,0,0,0.2)] relative">
          {isBannerVisible && <CardBanner tipo={props.imovel.tipoBanner} />}
          <div>
             <img
@@ -23,46 +22,53 @@ export default function CardImovel(props: HomeProps) {
                className="w-full  max-h-[40%] max-w-[350px] rounded-t-2xl"
             />
          </div>
-         <div className="mx-6 mt-4 flex flex-col gap-3">
-            <div className="flex flex-col">
-               <div className="flex flex-row justify-between w-full pr-1 items-center">
-                  <h3 className="text-havprincipal text-fontcard1">
-                     {props.imovel.tipo}
-                  </h3>
-                  <FavButton favorited={props.imovel.favoritado} />
-               </div>
-               <div className="flex flex-row justify-between w-full">
-                  <div className="flex flex-row gap-1 items-center">
-                     <ObjetivoImovel objImovel={props.imovel.objImovel} />
-                     <div className="flex flex-row gap-1 items-center justify-center">
-                        <p className="text-xs font-semibold">R$</p>
-                        <p className="text-xs font-semibold">
-                           {props.imovel.valor.toFixed(2)}
-                        </p>
+         <div className="mx-5 mt-4 flex flex-col gap-3">
+            <div className="flex flex-col gap-2">
+               <div className="flex flex-col">
+                  <div className="flex flex-row justify-between w-full pr-1 items-center">
+                     <p className="text-havprincipal text-xs font-medium">
+                        {props.imovel.objImovel === "Venda"
+                           ? "Venda por"
+                           : "Locação por"}
+                     </p>
+                     <FavButton favorited={props.imovel.favoritado} />
+                  </div>
+                  <div className="flex flex-row justify-between w-full">
+                     <div className="flex flex-row gap-1 items-center">
+                        <div className="flex flex-row gap-1 items-center justify-center text-havprincipal">
+                           <p
+                              className="text-base font-bold"
+                              style={{
+                                 textShadow: "2px 2px 4px rgba(0, 0, 0, 0.25)",
+                              }}
+                           >
+                              R$
+                           </p>
+                           <p
+                              className="text-base font-bold"
+                              style={{
+                                 textShadow: "2px 2px 4px rgba(0, 0, 0, 0.25)",
+                              }}
+                           >
+                              {props.imovel.valor.toFixed(2)}
+                           </p>
+                        </div>
                      </div>
                   </div>
-                  <p className="text-xs p-1">{props.imovel.qtdFav}</p>
+               </div>
+               <div>
+                  <p className="text-xs text-havprincipal">
+                     {props.imovel.tipo}
+                  </p>
+                  <CardInfo
+                     qtdBanheiros={props.imovel.qtdBanheiros}
+                     qtdQuartos={props.imovel.qtdQuartos}
+                     qtdVagas={props.imovel.qtdVagas}
+                     metragem={props.imovel.metragem}
+                  />
                </div>
             </div>
-            {/* ESSA DAQUI TA MEIO ESTRANHA, MAS TBM DA PARA TESTAR
-         
-            <div className="mx-6 mt-4 flex flex-row items-center justify-between">
-               <div>
-                  <h3 className="text-havprincipal text-fontcard1">{tipo}</h3>
-                  <div className="flex flex-row gap-[0.25rem] justify-center items-center">
-                     <ObjetivoImovel objImovel={objImovel} />
-                     <div className="flex flex-row gap-[0.25rem]">
-                        <p className="text-[0.75rem]">R$</p>
-                        <p className="text-[0.75rem]">{valor.toFixed(2)}</p>
-                     </div>
-                  </div>
-               </div>
-               <div className="flex flex-col justify-between">
-                  <FavButton favorited={favorited} />
-                  <p className="text-[0.75rem] p-[0.25rem]">{qtdFav}</p>
-               </div>
-            </div> */}
-            <div className="text-[0.625rem] text-havprincipal flex flex-col gap-2 text-justify">
+            <div className="text-[0.625rem] text-havprincipal flex flex-col gap-1 text-justify">
                <p>Código: {props.imovel.codigo}</p>
                <div className="flex flex-col gap-1">
                   <p>
@@ -72,15 +78,7 @@ export default function CardImovel(props: HomeProps) {
                </div>
                <p>{props.imovel.descricao}</p>
             </div>
-            <div>
-               <CardInfo
-                  qtdBanheiros={props.imovel.qtdBanheiros}
-                  qtdQuartos={props.imovel.qtdQuartos}
-                  qtdVagas={props.imovel.qtdVagas}
-                  metragem={props.imovel.metragem}
-               />
-            </div>
-            <div className="flex justify-center">
+            <div className="flex justify-center pb-5">
                <SaibaMaisBotao codigo={props.imovel.codigo} />
             </div>
          </div>
