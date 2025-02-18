@@ -12,12 +12,10 @@ export default {
             background: "var(--background)",
             foreground: "var(--foreground)",
             havprincipal: "#702632",
-            begepadrao: "#DFDAD0",
-            cinzaNeutro: "#BCBCBC",
+            begepadrao: "#EDEDED",
          },
          fontSize: {
             fontcard1: "1.6rem",
-           
          },
          fontFamily: {
             inter: "Inter",
