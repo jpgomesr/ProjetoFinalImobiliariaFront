@@ -29,6 +29,9 @@ export default function Home() {
 
    return (
       <Layout>
+         <div>
+            <CompontentePrincipalFiltro />
+         </div>
          <CardImovel imovel={imovel} />
       </Layout>
    );
