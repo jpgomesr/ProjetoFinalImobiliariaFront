@@ -10,6 +10,11 @@
    --foreground: #171717;
 }
 
+.botao {
+   @apply px-3 py-2  rounded-md text-xs md:px-4 md:py-3 2xl:px-6 2xl:py-3 2xl:text-sm;
+}
+
+
 @media (prefers-color-scheme: dark) {
    :root {
       --background: #0a0a0a;
