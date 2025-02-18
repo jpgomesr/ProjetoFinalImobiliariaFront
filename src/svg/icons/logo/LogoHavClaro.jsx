@@ -95,8 +95,8 @@ export default function LogoHav({ width, height, visible }) {
                   id="filter0_d_2201_5941"
                   x="0"
                   y="0"
-                  width="64"
-                  height="63"
+                  width={width}
+                  height={height}
                   filterUnits="userSpaceOnUse"
                   colorInterpolationFilters="sRGB"
                >
