@@ -3,7 +3,6 @@ export default class Imovel {
    favoritado: boolean;
    objImovel: string;
    valor: number;
-   qtdFav: number;
    codigo: number;
    endereco: string;
    bairro: string;
@@ -21,7 +20,6 @@ export default class Imovel {
       favoritado: boolean,
       objImovel: string,
       valor: number,
-      qtdFav: number,
       codigo: number,
       endereco: string,
       bairro: string,
@@ -38,7 +36,6 @@ export default class Imovel {
       this.favoritado = favoritado;
       this.objImovel = objImovel;
       this.valor = valor;
-      this.qtdFav = qtdFav;
       this.codigo = codigo;
       this.endereco = endereco;
       this.bairro = bairro;

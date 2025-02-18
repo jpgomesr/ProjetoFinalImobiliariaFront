@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import CardImovel from "../components/card/CardImovel";
-import HeaderVermelho from "../components/headers/HeaderVermelho";
 import ModelImovel from "../models/ModelImovel";
+import Layout from "../components/Layout";
 
 export default function Home() {
    const [imovel] = useState(
@@ -12,7 +12,6 @@ export default function Home() {
          false,
          "Venda",
          99999,
-         9999,
          12345,
          "Rua Arthur Gonçalves de Araujo",
          "João Pessoa",
@@ -28,9 +27,8 @@ export default function Home() {
    );
 
    return (
-      <div className="flex flex-col gap-4">
-         <HeaderVermelho />
+      <Layout>
          <CardImovel imovel={imovel} />
-      </div>
+      </Layout>
    );
 }
