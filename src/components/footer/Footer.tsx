@@ -26,7 +26,7 @@ const Footer = () => {
             <button onClick={() => router.push("/")}>Dúvidas frequentes</button>
             <button onClick={() => router.push("/")}>Chat Bot</button>
             <div className="flex flex-row gap-2 justify-center">
-               <LogoHav width={50} height={50} visible={false} />
+               <LogoHav className="w-12 h-12" visible={false} />
                <button onClick={() => router.push("/")}>HAV Imobiliária</button>
             </div>
             <div className="flex flex-row justify-center items-center gap-4">
