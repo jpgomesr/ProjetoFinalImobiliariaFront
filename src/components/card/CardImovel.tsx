@@ -11,6 +11,12 @@ interface HomeProps {
 
 export default function CardImovel(props: HomeProps) {
    const [isBannerVisible] = useState(props.imovel.banner);
+   const valor = props.imovel.valor;
+   const valorFormatado = valor.toLocaleString("pt-BR", {
+      style: "decimal",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+   });
 
    return (
       <div className="w-[70%] h-full max-w-[305px] bg-begepadrao rounded-2xl shadow-[4px_4px_4px_rgba(0,0,0,0.2)] relative">
@@ -50,7 +56,7 @@ export default function CardImovel(props: HomeProps) {
                                  textShadow: "2px 2px 4px rgba(0, 0, 0, 0.25)",
                               }}
                            >
-                              {props.imovel.valor.toFixed(2)}
+                              {valorFormatado}
                            </p>
                         </div>
                      </div>
