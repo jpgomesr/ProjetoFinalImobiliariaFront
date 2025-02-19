@@ -4,6 +4,7 @@ import { useState } from "react";
 import CardImovel from "../components/card/CardImovel";
 import ModelImovel from "../models/ModelImovel";
 import Layout from "../components/Layout";
+import CompontentePrincipalFiltro from "@/components/componetes_filtro/CompontentePrincipalFiltro";
 
 export default function Home() {
    const [imovel] = useState(
@@ -28,6 +29,9 @@ export default function Home() {
 
    return (
       <Layout>
+         <div>
+            <CompontentePrincipalFiltro />
+         </div>
          <CardImovel imovel={imovel} />
       </Layout>
    );

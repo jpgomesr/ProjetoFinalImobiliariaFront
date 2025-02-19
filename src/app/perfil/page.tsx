@@ -4,7 +4,7 @@ import Layout from "@/components/Layout";
 import React from "react";
 
 const page = () => {
-   return <Layout>chat</Layout>;
+   return <Layout>perfil</Layout>;
 };
 
 export default page;
