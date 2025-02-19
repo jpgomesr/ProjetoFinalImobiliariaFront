@@ -98,9 +98,9 @@ export default function LogoHav({ width, height, visible }) {
                   width="64"
                   height="63"
                   filterUnits="userSpaceOnUse"
-                  color-interpolation-filters="sRGB"
+                  colorInterpolationFilters="sRGB"
                >
-                  <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                  <feFlood floodOpacity="0" result="BackgroundImageFix" />
                   <feColorMatrix
                      in="SourceAlpha"
                      type="matrix"
@@ -134,8 +134,8 @@ export default function LogoHav({ width, height, visible }) {
                   y2="55"
                   gradientUnits="userSpaceOnUse"
                >
-                  <stop stop-color="#93656D" />
-                  <stop offset="0.81" stop-color="#DFDAD0" />
+                  <stop stopColor="#93656D" />
+                  <stop offset="0.81" stopColor="#DFDAD0" />
                </linearGradient>
                <linearGradient
                   id="paint1_linear_2201_5941"
@@ -145,8 +145,8 @@ export default function LogoHav({ width, height, visible }) {
                   y2="55"
                   gradientUnits="userSpaceOnUse"
                >
-                  <stop stop-color="#93656D" />
-                  <stop offset="0.81" stop-color="#DFDAD0" />
+                  <stop stopColor="#93656D" />
+                  <stop offset="0.81" stopColor="#DFDAD0" />
                </linearGradient>
                <linearGradient
                   id="paint2_linear_2201_5941"
@@ -156,8 +156,8 @@ export default function LogoHav({ width, height, visible }) {
                   y2="60.0978"
                   gradientUnits="userSpaceOnUse"
                >
-                  <stop stop-color="#93656D" />
-                  <stop offset="0.615" stop-color="#DFDAD0" />
+                  <stop stopColor="#93656D" />
+                  <stop offset="0.615" stopColor="#DFDAD0" />
                </linearGradient>
                <linearGradient
                   id="paint3_linear_2201_5941"
@@ -167,8 +167,8 @@ export default function LogoHav({ width, height, visible }) {
                   y2="35.7427"
                   gradientUnits="userSpaceOnUse"
                >
-                  <stop stop-color="#93656D" />
-                  <stop offset="1" stop-color="#DFDAD0" />
+                  <stop stopColor="#93656D" />
+                  <stop offset="1" stopColor="#DFDAD0" />
                </linearGradient>
             </defs>
          </svg>
