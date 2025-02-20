@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import LupaIcon from "@/svg/icons/LupaIcon";
 import BotaoPadrao from "../BotaoPadrao";
 import ComponenteInputFiltro from "./ComponenteInputFiltro";
 import ComponenteRadioFiltro from "./ComponenteRadioFiltro";
 import ComponenteSelectFiltro from "./ComponenteSelectFiltro";
+import { Search } from "lucide-react";
 
 const CompontentePrincipalFiltro = () => {
    const [tipoVenda, setTipoVenda] = useState<"Compra" | "Aluguel">("Compra");
@@ -71,7 +71,7 @@ const CompontentePrincipalFiltro = () => {
             md:border md:border-black md:p-3 md:items-center md:justify-start md:rounded-xl md:w-11/12
             2xl:w-10/12"
             >
-               <LupaIcon width={16} height={16} />
+               <Search className="w-4 h-4" />
                <input
                   type="text"
                   className="ml-2 placeholder:text-mobilePadrao text-xs
