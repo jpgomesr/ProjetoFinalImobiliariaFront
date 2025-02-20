@@ -6,7 +6,9 @@ import React from "react";
 
 const page = () => {
    return <Layout>
-      <InputPadrao htmlFor="teste" placeholder="teste" label="teste" tipoInput="text"/>
+      <div>
+         teste
+      </div>
    </Layout>;
 };
 

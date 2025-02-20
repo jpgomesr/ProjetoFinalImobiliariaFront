@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 
-interface ComponenteInputFiltro {
+interface ComponenteSelectFiltro {
    opcoes: string[];
    onChange: (selecionado: string) => void;
    placeholder: string;
    selecionado: string;
 }
 
-const ComponenteSelectFiltro = (props: ComponenteInputFiltro) => {
+const ComponenteSelectFiltro = (props: ComponenteSelectFiltro) => {
    // Estado para controlar o valor selecionado
    const [selecionado, setSelecionado] = useState("");
    // Função de mudança de seleção
