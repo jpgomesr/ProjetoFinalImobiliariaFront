@@ -4,13 +4,14 @@ import Footer from "./footer/Footer";
 
 interface LayoutProps {
    children: React.ReactNode;
+   className? : string
 }
 
 const Layout = (props: LayoutProps) => {
    return (
       <div>
          <HeaderVermelho />
-         <div className="py-8">{props.children}</div>
+         <div className={`${props.className ? props.className : "py-8"}`}>{props.children}</div>
          <Footer />
       </div>
    );
