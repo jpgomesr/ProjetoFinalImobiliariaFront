@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Heart from "../svg/icons/CoracaoIcon";
 
 interface HomeProps {
@@ -7,8 +8,10 @@ interface HomeProps {
 }
 
 export default function FavButton({ favorited }: HomeProps) {
+   const [isFavorited, setIsFavorited] = useState(favorited);
+
    const handleChangeFav = () => {
-      favorited = !favorited;
+      setIsFavorited((prevState) => !prevState);
    };
 
    return (
@@ -16,7 +19,7 @@ export default function FavButton({ favorited }: HomeProps) {
          className="flex items-center justify-center"
          onClick={handleChangeFav}
       >
-         {<Heart favorited={favorited} height={15} width={15} />}
+         {<Heart favorited={isFavorited} height={15} width={15} />}
       </button>
    );
 }
