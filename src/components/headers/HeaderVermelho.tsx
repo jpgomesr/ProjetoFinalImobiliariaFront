@@ -1,15 +1,14 @@
-import LogoHavClaro from "../../svg/icons/logo/LogoHavClaro";
-import PerfilIcon from "../../svg/icons/header/PerfilIcon";
-import MenuHamburguer from "../../svg/icons/header/MenuHamburguer";
-import XIcon from "../../svg/icons/header/XIcon";
+import LogoHavClaro from "@/svg/icons/logo/LogoHavClaro";
+import PerfilIcon from "@/svg/icons/header/PerfilIcon";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
-import Hamburguer from "./Hamburguer";
 import { useRouter } from "next/navigation";
 import FavIcon from "@/svg/icons/header/FavIcon";
 import FaqIcon from "@/svg/icons/header/FaqIcon";
 import ChatIcon from "@/svg/icons/header/ChatIcon";
 import FuncoesHeader from "./FuncoesHeader";
 import { Roles } from "@/models/Enum/Roles";
+import Hamburguer from "./Hamburguer";
 
 interface HeaderVermelhoProps {
    role: Roles;
@@ -34,7 +33,7 @@ export default function HeaderVermelho(props: HeaderVermelhoProps) {
                      flex justify-between"
       >
          <div className="flex flex-row md:gap-14 2xl:gap-28">
-            <FuncoesHeader role={Roles.ADMIN} />
+            <FuncoesHeader role={props.role} />
             <LogoHavClaro
                className="w-14 h-14 2xl:w-20 2xl:h-20"
                visible={true}
@@ -65,19 +64,19 @@ export default function HeaderVermelho(props: HeaderVermelhoProps) {
             <button onClick={() => router.push("/perfil")}>
                <PerfilIcon className="w-6 h-6 md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
             </button>
-            <div
+            <button
                onClick={handleHamburguer}
                className="cursor-pointer md:hidden"
             >
                {!isHamburguerVisible ? (
-                  <MenuHamburguer width={23} height={15} />
+                  <Menu className="w-8 h-8 text-white" />
                ) : (
                   <div>
-                     <XIcon width={23} height={23} />
+                     <X className="w-8 h-8 text-white" />
                      <Hamburguer role={props.role} />
                   </div>
                )}
-            </div>
+            </button>
          </div>
       </div>
    );
