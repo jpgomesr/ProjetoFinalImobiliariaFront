@@ -1,6 +1,6 @@
 export enum Roles {
-   "Usuário",
-   "Admin",
-   "Corretor",
-   "Editor",
+   "USUARIO",
+   "ADMIN",
+   "CORRETOR",
+   "EDITOR",
 }
