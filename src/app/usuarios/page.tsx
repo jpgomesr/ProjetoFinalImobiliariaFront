@@ -6,14 +6,60 @@ import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
 import InputPadrao from "@/components/InputPadrao";
 import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
+import ModelUsuario from "@/models/ModelUsuario";
 import { PlusIcon } from "lucide-react";
-import React, { useState } from "react";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
 
 const page = () => {
    const opcoesStatus = [{ status: "Ativo" }, { status: "Inativo" }];
-
+   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const [status, setStatus] = useState<string>("Ativo");
    const [tipoUsuario, setTipoUsuario] = useState<string>("Usuario");
+   const [usuarios, setUsuarios] = useState<ModelUsuario[]>();
+
+   useEffect(() => {
+      renderizarUsuariosApi();
+   }, []);
+
+   const renderizarUsuariosApi = async () => {
+      const response = await fetch(`${BASE_URL}/usuarios`);
+
+      const data = await response.json();
+
+      setUsuarios(transformarParaModel(data));
+   };
+
+   const renderizarUsuariosPagina = () => {
+      return usuarios?.map((usuario) => (
+         <CardUsuario
+            email={usuario.email}
+            id={usuario.id}
+            nome={usuario.nome}
+            status={usuario.ativo ? "Ativo" : "Desativado"}
+            tipoConta={usuario.role}
+            key={usuario.id}
+         />
+      ));
+   };
+
+
+   const transformarParaModel = (data: any) => {
+      const usuarios: ModelUsuario[] = data.content.map((usuario: any) => {
+         return new ModelUsuario(
+            usuario.id,
+            usuario.role,
+            usuario.nome,
+            usuario.telefone,
+            usuario.email,
+            usuario.descricao,
+            usuario.foto,
+            usuario.ativo
+         );
+      });
+
+      return usuarios;
+   };
 
    const tiposDeUsuarios = [
       { tipo: "USUARIO" },
@@ -40,15 +86,17 @@ const page = () => {
 
    return (
       <Layout className="py-0">
-        <SubLayoutPaginasCRUD>
+         <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao
                titulo="Gerenciamento de usuários"
                className="w-full"
             >
-               <div className="grid grid-cols-1 gap-3 w-full
+               <div
+                  className="grid grid-cols-1 gap-3 w-full
                md:grid-cols-[1fr_3fr_1fr_1fr]
                xl:grid-cols-[1fr_6fr_1fr_1fr]
-               ">
+               "
+               >
                   <select
                      name="Status"
                      className="text-black border-black border px-2 py-1 rounded-md text-sm 
@@ -79,37 +127,27 @@ const page = () => {
                   >
                      {renderizarOpcoesTipoUsuario()}
                   </select>
-                  <button
-                     className="flex items-center justify-center bg-havprincipal rounded-md text-white
+                  <Link href={"/usuarios/cadastro"}>
+                     <button
+                        className="flex items-center justify-center bg-havprincipal rounded-md text-white h-full
                   text-sm py-1 px-2
                   lg:text-base lg:py-2 lg:px-3
                   2xl:py-3 2xl:px-4"
-                  >
-                     Adicionar <PlusIcon className="w-4" />
-                  </button>
+                     >
+                        Adicionar <PlusIcon className="w-4" />
+                     </button>
+                  </Link>
                </div>
-               <div className="grid grid-cols-1 gap-4 w-full
+               <div
+                  className="grid grid-cols-1 gap-4 w-full
                md:mt-2
                lg:place-content-center lg:self-center lg:grid-cols-2 lg:mt-4
-               2xl:mt-6">
-               <CardUsuario
-                  id={1}
-                  nome="Carlos"
-                  status="Ativo"
-                  email="Carlos@gmail.com"
-                  tipoConta="USUARIO"
-               />
-               <CardUsuario
-                  id={2}
-                  nome="Carlos"
-                  status="Ativo"
-                  email="Carlos@gmail.com"
-                  tipoConta="USUARIO"
-               />
+               2xl:mt-6"
+               >
+                  {renderizarUsuariosPagina()}
                </div>
-             
             </FundoBrancoPadrao>
-            </SubLayoutPaginasCRUD>
+         </SubLayoutPaginasCRUD>
       </Layout>
    );
 };

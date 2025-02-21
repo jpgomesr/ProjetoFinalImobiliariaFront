@@ -5,12 +5,16 @@ import InputPadrao from "@/components/InputPadrao";
 import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import SelectPadrao from "@/components/SelectPadrao";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UploadImagem from "@/components/ComponentesCrud/UploadImagem";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import TextAreaPadrao from "@/components/TextAreaPadrao";
+import { UseFetchPost } from "@/hooks/UseFetchPost";
+import { useRouter } from "next/navigation";
 
 const page = () => {
+   const router = useRouter();
+
    const [nomeCompleto, setNomeCompleto] = useState("");
    const [email, setEmail] = useState("");
    const [senha, setSenha] = useState("");
@@ -19,28 +23,26 @@ const page = () => {
    const [imagemPerfil, setImagemPerfil] = useState<File | null>(null);
    const [tipoUsuario, setTipoUsuario] = useState("USUARIO");
    const [descricao, setDescricao] = useState("");
-   console.log(nomeCompleto);
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
    const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
 
    const criarUsuario = async () => {
-      const data = await fetch(`${BASE_URL}/usuarios`, {
-         method: "POST",
-         headers: {
-            "Content-type": "application/json",
-         },
-         body: JSON.stringify({
-            nome: nomeCompleto,
-            email: email,
-            senha: senha,
-            telefone: telefone,
-            role: tipoUsuario,
-            descricao: descricao,
-         }),
+      const response = await UseFetchPost(`${BASE_URL}/usuarios`, {
+         nome: nomeCompleto,
+         email: email,
+         senha: senha,
+         telefone: telefone,
+         role: tipoUsuario,
+         descricao: descricao,
       });
-      const response = await data;
+
+      const data = await response.body;
+
+      if (response.ok) {
+         router.push("/usuarios");
+      }
 
       console.log(response);
    };

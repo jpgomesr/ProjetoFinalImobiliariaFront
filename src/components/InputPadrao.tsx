@@ -7,6 +7,7 @@ interface InputPadraoProps {
    htmlFor: string;
    onChange: (valor: string) => void;
    required: boolean;
+   lenght?: number;
 }
 
 const InputPadrao = (props: InputPadraoProps) => {
@@ -27,11 +28,12 @@ const InputPadrao = (props: InputPadraoProps) => {
             type={props.tipoInput}
             placeholder={props.placeholder}
             required={props.required}
-            className="h-6 rounded-md border py-2 px-2 border-black text-[10px]
+            className="h-6 rounded-md border py-2 px-2 border-black text-[10px] focus:border-black
             md:h-8 md:text-sm
             lg:h-10 lg:py-3 lg:px-3
             xl:h-12 xl:text-base xl:py-3 xl:px-4"
             onChange={(e) => props.onChange(e.target.value)}
+            maxLength={props.lenght}
          />
       </div>
    );
