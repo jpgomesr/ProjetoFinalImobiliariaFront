@@ -1,15 +1,13 @@
 import React from "react";
 
-interface InputPadraoProps {
+interface TextAreaPadraoProps {
    placeholder?: string;
-   tipoInput: string;
    label: string;
    htmlFor: string;
    onChange: (valor: string) => void;
-   required: boolean;
 }
 
-const InputPadrao = (props: InputPadraoProps) => {
+const TextAreaPadrao = (props: TextAreaPadraoProps) => {
    return (
       <div className="flex flex-col lg:gap-1 2xl:gap-2">
          <label
@@ -23,18 +21,17 @@ const InputPadrao = (props: InputPadraoProps) => {
          >
             {props.label}
          </label>
-         <input
-            type={props.tipoInput}
-            placeholder={props.placeholder}
-            required={props.required}
-            className="h-6 rounded-md border py-2 px-2 border-black text-[10px]
+         <textarea
+            name="descricao"
+            className="border border-black min-h-20 text-xs py-2 px-2
             md:h-8 md:text-sm
             lg:h-10 lg:py-3 lg:px-3
             xl:h-12 xl:text-base xl:py-3 xl:px-4"
             onChange={(e) => props.onChange(e.target.value)}
-         />
+            placeholder={props.placeholder}
+         ></textarea>
       </div>
    );
 };
 
-export default InputPadrao;
+export default TextAreaPadrao;

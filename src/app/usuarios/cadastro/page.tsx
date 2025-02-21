@@ -8,6 +8,7 @@ import SelectPadrao from "@/components/SelectPadrao";
 import React, { useState } from "react";
 import UploadImagem from "@/components/ComponentesCrud/UploadImagem";
 import BotaoPadrao from "@/components/BotaoPadrao";
+import TextAreaPadrao from "@/components/TextAreaPadrao";
 
 const page = () => {
    const [nomeCompleto, setNomeCompleto] = useState("");
@@ -17,14 +18,43 @@ const page = () => {
    const [telefone, setTelefone] = useState("");
    const [imagemPerfil, setImagemPerfil] = useState<File | null>(null);
    const [tipoUsuario, setTipoUsuario] = useState("USUARIO");
+   const [descricao, setDescricao] = useState("");
+   console.log(nomeCompleto);
+
+   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
    const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
+
+   const criarUsuario = async () => {
+      const data = await fetch(`${BASE_URL}/usuarios`, {
+         method: "POST",
+         headers: {
+            "Content-type": "application/json",
+         },
+         body: JSON.stringify({
+            nome: nomeCompleto,
+            email: email,
+            senha: senha,
+            telefone: telefone,
+            role: tipoUsuario,
+            descricao: descricao,
+         }),
+      });
+      const response = await data;
+
+      console.log(response);
+   };
+   const enviandoFormulario = (e: React.FormEvent) => {
+      e.preventDefault();
+      criarUsuario();
+   };
 
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao titulo="Cadastro de usuário" className="w-full">
                <form
+                  onSubmit={(e) => enviandoFormulario(e)}
                   className="flex flex-col gap-2
             md:gap-3
             lg:gap-4
@@ -70,6 +100,11 @@ const page = () => {
                      tipoInput="text"
                      placeholder="Ex:47912312121"
                      onChange={setTelefone}
+                  />
+                  <TextAreaPadrao
+                     htmlFor="descricao"
+                     label="Descricao"
+                     onChange={setDescricao}
                   />
                   <div className="flex flex-col">
                      <label
