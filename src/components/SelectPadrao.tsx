@@ -1,31 +1,28 @@
-import React, {useState} from 'react'
-
+import React, { useState } from "react";
 
 interface SelectPadraoProps {
-    opcoes: string[];
-    onChange: (selecionado: string) => void;
-    placeholder: string;
-    selecionado: string;
- }
+   opcoes: string[];
+   onChange: (selecionado: string) => void;
+   placeholder: string;
+   selecionado: string;
+   className?: string;
+}
 
-const SelectPadrao = (props : SelectPadraoProps) => {
-
+const SelectPadrao = (props: SelectPadraoProps) => {
    const [selecionado, setSelecionado] = useState("");
 
-    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const valorSelecionado = e.target.value;
-        setSelecionado(valorSelecionado);
-        props.onChange(valorSelecionado);
-     };
-  return (
-
-    
-
-    <select
-         className="w-full p-1.5 border border-black rounded-md text-[10px] max-w-24
-         2xl:w-44 2xl:max-w-44 md:text-sm"
+   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const valorSelecionado = e.target.value;
+      setSelecionado(valorSelecionado);
+      props.onChange(valorSelecionado);
+   };
+   return (
+      <select
+         className={`${props.className ?? ""} 
+         border border-black rounded-md py-1 px-2 text-xs
+         lg:text-sm lg:py-2 lg:px-3
+         xl:text-base xl:py-3 xl:px-4`}
          onChange={handleChange}
-         
          value={props.selecionado}
       >
          <option value="" disabled hidden>
@@ -37,7 +34,7 @@ const SelectPadrao = (props : SelectPadraoProps) => {
             </option>
          ))}
       </select>
-  )
-}
+   );
+};
 
 export default SelectPadrao;
