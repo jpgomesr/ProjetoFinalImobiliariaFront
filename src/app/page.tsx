@@ -3,7 +3,7 @@
 import { useState } from "react";
 import CardImovel from "../components/card/CardImovel";
 import ModelImovel from "../models/ModelImovel";
-import Layout from "../components/Layout";
+import Layout from "../components/layout/LayoutPadrao";
 import CompontentePrincipalFiltro from "@/components/componetes_filtro/CompontentePrincipalFiltro";
 
 export default function Home() {

@@ -1,7 +1,7 @@
 "use client";
 
 import InputPadrao from "@/components/InputPadrao";
-import Layout from "@/components/Layout";
+import Layout from "@/components/layout/LayoutPadrao";
 import React from "react";
 
 const page = () => {

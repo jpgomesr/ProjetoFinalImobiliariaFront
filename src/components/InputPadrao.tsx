@@ -5,7 +5,8 @@ interface InputPadraoProps {
    tipoInput: string;
    label: string;
    htmlFor: string;
-   required : boolean
+   onChange : (valor : string) => void;
+   required : boolean;
 }
 
 const InputPadrao = (props: InputPadraoProps) => {
@@ -16,8 +17,8 @@ const InputPadrao = (props: InputPadraoProps) => {
             className="opacity-90 text-xs
          font-montserrat
          md:text-sm
-         lg:text-xl lg:rounded-lg
-         2xl:text-2xl 2xl:rounded-xl
+         lg:text-base lg:rounded-lg
+         2xl:text-xl 2xl:rounded-xl
          "
          >
             {props.label}

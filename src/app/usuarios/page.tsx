@@ -4,7 +4,8 @@ import BotaoPadrao from "@/components/BotaoPadrao";
 import CardUsuario from "@/components/CardUsuario";
 import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
 import InputPadrao from "@/components/InputPadrao";
-import Layout from "@/components/Layout";
+import Layout from "@/components/layout/LayoutPadrao";
+import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import { PlusIcon } from "lucide-react";
 import React, { useState } from "react";
 
@@ -39,15 +40,15 @@ const page = () => {
 
    return (
       <Layout className="py-0">
-         <div className="bg-begeClaroPadrao w-full flex flex-col items-center justify-center  py-6">
+        <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao
                titulo="Gerenciamento de usuários"
                className="w-full"
             >
                <div className="grid grid-cols-1 gap-3 w-full
-               md:mt-4 md:grid-cols-[1fr_3fr_1fr_1fr]
+               md:grid-cols-[1fr_3fr_1fr_1fr]
                xl:grid-cols-[1fr_6fr_1fr_1fr]
-               2xl:mt-8">
+               ">
                   <select
                      name="Status"
                      className="text-black border-black border px-2 py-1 rounded-md text-sm 
@@ -88,9 +89,9 @@ const page = () => {
                   </button>
                </div>
                <div className="grid grid-cols-1 gap-4 w-full
-               md:mt-2 
-               lg:place-content-center lg:self-center lg:mt-4 lg:grid-cols-2
-               2xl:mt-8">
+               md:mt-2
+               lg:place-content-center lg:self-center lg:grid-cols-2 lg:mt-4
+               2xl:mt-6">
                <CardUsuario
                   id={1}
                   nome="Carlos"
@@ -108,7 +109,7 @@ const page = () => {
                </div>
              
             </FundoBrancoPadrao>
-         </div>
+            </SubLayoutPaginasCRUD>
       </Layout>
    );
 };

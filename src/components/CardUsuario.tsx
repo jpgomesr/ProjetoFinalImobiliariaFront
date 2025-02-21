@@ -47,9 +47,9 @@ const CardUsuario = (props: CardUsuarioProps) => {
                </div>
             </div>
 
-            <div className="flex flex-wrap justify-start max-w-full mt-1 gap-2 text-xs 
-               md:flex-row md:max-w-72 md:gap-4 md:justify-center
-               lg:text-sm 2xl:text-base 2xl:max-w-96 2xl:gap-8 2xl:mt-3">
+            <div className="flex flex-wrap justify-start max-w-full mt-1 gap-2 text-xs w-full
+               md:flex-row  md:gap-4 
+               lg:justify-center lg:text-sm 2xl:text-base 2xl:max-w-96 2xl:gap-8 2xl:mt-3">
                
                <button className="bg-white border-black border rounded-md px-2 py-1">
                   Editar usuário
