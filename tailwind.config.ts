@@ -13,7 +13,8 @@ export default {
             foreground: "var(--foreground)",
             havprincipal: "#702632",
             begepadrao: "#EDEDED",
-            begeClaroPadrao: "#DFDAD0"
+            begeClaroPadrao: "#DFDAD0",
+            brancoFundo: "#FAFAFA",
          },
          fontSize: {
             fontcard1: "1.6rem",
