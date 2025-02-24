@@ -1,6 +1,6 @@
 "use client";
 
-import BotaoPadrao from "@/components/BotaoPadrao";
+import { UseFetchDelete } from "@/hooks/UseFetchDelete";
 import CardUsuario from "@/components/CardUsuario";
 import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
 import InputPadrao from "@/components/InputPadrao";
@@ -17,10 +17,11 @@ const page = () => {
    const [status, setStatus] = useState<string>("Ativo");
    const [tipoUsuario, setTipoUsuario] = useState<string>("Usuario");
    const [usuarios, setUsuarios] = useState<ModelUsuario[]>();
+   const [revalidarQuery, setRevalidarQuery] = useState<boolean>(false);
 
    useEffect(() => {
       renderizarUsuariosApi();
-   }, []);
+   }, [revalidarQuery]);
 
    const renderizarUsuariosApi = async () => {
       const response = await fetch(`${BASE_URL}/usuarios`);
@@ -28,6 +29,12 @@ const page = () => {
       const data = await response.json();
 
       setUsuarios(transformarParaModel(data));
+   };
+   const deletarUsuario = async (id: number) => {
+      const response = await UseFetchDelete(
+         `${BASE_URL}/usuarios/${id}`
+      );
+      setRevalidarQuery(!revalidarQuery);
    };
 
    const renderizarUsuariosPagina = () => {
@@ -39,10 +46,10 @@ const page = () => {
             status={usuario.ativo ? "Ativo" : "Desativado"}
             tipoConta={usuario.role}
             key={usuario.id}
+            deletarUsuario={deletarUsuario}
          />
       ));
    };
-
 
    const transformarParaModel = (data: any) => {
       const usuarios: ModelUsuario[] = data.content.map((usuario: any) => {

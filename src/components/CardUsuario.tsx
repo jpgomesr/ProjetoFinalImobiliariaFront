@@ -11,14 +11,11 @@ interface CardUsuarioProps {
    tipoConta: string;
    status: string;
    imagem?: string;
+   deletarUsuario : (id : number) => void
 }
 
 const CardUsuario = (props: CardUsuarioProps) => {
-   // const deleteUsuario = async () => {
-   //    const response = await UseFetchDelete(
-   //       `127.0.0.1:8081/usuarios/${props.id}`
-   //    );
-   // };
+   
 
    return (
       <div
@@ -29,7 +26,7 @@ const CardUsuario = (props: CardUsuarioProps) => {
       >
          <div
             className="absolute top-[-10px] right-[-10px] bg-havprincipal  p-1 rounded-full cursor-pointer"
-            // onClick={deleteUsuario}
+            onClick={() => props.deletarUsuario(props.id)}
          >
             <Trash className="text-white" />
          </div>

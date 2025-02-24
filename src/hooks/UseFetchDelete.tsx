@@ -1,7 +1,7 @@
-export const UseFetchDelete =  async(url : string) => {
+export const UseFetchDelete = async (url: string) => {
+   console.log(url);
 
-    return await fetch(url,{
-        method : "DELETE",
-    })
-
-}
+   return await fetch(url, {
+      method: "DELETE",
+   });
+};
