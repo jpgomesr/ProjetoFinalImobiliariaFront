@@ -1,6 +1,7 @@
 interface FundoBrancoPadraoProps {
    titulo: string;
    children: React.ReactNode;
+   className? : string
 }
 
 import React from "react";
@@ -19,8 +20,12 @@ const FundoBrancoPadrao = (props: FundoBrancoPadraoProps) => {
          >
             {props.titulo}
          </h2>
-         <div className="h-[1px] w-full bg-gray-400 my-3"></div>
-         <div className="flex flex-col gap-3 w-10/12">{props.children}</div>
+         <div className="h-[1px] w-full bg-gray-400 my-3
+         md:my-4
+         lg:my-6
+         2xl:my-8"></div>
+
+         <div className={`flex flex-col gap-3 ${props.className ? props.className : "w-10/12"}`}>{props.children}</div>
       </div>
    );
 };

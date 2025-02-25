@@ -1,26 +1,27 @@
 import React, { useState } from "react";
 
-interface ComponenteSelectFiltro {
+interface SelectPadraoProps {
    opcoes: string[];
    onChange: (selecionado: string) => void;
    placeholder: string;
    selecionado: string;
+   className?: string;
 }
 
-const ComponenteSelectFiltro = (props: ComponenteSelectFiltro) => {
-   // Estado para controlar o valor selecionado
+const SelectPadrao = (props: SelectPadraoProps) => {
    const [selecionado, setSelecionado] = useState("");
-   // Função de mudança de seleção
+
    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       const valorSelecionado = e.target.value;
       setSelecionado(valorSelecionado);
       props.onChange(valorSelecionado);
    };
-
    return (
       <select
-         className="w-full p-1.5 border border-black rounded-md text-[10px] max-w-24
-         2xl:w-44 2xl:max-w-44 md:text-sm"
+         className={`${props.className ?? ""} 
+         border border-black rounded-md py-1 px-2 text-xs
+         lg:text-sm lg:py-2 lg:px-3
+         xl:text-base xl:py-3 xl:px-4`}
          onChange={handleChange}
          value={props.selecionado}
       >
@@ -36,4 +37,4 @@ const ComponenteSelectFiltro = (props: ComponenteSelectFiltro) => {
    );
 };
 
-export default ComponenteSelectFiltro;
+export default SelectPadrao;
