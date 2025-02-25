@@ -8,8 +8,14 @@ import { useRouter } from "next/navigation";
 import FavIcon from "@/svg/icons/header/FavIcon";
 import FaqIcon from "@/svg/icons/header/FaqIcon";
 import ChatIcon from "@/svg/icons/header/ChatIcon";
+import FuncoesHeader from "./FuncoesHeader";
+import { Roles } from "@/models/Enum/Roles";
 
-export default function HeaderVermelho() {
+interface HeaderVermelhoProps {
+   role: Roles;
+}
+
+export default function HeaderVermelho(props: HeaderVermelhoProps) {
    const [isHamburguerVisible, setIsHamburguerVisible] = useState(false);
 
    const router = useRouter();
@@ -27,7 +33,8 @@ export default function HeaderVermelho() {
                      2xl:px-20 2xl:py-5 
                      flex justify-between"
       >
-         <div className="flex flex-row md:gap-16 2xl:gap-28">
+         <div className="flex flex-row md:gap-14 2xl:gap-28">
+            <FuncoesHeader role={Roles.ADMIN} />
             <LogoHavClaro
                className="w-14 h-14 2xl:w-20 2xl:h-20"
                visible={true}
@@ -67,7 +74,7 @@ export default function HeaderVermelho() {
                ) : (
                   <div>
                      <XIcon width={23} height={23} />
-                     <Hamburguer />
+                     <Hamburguer role={props.role} />
                   </div>
                )}
             </div>
