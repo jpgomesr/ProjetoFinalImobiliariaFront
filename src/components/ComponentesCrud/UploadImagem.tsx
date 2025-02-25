@@ -1,11 +1,16 @@
 import { useState } from "react";
 
-export default function ImageUpload() {
+interface UploadImagemProps{
+   onChange : (foto : File) => void
+}
+
+export default function uploadImagem(props : UploadImagemProps) {
    const [preview, setPreview] = useState<string | null>(null);
 
    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (file) {
+         props.onChange(file)
          const reader = new FileReader();
          reader.onload = (e: ProgressEvent<FileReader>) => {
             if (e.target && typeof e.target.result === "string") {
