@@ -4,6 +4,7 @@ import FotoUsuarioDeslogado from "./FotoUsuarioDeslogado";
 import BotaoPadrao from "./BotaoPadrao";
 import Image from "next/image";
 import { UseFetchDelete } from "@/hooks/UseFetchDelete";
+import Link from "next/link";
 
 interface CardUsuarioProps {
    id: number;
@@ -69,9 +70,12 @@ const CardUsuario = (props: CardUsuarioProps) => {
                md:flex-row  md:gap-4 
                lg:justify-center lg:text-sm 2xl:text-base 2xl:max-w-96 2xl:gap-8 2xl:mt-3"
             >
-               <button className="bg-white border-black border rounded-md px-2 py-1">
-                  Editar usuário
-               </button>
+               <Link href={`/usuarios/edicao/${props.id}`}>
+                  <button className="bg-white border-black border rounded-md px-2 py-1">
+                     Editar usuário
+                  </button>
+               </Link>
+
                <button className="bg-white border-black border rounded-md px-2 py-1">
                   Enviar comunicado
                </button>
