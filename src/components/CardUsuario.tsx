@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Trash, UserRound } from "lucide-react";
 import FotoUsuarioDeslogado from "./FotoUsuarioDeslogado";
 import BotaoPadrao from "./BotaoPadrao";
+import Image from "next/image";
 import { UseFetchDelete } from "@/hooks/UseFetchDelete";
 
 interface CardUsuarioProps {
@@ -11,12 +12,10 @@ interface CardUsuarioProps {
    tipoConta: string;
    status: string;
    imagem?: string;
-   deletarUsuario : (id : number) => void
+   deletarUsuario: (id: number) => void;
 }
 
 const CardUsuario = (props: CardUsuarioProps) => {
-   
-
    return (
       <div
          className="border bg-brancoEscurecido border-gray-700 rounded-md shadow-[4px_4px_4px_rgba(0,0,0,0.2)]  relative
@@ -31,7 +30,17 @@ const CardUsuario = (props: CardUsuarioProps) => {
             <Trash className="text-white" />
          </div>
 
-         <FotoUsuarioDeslogado />
+         {props.imagem ? (
+            <Image
+               src={props.imagem}
+               alt="Imagem usuario"
+               width={1920}
+               height={1080}
+               className="flex justify-center items-center rounded-full h-14 w-16 lg:w-24 lg:h-20 2xl:w-28 2xl:h-24"
+            />
+         ) : (
+            <FotoUsuarioDeslogado />
+         )}
 
          <div className="flex flex-col w-full min-w-0">
             <p className="text-sm font-bold lg:text-xl">Informações</p>

@@ -29,7 +29,7 @@ const page = () => {
    const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
 
    const criarUsuario = async () => {
-      const response = await UseFetchPostFormData(`http://localhost:8081/usuarios`, {
+      const response = await UseFetchPostFormData(`${BASE_URL}/usuarios`, {
          nome: nomeCompleto,
          email: email,
          senha: senha,
