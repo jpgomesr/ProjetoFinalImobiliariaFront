@@ -98,12 +98,11 @@ const page = () => {
                className="w-full"
             >
                <div
-                  className="grid grid-cols-1 gap-3 w-full
+                  className="grid grid-cols-1 gap-3 w-full place-content-center place-self-center
                md:grid-cols-[1fr_3fr_1fr_1fr]
                xl:grid-cols-[1fr_6fr_1fr_1fr]
                "
                >
-
                   <select
                      name="Status"
                      className="text-black border-black border px-2 py-1 rounded-md text-sm 

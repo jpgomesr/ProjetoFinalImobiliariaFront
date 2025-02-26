@@ -8,6 +8,7 @@ interface InputPadraoProps {
    onChange: (valor: string) => void;
    required: boolean;
    lenght?: number;
+   value? : string
 }
 
 const InputPadrao = (props: InputPadraoProps) => {
@@ -34,6 +35,7 @@ const InputPadrao = (props: InputPadraoProps) => {
             xl:h-12 xl:text-base xl:py-3 xl:px-4"
             onChange={(e) => props.onChange(e.target.value)}
             maxLength={props.lenght}
+            value={props.value}
          />
       </div>
    );

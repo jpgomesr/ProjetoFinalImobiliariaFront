@@ -5,6 +5,7 @@ interface TextAreaPadraoProps {
    label: string;
    htmlFor: string;
    onChange: (valor: string) => void;
+   value?: string;
 }
 
 const TextAreaPadrao = (props: TextAreaPadraoProps) => {
@@ -23,12 +24,13 @@ const TextAreaPadrao = (props: TextAreaPadraoProps) => {
          </label>
          <textarea
             name="descricao"
-            className="border border-black min-h-20 text-xs py-2 px-2
+            className="border border-black rounded-md min-h-20 text-xs py-2 px-2
             md:h-8 md:text-sm
             lg:h-10 lg:py-3 lg:px-3
             xl:h-12 xl:text-base xl:py-3 xl:px-4"
             onChange={(e) => props.onChange(e.target.value)}
             placeholder={props.placeholder}
+            value={props.value}
          ></textarea>
       </div>
    );
