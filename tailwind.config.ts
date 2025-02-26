@@ -14,7 +14,7 @@ export default {
             havprincipal: "#702632",
             begepadrao: "#EDEDED",
             begeClaroPadrao: "#DFDAD0",
-            brancoFundo: "#FAFAFA",
+            brancoEscurecido : "#FAFAFA"
          },
          fontSize: {
             fontcard1: "1.6rem",

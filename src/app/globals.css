@@ -11,7 +11,7 @@
 }
 
 .botao {
-   @apply px-3 py-2  rounded-md text-xs md:px-4 md:py-3 2xl:px-6 2xl:py-3 2xl:text-sm cursor-pointer;
+   @apply px-3 py-2  rounded-md text-xs md:px-4 md:py-3 lg:text-base 2xl:px-6 2xl:py-3 2xl:text-xl cursor-pointer;
 }
 
 @media (prefers-color-scheme: dark) {
