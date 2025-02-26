@@ -9,7 +9,7 @@ import React, { useEffect, useState } from "react";
 import UploadImagem from "@/components/ComponentesCrud/UploadImagem";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import TextAreaPadrao from "@/components/TextAreaPadrao";
-import { UseFetchPost } from "@/hooks/UseFetchPost";
+import { UseFetchPostFormData } from "@/hooks/UseFetchPostFormData";
 import { useRouter } from "next/navigation";
 
 const page = () => {
@@ -29,14 +29,14 @@ const page = () => {
    const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
 
    const criarUsuario = async () => {
-      const response = await UseFetchPost(`${BASE_URL}/usuarios`, {
+      const response = await UseFetchPostFormData(`${BASE_URL}/usuarios`, {
          nome: nomeCompleto,
          email: email,
          senha: senha,
          telefone: telefone,
          role: tipoUsuario,
          descricao: descricao,
-      });
+      }, "usuario", imagemPerfil);
 
       const data = await response.body;
 
@@ -127,7 +127,7 @@ const page = () => {
                         className="w-2/4 lg:max-w-sm"
                      />
                   </div>
-                  <UploadImagem />
+                  <UploadImagem onChange={setImagemPerfil} />
                   <div className="flex justify-center">
                      <BotaoPadrao
                         texto="Concluir"

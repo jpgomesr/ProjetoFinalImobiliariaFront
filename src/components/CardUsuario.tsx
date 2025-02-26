@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Trash, UserRound } from "lucide-react";
 import FotoUsuarioDeslogado from "./FotoUsuarioDeslogado";
 import BotaoPadrao from "./BotaoPadrao";
+import Image from "next/image";
 import { UseFetchDelete } from "@/hooks/UseFetchDelete";
+import Link from "next/link";
 
 interface CardUsuarioProps {
    id: number;
@@ -11,12 +13,10 @@ interface CardUsuarioProps {
    tipoConta: string;
    status: string;
    imagem?: string;
-   deletarUsuario : (id : number) => void
+   deletarUsuario: (id: number) => void;
 }
 
 const CardUsuario = (props: CardUsuarioProps) => {
-   
-
    return (
       <div
          className="border bg-brancoEscurecido border-gray-700 rounded-md shadow-[4px_4px_4px_rgba(0,0,0,0.2)]  relative
@@ -31,7 +31,17 @@ const CardUsuario = (props: CardUsuarioProps) => {
             <Trash className="text-white" />
          </div>
 
-         <FotoUsuarioDeslogado />
+         {props.imagem ? (
+            <Image
+               src={props.imagem}
+               alt="Imagem usuario"
+               width={1920}
+               height={1080}
+               className="flex justify-center items-center rounded-full h-14 w-16 lg:w-24 lg:h-20 2xl:w-28 2xl:h-24"
+            />
+         ) : (
+            <FotoUsuarioDeslogado />
+         )}
 
          <div className="flex flex-col w-full min-w-0">
             <p className="text-sm font-bold lg:text-xl">Informações</p>
@@ -60,9 +70,12 @@ const CardUsuario = (props: CardUsuarioProps) => {
                md:flex-row  md:gap-4 
                lg:justify-center lg:text-sm 2xl:text-base 2xl:max-w-96 2xl:gap-8 2xl:mt-3"
             >
-               <button className="bg-white border-black border rounded-md px-2 py-1">
-                  Editar usuário
-               </button>
+               <Link href={`/usuarios/edicao/${props.id}`}>
+                  <button className="bg-white border-black border rounded-md px-2 py-1">
+                     Editar usuário
+                  </button>
+               </Link>
+
                <button className="bg-white border-black border rounded-md px-2 py-1">
                   Enviar comunicado
                </button>
