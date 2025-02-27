@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { Roles } from "@/models/Enum/Roles";
 
 interface HamburguerProps {
-   role: Roles;
+   role?: Roles;
 }
 
 const Hamburguer = (props: HamburguerProps) => {
