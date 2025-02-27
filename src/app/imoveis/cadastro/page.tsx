@@ -38,7 +38,7 @@ const page = () => {
    const [visibilidade, setVisibilidade] = useState(false);
    const [destaque, setDestaque] = useState(false);
 
-   const [step, setStep] = useState(2);
+   const [step, setStep] = useState(1);
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -249,7 +249,7 @@ const page = () => {
                            tipoInput="number"
                            placeholder="Ex:1.342,00"
                            onChange={setIptu}
-                       y />
+                        />
                         <InputPadrao
                            htmlFor="proprietario"
                            label="Proprietário"
@@ -258,14 +258,15 @@ const page = () => {
                            placeholder="Ex:João"
                            onChange={setProprietario}
                         />
-                        <div className="flex flex-col gap-2 md:flex-row">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:gap-4 items-center">
                            <div
                               className="flex flex-col w-full gap
-                                        md:w-1/3"
+                                        sm:w-1/3
+                                        lg:max-w-sm"
                            >
                               <label
                                  htmlFor="tipo-usuario"
-                                 className="opacit-90 text-xs
+                                 className="opacity-90 text-xs
                                         font-montserrat
                                         md:text-sm
                                         lg:text-base lg:rounded-lg
@@ -278,10 +279,10 @@ const page = () => {
                                  onChange={setCorretor}
                                  placeholder="Corretores"
                                  selecionado={corretor}
-                                 className="w-full lg:max-w-sm"
+                                 className="w-full"
                               />
                            </div>
-                           <div className="flex flex-row justify-between md:justify-normal">
+                           <div className="flex flex-row justify-between w-full sm:justify-normal sm:gap-4">
                               <div className="flex flex-col">
                                  <label
                                     htmlFor="visibilidade"
@@ -294,7 +295,7 @@ const page = () => {
                                     Habilitar visibilidade
                                  </label>
                                  <Switch
-                                    className="w-8 h-4"
+                                    className="w-8 h-4 sm:w-12 sm:h-6 md:w-14 md:h-7 lg:w-16 lg:h-8"
                                     handleAcao={handleMudarVisibilidade}
                                  />
                               </div>
@@ -310,7 +311,7 @@ const page = () => {
                                     Permitir destaque
                                  </label>
                                  <Switch
-                                    className="w-8 h-4"
+                                    className="w-8 h-4 sm:w-12 sm:h-6 md:w-14 md:h-7 lg:w-16 lg:h-8"
                                     handleAcao={handleMudarDestaque}
                                  />
                               </div>
