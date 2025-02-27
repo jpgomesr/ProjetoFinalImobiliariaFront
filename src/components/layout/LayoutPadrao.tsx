@@ -6,7 +6,7 @@ import Footer from "../footer/Footer";
 interface LayoutProps {
    children: React.ReactNode;
    className?: string;
-   role: Roles;
+   role?: Roles;
 }
 
 const Layout = (props: LayoutProps) => {

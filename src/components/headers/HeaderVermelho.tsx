@@ -12,7 +12,7 @@ import FuncoesHeader from "./FuncoesHeader";
 import { Roles } from "@/models/Enum/Roles";
 
 interface HeaderVermelhoProps {
-   role: Roles;
+   role?: Roles;
 }
 
 export default function HeaderVermelho(props: HeaderVermelhoProps) {

@@ -1,16 +1,17 @@
+import { Plus } from "lucide-react";
 import { useState } from "react";
 
-interface UploadImagemProps{
-   onChange : (foto : File) => void
+interface UploadImagemProps {
+   onChange: (foto: File) => void;
 }
 
-export default function uploadImagem(props : UploadImagemProps) {
+export default function uploadImagem(props: UploadImagemProps) {
    const [preview, setPreview] = useState<string | null>(null);
 
    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (file) {
-         props.onChange(file)
+         props.onChange(file);
          const reader = new FileReader();
          reader.onload = (e: ProgressEvent<FileReader>) => {
             if (e.target && typeof e.target.result === "string") {
@@ -44,7 +45,7 @@ export default function uploadImagem(props : UploadImagemProps) {
                />
             ) : (
                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-300">
-                  <span className="text-gray-600 text-2xl">+</span>
+                  <Plus className="text-gray-500" />
                </div>
             )}
             <input

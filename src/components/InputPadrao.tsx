@@ -16,11 +16,11 @@ const InputPadrao = (props: InputPadraoProps) => {
          <label
             htmlFor={props.htmlFor}
             className="opacity-90 text-xs
-         font-montserrat
-         md:text-sm
-         lg:text-base lg:rounded-lg
-         2xl:text-xl 2xl:rounded-xl
-         "
+                        font-montserrat
+                        md:text-sm
+                        lg:text-base lg:rounded-lg
+                        2xl:text-xl 2xl:rounded-xl
+                        "
          >
             {props.label}
          </label>
