@@ -5,7 +5,7 @@ import InputPadrao from "@/components/InputPadrao";
 import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import SelectPadrao from "@/components/SelectPadrao";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import UploadImagem from "@/components/ComponentesCrud/UploadImagem";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import TextAreaPadrao from "@/components/TextAreaPadrao";
@@ -29,14 +29,19 @@ const page = () => {
    const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
 
    const criarUsuario = async () => {
-      const response = await UseFetchPostFormData(`http://localhost:8081/usuarios`, {
-         nome: nomeCompleto,
-         email: email,
-         senha: senha,
-         telefone: telefone,
-         role: tipoUsuario,
-         descricao: descricao,
-      }, "usuario", imagemPerfil);
+      const response = await UseFetchPostFormData(
+         `http://localhost:8081/usuarios`,
+         {
+            nome: nomeCompleto,
+            email: email,
+            senha: senha,
+            telefone: telefone,
+            role: tipoUsuario,
+            descricao: descricao,
+         },
+         "usuario",
+         imagemPerfil
+      );
 
       const data = await response.body;
 
