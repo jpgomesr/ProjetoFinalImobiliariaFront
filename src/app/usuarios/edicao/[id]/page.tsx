@@ -85,7 +85,7 @@ const page = () => {
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
-            <FundoBrancoPadrao titulo="Cadastro de usuário" className="w-full">
+            <FundoBrancoPadrao titulo="Edição de usuário" className="w-full">
                <form
                   onSubmit={(e) => enviandoFormulario(e)}
                   className="flex flex-col gap-2
