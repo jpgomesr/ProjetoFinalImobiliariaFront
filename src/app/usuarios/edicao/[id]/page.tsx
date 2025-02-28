@@ -9,13 +9,16 @@ import React, { useEffect, useState } from "react";
 import UploadImagem from "@/components/ComponentesCrud/UploadImagem";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import TextAreaPadrao from "@/components/TextAreaPadrao";
-import { UseFetchPostFormData } from "@/hooks/UseFetchPostFormData";
+import { UseFetchPostFormData } from "@/hooks/UseFetchFormData";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import AtivoDesativoComponente from "@/components/ComponentesCrud/AtivoDesativoComponente";
+import ModelUsuario from "@/models/ModelUsuario";
 
 const page = () => {
    const router = useRouter();
+
+   const [usuario, setUsuario] = useState<ModelUsuario>();
 
    const [nomeCompleto, setNomeCompleto] = useState("");
    const [email, setEmail] = useState("");
@@ -25,16 +28,31 @@ const page = () => {
    const [imagemPerfil, setImagemPerfil] = useState<File | null>(null);
    const [tipoUsuario, setTipoUsuario] = useState("USUARIO");
    const [descricao, setDescricao] = useState("");
+   const [preview, setPreview] = useState<any>(undefined);
 
    const { id } = useParams();
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-
+   console.log(imagemPerfil)
    const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
 
    useEffect(() => {
       preencherInformacoesAtuaisDoUsuario();
    }, []);
+
+   const transformarParaModel = (usuario: any) => {
+      const usuarioModel = new ModelUsuario(
+         usuario.id,
+         usuario.role,
+         usuario.nome,
+         usuario.telefone,
+         usuario.email,
+         usuario.descricao,
+         usuario.foto,
+         usuario.ativo
+      );
+      return usuarioModel;
+   };
 
    const buscarUsuarioCadastrado = async () => {
       const requisicao = await fetch(`${BASE_URL}/usuarios/${id}`);
@@ -43,20 +61,22 @@ const page = () => {
 
       return data;
    };
-   
 
    const preencherInformacoesAtuaisDoUsuario = async () => {
       const informacoes = await buscarUsuarioCadastrado();
-      setNomeCompleto(informacoes.nome);
-      setDescricao(informacoes.descricao);
-      setEmail(informacoes.email);
-      setTelefone(informacoes.telefone);
-      setTipoUsuario(informacoes.role);
-   };
 
+      const usuario = transformarParaModel(informacoes);
+
+      setNomeCompleto(usuario.nome);
+      setDescricao(usuario.descricao);
+      setEmail(usuario.email);
+      setTelefone(usuario.telefone);
+      setTipoUsuario(usuario.role);
+      setPreview(usuario.foto);
+   };
    const editarUsuario = async () => {
       const response = await UseFetchPostFormData(
-         `${BASE_URL}/usuarios`,
+         `${BASE_URL}/usuarios/${id}`,
          {
             nome: nomeCompleto,
             email: email,
@@ -66,16 +86,13 @@ const page = () => {
             descricao: descricao,
          },
          "usuario",
-         imagemPerfil
+         imagemPerfil,
+         "PUT"
       );
-
-      const data = await response.body;
 
       if (response.ok) {
          router.push("/usuarios");
       }
-
-      console.log(response);
    };
    const enviandoFormulario = (e: React.FormEvent) => {
       e.preventDefault();
@@ -162,8 +179,10 @@ const page = () => {
                         className="w-2/4 lg:max-w-sm"
                      />
                   </div>
-                  <UploadImagem onChange={setImagemPerfil} />
-                  <AtivoDesativoComponente/> 
+
+                  <UploadImagem onChange={setImagemPerfil} preview={preview} />
+
+                  <AtivoDesativoComponente />
                   <div className="flex justify-center">
                      <BotaoPadrao
                         texto="Concluir"

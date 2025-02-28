@@ -1,16 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-interface UploadImagemProps{
-   onChange : (foto : File) => void
+interface UploadImagemProps {
+   onChange: (foto: File) => void;
+   preview?: string;
 }
 
-export default function uploadImagem(props : UploadImagemProps) {
-   const [preview, setPreview] = useState<string | null>(null);
+export default function uploadImagem(props: UploadImagemProps) {
+   useEffect(() => {
+      setPreview(props.preview);
+   }, [props.preview]);
+
+   const [preview, setPreview] = useState<string | undefined>("");
 
    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (file) {
-         props.onChange(file)
+         props.onChange(file);
          const reader = new FileReader();
          reader.onload = (e: ProgressEvent<FileReader>) => {
             if (e.target && typeof e.target.result === "string") {
