@@ -2,7 +2,8 @@ export const UseFetchPostFormData = async (
    url: string,
    data: object,
    nomeObjeto: string,
-   file: File | null,
+   nomeArquivo : string,
+   arquivo: File | null,
    method: string
 ) => {
    const formData = new FormData();
@@ -12,8 +13,8 @@ export const UseFetchPostFormData = async (
       new Blob([JSON.stringify(data)], { type: "application/json" })
    );
 
-   if (file) {
-      formData.append("file", file);
+   if (arquivo) {
+      formData.append(nomeArquivo, arquivo);
    }
 
    return await fetch(url, {

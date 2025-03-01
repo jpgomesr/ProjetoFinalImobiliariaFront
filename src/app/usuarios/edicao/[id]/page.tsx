@@ -53,6 +53,7 @@ const page = () => {
       );
       return usuarioModel;
    };
+   console.log(imagemPerfil)
 
    const buscarUsuarioCadastrado = async () => {
       const requisicao = await fetch(`${BASE_URL}/usuarios/${id}`);
@@ -86,6 +87,7 @@ const page = () => {
             descricao: descricao,
          },
          "usuario",
+         "novaImagem",
          imagemPerfil,
          "PUT"
       );
@@ -158,7 +160,7 @@ const page = () => {
                      htmlFor="descricao"
                      label="Descricao"
                      onChange={setDescricao}
-                     value={nomeCompleto}
+                     value={descricao}
                   />
                   <div className="flex flex-col">
                      <label
