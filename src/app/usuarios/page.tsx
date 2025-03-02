@@ -31,9 +31,7 @@ const page = () => {
       setUsuarios(transformarParaModel(data));
    };
    const deletarUsuario = async (id: number) => {
-      const response = await UseFetchDelete(
-         `${BASE_URL}/usuarios/${id}`
-      );
+      const response = await UseFetchDelete(`${BASE_URL}/usuarios/${id}`);
       setRevalidarQuery(!revalidarQuery);
    };
 
@@ -46,6 +44,7 @@ const page = () => {
             status={usuario.ativo ? "Ativo" : "Desativado"}
             tipoConta={usuario.role}
             key={usuario.id}
+            imagem={usuario.foto}
             deletarUsuario={deletarUsuario}
          />
       ));
@@ -100,8 +99,8 @@ const page = () => {
             >
                <div
                   className="grid grid-cols-1 gap-3 w-full
-               md:grid-cols-[1fr_3fr_1fr_1fr]
-               xl:grid-cols-[1fr_6fr_1fr_1fr]
+               md:grid-cols-[1fr_5fr_1fr_1fr]
+               xl:grid-cols-[1fr_6fr_1fr_1fr]   
                "
                >
                   <select

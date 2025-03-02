@@ -9,7 +9,7 @@ import React, { useState } from "react";
 import UploadImagem from "@/components/ComponentesCrud/UploadImagem";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import TextAreaPadrao from "@/components/TextAreaPadrao";
-import { UseFetchPostFormData } from "@/hooks/UseFetchPostFormData";
+import { UseFetchPostFormData } from "@/hooks/UseFetchFormData";
 import { useRouter } from "next/navigation";
 
 const page = () => {
@@ -23,34 +23,72 @@ const page = () => {
    const [imagemPerfil, setImagemPerfil] = useState<File | null>(null);
    const [tipoUsuario, setTipoUsuario] = useState("USUARIO");
    const [descricao, setDescricao] = useState("");
+   const [erros, setErros] = useState<Record<string, string>>({});
+   const [ativo, setAtivo] = useState<string>("Ativo");
+   const opcoesAtivoDesativo = ["Ativo", "Desativado"];
+   
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
    const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
 
    const criarUsuario = async () => {
-      const response = await UseFetchPostFormData(
-         `http://localhost:8081/usuarios`,
-         {
-            nome: nomeCompleto,
-            email: email,
-            senha: senha,
-            telefone: telefone,
-            role: tipoUsuario,
-            descricao: descricao,
-         },
-         "usuario",
-         imagemPerfil
-      );
-
-      const data = await response.body;
-
-      if (response.ok) {
-         router.push("/usuarios");
+      if (senha !== confirmaSenha) {
+         setErros({ ...erros, confirmaSenha: "As senhas não coincidem" });
+         return;
       }
 
-      console.log(response);
+      try {
+         const response = await UseFetchPostFormData(
+            `${BASE_URL}/usuarios`,
+            {
+               nome: nomeCompleto,
+               email: email,
+               senha: senha,
+               telefone: telefone,
+               role: tipoUsuario,
+               descricao: descricao,
+               ativo: ativo === "Ativo" ? true : false,
+            },
+            "usuario",
+            "file",
+            imagemPerfil,
+            "POST"
+         );
+
+         if (!response.ok) {
+            const data = await response.json();
+
+            if (data.erros) {
+               const errosFormatados = data.erros.reduce(
+                  (acc: any, erro: any) => {
+                     acc[erro.campo] = erro.erro || "Erro desconhecido";
+                     return acc;
+                  },
+                  {}
+               );
+
+
+               setErros(errosFormatados);
+            }
+
+            throw new Error(data.mensagem || "Erro ao criar usuário.");
+         }
+
+         setErros({}); // Limpa os erros ao cadastrar com sucesso
+         router.push("/usuarios");
+      } catch (error) {
+         console.error("Erro ao criar usuário:", error);
+      }
    };
+   console.log(erros);
+   const handleChange = (setter: any, campo: string) => (value: string) => {
+      setter(value);
+      if (erros[campo]) {
+         setErros({ ...erros, [campo]: "" });
+      }
+   };
+
    const enviandoFormulario = (e: React.FormEvent) => {
       e.preventDefault();
       criarUsuario();
@@ -73,45 +111,52 @@ const page = () => {
                      label="Nome completo"
                      required={true}
                      tipoInput="text"
-                     placeholder="Ex:Carlos"
-                     onChange={setNomeCompleto}
+                     placeholder="Ex: Carlos"
+                     onChange={handleChange(setNomeCompleto, "nome")}
+                     mensagemErro={erros["nome"]}
                   />
                   <InputPadrao
                      htmlFor="email"
                      label="E-mail"
                      required={true}
-                     tipoInput="text"
-                     placeholder="Ex:Carlos@gmail.com"
-                     onChange={setEmail}
+                     tipoInput="email"
+                     placeholder="Ex: Carlos@gmail.com"
+                     onChange={handleChange(setEmail, "email")}
+                     mensagemErro={erros["email"]}
                   />
                   <InputPadrao
                      htmlFor="senha"
                      label="Senha"
                      required={true}
                      tipoInput="password"
-                     placeholder="Ex:123C@31s$"
-                     onChange={setSenha}
+                     placeholder="Ex: 123C@31s$"
+                     onChange={handleChange(setSenha, "senha")}
+                     mensagemErro={erros["senha"]}
                   />
                   <InputPadrao
-                     htmlFor="senha"
-                     label="Confirmar senha "
+                     htmlFor="confirmaSenha"
+                     label="Confirmar senha"
                      required={true}
                      tipoInput="password"
                      placeholder="Digite a senha novamente"
-                     onChange={setConfirmaSenha}
+                     onChange={handleChange(setConfirmaSenha, "confirmaSenha")}
+                     mensagemErro={erros["confirmaSenha"]}
                   />
                   <InputPadrao
                      htmlFor="telefone"
                      label="Telefone"
                      required={true}
                      tipoInput="text"
-                     placeholder="Ex:47912312121"
-                     onChange={setTelefone}
+                     placeholder="Ex: 47912312121"
+                     onChange={handleChange(setTelefone, "telefone")}
+                     mensagemErro={erros["telefone"]}
                   />
                   <TextAreaPadrao
                      htmlFor="descricao"
                      label="Descricao"
-                     onChange={setDescricao}
+                     onChange={handleChange(setDescricao, "descricao")}
+                     value={descricao}
+                     mensagemErro={erros["descricao"]}
                   />
                   <div className="flex flex-col">
                      <label
@@ -129,6 +174,25 @@ const page = () => {
                         onChange={setTipoUsuario}
                         placeholder="Tipo usuario"
                         selecionado={tipoUsuario}
+                        className="w-2/4 lg:max-w-sm"
+                     />
+                  </div>
+                  <div className="flex flex-col">
+                     <label
+                        htmlFor="tipo-usuario"
+                        className="opacity-90 text-xs
+                     font-montserrat
+                     md:text-sm
+                     lg:text-base lg:rounded-lg
+                     2xl:text-xl 2xl:rounded-xl"
+                     >
+                        Status
+                     </label>
+                     <SelectPadrao
+                        opcoes={opcoesAtivoDesativo}
+                        onChange={setAtivo}
+                        placeholder="Ativo"
+                        selecionado={ativo}
                         className="w-2/4 lg:max-w-sm"
                      />
                   </div>
