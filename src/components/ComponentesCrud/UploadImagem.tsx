@@ -1,13 +1,18 @@
 
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 
 interface UploadImagemProps {
    onChange: (foto: File) => void;
+   preview?: string;
 }
 
 export default function uploadImagem(props: UploadImagemProps) {
-   const [preview, setPreview] = useState<string | null>(null);
+   const [preview, setPreview] = useState<string | undefined>(undefined);
+
+   useEffect(() => {
+      setPreview(props.preview);
+   }, [props.preview]);
 
 
    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
