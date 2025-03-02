@@ -12,7 +12,6 @@ import TextAreaPadrao from "@/components/TextAreaPadrao";
 import { UseFetchPostFormData } from "@/hooks/UseFetchFormData";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
-import AtivoDesativoComponente from "@/components/ComponentesCrud/AtivoDesativoComponente";
 import ModelUsuario from "@/models/ModelUsuario";
 
 const page = () => {
@@ -134,7 +133,6 @@ const page = () => {
       e.preventDefault();
       editarUsuario();
    };
-   console.log(erros);
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
@@ -241,9 +239,9 @@ const page = () => {
                      />
                   </div>
 
-                  <UploadImagem onChange={setImagemPerfil} preview={preview} />
+                     
+                     <UploadImagem onChange={setImagemPerfil} preview={preview} />
 
-                  <AtivoDesativoComponente />
                   <div className="flex justify-center">
                      <BotaoPadrao
                         texto="Concluir"
