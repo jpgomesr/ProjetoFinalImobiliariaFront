@@ -5,7 +5,7 @@ import InputPadrao from "@/components/InputPadrao";
 import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import SelectPadrao from "@/components/SelectPadrao";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import UploadImagem from "@/components/ComponentesCrud/UploadImagem";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import TextAreaPadrao from "@/components/TextAreaPadrao";
@@ -67,6 +67,7 @@ const page = () => {
                   },
                   {}
                );
+
 
                setErros(errosFormatados);
             }

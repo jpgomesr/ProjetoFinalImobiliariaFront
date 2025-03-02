@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
+
+import { Plus } from "lucide-react";
+import { useState } from "react";
 
 interface UploadImagemProps {
    onChange: (foto: File) => void;
-   preview?: string;
 }
 
 export default function uploadImagem(props: UploadImagemProps) {
-   useEffect(() => {
-      setPreview(props.preview);
-   }, [props.preview]);
+   const [preview, setPreview] = useState<string | null>(null);
 
-   const [preview, setPreview] = useState<string | undefined>("");
 
    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
@@ -49,7 +47,7 @@ export default function uploadImagem(props: UploadImagemProps) {
                />
             ) : (
                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-300">
-                  <span className="text-gray-600 text-2xl">+</span>
+                  <Plus className="text-gray-500" />
                </div>
             )}
             <input
