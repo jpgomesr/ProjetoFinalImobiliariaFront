@@ -118,7 +118,7 @@ const page = () => {
                      htmlFor="email"
                      label="E-mail"
                      required={true}
-                     tipoInput="text"
+                     tipoInput="email"
                      placeholder="Ex: Carlos@gmail.com"
                      onChange={handleChange(setEmail, "email")}
                      mensagemErro={erros["email"]}

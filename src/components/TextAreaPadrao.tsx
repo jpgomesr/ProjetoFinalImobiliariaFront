@@ -6,7 +6,8 @@ interface TextAreaPadraoProps {
    htmlFor: string;
    onChange: (valor: string) => void;
    value?: string;
-   mensagemErro? : string
+   mensagemErro? : string;
+   maxLength? : number 
 }
 
 const TextAreaPadrao = (props: TextAreaPadraoProps) => {
@@ -32,6 +33,7 @@ const TextAreaPadrao = (props: TextAreaPadraoProps) => {
             onChange={(e) => props.onChange(e.target.value)}
             placeholder={props.placeholder}
             value={props.value}
+            maxLength={props.maxLength}
          ></textarea>
        {props.mensagemErro && <span className="text-red-500 text-xs mt-1 md:text-sm xl:text-base">{props.mensagemErro}</span>}
       </div>

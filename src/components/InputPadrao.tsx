@@ -7,9 +7,10 @@ interface InputPadraoProps {
    htmlFor: string;
    onChange: (valor: string) => void;
    required: boolean;
-   lenght?: number;
+   maxLenght?: number;
+   minLength? : number;
    value? : string;
-   mensagemErro?: string   
+   mensagemErro?: string 
 }
 
 const InputPadrao = (props: InputPadraoProps) => {
@@ -35,7 +36,8 @@ const InputPadrao = (props: InputPadraoProps) => {
             lg:h-10 lg:py-3 lg:px-3
             xl:h-12 xl:text-base xl:py-3 xl:px-4`}
             onChange={(e) => props.onChange(e.target.value)}
-            maxLength={props.lenght}
+            maxLength={props.maxLenght}
+            minLength={props.minLength}
             value={props.value}
          />
          {props.mensagemErro && <span className="text-red-500 text-xs mt-1 md:text-sm xl:text-base">{props.mensagemErro}</span>}

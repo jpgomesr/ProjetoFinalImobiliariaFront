@@ -153,16 +153,19 @@ const page = () => {
                      placeholder="Ex:Carlos"
                      onChange={handleChange(setNomeCompleto, "nome")}
                      value={nomeCompleto}
+                     maxLenght={100}
                      mensagemErro={erros["nome"]}
+                     
                   />
                   <InputPadrao
                      htmlFor="email"
                      label="E-mail"
                      required={true}
-                     tipoInput="text"
+                     tipoInput="email"
                      placeholder="Ex:Carlos@gmail.com"
                      onChange={handleChange(setEmail, "email")}
                      value={email}
+                     maxLenght={100}
                      mensagemErro={erros["email"]}
                   />
                   <InputPadrao
@@ -172,13 +175,17 @@ const page = () => {
                      tipoInput="password"
                      placeholder="Ex:123C@31s$"
                      onChange={handleChange(setSenha, "senha")}
+                     minLength={8}
+                     maxLenght={45}
                      mensagemErro={erros["senha"]}
                   />
                   <InputPadrao
                      htmlFor="senha"
-                     label="Confirmar senha "
+                     label="Confirmar senha"
                      required={true}
                      tipoInput="password"
+                     minLength={8}
+                     maxLenght={45}
                      placeholder="Digite a senha novamente"
                      onChange={handleChange(setConfirmaSenha, "confirmaSenha")}
                      mensagemErro={erros["confirmaSenha"]}
@@ -187,6 +194,8 @@ const page = () => {
                      htmlFor="telefone"
                      label="Telefone"
                      required={true}
+                     minLength={11}
+                     maxLenght={11}
                      tipoInput="text"
                      placeholder="Ex:47912312121"
                      onChange={handleChange(setTelefone, "telefone")}
@@ -198,6 +207,7 @@ const page = () => {
                      label="Descricao"
                      onChange={handleChange(setDescricao, "descricao")}
                      value={descricao}
+                     maxLength={500}
                      mensagemErro={erros["descricao"]}
                   />
                   <div className="flex flex-col">
