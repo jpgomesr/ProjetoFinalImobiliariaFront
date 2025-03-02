@@ -29,16 +29,25 @@ const page = () => {
    const [tipoUsuario, setTipoUsuario] = useState("USUARIO");
    const [descricao, setDescricao] = useState("");
    const [preview, setPreview] = useState<any>(undefined);
+   const [erros, setErros] = useState<Record<string, string>>({});
+   const [ativo, setAtivo] = useState<string>("Ativo");
 
    const { id } = useParams();
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-   console.log(imagemPerfil)
    const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
+   const opcoesAtivoDesativo = ["Ativo", "Desativado"];
 
    useEffect(() => {
       preencherInformacoesAtuaisDoUsuario();
    }, []);
+
+   const handleChange = (setter: any, campo: string) => (value: string) => {
+      setter(value);
+      if (erros[campo]) {
+         setErros({ ...erros, [campo]: "" });
+      }
+   };
 
    const transformarParaModel = (usuario: any) => {
       const usuarioModel = new ModelUsuario(
@@ -53,8 +62,6 @@ const page = () => {
       );
       return usuarioModel;
    };
-   console.log(imagemPerfil)
-
    const buscarUsuarioCadastrado = async () => {
       const requisicao = await fetch(`${BASE_URL}/usuarios/${id}`);
 
@@ -68,39 +75,66 @@ const page = () => {
 
       const usuario = transformarParaModel(informacoes);
 
+      console.log(usuario);
+
       setNomeCompleto(usuario.nome);
       setDescricao(usuario.descricao);
       setEmail(usuario.email);
       setTelefone(usuario.telefone);
       setTipoUsuario(usuario.role);
       setPreview(usuario.foto);
+      setAtivo(usuario.ativo ? "Ativo" : "Desativado");
    };
    const editarUsuario = async () => {
-      const response = await UseFetchPostFormData(
-         `${BASE_URL}/usuarios/${id}`,
-         {
-            nome: nomeCompleto,
-            email: email,
-            senha: senha,
-            telefone: telefone,
-            role: tipoUsuario,
-            descricao: descricao,
-         },
-         "usuario",
-         "novaImagem",
-         imagemPerfil,
-         "PUT"
-      );
+      if (senha !== confirmaSenha) {
+         setErros({ ...erros, confirmaSenha: "As senhas não coincidem" });
+         return;
+      }
+      try {
+         const response = await UseFetchPostFormData(
+            `${BASE_URL}/usuarios/${id}`,
+            {
+               nome: nomeCompleto,
+               email: email,
+               senha: senha,
+               telefone: telefone,
+               role: tipoUsuario,
+               descricao: descricao,
+               ativo: ativo === "Ativo" ? true : false,
+            },
+            "usuario",
+            "novaImagem",
+            imagemPerfil,
+            "PUT"
+         );
+         if (!response.ok) {
+            const data = await response.json();
 
-      if (response.ok) {
+            if (data.erros) {
+               const errosFormatados = data.erros.reduce(
+                  (acc: any, erro: any) => {
+                     acc[erro.campo] = erro.erro || "Erro desconhecido";
+                     return acc;
+                  },
+                  {}
+               );
+
+               setErros(errosFormatados);
+            }
+
+            throw new Error(data.mensagem || "Erro ao criar usuário.");
+         }
+         setErros({}); // Limpa os erros ao cadastrar com sucesso
          router.push("/usuarios");
+      } catch (error) {
+         console.error("Erro ao editar o usuário:", error);
       }
    };
    const enviandoFormulario = (e: React.FormEvent) => {
       e.preventDefault();
       editarUsuario();
    };
-
+   console.log(erros);
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
@@ -119,8 +153,9 @@ const page = () => {
                      required={true}
                      tipoInput="text"
                      placeholder="Ex:Carlos"
-                     onChange={setNomeCompleto}
+                     onChange={handleChange(setNomeCompleto, "nome")}
                      value={nomeCompleto}
+                     mensagemErro={erros["nome"]}
                   />
                   <InputPadrao
                      htmlFor="email"
@@ -128,8 +163,9 @@ const page = () => {
                      required={true}
                      tipoInput="text"
                      placeholder="Ex:Carlos@gmail.com"
-                     onChange={setEmail}
+                     onChange={handleChange(setEmail, "email")}
                      value={email}
+                     mensagemErro={erros["email"]}
                   />
                   <InputPadrao
                      htmlFor="senha"
@@ -137,7 +173,8 @@ const page = () => {
                      required={true}
                      tipoInput="password"
                      placeholder="Ex:123C@31s$"
-                     onChange={setSenha}
+                     onChange={handleChange(setSenha, "senha")}
+                     mensagemErro={erros["senha"]}
                   />
                   <InputPadrao
                      htmlFor="senha"
@@ -145,7 +182,8 @@ const page = () => {
                      required={true}
                      tipoInput="password"
                      placeholder="Digite a senha novamente"
-                     onChange={setConfirmaSenha}
+                     onChange={handleChange(setConfirmaSenha, "confirmaSenha")}
+                     mensagemErro={erros["confirmaSenha"]}
                   />
                   <InputPadrao
                      htmlFor="telefone"
@@ -153,14 +191,16 @@ const page = () => {
                      required={true}
                      tipoInput="text"
                      placeholder="Ex:47912312121"
-                     onChange={setTelefone}
+                     onChange={handleChange(setTelefone, "telefone")}
                      value={telefone}
+                     mensagemErro={erros["telefone"]}
                   />
                   <TextAreaPadrao
                      htmlFor="descricao"
                      label="Descricao"
-                     onChange={setDescricao}
+                     onChange={handleChange(setDescricao, "descricao")}
                      value={descricao}
+                     mensagemErro={erros["descricao"]}
                   />
                   <div className="flex flex-col">
                      <label
@@ -178,6 +218,25 @@ const page = () => {
                         onChange={setTipoUsuario}
                         placeholder="Tipo usuario"
                         selecionado={tipoUsuario}
+                        className="w-2/4 lg:max-w-sm"
+                     />
+                  </div>
+                  <div className="flex flex-col">
+                     <label
+                        htmlFor="tipo-usuario"
+                        className="opacity-90 text-xs
+                     font-montserrat
+                     md:text-sm
+                     lg:text-base lg:rounded-lg
+                     2xl:text-xl 2xl:rounded-xl"
+                     >
+                        Status
+                     </label>
+                     <SelectPadrao
+                        opcoes={opcoesAtivoDesativo}
+                        onChange={setAtivo}
+                        placeholder="Ativo"
+                        selecionado={ativo}
                         className="w-2/4 lg:max-w-sm"
                      />
                   </div>

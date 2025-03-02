@@ -24,6 +24,9 @@ const page = () => {
    const [tipoUsuario, setTipoUsuario] = useState("USUARIO");
    const [descricao, setDescricao] = useState("");
    const [erros, setErros] = useState<Record<string, string>>({});
+   const [ativo, setAtivo] = useState<string>("Ativo");
+   const opcoesAtivoDesativo = ["Ativo", "Desativado"];
+   
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -45,6 +48,7 @@ const page = () => {
                telefone: telefone,
                role: tipoUsuario,
                descricao: descricao,
+               ativo: ativo === "Ativo" ? true : false,
             },
             "usuario",
             "file",
@@ -76,14 +80,13 @@ const page = () => {
          console.error("Erro ao criar usuário:", error);
       }
    };
-   console.log(erros)
+   console.log(erros);
    const handleChange = (setter: any, campo: string) => (value: string) => {
       setter(value);
       if (erros[campo]) {
          setErros({ ...erros, [campo]: "" });
       }
    };
-   
 
    const enviandoFormulario = (e: React.FormEvent) => {
       e.preventDefault();
@@ -128,7 +131,6 @@ const page = () => {
                      placeholder="Ex: 123C@31s$"
                      onChange={handleChange(setSenha, "senha")}
                      mensagemErro={erros["senha"]}
-
                   />
                   <InputPadrao
                      htmlFor="confirmaSenha"
@@ -138,7 +140,6 @@ const page = () => {
                      placeholder="Digite a senha novamente"
                      onChange={handleChange(setConfirmaSenha, "confirmaSenha")}
                      mensagemErro={erros["confirmaSenha"]}
-
                   />
                   <InputPadrao
                      htmlFor="telefone"
@@ -155,7 +156,6 @@ const page = () => {
                      onChange={handleChange(setDescricao, "descricao")}
                      value={descricao}
                      mensagemErro={erros["descricao"]}
-
                   />
                   <div className="flex flex-col">
                      <label
@@ -173,6 +173,25 @@ const page = () => {
                         onChange={setTipoUsuario}
                         placeholder="Tipo usuario"
                         selecionado={tipoUsuario}
+                        className="w-2/4 lg:max-w-sm"
+                     />
+                  </div>
+                  <div className="flex flex-col">
+                     <label
+                        htmlFor="tipo-usuario"
+                        className="opacity-90 text-xs
+                     font-montserrat
+                     md:text-sm
+                     lg:text-base lg:rounded-lg
+                     2xl:text-xl 2xl:rounded-xl"
+                     >
+                        Status
+                     </label>
+                     <SelectPadrao
+                        opcoes={opcoesAtivoDesativo}
+                        onChange={setAtivo}
+                        placeholder="Ativo"
+                        selecionado={ativo}
                         className="w-2/4 lg:max-w-sm"
                      />
                   </div>
