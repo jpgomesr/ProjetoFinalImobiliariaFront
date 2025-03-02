@@ -26,6 +26,8 @@ const page = () => {
    const [erros, setErros] = useState<Record<string, string>>({});
    const [ativo, setAtivo] = useState<string>("Ativo");
    const opcoesAtivoDesativo = ["Ativo", "Desativado"];
+   const [formularioDesativado, setFormularioDesativado] = useState<boolean>(false)
+   
    
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -33,6 +35,7 @@ const page = () => {
    const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
 
    const criarUsuario = async () => {
+      setFormularioDesativado(true)
       if (senha !== confirmaSenha) {
          setErros({ ...erros, confirmaSenha: "As senhas não coincidem" });
          return;
@@ -71,7 +74,7 @@ const page = () => {
 
                setErros(errosFormatados);
             }
-
+            setFormularioDesativado(false)
             throw new Error(data.mensagem || "Erro ao criar usuário.");
          }
 
@@ -79,9 +82,11 @@ const page = () => {
          router.push("/usuarios");
       } catch (error) {
          console.error("Erro ao criar usuário:", error);
+         setFormularioDesativado(false)
+
       }
    };
-   console.log(erros);
+   console.log(formularioDesativado)
    const handleChange = (setter: any, campo: string) => (value: string) => {
       setter(value);
       if (erros[campo]) {
@@ -97,7 +102,7 @@ const page = () => {
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
-            <FundoBrancoPadrao titulo="Cadastro de usuário" className="w-full">
+            <FundoBrancoPadrao titulo="Cadastro de usuário" className={`w-full ${formularioDesativado ? "opacity-40" : "opacity-100"}`}>
                <form
                   onSubmit={(e) => enviandoFormulario(e)}
                   className="flex flex-col gap-2
@@ -201,6 +206,7 @@ const page = () => {
                      <BotaoPadrao
                         texto="Concluir"
                         className="border border-black"
+                        disable={formularioDesativado}
                      />
                   </div>
                </form>

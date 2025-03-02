@@ -30,6 +30,7 @@ const page = () => {
    const [preview, setPreview] = useState<any>(undefined);
    const [erros, setErros] = useState<Record<string, string>>({});
    const [ativo, setAtivo] = useState<string>("Ativo");
+   const [formularioDesativado, setFormularioDesativado] = useState<boolean>(false)
 
    const { id } = useParams();
 
@@ -73,8 +74,6 @@ const page = () => {
       const informacoes = await buscarUsuarioCadastrado();
 
       const usuario = transformarParaModel(informacoes);
-
-      console.log(usuario);
 
       setNomeCompleto(usuario.nome);
       setDescricao(usuario.descricao);
@@ -120,30 +119,34 @@ const page = () => {
 
                setErros(errosFormatados);
             }
-
+             setFormularioDesativado(false)
             throw new Error(data.mensagem || "Erro ao criar usuário.");
          }
          setErros({}); // Limpa os erros ao cadastrar com sucesso
          router.push("/usuarios");
       } catch (error) {
          console.error("Erro ao editar o usuário:", error);
+         setFormularioDesativado(false)
+
       }
    };
    const enviandoFormulario = (e: React.FormEvent) => {
       e.preventDefault();
+      setFormularioDesativado(true)
       editarUsuario();
+
    };
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
-            <FundoBrancoPadrao titulo="Edição de usuário" className="w-full">
+            <FundoBrancoPadrao titulo="Edição de usuário" className={`w-full ${formularioDesativado ? "opacity-40" : "opacity-100"}`}>
                <form
                   onSubmit={(e) => enviandoFormulario(e)}
-                  className="flex flex-col gap-2
+                  className={`flex flex-col gap-2 
             md:gap-3
             lg:gap-4
             xl:gap-5
-            2xl:gap-6"
+            2xl:gap-6`}
                >
                   <InputPadrao
                      htmlFor="nome"
@@ -254,8 +257,10 @@ const page = () => {
 
                   <div className="flex justify-center">
                      <BotaoPadrao
+
                         texto="Concluir"
                         className="border border-black"
+                        disable={formularioDesativado}
                      />
                   </div>
                </form>
