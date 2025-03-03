@@ -19,6 +19,8 @@ const page = () => {
    const [tipoUsuario, setTipoUsuario] = useState<string>("Usuario");
    const [usuarios, setUsuarios] = useState<ModelUsuario[]>();
    const [revalidarQuery, setRevalidarQuery] = useState<boolean>(false);
+   const [modalConfirmacaoAberto, setModalConfirmacaoAberto] = useState(false)
+
 
 
    const [itemDeletadoId, setItemDeletadoId] = useState<number | null>(null)
