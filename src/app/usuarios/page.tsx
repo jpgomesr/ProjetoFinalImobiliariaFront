@@ -10,6 +10,7 @@ import ModelUsuario from "@/models/ModelUsuario";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
 
 const page = () => {
    const opcoesStatus = [{ status: "Ativo" }, { status: "Inativo" }];
@@ -19,9 +20,29 @@ const page = () => {
    const [usuarios, setUsuarios] = useState<ModelUsuario[]>();
    const [revalidarQuery, setRevalidarQuery] = useState<boolean>(false);
 
+
+   const [itemDeletadoId, setItemDeletadoId] = useState<number | null>(null)
+   const [mostrarNotificacao, setMostrarNotificacao] = useState(false)
+
    useEffect(() => {
       renderizarUsuariosApi();
    }, [revalidarQuery]);
+
+
+   const fechandoNotificacao = () => {
+      setMostrarNotificacao(false)
+      setItemDeletadoId(null)
+   }
+   const desfazendoDelete = async () => {
+      await fetch(`${BASE_URL}/usuarios/restaurar/${itemDeletadoId}`,
+         {
+            method : "POST"
+         }
+      )
+      setRevalidarQuery(!revalidarQuery)
+
+   }
+
 
    const renderizarUsuariosApi = async () => {
       const response = await fetch(`${BASE_URL}/usuarios`);
@@ -32,6 +53,8 @@ const page = () => {
    };
    const deletarUsuario = async (id: number) => {
       const response = await UseFetchDelete(`${BASE_URL}/usuarios/${id}`);
+      setItemDeletadoId(id)
+      setMostrarNotificacao(true)
       setRevalidarQuery(!revalidarQuery);
    };
 
@@ -152,6 +175,14 @@ const page = () => {
                >
                   {renderizarUsuariosPagina()}
                </div>
+
+               <NotificacaoCrud
+               message="Desfazer"
+               isVisible={mostrarNotificacao}
+               onClose={fechandoNotificacao}
+               onUndo={desfazendoDelete}
+               duration={5000}
+               />
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
       </Layout>

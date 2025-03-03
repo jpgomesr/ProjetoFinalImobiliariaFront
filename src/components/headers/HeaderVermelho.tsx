@@ -28,7 +28,7 @@ export default function HeaderVermelho(props: HeaderVermelhoProps) {
 
    return (
       <div
-         className="bg-havprincipal px-6 py-1 
+         className="bg-havprincipal px-6 py-1
                      md:px-10 md:py-3 
                      2xl:px-20 2xl:py-5 
                      flex justify-between"

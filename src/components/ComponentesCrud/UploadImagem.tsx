@@ -15,6 +15,7 @@ export default function uploadImagem(props: UploadImagemProps) {
    }, [props.preview]);
 
 
+
    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (file) {

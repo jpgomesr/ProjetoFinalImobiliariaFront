@@ -86,7 +86,6 @@ const page = () => {
 
       }
    };
-   console.log(formularioDesativado)
    const handleChange = (setter: any, campo: string) => (value: string) => {
       setter(value);
       if (erros[campo]) {
