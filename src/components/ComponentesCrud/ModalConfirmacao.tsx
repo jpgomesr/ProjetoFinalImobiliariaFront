@@ -1,18 +1,18 @@
 "use client"
 
-interface ConfirmationModalProps {
+interface ModalCofirmacaoProps {
   isOpen: boolean
   onClose: () => void
   onConfirm: () => void
   message?: string
 }
 
-export default function ConfirmationModal({
+export default function ModalCofirmacao({
   isOpen,
   onClose,
   onConfirm,
   message = "Você tem certeza que deseja remover o proprietário?",
-}: ConfirmationModalProps) {
+}: ModalCofirmacaoProps) {
   if (!isOpen) return null
 
   const handleConfirm = () => {

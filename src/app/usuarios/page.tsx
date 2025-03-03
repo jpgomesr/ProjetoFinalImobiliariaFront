@@ -11,6 +11,7 @@ import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
+import ModalCofirmacao from "@/components/ComponentesCrud/ModalConfirmacao";
 
 const page = () => {
    const opcoesStatus = [{ status: "Ativo" }, { status: "Inativo" }];
@@ -20,11 +21,10 @@ const page = () => {
    const [usuarios, setUsuarios] = useState<ModelUsuario[]>();
    const [revalidarQuery, setRevalidarQuery] = useState<boolean>(false);
    const [modalConfirmacaoAberto, setModalConfirmacaoAberto] = useState(false)
-
-
-
    const [itemDeletadoId, setItemDeletadoId] = useState<number | null>(null)
    const [mostrarNotificacao, setMostrarNotificacao] = useState(false)
+   const [idItemParaDeletar, setIdItemParaDeletar] = useState<number | null>(null)
+
 
    useEffect(() => {
       renderizarUsuariosApi();
@@ -53,12 +53,18 @@ const page = () => {
 
       setUsuarios(transformarParaModel(data));
    };
-   const deletarUsuario = async (id: number) => {
-      const response = await UseFetchDelete(`${BASE_URL}/usuarios/${id}`);
-      setItemDeletadoId(id)
+   const deletarUsuario = async () => {
+      const response = await UseFetchDelete(`${BASE_URL}/usuarios/${idItemParaDeletar}`);
+      setItemDeletadoId(idItemParaDeletar)
       setMostrarNotificacao(true)
       setRevalidarQuery(!revalidarQuery);
+      setIdItemParaDeletar(null)
    };
+   const exibirModal = (id : number) => {
+      setIdItemParaDeletar(id)
+      setModalConfirmacaoAberto(true);
+      
+   }
 
    const renderizarUsuariosPagina = () => {
       return usuarios?.map((usuario) => (
@@ -70,7 +76,7 @@ const page = () => {
             tipoConta={usuario.role}
             key={usuario.id}
             imagem={usuario.foto}
-            deletarUsuario={deletarUsuario}
+            deletarUsuario={exibirModal}
          />
       ));
    };
@@ -185,6 +191,11 @@ const page = () => {
                onUndo={desfazendoDelete}
                duration={5000}
                />
+               <ModalCofirmacao
+               isOpen={modalConfirmacaoAberto}
+               onClose={() => setModalConfirmacaoAberto(false)}
+               onConfirm={deletarUsuario}
+               /> 
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
       </Layout>

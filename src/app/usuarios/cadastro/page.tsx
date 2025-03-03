@@ -31,7 +31,7 @@ const page = () => {
    
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-
+   
    const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
 
    const criarUsuario = async () => {
