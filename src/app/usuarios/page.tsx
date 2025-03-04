@@ -12,59 +12,69 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
 import ModalCofirmacao from "@/components/ComponentesCrud/ModalConfirmacao";
+import SelectPadrao from "@/components/SelectPadrao";
 
 const page = () => {
-   const opcoesStatus = [{ status: "Ativo" }, { status: "Inativo" }];
+   const opcoesStatus = ["Ativo", "Desativado"];
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const [status, setStatus] = useState<string>("Ativo");
-   const [tipoUsuario, setTipoUsuario] = useState<string>("Usuario");
+   const [tipoUsuario, setTipoUsuario] = useState<string>("USUARIO");
    const [usuarios, setUsuarios] = useState<ModelUsuario[]>();
    const [revalidarQuery, setRevalidarQuery] = useState<boolean>(false);
-   const [modalConfirmacaoAberto, setModalConfirmacaoAberto] = useState(false)
-   const [itemDeletadoId, setItemDeletadoId] = useState<number | null>(null)
-   const [mostrarNotificacao, setMostrarNotificacao] = useState(false)
-   const [idItemParaDeletar, setIdItemParaDeletar] = useState<number | null>(null)
+   const [modalConfirmacaoAberto, setModalConfirmacaoAberto] = useState(false);
+   const [itemDeletadoId, setItemDeletadoId] = useState<number | null>(null);
+   const [mostrarNotificacao, setMostrarNotificacao] = useState(false);
+   const [idItemParaDeletar, setIdItemParaDeletar] = useState<number | null>(
+      null
+   );
+   const [nomePesquisa, setNomePesquisa] = useState<string>("");
 
+   console.log(tipoUsuario);
 
    useEffect(() => {
       renderizarUsuariosApi();
    }, [revalidarQuery]);
 
-
    const fechandoNotificacao = () => {
-      setMostrarNotificacao(false)
-      setItemDeletadoId(null)
-   }
+      setMostrarNotificacao(false);
+      setItemDeletadoId(null);
+   };
    const desfazendoDelete = async () => {
-      await fetch(`${BASE_URL}/usuarios/restaurar/${itemDeletadoId}`,
-         {
-            method : "POST"
-         }
-      )
-      setRevalidarQuery(!revalidarQuery)
-
-   }
-
+      await fetch(`${BASE_URL}/usuarios/restaurar/${itemDeletadoId}`, {
+         method: "POST",
+      });
+      setRevalidarQuery(!revalidarQuery);
+   };
+   const setRevalidandoQuery =
+      (funcao: (valor: string) => any) => (valor: string) => {
+         funcao(valor);
+         setRevalidarQuery(!revalidarQuery);
+      };
 
    const renderizarUsuariosApi = async () => {
-      const response = await fetch(`${BASE_URL}/usuarios?role=${tipoUsuario}`);
+      const response = await fetch(
+         `${BASE_URL}/usuarios?role=${tipoUsuario}&ativo=${
+            status === "Ativo" ? true : false
+         }&nome=${nomePesquisa}`
+      );
 
       const data = await response.json();
 
       setUsuarios(transformarParaModel(data));
    };
    const deletarUsuario = async () => {
-      const response = await UseFetchDelete(`${BASE_URL}/usuarios/${idItemParaDeletar}`);
-      setItemDeletadoId(idItemParaDeletar)
-      setMostrarNotificacao(true)
+      const response = await UseFetchDelete(
+         `${BASE_URL}/usuarios/${idItemParaDeletar}`
+      );
+      setItemDeletadoId(idItemParaDeletar);
+      setMostrarNotificacao(true);
       setRevalidarQuery(!revalidarQuery);
-      setIdItemParaDeletar(null)
+      setIdItemParaDeletar(null);
    };
-   const exibirModal = (id : number) => {
-      setIdItemParaDeletar(id)
+   const exibirModal = (id: number) => {
+      setIdItemParaDeletar(id);
       setModalConfirmacaoAberto(true);
-      
-   }
+   };
 
    const renderizarUsuariosPagina = () => {
       return usuarios?.map((usuario) => (
@@ -98,28 +108,7 @@ const page = () => {
       return usuarios;
    };
 
-   const tiposDeUsuarios = [
-      { tipo: "USUARIO" },
-      { tipo: "ADMINISTRADOR" },
-      { tipo: "EDITOR" },
-      { tipo: "CORRETOR" },
-   ];
-
-   const renderizarOpcoesTipoUsuario = () => {
-      return tiposDeUsuarios.map((objeto, key) => (
-         <option value={objeto.tipo} key={key}>
-            {objeto.tipo}
-         </option>
-      ));
-   };
-
-   const renderizarOpcoesStatus = () => {
-      return opcoesStatus.map((opcao, key) => (
-         <option value={opcao.status} key={key}>
-            {opcao.status}
-         </option>
-      ));
-   };
+   const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
 
    return (
       <Layout className="py-0">
@@ -134,39 +123,32 @@ const page = () => {
                xl:grid-cols-[1fr_6fr_1fr_1fr]   
                "
                >
-                  <select
-                     name="Status"
-                     className="text-black border-black border px-2 py-1 rounded-md text-sm 
-                     lg:text-base lg:py-2 lg:px-3
-                     2xl:py-3 2xl:px-4
-                     "
-                     value={"Ativo"}
-                     onChange={(e) => setStatus(e.target.value)}
-                  >
-                     <option value="" disabled hidden>
-                        Status
-                     </option>
-                     {renderizarOpcoesStatus()}
-                  </select>
-                  <input
+                  <SelectPadrao
+                     onChange={setRevalidandoQuery(setStatus)}
+                     opcoes={opcoesStatus}
+                     selecionado={status}
+                     placeholder="Ativo"
+                  />
+                  <InputPadrao
+                     tipoInput="text"
+                     htmlFor="input-busca-nome"
+                     onChange={setRevalidandoQuery(setNomePesquisa)}
+                     placeholder="Digite o nome que deseja pesquisar"
+                     required={false}
+                  />
+                  {/* <input
                      className="border border-gray-500 rounded-md px-2 py-2 text-sm  
                      lg:text-base lg:py-2 lg:px-3
                       2xl:py-3 2xl:px-4"
                      placeholder="Digite o nome do usuário"
-                  ></input>
-                  <select
-                     className="text-black border-black border px-2 py-1 rounded-md text-sm 
-                      lg:text-base lg:py-2 lg:px-3
-                       2xl:py-3 2xl:px-4"
-                     name="tipo_usuario"
-                     value={tipoUsuario}
-                     onChange={(e) =>  {
-                        setTipoUsuario(e.target.value)
-                        setRevalidarQuery(!revalidarQuery)
-                     }}
-                  >
-                     {renderizarOpcoesTipoUsuario()}
-                  </select>
+                     onChange={() => setRevalidandoQuery(setNomePesquisa)}
+                  ></input> */}
+                  <SelectPadrao
+                     opcoes={tiposDeUsuarios}
+                     onChange={setRevalidandoQuery(setTipoUsuario)}
+                     placeholder="USUARIO"
+                     selecionado={tipoUsuario}
+                  />
                   <Link href={"/usuarios/cadastro"}>
                      <button
                         className="flex items-center justify-center bg-havprincipal rounded-md text-white h-full
@@ -188,18 +170,18 @@ const page = () => {
                </div>
 
                <NotificacaoCrud
-               message="Desfazer"
-               isVisible={mostrarNotificacao}
-               onClose={fechandoNotificacao}
-               onUndo={desfazendoDelete}
-               duration={5000}
+                  message="Desfazer"
+                  isVisible={mostrarNotificacao}
+                  onClose={fechandoNotificacao}
+                  onUndo={desfazendoDelete}
+                  duration={5000}
                />
                <ModalCofirmacao
-               isOpen={modalConfirmacaoAberto}
-               onClose={() => setModalConfirmacaoAberto(false)}
-               onConfirm={deletarUsuario}
-               message="Você realmente deseja remover este usuário?"
-               /> 
+                  isOpen={modalConfirmacaoAberto}
+                  onClose={() => setModalConfirmacaoAberto(false)}
+                  onConfirm={deletarUsuario}
+                  message="Você realmente deseja remover este usuário?"
+               />
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
       </Layout>

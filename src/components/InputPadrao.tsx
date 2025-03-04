@@ -3,10 +3,10 @@ import React from "react";
 interface InputPadraoProps {
    placeholder?: string;
    tipoInput: string;
-   label: string;
+   label?: string;
    htmlFor: string;
    onChange: (valor: string) => void;
-   required: boolean;
+   required?: boolean;
    maxLenght?: number;
    minLength? : number;
    value? : string;
@@ -17,17 +17,21 @@ interface InputPadraoProps {
 const InputPadrao = (props: InputPadraoProps) => {
    return (
       <div className="flex flex-col lg:gap-1 2xl:gap-2">
-         <label
-            htmlFor={props.htmlFor}
-            className="opacity-90 text-xs
-                        font-montserrat
-                        md:text-sm
-                        lg:text-base lg:rounded-lg
-                        2xl:text-xl 2xl:rounded-xl
-                        "
-         >
-            {props.label}
-         </label>
+         {props.label &&
+           <label
+           htmlFor={props.htmlFor}
+           className="opacity-90 text-xs
+                       font-montserrat
+                       md:text-sm
+                       lg:text-base lg:rounded-lg
+                       2xl:text-xl 2xl:rounded-xl
+                       "
+        >
+           {props.label}
+        </label>
+         
+         }
+       
          <input
             type={props.tipoInput}
             placeholder={props.placeholder}
