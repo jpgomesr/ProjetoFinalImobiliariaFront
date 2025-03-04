@@ -10,6 +10,8 @@ import ModelUsuario from "@/models/ModelUsuario";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
+import ModalCofirmacao from "@/components/ComponentesCrud/ModalConfirmacao";
 
 const page = () => {
    const opcoesStatus = [{ status: "Ativo" }, { status: "Inativo" }];
@@ -18,10 +20,31 @@ const page = () => {
    const [tipoUsuario, setTipoUsuario] = useState<string>("Usuario");
    const [usuarios, setUsuarios] = useState<ModelUsuario[]>();
    const [revalidarQuery, setRevalidarQuery] = useState<boolean>(false);
+   const [modalConfirmacaoAberto, setModalConfirmacaoAberto] = useState(false)
+   const [itemDeletadoId, setItemDeletadoId] = useState<number | null>(null)
+   const [mostrarNotificacao, setMostrarNotificacao] = useState(false)
+   const [idItemParaDeletar, setIdItemParaDeletar] = useState<number | null>(null)
+
 
    useEffect(() => {
       renderizarUsuariosApi();
    }, [revalidarQuery]);
+
+
+   const fechandoNotificacao = () => {
+      setMostrarNotificacao(false)
+      setItemDeletadoId(null)
+   }
+   const desfazendoDelete = async () => {
+      await fetch(`${BASE_URL}/usuarios/restaurar/${itemDeletadoId}`,
+         {
+            method : "POST"
+         }
+      )
+      setRevalidarQuery(!revalidarQuery)
+
+   }
+
 
    const renderizarUsuariosApi = async () => {
       const response = await fetch(`${BASE_URL}/usuarios`);
@@ -30,10 +53,18 @@ const page = () => {
 
       setUsuarios(transformarParaModel(data));
    };
-   const deletarUsuario = async (id: number) => {
-      const response = await UseFetchDelete(`${BASE_URL}/usuarios/${id}`);
+   const deletarUsuario = async () => {
+      const response = await UseFetchDelete(`${BASE_URL}/usuarios/${idItemParaDeletar}`);
+      setItemDeletadoId(idItemParaDeletar)
+      setMostrarNotificacao(true)
       setRevalidarQuery(!revalidarQuery);
+      setIdItemParaDeletar(null)
    };
+   const exibirModal = (id : number) => {
+      setIdItemParaDeletar(id)
+      setModalConfirmacaoAberto(true);
+      
+   }
 
    const renderizarUsuariosPagina = () => {
       return usuarios?.map((usuario) => (
@@ -45,7 +76,7 @@ const page = () => {
             tipoConta={usuario.role}
             key={usuario.id}
             imagem={usuario.foto}
-            deletarUsuario={deletarUsuario}
+            deletarUsuario={exibirModal}
          />
       ));
    };
@@ -152,6 +183,19 @@ const page = () => {
                >
                   {renderizarUsuariosPagina()}
                </div>
+
+               <NotificacaoCrud
+               message="Desfazer"
+               isVisible={mostrarNotificacao}
+               onClose={fechandoNotificacao}
+               onUndo={desfazendoDelete}
+               duration={5000}
+               />
+               <ModalCofirmacao
+               isOpen={modalConfirmacaoAberto}
+               onClose={() => setModalConfirmacaoAberto(false)}
+               onConfirm={deletarUsuario}
+               /> 
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
       </Layout>

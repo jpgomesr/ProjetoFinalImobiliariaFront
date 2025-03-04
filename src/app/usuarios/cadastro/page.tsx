@@ -31,7 +31,7 @@ const page = () => {
    
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-
+   
    const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
 
    const criarUsuario = async () => {
@@ -86,7 +86,6 @@ const page = () => {
 
       }
    };
-   console.log(formularioDesativado)
    const handleChange = (setter: any, campo: string) => (value: string) => {
       setter(value);
       if (erros[campo]) {

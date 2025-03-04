@@ -21,7 +21,8 @@ const Switch = (props: SwitchProps) => {
                checked={isChecked}
                onChange={() => {
                   setIsChecked(!isChecked);
-                  props.handleAcao;
+                  props.handleAcao();
+                  
                }}
             />
             <div
