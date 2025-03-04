@@ -58,7 +58,6 @@ const page = () => {
          setSenha("")
          setConfirmaSenha("")
       }
-      console.log(alterarSenha)
 
    }
   
@@ -138,21 +137,6 @@ const page = () => {
 
       }
    }; 
-   const alterarSenhaBanco = async () => {
-      try {
-         
-         const response = await fetch(`${BASE_URL}/usuarios/alterarSenha/${id}`,
-         {
-            method: "PATCH",
-            body: JSON.stringify({
-               senha : senha
-            })
-         })
-
-      } catch (error) {
-         
-      }
-   }
    const enviandoFormulario = (e: React.FormEvent) => {
       e.preventDefault();
       setFormularioDesativado(true)

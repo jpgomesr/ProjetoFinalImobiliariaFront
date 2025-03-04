@@ -47,7 +47,7 @@ const page = () => {
 
 
    const renderizarUsuariosApi = async () => {
-      const response = await fetch(`${BASE_URL}/usuarios`);
+      const response = await fetch(`${BASE_URL}/usuarios?role=${tipoUsuario}`);
 
       const data = await response.json();
 
@@ -160,7 +160,10 @@ const page = () => {
                        2xl:py-3 2xl:px-4"
                      name="tipo_usuario"
                      value={tipoUsuario}
-                     onChange={(e) => setTipoUsuario(e.target.value)}
+                     onChange={(e) =>  {
+                        setTipoUsuario(e.target.value)
+                        setRevalidarQuery(!revalidarQuery)
+                     }}
                   >
                      {renderizarOpcoesTipoUsuario()}
                   </select>
@@ -195,6 +198,7 @@ const page = () => {
                isOpen={modalConfirmacaoAberto}
                onClose={() => setModalConfirmacaoAberto(false)}
                onConfirm={deletarUsuario}
+               message="Você realmente deseja remover este usuário?"
                /> 
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
