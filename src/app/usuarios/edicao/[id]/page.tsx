@@ -13,6 +13,8 @@ import { UseFetchPostFormData } from "@/hooks/UseFetchFormData";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import ModelUsuario from "@/models/ModelUsuario";
+import Switch from "@/components/ComponentesCrud/Switch";
+import { UseErros } from "@/hooks/UseErros";
 
 const page = () => {
    const router = useRouter();
@@ -32,6 +34,8 @@ const page = () => {
    const [ativo, setAtivo] = useState<string>("Ativo");
    const [formularioDesativado, setFormularioDesativado] = useState<boolean>(false)
 
+   const [alterarSenha, setAlterarSenha] = useState(false);
+
    const { id } = useParams();
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -48,6 +52,16 @@ const page = () => {
          setErros({ ...erros, [campo]: "" });
       }
    };
+   const handleAlterarSenha = () => {
+      setAlterarSenha(!alterarSenha)
+      if(alterarSenha === false){
+         setSenha("")
+         setConfirmaSenha("")
+      }
+      console.log(alterarSenha)
+
+   }
+  
 
    const transformarParaModel = (usuario: any) => {
       const usuarioModel = new ModelUsuario(
@@ -86,6 +100,7 @@ const page = () => {
    const editarUsuario = async () => {
       if (senha !== confirmaSenha) {
          setErros({ ...erros, confirmaSenha: "As senhas não coincidem" });
+         setFormularioDesativado(false)
          return;
       }
       try {
@@ -94,7 +109,7 @@ const page = () => {
             {
                nome: nomeCompleto,
                email: email,
-               senha: senha,
+               senha: senha !== "" ? senha : null ,
                telefone: telefone,
                role: tipoUsuario,
                descricao: descricao,
@@ -109,15 +124,8 @@ const page = () => {
             const data = await response.json();
 
             if (data.erros) {
-               const errosFormatados = data.erros.reduce(
-                  (acc: any, erro: any) => {
-                     acc[erro.campo] = erro.erro || "Erro desconhecido";
-                     return acc;
-                  },
-                  {}
-               );
 
-               setErros(errosFormatados);
+               setErros(UseErros(data));
             }
              setFormularioDesativado(false)
             throw new Error(data.mensagem || "Erro ao criar usuário.");
@@ -129,7 +137,22 @@ const page = () => {
          setFormularioDesativado(false)
 
       }
-   };
+   }; 
+   const alterarSenhaBanco = async () => {
+      try {
+         
+         const response = await fetch(`${BASE_URL}/usuarios/alterarSenha/${id}`,
+         {
+            method: "PATCH",
+            body: JSON.stringify({
+               senha : senha
+            })
+         })
+
+      } catch (error) {
+         
+      }
+   }
    const enviandoFormulario = (e: React.FormEvent) => {
       e.preventDefault();
       setFormularioDesativado(true)
@@ -171,6 +194,17 @@ const page = () => {
                      maxLenght={100}
                      mensagemErro={erros["email"]}
                   />
+                  <div>
+                     <p className="opacity-90 text-xs
+                        font-montserrat
+                        md:text-sm
+                        lg:text-base lg:rounded-lg
+                        2xl:text-xl 2xl:rounded-xl
+                        ">Alterar Senha?</p>
+                  <Switch handleAcao={handleAlterarSenha}className="w-8 h-4 sm:w-12 sm:h-6 md:w-14 md:h-7 lg:w-16 lg:h-8"/> 
+
+                  </div>
+                  
                   <InputPadrao
                      htmlFor="senha"
                      label="Senha"
@@ -181,6 +215,7 @@ const page = () => {
                      minLength={8}
                      maxLenght={45}
                      mensagemErro={erros["senha"]}
+                     disable={!alterarSenha}
                   />
                   <InputPadrao
                      htmlFor="senha"
@@ -192,6 +227,7 @@ const page = () => {
                      placeholder="Digite a senha novamente"
                      onChange={handleChange(setConfirmaSenha, "confirmaSenha")}
                      mensagemErro={erros["confirmaSenha"]}
+                     disable={!alterarSenha}
                   />
                   <InputPadrao
                      htmlFor="telefone"

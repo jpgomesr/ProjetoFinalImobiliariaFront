@@ -11,6 +11,7 @@ interface InputPadraoProps {
    minLength? : number;
    value? : string;
    mensagemErro?: string 
+   disable? : boolean
 }
 
 const InputPadrao = (props: InputPadraoProps) => {
@@ -39,6 +40,7 @@ const InputPadrao = (props: InputPadraoProps) => {
             maxLength={props.maxLenght}
             minLength={props.minLength}
             value={props.value}
+            disabled={props.disable}
          />
          {props.mensagemErro && <span className="text-red-500 text-xs mt-1 md:text-sm xl:text-base">{props.mensagemErro}</span>}
 
