@@ -30,13 +30,12 @@ const page = () => {
    );
    const [numeroPaginaAtual, setNumeroPaginaAtual] = useState(0);
    const [nomePesquisa, setNomePesquisa] = useState<string>("");
-   const peageableinfo = {
+   const [peageableinfo, setPeageableInfo] = useState({
       totalPaginas: 0,
       ultima: true,
       maximoPaginasVisiveis: 5,
-   };
+   });
 
-   console.log(peageableinfo);
    useEffect(() => {
       renderizarUsuariosApi();
    }, [revalidarQuery]);
@@ -46,8 +45,11 @@ const page = () => {
       setItemDeletadoId(null);
    };
    const adicionarInformacoesPagina = (data: any) => {
-      peageableinfo.totalPaginas = data.totalPages;
-      peageableinfo.ultima = data.last;
+      const quantidadePaginas = data.totalPages;
+      const ultimaPagina : boolean = data.last;
+
+
+      setPeageableInfo( prev => ({...prev, totalPaginas : quantidadePaginas, ultima : ultimaPagina }))
    };
    const desfazendoDelete = async () => {
       await fetch(`${BASE_URL}/usuarios/restaurar/${itemDeletadoId}`, {
@@ -56,7 +58,7 @@ const page = () => {
       setRevalidarQuery(!revalidarQuery);
    };
    const setRevalidandoQuery =
-      (funcao: (valor: string) => any) => (valor: string) => {
+      (funcao: (valor: any) => any) => (valor: any) => {
          funcao(valor);
          setRevalidarQuery(!revalidarQuery);
       };
@@ -65,7 +67,7 @@ const page = () => {
       const response = await fetch(
          `${BASE_URL}/usuarios?role=${tipoUsuario}&ativo=${
             status === "Ativo" ? true : false
-         }&nome=${nomePesquisa}`
+         }&nome=${nomePesquisa}&page=${numeroPaginaAtual}`
       );
 
       const data = await response.json();
@@ -147,13 +149,6 @@ const page = () => {
                      placeholder="Digite o nome que deseja pesquisar"
                      required={false}
                   />
-                  {/* <input
-                     className="border border-gray-500 rounded-md px-2 py-2 text-sm  
-                     lg:text-base lg:py-2 lg:px-3
-                      2xl:py-3 2xl:px-4"
-                     placeholder="Digite o nome do usuário"
-                     onChange={() => setRevalidandoQuery(setNomePesquisa)}
-                  ></input> */}
                   <SelectPadrao
                      opcoes={tiposDeUsuarios}
                      onChange={setRevalidandoQuery(setTipoUsuario)}
@@ -181,7 +176,7 @@ const page = () => {
                </div>
                <ComponentePaginacao
                   paginaAtual={numeroPaginaAtual}
-                  setPaginaAtual={setNumeroPaginaAtual}
+                  setPaginaAtual={setRevalidandoQuery(setNumeroPaginaAtual)}
                   totalPaginas={peageableinfo.totalPaginas}
                   maximoPaginasVisiveis={peageableinfo.maximoPaginasVisiveis}
                   ultimaPagina={peageableinfo.ultima}

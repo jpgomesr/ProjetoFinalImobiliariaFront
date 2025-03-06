@@ -2,7 +2,7 @@ import React from "react";
 
 interface BotaoProps {
    texto: string;
-   handler?: () => void;
+   handler?: ( e?:any) => void;
    className?: string;
    disable?:boolean
 }
