@@ -6,7 +6,7 @@ import { useState } from "react";
 
 interface SwitchProps {
    className?: string;
-   handleAcao: () => void;
+   handleAcao: ( e?:any) => void;
 }
 
 const Switch = (props: SwitchProps) => {

@@ -146,7 +146,7 @@ const page = () => {
                      placeholder="Ativo"
                   />
                   <InputPadrao
-                     tipoInput="text"
+                     type="text"
                      htmlFor="input-busca-nome"
                      onChange={setRevalidandoQuery(setNomePesquisa)}
                      placeholder="Digite o nome que deseja pesquisar"
