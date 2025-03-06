@@ -70,7 +70,7 @@ const page = () => {
       const response = await fetch(
          `${BASE_URL}/usuarios?role=${tipoUsuario}&ativo=${
             status === "Ativo" ? true : false
-         }&nome=${nomePesquisa}&page=${numeroPaginaAtual}`
+         }&nome=${nomePesquisa}&page=${numeroPaginaAtual}  `
       );
 
       const data = await response.json();
