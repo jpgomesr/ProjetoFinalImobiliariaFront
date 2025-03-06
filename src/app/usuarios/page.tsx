@@ -13,6 +13,7 @@ import React, { useEffect, useState } from "react";
 import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
 import ModalCofirmacao from "@/components/ComponentesCrud/ModalConfirmacao";
 import SelectPadrao from "@/components/SelectPadrao";
+import ComponentePaginacao from "@/components/ComponentePaginacao";
 
 const page = () => {
    const opcoesStatus = ["Ativo", "Desativado"];
@@ -27,10 +28,15 @@ const page = () => {
    const [idItemParaDeletar, setIdItemParaDeletar] = useState<number | null>(
       null
    );
+   const [numeroPaginaAtual, setNumeroPaginaAtual] = useState(0);
    const [nomePesquisa, setNomePesquisa] = useState<string>("");
+   const peageableinfo = {
+      totalPaginas: 0,
+      ultima: true,
+      maximoPaginasVisiveis: 5,
+   };
 
-   console.log(tipoUsuario);
-
+   console.log(peageableinfo);
    useEffect(() => {
       renderizarUsuariosApi();
    }, [revalidarQuery]);
@@ -38,6 +44,10 @@ const page = () => {
    const fechandoNotificacao = () => {
       setMostrarNotificacao(false);
       setItemDeletadoId(null);
+   };
+   const adicionarInformacoesPagina = (data: any) => {
+      peageableinfo.totalPaginas = data.totalPages;
+      peageableinfo.ultima = data.last;
    };
    const desfazendoDelete = async () => {
       await fetch(`${BASE_URL}/usuarios/restaurar/${itemDeletadoId}`, {
@@ -60,6 +70,7 @@ const page = () => {
 
       const data = await response.json();
 
+      adicionarInformacoesPagina(data);
       setUsuarios(transformarParaModel(data));
    };
    const deletarUsuario = async () => {
@@ -168,6 +179,13 @@ const page = () => {
                >
                   {renderizarUsuariosPagina()}
                </div>
+               <ComponentePaginacao
+                  paginaAtual={numeroPaginaAtual}
+                  setPaginaAtual={setNumeroPaginaAtual}
+                  totalPaginas={peageableinfo.totalPaginas}
+                  maximoPaginasVisiveis={peageableinfo.maximoPaginasVisiveis}
+                  ultimaPagina={peageableinfo.ultima}
+               />
 
                <NotificacaoCrud
                   message="Desfazer"
