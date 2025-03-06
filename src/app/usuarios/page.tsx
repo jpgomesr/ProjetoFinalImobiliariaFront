@@ -177,6 +177,11 @@ const page = () => {
                >
                   {renderizarUsuariosPagina()}
                </div>
+               {usuarios?.length === 0 && (
+                  <div className="text-center w-full col-span-2">
+                     Nenhum usuário encontrado...
+                  </div>
+               )}
                {peageableinfo.totalPaginas > 0 && (
                   <ComponentePaginacao
                      paginaAtual={numeroPaginaAtual}
