@@ -37,7 +37,7 @@ const CardUsuario = (props: CardUsuarioProps) => {
                alt="Imagem usuario"
                width={1920}
                height={1080}
-               className="flex justify-center items-center rounded-full h-16 w-16 lg:w-20 lg:h-20 2xl:w-28 2xl:h-28"
+               className="flex justify-center border-2 border-gray-500 items-center rounded-full h-16 w-16 lg:w-20 lg:h-20 2xl:w-28 2xl:h-28"
             />
          ) : (
             <FotoUsuarioDeslogado />

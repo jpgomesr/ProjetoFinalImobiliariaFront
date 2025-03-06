@@ -38,6 +38,7 @@ const page = () => {
       setFormularioDesativado(true)
       if (senha !== confirmaSenha) {
          setErros({ ...erros, confirmaSenha: "As senhas não coincidem" });
+         setFormularioDesativado(false)
          return;
       }
 
