@@ -46,10 +46,13 @@ const page = () => {
    };
    const adicionarInformacoesPagina = (data: any) => {
       const quantidadePaginas = data.totalPages;
-      const ultimaPagina : boolean = data.last;
+      const ultimaPagina: boolean = data.last;
 
-
-      setPeageableInfo( prev => ({...prev, totalPaginas : quantidadePaginas, ultima : ultimaPagina }))
+      setPeageableInfo((prev) => ({
+         ...prev,
+         totalPaginas: quantidadePaginas,
+         ultima: ultimaPagina,
+      }));
    };
    const desfazendoDelete = async () => {
       await fetch(`${BASE_URL}/usuarios/restaurar/${itemDeletadoId}`, {
@@ -174,13 +177,15 @@ const page = () => {
                >
                   {renderizarUsuariosPagina()}
                </div>
-               <ComponentePaginacao
-                  paginaAtual={numeroPaginaAtual}
-                  setPaginaAtual={setRevalidandoQuery(setNumeroPaginaAtual)}
-                  totalPaginas={peageableinfo.totalPaginas}
-                  maximoPaginasVisiveis={peageableinfo.maximoPaginasVisiveis}
-                  ultimaPagina={peageableinfo.ultima}
-               />
+               {peageableinfo.totalPaginas > 0 && (
+                  <ComponentePaginacao
+                     paginaAtual={numeroPaginaAtual}
+                     setPaginaAtual={setRevalidandoQuery(setNumeroPaginaAtual)}
+                     totalPaginas={peageableinfo.totalPaginas}
+                     maximoPaginasVisiveis={peageableinfo.maximoPaginasVisiveis}
+                     ultimaPagina={peageableinfo.ultima}
+                  />
+               )}
 
                <NotificacaoCrud
                   message="Desfazer"
