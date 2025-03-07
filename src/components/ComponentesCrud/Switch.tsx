@@ -7,10 +7,11 @@ import { useState } from "react";
 interface SwitchProps {
    className?: string;
    handleAcao: ( e?:any) => void;
+   value? : boolean
 }
 
 const Switch = (props: SwitchProps) => {
-   const [isChecked, setIsChecked] = useState(false);
+   const [isChecked, setIsChecked] = useState(props.value ?? false);
 
    return (
       <div className={`inline-block ${props.className}`}>
@@ -21,7 +22,7 @@ const Switch = (props: SwitchProps) => {
                checked={isChecked}
                onChange={() => {
                   setIsChecked(!isChecked);
-                  props.handleAcao();
+                  props.handleAcao(!isChecked);
                   
                }}
             />

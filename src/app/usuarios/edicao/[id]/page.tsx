@@ -5,7 +5,7 @@ import InputPadrao from "@/components/InputPadrao";
 import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import SelectPadrao from "@/components/SelectPadrao";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import UploadImagem from "@/components/ComponentesCrud/UploadImagem";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import TextAreaPadrao from "@/components/TextAreaPadrao";
@@ -15,25 +15,29 @@ import ModelUsuario from "@/models/ModelUsuario";
 import Switch from "@/components/ComponentesCrud/Switch";
 import { UseErros } from "@/hooks/UseErros";
 import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { usuarioValidator, usuarioValidatorSchema } from "@/validators/usuariosValidator";
 
 // Interface para os valores do formulário
-interface FormValues {
-  nomeCompleto: string;
-  email: string;
-  senha: string;
-  confirmaSenha: string;
-  telefone: string;
-  tipoUsuario: string;
-  descricao: string;
-  ativo: string;
-  imagemPerfil: File | null;
-  alterarSenha: boolean;
-  preview : string | undefined;
-}
+
 
 const Page = () => {
   const router = useRouter();
   const { id } = useParams();
+
+  const [preview, setPreview ] = useState<string>()
+  const [alterarSenha, setAlterarSenha] = useState(false)
+
+  const handleTrocaDeSenha = (ativo : boolean) => {
+
+      setAlterarSenha(ativo);
+      if(alterarSenha){
+         setValue("senha", "");
+         setValue("confirmaSenha", "")
+
+      }
+
+  }
 
   const {
     register,
@@ -44,7 +48,8 @@ const Page = () => {
     clearErrors,
     control,
     formState: { errors, isSubmitting },
-  } = useForm<FormValues>({
+  } = useForm<usuarioValidatorSchema>({
+    resolver : zodResolver(usuarioValidator),
     defaultValues: {
       nomeCompleto: "",
       email: "",
@@ -54,9 +59,7 @@ const Page = () => {
       tipoUsuario: "USUARIO",
       descricao: "",
       ativo: "Ativo",
-      imagemPerfil: null,
-      alterarSenha: false,
-      preview: undefined
+      imagemPerfil: undefined,
     },
   });
 
@@ -93,14 +96,14 @@ const Page = () => {
     setValue("telefone", usuario.telefone);
     setValue("tipoUsuario", usuario.role);
     setValue("ativo", usuario.ativo ? "Ativo" : "Desativado");
-    setValue("preview", usuario.foto)
+    setPreview(usuario.foto)
   };
 
   useEffect(() => {
     preencherInformacoesAtuaisDoUsuario();
   }, []);
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: usuarioValidatorSchema) => {
     if (data.senha !== data.confirmaSenha) {
       setError("confirmaSenha", {
         type: "manual",
@@ -115,7 +118,7 @@ const Page = () => {
         {
           nome: data.nomeCompleto,
           email: data.email,
-          senha: data.alterarSenha ? data.senha : null,
+          senha: alterarSenha ? data.senha : null,
           telefone: data.telefone,
           role: data.tipoUsuario,
           descricao: data.descricao,
@@ -132,7 +135,7 @@ const Page = () => {
         if (responseData.erros) {
           const errosFormatados = UseErros(responseData);
           Object.keys(errosFormatados).forEach((campo) => {
-            setError(campo as keyof FormValues, {
+            setError(campo as keyof usuarioValidatorSchema, {
               type: "manual",
               message: errosFormatados[campo],
             });
@@ -181,22 +184,12 @@ const Page = () => {
               <p className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl">
                 Alterar Senha?
               </p>
-              <Controller
-                name="alterarSenha"
-                control={control}
-                render={({ field }) => (
+
                   <Switch
-                    handleAcao={(checked: boolean) => {
-                      field.onChange(checked);
-                      if (!checked) {
-                        setValue("senha", "");
-                        setValue("confirmaSenha", "");
-                      }
-                    }}
+                    handleAcao={handleTrocaDeSenha}
                     className="w-8 h-4 sm:w-12 sm:h-6 md:w-14 md:h-7 lg:w-16 lg:h-8"
+                    value={alterarSenha}
                   />
-                )}
-              />
             </div>
             <InputPadrao
               htmlFor="senha"
@@ -204,19 +197,9 @@ const Page = () => {
               required={true}
               type="password"
               placeholder="Ex: 123C@31s$"
-              {...register("senha", {
-                required: watch("alterarSenha") ? "Senha é obrigatória" : false,
-                minLength: {
-                  value: 8,
-                  message: "A senha deve ter no mínimo 8 caracteres",
-                },
-                maxLength: {
-                  value: 45,
-                  message: "A senha deve ter no máximo 45 caracteres",
-                },
-              })}
+              {...register("senha")}
               mensagemErro={errors.senha?.message}
-              disabled={!watch("alterarSenha")}
+              disabled={!alterarSenha}
             />
             <InputPadrao
               htmlFor="confirmaSenha"
@@ -224,19 +207,9 @@ const Page = () => {
               required={true}
               type="password"
               placeholder="Digite a senha novamente"
-              {...register("confirmaSenha", {
-                required: watch("alterarSenha") ? "Confirmação de senha é obrigatória" : false,
-                minLength: {
-                  value: 8,
-                  message: "A senha deve ter no mínimo 8 caracteres",
-                },
-                maxLength: {
-                  value: 45,
-                  message: "A senha deve ter no máximo 45 caracteres",
-                },
-              })}
+              {...register("confirmaSenha", )}
               mensagemErro={errors.confirmaSenha?.message}
-              disabled={!watch("alterarSenha")}
+              disabled={!alterarSenha}
             />
             <InputPadrao
               htmlFor="telefone"
@@ -244,28 +217,13 @@ const Page = () => {
               required={true}
               type="text"
               placeholder="Ex: 47912312121"
-              {...register("telefone", {
-                required: "Telefone é obrigatório",
-                minLength: {
-                  value: 11,
-                  message: "O telefone deve ter 11 caracteres",
-                },
-                maxLength: {
-                  value: 11,
-                  message: "O telefone deve ter 11 caracteres",
-                },
-              })}
+              {...register("telefone")}
               mensagemErro={errors.telefone?.message}
             />
             <TextAreaPadrao
               htmlFor="descricao"
               label="Descricao"
-              {...register("descricao", {
-                maxLength: {
-                  value: 500,
-                  message: "A descrição deve ter no máximo 500 caracteres",
-                },
-              })}
+              {...register("descricao")}
               mensagemErro={errors.descricao?.message}
             />
             <div className="flex flex-col">
@@ -316,7 +274,7 @@ const Page = () => {
               render={({ field }) => (
                 <UploadImagem
                   onChange={(file: File | null) => field.onChange(file)}
-                  preview={watch("preview")}
+                  preview={preview}
                 />
               )}
             />
