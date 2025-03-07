@@ -10,60 +10,71 @@ import UploadImagem from "@/components/ComponentesCrud/UploadImagem";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import TextAreaPadrao from "@/components/TextAreaPadrao";
 import { UseFetchPostFormData } from "@/hooks/UseFetchFormData";
-import { useRouter } from "next/navigation";
-import { useParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import ModelUsuario from "@/models/ModelUsuario";
 import Switch from "@/components/ComponentesCrud/Switch";
 import { UseErros } from "@/hooks/UseErros";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import z from "zod";
+import { createUsuarioValidator } from "@/validators/usuariosValidator";
 
-const page = () => {
+// Interface para os valores do formulário
+
+const Page = () => {
    const router = useRouter();
+   const { id } = useParams();
 
-   const [usuario, setUsuario] = useState<ModelUsuario>();
-
-   const [nomeCompleto, setNomeCompleto] = useState("");
-   const [email, setEmail] = useState("");
-   const [senha, setSenha] = useState("");
-   const [confirmaSenha, setConfirmaSenha] = useState("");
-   const [telefone, setTelefone] = useState("");
-   const [imagemPerfil, setImagemPerfil] = useState<File | null>(null);
-   const [tipoUsuario, setTipoUsuario] = useState("USUARIO");
-   const [descricao, setDescricao] = useState("");
-   const [preview, setPreview] = useState<any>(undefined);
-   const [erros, setErros] = useState<Record<string, string>>({});
-   const [ativo, setAtivo] = useState<string>("Ativo");
-   const [formularioDesativado, setFormularioDesativado] = useState<boolean>(false)
-
+   const [preview, setPreview] = useState<string>();
    const [alterarSenha, setAlterarSenha] = useState(false);
 
-   const { id } = useParams();
+   const handleTrocaDeSenha = (ativo: boolean) => {
+      setAlterarSenha(ativo);
+      if (alterarSenha) {
+         setValue("senha", "");
+         setValue("confirmaSenha", "");
+      }
+   };
+
+   const usuarioValidator = createUsuarioValidator(alterarSenha);
+   type usuarioValidatorSchema = z.infer<typeof usuarioValidator>;
+
+   const {
+      register,
+      handleSubmit,
+      setValue,
+      watch,
+      setError,
+      setFocus,
+      clearErrors,
+      resetField,
+      control,
+      formState: { errors, isSubmitting },
+   } = useForm<usuarioValidatorSchema>({
+      resolver: zodResolver(usuarioValidator),
+      defaultValues: {
+         nomeCompleto: "",
+         email: "",
+         senha: "",
+         confirmaSenha: "",
+         telefone: "",
+         tipoUsuario: "USUARIO",
+         descricao: "",
+         ativo: "Ativo",
+         imagemPerfil: null,
+      },
+   });
+
+   useEffect(() => {
+      console.log(errors);
+   }, [errors]);
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
    const opcoesAtivoDesativo = ["Ativo", "Desativado"];
 
-   useEffect(() => {
-      preencherInformacoesAtuaisDoUsuario();
-   }, []);
-
-   const handleChange = (setter: any, campo: string) => (value: string) => {
-      setter(value);
-      if (erros[campo]) {
-         setErros({ ...erros, [campo]: "" });
-      }
-   };
-   const handleAlterarSenha = () => {
-      setAlterarSenha(!alterarSenha)
-      if(alterarSenha === false){
-         setSenha("")
-         setConfirmaSenha("")
-      }
-
-   }
-  
-
-   const transformarParaModel = (usuario: any) => {
-      const usuarioModel = new ModelUsuario(
+   const transformarParaModel = (usuario: any): ModelUsuario => {
+      return new ModelUsuario(
          usuario.id,
          usuario.role,
          usuario.nome,
@@ -73,214 +84,215 @@ const page = () => {
          usuario.foto,
          usuario.ativo
       );
-      return usuarioModel;
    };
+
    const buscarUsuarioCadastrado = async () => {
       const requisicao = await fetch(`${BASE_URL}/usuarios/${id}`);
-
       const data = await requisicao.json();
-
       return data;
    };
 
    const preencherInformacoesAtuaisDoUsuario = async () => {
       const informacoes = await buscarUsuarioCadastrado();
-
       const usuario = transformarParaModel(informacoes);
 
-      setNomeCompleto(usuario.nome);
-      setDescricao(usuario.descricao);
-      setEmail(usuario.email);
-      setTelefone(usuario.telefone);
-      setTipoUsuario(usuario.role);
+      setValue("nomeCompleto", usuario.nome);
+      setValue("descricao", usuario.descricao);
+      setValue("email", usuario.email);
+      setValue("telefone", usuario.telefone);
+      setValue("tipoUsuario", usuario.role);
+      setValue("ativo", usuario.ativo ? "Ativo" : "Desativado");
       setPreview(usuario.foto);
-      setAtivo(usuario.ativo ? "Ativo" : "Desativado");
    };
-   const editarUsuario = async () => {
-      if (senha !== confirmaSenha) {
-         setErros({ ...erros, confirmaSenha: "As senhas não coincidem" });
-         setFormularioDesativado(false)
-         return;
+
+   useEffect(() => {
+      preencherInformacoesAtuaisDoUsuario();
+   }, []);
+   useEffect(() => {
+      if (!alterarSenha) {
+         resetField("senha");
+         resetField("confirmaSenha");
       }
+   }, [alterarSenha, resetField]);
+
+   const onSubmit = async (data: usuarioValidatorSchema) => {
       try {
          const response = await UseFetchPostFormData(
             `${BASE_URL}/usuarios/${id}`,
             {
-               nome: nomeCompleto,
-               email: email,
-               senha: senha !== "" ? senha : null ,
-               telefone: telefone,
-               role: tipoUsuario,
-               descricao: descricao,
-               ativo: ativo === "Ativo" ? true : false,
+               nome: data.nomeCompleto,
+               email: data.email,
+               senha: alterarSenha ? data.senha : null,
+               telefone: data.telefone,
+               role: data.tipoUsuario,
+               descricao: data.descricao,
+               ativo: data.ativo === "Ativo",
             },
             "usuario",
             "novaImagem",
-            imagemPerfil,
+            data.imagemPerfil,
             "PUT"
          );
+
          if (!response.ok) {
-            const data = await response.json();
-
-            if (data.erros) {
-
-               setErros(UseErros(data));
+            const responseData = await response.json();
+            if (responseData.erros) {
+               const errosFormatados = UseErros(responseData);
+               Object.keys(errosFormatados).forEach((campo) => {
+                  setError(campo as keyof usuarioValidatorSchema, {
+                     type: "manual",
+                     message: errosFormatados[campo],
+                  });
+               });
+               const primeiroCampoComErro = Object.keys(
+                  errosFormatados
+               )[0] as keyof usuarioValidatorSchema;
+               if (primeiroCampoComErro) {
+                  setFocus(primeiroCampoComErro);
+               }
             }
-             setFormularioDesativado(false)
-            throw new Error(data.mensagem || "Erro ao criar usuário.");
+            throw new Error(responseData.mensagem || "Erro ao editar usuário.");
          }
-         setErros({}); // Limpa os erros ao cadastrar com sucesso
+
+         clearErrors();
          router.push("/usuarios");
       } catch (error) {
          console.error("Erro ao editar o usuário:", error);
-         setFormularioDesativado(false)
-
       }
-   }; 
-   const enviandoFormulario = (e: React.FormEvent) => {
-      e.preventDefault();
-      setFormularioDesativado(true)
-      editarUsuario();
-
    };
+
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
-            <FundoBrancoPadrao titulo="Edição de usuário" className={`w-full ${formularioDesativado ? "opacity-40" : "opacity-100"}`}>
+            <FundoBrancoPadrao
+               titulo="Edição de usuário"
+               className={`w-full ${
+                  isSubmitting ? "opacity-40" : "opacity-100"
+               }`}
+            >
                <form
-                  onSubmit={(e) => enviandoFormulario(e)}
-                  className={`flex flex-col gap-2 
-            md:gap-3
-            lg:gap-4
-            xl:gap-5
-            2xl:gap-6`}
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="flex flex-col gap-2 md:gap-3 lg:gap-4 xl:gap-5 2xl:gap-6"
                >
                   <InputPadrao
-                     htmlFor="nome"
+                     htmlFor="nomeCompleto"
                      label="Nome completo"
-                     required={true}
-                     tipoInput="text"
-                     placeholder="Ex:Carlos"
-                     onChange={handleChange(setNomeCompleto, "nome")}
-                     value={nomeCompleto}
-                     maxLenght={100}
-                     mensagemErro={erros["nome"]}
-                     
+                     type="text"
+                     placeholder="Ex: Carlos"
+                     {...register("nomeCompleto")}
+                     mensagemErro={errors.nomeCompleto?.message}
                   />
                   <InputPadrao
                      htmlFor="email"
                      label="E-mail"
-                     required={true}
-                     tipoInput="email"
-                     placeholder="Ex:Carlos@gmail.com"
-                     onChange={handleChange(setEmail, "email")}
-                     value={email}
-                     maxLenght={100}
-                     mensagemErro={erros["email"]}
+                     type="email"
+                     placeholder="Ex: Carlos@gmail.com"
+                     {...register("email")}
+                     mensagemErro={errors.email?.message}
                   />
                   <div>
-                     <p className="opacity-90 text-xs
-                        font-montserrat
-                        md:text-sm
-                        lg:text-base lg:rounded-lg
-                        2xl:text-xl 2xl:rounded-xl
-                        ">Alterar Senha?</p>
-                  <Switch handleAcao={handleAlterarSenha}className="w-8 h-4 sm:w-12 sm:h-6 md:w-14 md:h-7 lg:w-16 lg:h-8"/> 
+                     <p className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl">
+                        Alterar Senha?
+                     </p>
 
+                     <Switch
+                        handleAcao={handleTrocaDeSenha}
+                        className="w-8 h-4 sm:w-12 sm:h-6 md:w-14 md:h-7 lg:w-16 lg:h-8"
+                        value={alterarSenha}
+                     />
                   </div>
-                  
                   <InputPadrao
                      htmlFor="senha"
                      label="Senha"
-                     required={true}
-                     tipoInput="password"
-                     placeholder="Ex:123C@31s$"
-                     onChange={handleChange(setSenha, "senha")}
-                     minLength={8}
-                     maxLenght={45}
-                     mensagemErro={erros["senha"]}
-                     disable={!alterarSenha}
+                     type="password"
+                     placeholder="Ex: 123C@31s$"
+                     {...register("senha")}
+                     mensagemErro={errors.senha?.message}
+                     disabled={!alterarSenha}
                   />
                   <InputPadrao
-                     htmlFor="senha"
+                     htmlFor="confirmaSenha"
                      label="Confirmar senha"
-                     required={true}
-                     tipoInput="password"
-                     minLength={8}
-                     maxLenght={45}
+                     type="password"
                      placeholder="Digite a senha novamente"
-                     onChange={handleChange(setConfirmaSenha, "confirmaSenha")}
-                     mensagemErro={erros["confirmaSenha"]}
-                     disable={!alterarSenha}
+                     {...register("confirmaSenha")}
+                     mensagemErro={errors.confirmaSenha?.message}
+                     disabled={!alterarSenha}
                   />
                   <InputPadrao
                      htmlFor="telefone"
                      label="Telefone"
-                     required={true}
-                     minLength={11}
-                     maxLenght={11}
-                     tipoInput="text"
-                     placeholder="Ex:47912312121"
-                     onChange={handleChange(setTelefone, "telefone")}
-                     value={telefone}
-                     mensagemErro={erros["telefone"]}
+                     type="text"
+                     placeholder="Ex: 47912312121"
+                     {...register("telefone")}
+                     mensagemErro={errors.telefone?.message}
                   />
                   <TextAreaPadrao
                      htmlFor="descricao"
                      label="Descricao"
-                     onChange={handleChange(setDescricao, "descricao")}
-                     value={descricao}
-                     maxLength={500}
-                     mensagemErro={erros["descricao"]}
+                     {...register("descricao")}
+                     mensagemErro={errors.descricao?.message}
                   />
                   <div className="flex flex-col">
                      <label
                         htmlFor="tipo-usuario"
-                        className="opacity-90 text-xs
-                     font-montserrat
-                     md:text-sm
-                     lg:text-base lg:rounded-lg
-                     2xl:text-xl 2xl:rounded-xl"
+                        className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl"
                      >
                         Tipo usuario
                      </label>
-                     <SelectPadrao
-                        opcoes={tiposDeUsuarios}
-                        onChange={setTipoUsuario}
-                        placeholder="Tipo usuario"
-                        selecionado={tipoUsuario}
-                        className="w-2/4 lg:max-w-sm"
+                     <Controller
+                        name="tipoUsuario"
+                        control={control}
+                        render={({ field }) => (
+                           <SelectPadrao
+                              opcoes={tiposDeUsuarios}
+                              onChange={field.onChange}
+                              placeholder="Tipo usuario"
+                              selecionado={field.value}
+                              className="w-2/4 lg:max-w-sm"
+                           />
+                        )}
                      />
                   </div>
                   <div className="flex flex-col">
                      <label
                         htmlFor="tipo-usuario"
-                        className="opacity-90 text-xs
-                     font-montserrat
-                     md:text-sm
-                     lg:text-base lg:rounded-lg
-                     2xl:text-xl 2xl:rounded-xl"
+                        className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl"
                      >
                         Status
                      </label>
-                     <SelectPadrao
-                        opcoes={opcoesAtivoDesativo}
-                        onChange={setAtivo}
-                        placeholder="Ativo"
-                        selecionado={ativo}
-                        className="w-2/4 lg:max-w-sm"
+                     <Controller
+                        name="ativo"
+                        control={control}
+                        render={({ field }) => (
+                           <SelectPadrao
+                              opcoes={opcoesAtivoDesativo}
+                              onChange={field.onChange}
+                              placeholder="Ativo"
+                              selecionado={field.value}
+                              className="w-2/4 lg:max-w-sm"
+                           />
+                        )}
                      />
                   </div>
-
-                     
-                     <UploadImagem onChange={setImagemPerfil} preview={preview} />
-
+                  <Controller
+                     name="imagemPerfil"
+                     control={control}
+                     render={({ field }) => (
+                        <UploadImagem
+                           onChange={(file: File | null) =>
+                              field.onChange(file)
+                           }
+                           preview={preview}
+                        />
+                     )}
+                  />
                   <div className="flex justify-center">
                      <BotaoPadrao
-
                         texto="Concluir"
                         className="border border-black"
-                        disable={formularioDesativado}
+                        disabled={isSubmitting}
+                        type="submit"
                      />
                   </div>
                </form>
@@ -290,4 +302,4 @@ const page = () => {
    );
 };
 
-export default page;
+export default Page;

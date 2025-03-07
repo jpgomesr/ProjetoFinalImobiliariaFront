@@ -36,6 +36,8 @@ const page = () => {
       maximoPaginasVisiveis: 5,
    });
 
+   console.log(nomePesquisa);
+
    useEffect(() => {
       renderizarUsuariosApi();
    }, [revalidarQuery]);
@@ -146,9 +148,9 @@ const page = () => {
                      placeholder="Ativo"
                   />
                   <InputPadrao
-                     tipoInput="text"
+                     type="text"
                      htmlFor="input-busca-nome"
-                     onChange={setRevalidandoQuery(setNomePesquisa)}
+                     onChange={(e) => setRevalidandoQuery(setNomePesquisa)(e.target.value)}
                      placeholder="Digite o nome que deseja pesquisar"
                      required={false}
                   />
