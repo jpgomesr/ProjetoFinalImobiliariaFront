@@ -12,48 +12,51 @@ import TextAreaPadrao from "@/components/TextAreaPadrao";
 import { UseFetchPostFormData } from "@/hooks/UseFetchFormData";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
+import { createUsuarioValidator } from "@/validators/usuariosValidator";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { UseErros } from "@/hooks/UseErros";
 
-interface FormValues {
-  nomeCompleto: string;
-  email: string;
-  senha: string;
-  confirmaSenha: string;
-  telefone: string;
-  tipoUsuario: string;
-  descricao: string;
-  ativo: string;
-  imagemPerfil: File | null;
-}
 
 const Page = () => {
   const router = useRouter();
+
+
+
+  const usuarioValidator = createUsuarioValidator();
+  type usuarioValidatorSchema = z.infer<typeof usuarioValidator>;
+
   const {
     register,
     handleSubmit,
+    setValue,
     watch,
     setError,
+    setFocus,
     clearErrors,
+    resetField,
     control,
     formState: { errors, isSubmitting },
-  } = useForm<FormValues>({
+ } = useForm<usuarioValidatorSchema>({
+    resolver: zodResolver(usuarioValidator),
     defaultValues: {
-      nomeCompleto: "",
-      email: "",
-      senha: "",
-      confirmaSenha: "",
-      telefone: "",
-      tipoUsuario: "USUARIO",
-      descricao: "",
-      ativo: "Ativo",
-      imagemPerfil: null,
+       nomeCompleto: "",
+       email: "",
+       senha: "",
+       confirmaSenha: "",
+       telefone: "",
+       tipoUsuario: "USUARIO",
+       descricao: "",
+       ativo: "Ativo",
+       imagemPerfil: null,
     },
-  });
+ });
 
   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
   const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
   const opcoesAtivoDesativo = ["Ativo", "Desativado"];
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: usuarioValidatorSchema) => {
     if (data.senha !== data.confirmaSenha) {
       setError("confirmaSenha", {
         type: "manual",
@@ -83,15 +86,22 @@ const Page = () => {
       if (!response.ok) {
         const responseData = await response.json();
         if (responseData.erros) {
-          responseData.erros.forEach((erro: any) => {
-            setError(erro.campo as keyof FormValues, {
-              type: "manual",
-              message: erro.erro || "Erro desconhecido",
-            });
-          });
+           const errosFormatados = UseErros(responseData);
+           Object.keys(errosFormatados).forEach((campo) => {
+              setError(campo as keyof usuarioValidatorSchema, {
+                 type: "manual",
+                 message: errosFormatados[campo],
+              });
+           });
+           const primeiroCampoComErro = Object.keys(
+              errosFormatados
+           )[0] as keyof usuarioValidatorSchema;
+           if (primeiroCampoComErro) {
+              setFocus(primeiroCampoComErro);
+           }
         }
-        throw new Error(responseData.mensagem || "Erro ao criar usuário.");
-      }
+        throw new Error(responseData.mensagem || "Erro ao editar usuário.");
+     }
 
       clearErrors(); // Limpa os erros ao cadastrar com sucesso
       router.push("/usuarios");
@@ -217,7 +227,7 @@ const Page = () => {
               <BotaoPadrao
                 texto="Concluir"
                 className="border border-black"
-                disable={isSubmitting}
+                disabled={isSubmitting}
               />
             </div>
           </form>
