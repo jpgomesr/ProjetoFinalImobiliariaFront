@@ -7,13 +7,23 @@ import CardBanner from "./CardBanner";
 
 interface HomeProps {
    imovel: ModelImovel;
+   destaque: boolean;
 }
 
 export default function CardImovel(props: HomeProps) {
    const [isBannerVisible] = useState(props.imovel.banner);
+   const valor = props.imovel.valor;
+   const valorFormatado = valor.toLocaleString("pt-BR", {
+      style: "decimal",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+   });
 
    return (
-      <div className="w-[70%] h-full max-w-[305px] bg-begepadrao rounded-2xl shadow-[4px_4px_4px_rgba(0,0,0,0.2)] relative">
+      <div
+         className={`w-[70%] h-full min-w-[262.5px] max-w-[305px] rounded-2xl shadow-[4px_4px_4px_rgba(0,0,0,0.2)] relative
+                     ${!props.destaque ? "bg-begepadrao" : "bg-havprincipal"}`}
+      >
          {isBannerVisible && <CardBanner tipo={props.imovel.tipoBanner} />}
          <div>
             <img
@@ -26,16 +36,29 @@ export default function CardImovel(props: HomeProps) {
             <div className="flex flex-col gap-2">
                <div className="flex flex-col">
                   <div className="flex flex-row justify-between w-full pr-1 items-center">
-                     <p className="text-havprincipal text-xs font-medium">
+                     <p
+                        className={`text-xs font-medium ${
+                           !props.destaque ? "text-havprincipal" : "text-white"
+                        }`}
+                     >
                         {props.imovel.objImovel === "Venda"
                            ? "Venda por"
                            : "Locação por"}
                      </p>
-                     <FavButton favorited={props.imovel.favoritado} />
+                     <FavButton
+                        favorited={props.imovel.favoritado}
+                        dark={props.destaque}
+                     />
                   </div>
                   <div className="flex flex-row justify-between w-full">
                      <div className="flex flex-row gap-1 items-center">
-                        <div className="flex flex-row gap-1 items-center justify-center text-havprincipal">
+                        <div
+                           className={`flex flex-row gap-1 items-center justify-center ${
+                              !props.destaque
+                                 ? "text-havprincipal"
+                                 : "text-white"
+                           }`}
+                        >
                            <p
                               className="text-base font-bold"
                               style={{
@@ -50,14 +73,20 @@ export default function CardImovel(props: HomeProps) {
                                  textShadow: "2px 2px 4px rgba(0, 0, 0, 0.25)",
                               }}
                            >
-                              {props.imovel.valor.toFixed(2)}
+                              {valorFormatado}
                            </p>
                         </div>
                      </div>
                   </div>
                </div>
                <div>
-                  <p className="text-xs text-havprincipal">
+                  <p
+                     className={`text-xs ${
+                        !props.destaque
+                           ? "text-havprincipal"
+                           : "text-white"
+                     }`}
+                  >
                      {props.imovel.tipo}
                   </p>
                   <CardInfo
@@ -65,10 +94,15 @@ export default function CardImovel(props: HomeProps) {
                      qtdQuartos={props.imovel.qtdQuartos}
                      qtdVagas={props.imovel.qtdVagas}
                      metragem={props.imovel.metragem}
+                     dark={props.destaque}
                   />
                </div>
             </div>
-            <div className="text-[0.625rem] text-havprincipal flex flex-col gap-1 text-justify">
+            <div
+               className={`text-[0.625rem] flex flex-col gap-1 text-justify ${
+                  !props.destaque ? "text-havprincipal" : "text-white"
+               }`}
+            >
                <p>Código: {props.imovel.codigo}</p>
                <div className="flex flex-col gap-1">
                   <p>
@@ -79,7 +113,10 @@ export default function CardImovel(props: HomeProps) {
                <p>{props.imovel.descricao}</p>
             </div>
             <div className="flex justify-center pb-5">
-               <SaibaMaisBotao codigo={props.imovel.codigo} />
+               <SaibaMaisBotao
+                  codigo={props.imovel.codigo}
+                  dark={props.destaque}
+               />
             </div>
          </div>
       </div>

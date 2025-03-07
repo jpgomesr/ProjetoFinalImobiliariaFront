@@ -13,12 +13,15 @@ export default {
             foreground: "var(--foreground)",
             havprincipal: "#702632",
             begepadrao: "#EDEDED",
+            begeClaroPadrao: "#DFDAD0",
+            brancoEscurecido : "#FAFAFA"
          },
          fontSize: {
             fontcard1: "1.6rem",
          },
          fontFamily: {
             inter: "Inter",
+            montserrat: "Montserrat",
          },
       },
    },

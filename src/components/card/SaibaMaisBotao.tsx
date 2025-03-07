@@ -1,11 +1,22 @@
 interface HomeProps {
    codigo: number;
+   dark: boolean;
 }
 
-export default function SaibaMaisBotao({ codigo }: HomeProps) {
+export default function SaibaMaisBotao(props: HomeProps) {
    return (
-      <button className="bg-havprincipal rounded-md">
-         <p className="py-2 px-4 text-white text-sm">Saiba Mais</p>
+      <button
+         className={`rounded-md ${
+            !props.dark ? "bg-havprincipal" : "bg-white"
+         }`}
+      >
+         <p
+            className={`py-2 px-4 text-sm font-inter ${
+               !props.dark ? "text-white" : "text-havprincipal font-semibold"
+            }`}
+         >
+            Saiba Mais
+         </p>
       </button>
    );
 }
