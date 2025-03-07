@@ -1,18 +1,18 @@
 import React, { ReactElement } from "react";
 
-interface BotaoProps {
+interface BotaoProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
    texto: string | ReactElement;
    handler?: () => void;
    className?: string;
    disable?: boolean;
 }
 
-const BotaoPadrao = (props: BotaoProps) => {
+const BotaoCalendario = (props: BotaoProps) => {
    return (
       <button
-         className={`botao ${props.className ?? "bg-havprincipal text-white"} ${
-            props.disable ? "opacity-40" : ""
-         }`}
+         className={`botao-2 ${
+            props.className ?? "bg-havprincipal text-white"
+         } ${props.disable ? "opacity-40" : ""}`}
          onClick={props.handler}
          disabled={props.disable}
       >
@@ -21,4 +21,4 @@ const BotaoPadrao = (props: BotaoProps) => {
    );
 };
 
-export default BotaoPadrao;
+export default BotaoCalendario;
