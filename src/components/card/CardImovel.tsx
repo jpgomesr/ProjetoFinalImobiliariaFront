@@ -38,9 +38,7 @@ export default function CardImovel(props: HomeProps) {
                   <div className="flex flex-row justify-between w-full pr-1 items-center">
                      <p
                         className={`text-xs font-medium ${
-                           !props.destaque
-                              ? "text-havprincipal"
-                              : "text-brancoFundo"
+                           !props.destaque ? "text-havprincipal" : "text-white"
                         }`}
                      >
                         {props.imovel.objImovel === "Venda"
@@ -58,7 +56,7 @@ export default function CardImovel(props: HomeProps) {
                            className={`flex flex-row gap-1 items-center justify-center ${
                               !props.destaque
                                  ? "text-havprincipal"
-                                 : "text-brancoFundo"
+                                 : "text-white"
                            }`}
                         >
                            <p
@@ -86,7 +84,7 @@ export default function CardImovel(props: HomeProps) {
                      className={`text-xs ${
                         !props.destaque
                            ? "text-havprincipal"
-                           : "text-brancoFundo"
+                           : "text-white"
                      }`}
                   >
                      {props.imovel.tipo}
@@ -102,7 +100,7 @@ export default function CardImovel(props: HomeProps) {
             </div>
             <div
                className={`text-[0.625rem] flex flex-col gap-1 text-justify ${
-                  !props.destaque ? "text-havprincipal" : "text-brancoFundo"
+                  !props.destaque ? "text-havprincipal" : "text-white"
                }`}
             >
                <p>Código: {props.imovel.codigo}</p>

@@ -7,7 +7,7 @@ export default function SaibaMaisBotao(props: HomeProps) {
    return (
       <button
          className={`rounded-md ${
-            !props.dark ? "bg-havprincipal" : "bg-brancoFundo"
+            !props.dark ? "bg-havprincipal" : "bg-white"
          }`}
       >
          <p

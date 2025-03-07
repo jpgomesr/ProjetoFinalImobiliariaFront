@@ -21,7 +21,7 @@ export default function CardInfo({
    return (
       <div
          className={`flex flex-row ${
-            !dark ? "text-havprincipal" : "text-brancoFundo"
+            !dark ? "text-havprincipal" : "text-white"
          }`}
       >
          <div className="flex flex-row items-center justify-center gap-1 mr-3">
@@ -30,7 +30,7 @@ export default function CardInfo({
          </div>
          <div
             className={`border-l h-[1.125rem] ${
-               !dark ? "border-havprincipal" : "border-brancoFundo"
+               !dark ? "border-havprincipal" : "border-white"
             }`}
          ></div>
          <div className="flex flex-row items-center justify-center gap-1 mr-2 ml-3">
@@ -39,7 +39,7 @@ export default function CardInfo({
          </div>
          <div
             className={`border-l h-[1.125rem] ${
-               !dark ? "border-havprincipal" : "border-brancoFundo"
+               !dark ? "border-havprincipal" : "border-white"
             }`}
          ></div>
          <div className="flex flex-row items-center justify-center gap-1 mr-2 ml-3">
@@ -48,7 +48,7 @@ export default function CardInfo({
          </div>
          <div
             className={`border-l h-[1.125rem] ${
-               !dark ? "border-havprincipal" : "border-brancoFundo"
+               !dark ? "border-havprincipal" : "border-white"
             }`}
          ></div>
          <div className="flex flex-row items-center justify-center gap-1 ml-3">
