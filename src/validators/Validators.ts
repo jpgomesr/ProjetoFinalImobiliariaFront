@@ -8,7 +8,7 @@ export const createUsuarioValidator = (
       .object({
          nomeCompleto: z.string().min(1, { message: "Campo obrigatório" }),
          email: z.string().optional(),
-         senha: z
+         senha: isPasswordChangeEnabled ? z
             .string()
             .min(8, { message: "A senha deve ter no mínimo 8 caracteres." })
             .regex(/[A-Z]/, {
@@ -28,7 +28,8 @@ export const createUsuarioValidator = (
             })
             .refine((senha) => !senha.includes("usuario"), {
                message: "A senha não pode conter o nome de usuário.",
-            }),
+            }) : 
+            z.string().optional(),
          confirmaSenha: isPasswordChangeEnabled
             ? z.string().min(8, {
                  message: "A senha deve ter no mínimo oito caracteres",

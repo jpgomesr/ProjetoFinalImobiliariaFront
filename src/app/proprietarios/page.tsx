@@ -1,6 +1,7 @@
 "use client";
 
 import CardUsuario from "@/components/CardUsuario";
+import ComponentePaginacao from "@/components/ComponentePaginacao";
 import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
 import ModalCofirmacao from "@/components/ComponentesCrud/ModalConfirmacao";
 import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
@@ -19,7 +20,7 @@ const page = () => {
    const [status, setStatus] = useState<string>("Ativo");
    const [revalidarQuery, setRevalidarQuery] = useState<boolean>(false);
    const opcoesStatus = ["Ativo", "Desativado"];
-   const [proprietarios, setProprietarios] = useState<ModelProprietarioListagem[]>([])
+   const [proprietarios, setProprietarios] = useState<ModelProprietarioListagem[] | undefined>([])
    const [nomePesquisa, setNomePesquisa] = useState<string>("");
    const [modalConfirmacaoAberto, setModalConfirmacaoAberto] = useState(false);
    const [mostrarNotificacao, setMostrarNotificacao] = useState(false);
@@ -27,6 +28,12 @@ const page = () => {
          null
       );
    const [itemDeletadoId, setItemDeletadoId] = useState<number | null>(null);
+      const [numeroPaginaAtual, setNumeroPaginaAtual] = useState(0);
+      const [peageableinfo, setPeageableInfo] = useState({
+         totalPaginas: 0,
+         ultima: true,
+         maximoPaginasVisiveis: 5,
+      });
 
 
    
@@ -37,14 +44,27 @@ const page = () => {
       (funcao: (valor: any) => any) => (valor: any) => {
          funcao(valor);
          setRevalidarQuery(!revalidarQuery);
-      };
+   };
+
+   const adicionarInformacoesPagina = (data: any) => {
+      const quantidadePaginas = data.totalPages;
+      const ultimaPagina: boolean = data.last;
+
+      setPeageableInfo((prev) => ({
+         ...prev,
+         totalPaginas: quantidadePaginas,
+         ultima: ultimaPagina,
+      }));
+   };
 
    
       const renderizarUsuariosApi = async () => {
       
          
-         const proprietarios : ModelProprietarioListagem[]  = await buscarProprietarios(nomePesquisa)
-         setProprietarios(proprietarios)
+         const {conteudoCompleto, proprietariosRenderizados}  = await buscarProprietarios(numeroPaginaAtual,nomePesquisa, 1)
+         
+         adicionarInformacoesPagina(conteudoCompleto)
+         setProprietarios(proprietariosRenderizados)
          renderizarProprietariosPagina()
       };
       const deletarUsuario = async () => {
@@ -72,7 +92,6 @@ const page = () => {
       };
 
       const renderizarProprietariosPagina = () => {
-         console.log(proprietarios)
          return proprietarios?.map((proprietario) => (
             <CardUsuario
                labelPrimeiroValor="E-mail:"
@@ -95,6 +114,7 @@ const page = () => {
    useEffect(() => {
       renderizarUsuariosApi()
    }, [revalidarQuery]);
+
 
    return (
       <Layout className="py-0">
@@ -143,7 +163,15 @@ const page = () => {
                >
                {renderizarProprietariosPagina()}
                </div>
-
+               {peageableinfo.totalPaginas > 0 && (
+                  <ComponentePaginacao
+                     paginaAtual={numeroPaginaAtual}
+                     setPaginaAtual={setRevalidandoQuery(setNumeroPaginaAtual)}
+                     totalPaginas={peageableinfo.totalPaginas}
+                     maximoPaginasVisiveis={peageableinfo.maximoPaginasVisiveis}
+                     ultimaPagina={peageableinfo.ultima}
+                  />
+               )}
                <ModalCofirmacao
                                  isOpen={modalConfirmacaoAberto}
                                  onClose={() => setModalConfirmacaoAberto(false)}

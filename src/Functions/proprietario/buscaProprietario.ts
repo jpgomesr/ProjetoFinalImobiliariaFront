@@ -3,16 +3,25 @@ import ModelProprietarioListagem from "@/models/ModelProprietarioListagem";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
-export const buscarProprietarios = async (nome? : string) : Promise<ModelProprietarioListagem[]> => {
+interface retornoListaProprietario {
+    proprietariosRenderizados : ModelProprietarioListagem[] | undefined,
+    conteudoCompleto : object
+}
+
+export const buscarProprietarios = async (numeroPagina? : number, nome? : string, tamanhoPagina?: number) : Promise<retornoListaProprietario> => {
 
 
     const response = await fetch(
-        `${BASE_URL}/proprietarios?nome=${nome}`
+        `${BASE_URL}/proprietarios?nome=${nome ? nome : ""}&page=${numeroPagina}&size=${tamanhoPagina}`
      );
 
     const data = await response.json();
 
-    return data.content as ModelProprietarioListagem[]
+    return {
+        proprietariosRenderizados : data.content as ModelProprietarioListagem[],
+        conteudoCompleto : data
+    } 
+
 }
 export const buscarProprietarioPorId = async (id : string) : Promise<ModelProprietario> => {
 

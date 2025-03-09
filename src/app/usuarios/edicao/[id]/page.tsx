@@ -18,12 +18,14 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { createUsuarioValidator } from "@/validators/Validators";
+import { buscarUsuarioPorId } from "@/Functions/usuario/buscaUsuario";
 
 // Interface para os valores do formulário
 
 const Page = () => {
    const router = useRouter();
-   const { id } = useParams();
+   let { id } = useParams();
+   id = id ? Array.isArray(id) ? id[0] : id : undefined
 
    const [preview, setPreview] = useState<string>();
    const [alterarSenha, setAlterarSenha] = useState(false);
@@ -73,36 +75,24 @@ const Page = () => {
    const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
    const opcoesAtivoDesativo = ["Ativo", "Desativado"];
 
-   const transformarParaModel = (usuario: any): ModelUsuario => {
-      return new ModelUsuario(
-         usuario.id,
-         usuario.role,
-         usuario.nome,
-         usuario.telefone,
-         usuario.email,
-         usuario.descricao,
-         usuario.foto,
-         usuario.ativo
-      );
-   };
 
-   const buscarUsuarioCadastrado = async () => {
-      const requisicao = await fetch(`${BASE_URL}/usuarios/${id}`);
-      const data = await requisicao.json();
-      return data;
-   };
-
+  
    const preencherInformacoesAtuaisDoUsuario = async () => {
-      const informacoes = await buscarUsuarioCadastrado();
-      const usuario = transformarParaModel(informacoes);
+      if(id){
+         
+         const usuario : ModelUsuario = await buscarUsuarioPorId(id);
 
-      setValue("nomeCompleto", usuario.nome);
-      setValue("descricao", usuario.descricao);
-      setValue("email", usuario.email);
-      setValue("telefone", usuario.telefone);
-      setValue("tipoUsuario", usuario.role);
-      setValue("ativo", usuario.ativo ? "Ativo" : "Desativado");
-      setPreview(usuario.foto);
+         setValue("nomeCompleto", usuario.nome);
+         setValue("descricao", usuario.descricao);
+         setValue("email", usuario.email);
+         setValue("telefone", usuario.telefone);
+         setValue("tipoUsuario", usuario.role);
+         setValue("ativo", usuario.ativo ? "Ativo" : "Desativado");
+         setPreview(usuario.foto);
+      }
+ 
+
+      
    };
 
    useEffect(() => {

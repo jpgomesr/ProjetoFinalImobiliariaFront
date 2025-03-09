@@ -152,7 +152,7 @@ const page = () => {
        clearErrors(); // Limpa os erros ao cadastrar com sucesso
        router.push("/proprietarios");
      } catch (error) {
-       console.error("Erro ao criar usuário:", error);
+       console.error("Erro ao editar proprietario", error);
      }
    };
 
@@ -162,7 +162,7 @@ const page = () => {
         <Layout className="py-0">
           <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao
-              titulo="Cadastro de usuário"
+              titulo="Edição de proprietario"
               className={`w-full ${isSubmitting ? "opacity-40" : "opacity-100"}`}
             >
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
