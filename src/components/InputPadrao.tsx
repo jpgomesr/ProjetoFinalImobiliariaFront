@@ -32,7 +32,8 @@ const InputPadrao = ({
             {...props}
             className={`h-6 rounded-md border py-2 px-2 focus:outline-none ${
                mensagemErro ? "border-red-500" : "border-black text-[10px]"
-            } focus:border-black
+            }
+            ${props.disabled ? "opacity-30" : ""} focus:border-black
             md:h-8 md:text-sm
             lg:h-10 lg:py-3 lg:px-3
             xl:h-12 xl:text-base xl:py-3 xl:px-4`}

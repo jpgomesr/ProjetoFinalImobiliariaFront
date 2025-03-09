@@ -39,6 +39,10 @@ const page = () => {
     }, [])
 
 
+
+   
+
+
       const preencherInformacoesProprietario =  async () => {
  
             if(id) {
@@ -101,6 +105,8 @@ const page = () => {
       numeroApartamento: undefined, 
     },
   });
+
+
 
  const onSubmit = async (data: validatorSchema) => {
      try {
