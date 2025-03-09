@@ -12,7 +12,7 @@ import TextAreaPadrao from "@/components/TextAreaPadrao";
 import { UseFetchPostFormData } from "@/hooks/UseFetchFormData";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
-import { createUsuarioValidator } from "@/validators/usuariosValidator";
+import { createUsuarioValidator } from "@/validators/Validators";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UseErros } from "@/hooks/UseErros";
@@ -57,14 +57,6 @@ const Page = () => {
   const opcoesAtivoDesativo = ["Ativo", "Desativado"];
 
   const onSubmit = async (data: usuarioValidatorSchema) => {
-    if (data.senha !== data.confirmaSenha) {
-      setError("confirmaSenha", {
-        type: "manual",
-        message: "As senhas não coincidem",
-      });
-      return;
-    }
-
     try {
       const response = await UseFetchPostFormData(
         `${BASE_URL}/usuarios`,

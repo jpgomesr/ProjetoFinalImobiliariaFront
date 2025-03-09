@@ -1,9 +1,15 @@
 "use client";
 
+import CardUsuario from "@/components/CardUsuario";
 import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
+import ModalCofirmacao from "@/components/ComponentesCrud/ModalConfirmacao";
+import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
 import InputPadrao from "@/components/InputPadrao";
 import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
+import SelectPadrao from "@/components/SelectPadrao";
+import { UseFetchDelete } from "@/hooks/UseFetchDelete";
+import ModelProprietarioListagem from "@/models/ModelProprietarioListagem";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -12,7 +18,17 @@ const page = () => {
    const [status, setStatus] = useState<string>("Ativo");
    const [revalidarQuery, setRevalidarQuery] = useState<boolean>(false);
    const opcoesStatus = ["Ativo", "Desativado"];
+   const [proprietarios, setProprietarios] = useState<ModelProprietarioListagem[]>([])
    const [nomePesquisa, setNomePesquisa] = useState<string>("");
+   const [modalConfirmacaoAberto, setModalConfirmacaoAberto] = useState(false);
+   const [mostrarNotificacao, setMostrarNotificacao] = useState(false);
+   const [idItemParaDeletar, setIdItemParaDeletar] = useState<number | null>(
+         null
+      );
+   const [itemDeletadoId, setItemDeletadoId] = useState<number | null>(null);
+   
+   
+   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
    const setRevalidandoQuery =
       (funcao: (valor: any) => any) => (valor: any) => {
@@ -20,10 +36,75 @@ const page = () => {
          setRevalidarQuery(!revalidarQuery);
       };
 
-   // Garante que o código só seja executado no cliente
+   
+      const renderizarUsuariosApi = async () => {
+         const response = await fetch(
+            `${BASE_URL}/proprietarios`
+         );
+   
+         const data = await response.json();
+   
+         transformarParaModel(data)
+         renderizarProprietariosPagina()
+      };
+      const transformarParaModel = (data : any) => {
+         const proprietarios : ModelProprietarioListagem[] = data.content.map((proprietario : any) => {
+            return new ModelProprietarioListagem(proprietario.id,
+            proprietario.nome,
+            proprietario.telefone,
+            proprietario.cpf,
+            proprietario.email, 
+            proprietario.imagemUrl)
+         }) 
+         setProprietarios(proprietarios)
+      }
+        const deletarUsuario = async () => {
+            const response = await UseFetchDelete(
+               `${BASE_URL}/proprietarios/${idItemParaDeletar}`
+            );
+            setItemDeletadoId(idItemParaDeletar);
+            setMostrarNotificacao(true);
+            setRevalidarQuery(!revalidarQuery);
+            setIdItemParaDeletar(null);
+         };
+      const fechandoNotificacao = () => {
+         setMostrarNotificacao(false);
+         setItemDeletadoId(null);
+      };
+      const desfazendoDelete = async () => {
+         await fetch(`${BASE_URL}/proprietarios/restaurar/${itemDeletadoId}`, {
+            method: "POST",
+         });
+         setRevalidarQuery(!revalidarQuery);
+      };
+      const exibirModal = (id: number) => {
+         setIdItemParaDeletar(id);
+         setModalConfirmacaoAberto(true);
+      };
+
+      const renderizarProprietariosPagina = () => {
+         console.log(proprietarios)
+         return proprietarios?.map((proprietario) => (
+            <CardUsuario
+               labelPrimeiroValor="E-mail:"
+               primeiroValor={proprietario.email}
+               labelSegundoValor="Nome:"
+               segundoValor={proprietario.nome}
+               labelTerceiroValor="Telefone"
+               terceiroValor={proprietario.telefone}
+               labelQuartoValor="CPF:"
+               quartoValor={proprietario.cpf}
+               key={proprietario.id}
+               id={proprietario.id}
+               imagem={proprietario.imagemUrl}
+               deletarUsuario={exibirModal}
+            />
+         ));
+      };
+
    useEffect(() => {
-      // Lógica que depende do cliente
-   }, []);
+      renderizarUsuariosApi()
+   }, [revalidarQuery]);
 
    return (
       <Layout className="py-0">
@@ -34,10 +115,16 @@ const page = () => {
             >
                <div
                   className="grid grid-cols-1 gap-3 w-full
-               md:grid-cols-[1fr_5fr_1fr_1fr]
-               xl:grid-cols-[1fr_6fr_1fr_1fr]   
+               md:grid-cols-[1fr_7fr_1fr]
+               xl:grid-cols-[1fr_7fr_1fr]   
                "
                >
+                    <SelectPadrao
+                     onChange={setRevalidandoQuery(setStatus)}
+                     opcoes={opcoesStatus}
+                     selecionado={status}
+                     placeholder="Ativo"
+                  />
                   <InputPadrao
                      type="text"
                      htmlFor="input-busca-nome"
@@ -47,7 +134,7 @@ const page = () => {
                      placeholder="Digite o nome que deseja pesquisar"
                      required={false}
                   />
-                  <Link href={"/usuarios/cadastro"}>
+                  <Link href={"/proprietarios/cadastro"}>
                      <button
                         className="flex items-center justify-center bg-havprincipal rounded-md text-white h-full
                   text-sm py-1 px-2
@@ -63,7 +150,23 @@ const page = () => {
                md:mt-2
                lg:place-content-center lg:self-center lg:grid-cols-2 lg:mt-4
                2xl:mt-6"
-               ></div>
+               >
+               {renderizarProprietariosPagina()}
+               </div>
+
+               <ModalCofirmacao
+                                 isOpen={modalConfirmacaoAberto}
+                                 onClose={() => setModalConfirmacaoAberto(false)}
+                                 onConfirm={deletarUsuario}
+                                 message="Você realmente deseja remover este proprietario?"
+                              />
+                <NotificacaoCrud
+                                 message="Desfazer"
+                                 isVisible={mostrarNotificacao}
+                                 onClose={fechandoNotificacao}
+                                 onUndo={desfazendoDelete}
+                                 duration={5000}
+                              />
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
       </Layout>

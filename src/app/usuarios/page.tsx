@@ -36,7 +36,6 @@ const page = () => {
       maximoPaginasVisiveis: 5,
    });
 
-   console.log(nomePesquisa);
 
    useEffect(() => {
       renderizarUsuariosApi();
@@ -97,12 +96,16 @@ const page = () => {
    const renderizarUsuariosPagina = () => {
       return usuarios?.map((usuario) => (
          <CardUsuario
-            email={usuario.email}
-            id={usuario.id}
-            nome={usuario.nome}
-            status={usuario.ativo ? "Ativo" : "Desativado"}
-            tipoConta={usuario.role}
+            labelPrimeiroValor="E-mail:"
+            primeiroValor={usuario.email}
+            labelSegundoValor="Nome:"
+            segundoValor={usuario.nome}
+            labelTerceiroValor="Status:"
+            terceiroValor={usuario.ativo ? "Ativo" : "Desativado"}
+            labelQuartoValor="Tipo usuario:"
+            quartoValor={usuario.role}
             key={usuario.id}
+            id={usuario.id}
             imagem={usuario.foto}
             deletarUsuario={exibirModal}
          />
@@ -120,7 +123,7 @@ const page = () => {
             usuario.descricao,
             usuario.foto,
             usuario.ativo
-         );
+         ); 
       });
 
       return usuarios;

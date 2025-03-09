@@ -1,0 +1,300 @@
+"use client"
+
+import FundoBrancoPadrao from '@/components/ComponentesCrud/FundoBrancoPadrao';
+import Layout from '@/components/layout/LayoutPadrao';
+import SubLayoutPaginasCRUD from '@/components/layout/SubLayoutPaginasCRUD';
+import React from 'react'
+import { UseFetchPostFormData } from "@/hooks/UseFetchFormData";
+import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { UseErros } from "@/hooks/UseErros";
+import { proprietarioValidator } from '@/validators/Validators';
+import { TipoImovelEnum } from '@/models/Enum/TipoImovelEnum';
+import InputPadrao from '@/components/InputPadrao';
+import uploadImagem from '@/components/ComponentesCrud/UploadImagem';
+import UploadImagem from '@/components/ComponentesCrud/UploadImagem';
+import BotaoPadrao from '@/components/BotaoPadrao';
+import SelectPadrao from '@/components/SelectPadrao';
+import { useRouter } from "next/navigation";
+
+
+
+const page = () => {
+
+      const router = useRouter();
+
+      const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+      const opcoesTipoResidencia = ["CASA", "APARTAMENTO"]
+      const validator  = proprietarioValidator; 
+      type validatorSchema = z.infer<typeof validator>;
+
+
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    setError,
+    setFocus,
+    clearErrors,
+    resetField,
+    control,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(validator),
+    defaultValues: {
+      nome: "",
+      celular: "",
+      telefone: "",
+      email: "",
+      cpf: "",
+      imagemPerfil: null,
+      bairro: "",
+      cidade: "",
+      estado: "",
+      rua: "",
+      cep: "",
+      tipoResidencia: "CASA",
+      numeroCasaPredio: 0,
+      numeroApartamento: undefined, 
+    },
+  });
+
+ const onSubmit = async (data: validatorSchema) => {
+     try {
+       const response = await UseFetchPostFormData(
+         `${BASE_URL}/proprietarios`,
+         {
+            nome: data.nome,
+            celular: data.celular,
+            telefone: data.telefone,
+            email: data.email,
+            cpf: data.cpf,
+            enderecoPostDTO : {
+            bairro: data.bairro,
+            cidade: data.cidade,
+            estado: data.estado,
+            rua: data.rua,
+            cep: data.cep,
+            tipoResidencia: data.tipoResidencia,
+            numeroCasaPredio: data.numeroCasaPredio,
+            numeroApartamento: data.numeroApartamento, 
+        }
+         },
+         "proprietario",
+         "foto",
+         data.imagemPerfil,
+         "POST"
+       );
+ 
+       if (!response.ok) {
+         const responseData = await response.json();
+         if (responseData.erros) {
+            const errosFormatados = UseErros(responseData);
+            Object.keys(errosFormatados).forEach((campo) => {
+               setError(campo as keyof validatorSchema, {
+                  type: "manual",
+                  message: errosFormatados[campo],
+               });
+            });
+            const primeiroCampoComErro = Object.keys(
+               errosFormatados
+            )[0] as keyof validatorSchema;
+            if (primeiroCampoComErro) {
+               setFocus(primeiroCampoComErro);
+            }
+         }
+         throw new Error(responseData.mensagem || "Erro ao criar o usuario.");
+      }
+ 
+       clearErrors(); // Limpa os erros ao cadastrar com sucesso
+       router.push("/proprietarios");
+     } catch (error) {
+       console.error("Erro ao criar usuário:", error);
+     }
+   };
+
+
+
+    return (
+        <Layout className="py-0">
+          <SubLayoutPaginasCRUD>
+            <FundoBrancoPadrao
+              titulo="Cadastro de usuário"
+              className={`w-full ${isSubmitting ? "opacity-40" : "opacity-100"}`}
+            >
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* Campo Nome */}
+      <InputPadrao
+        htmlFor="nome"
+        label="Nome"
+        type="text"
+        placeholder="Ex: João Silva"
+        {...register("nome")}
+        mensagemErro={errors.nome?.message}
+      />
+
+      {/* Campo Celular */}
+      <InputPadrao
+        htmlFor="celular"
+        label="Celular"
+        type="text"
+        placeholder="Ex: 47912345678"
+        {...register("celular")}
+        mensagemErro={errors.celular?.message}
+      />
+
+      {/* Campo Telefone */}
+      <InputPadrao
+        htmlFor="telefone"
+        label="Telefone"
+        type="text"
+        placeholder="Ex: 47912312121"
+        {...register("telefone")}
+        mensagemErro={errors.telefone?.message}
+      />
+
+      {/* Campo Email */}
+      <InputPadrao
+        htmlFor="email"
+        label="Email"
+        type="email"
+        placeholder="Ex: joao.silva@example.com"
+        {...register("email")}
+        mensagemErro={errors.email?.message}
+      />
+
+      {/* Campo CPF */}
+      <InputPadrao
+        htmlFor="cpf"
+        label="CPF"
+        type="text"
+        placeholder="Ex: 12345678901"
+        {...register("cpf")}
+        mensagemErro={errors.cpf?.message}
+      />
+
+      {/* Campo Bairro */}
+      <InputPadrao
+        htmlFor="bairro"
+        label="Bairro"
+        type="text"
+        placeholder="Ex: Centro"
+        {...register("bairro")}
+        mensagemErro={errors.bairro?.message}
+      />
+
+      {/* Campo Cidade */}
+      <InputPadrao
+        htmlFor="cidade"
+        label="Cidade"
+        type="text"
+        placeholder="Ex: São Paulo"
+        {...register("cidade")}
+        mensagemErro={errors.cidade?.message}
+      />
+
+      {/* Campo Estado */}
+      <InputPadrao
+        htmlFor="estado"
+        label="Estado"
+        type="text"
+        placeholder="Ex: SP"
+        {...register("estado")}
+        mensagemErro={errors.estado?.message}
+      />
+
+      {/* Campo Rua */}
+      <InputPadrao
+        htmlFor="rua"
+        label="Rua"
+        type="text"
+        placeholder="Ex: Rua das Flores"
+        {...register("rua")}
+        mensagemErro={errors.rua?.message}
+      />
+
+      {/* Campo CEP */}
+      <InputPadrao
+        htmlFor="cep"
+        label="CEP"
+        type="text"
+        placeholder="Ex: 12345678"
+        {...register("cep")}
+        mensagemErro={errors.cep?.message}
+      />
+
+      <div className="flex flex-col">
+        <label
+          htmlFor="tipoResidencia"
+          className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl"
+        >
+          Tipo de Residência
+        </label>
+        <Controller
+          name="tipoResidencia"
+          control={control}
+          render={({ field }) => (
+            <SelectPadrao
+              opcoes={opcoesTipoResidencia}
+              onChange={field.onChange}
+              placeholder="Selecione o tipo de residência"
+              selecionado={field.value}
+              className="w-2/4 lg:max-w-sm"
+            />
+          )}
+        />
+        {errors.tipoResidencia && (
+          <span className="text-red-500 text-sm">{errors.tipoResidencia.message}</span>
+        )}
+      </div>
+
+      <InputPadrao
+        htmlFor="numeroCasaPredio"
+        label="Número da Casa/Prédio"
+        type="text"
+        placeholder="Ex: 123"
+        {...register("numeroCasaPredio", { valueAsNumber: true })}
+        mensagemErro={errors.numeroCasaPredio?.message}
+      />
+
+      <InputPadrao
+        htmlFor="numeroApartamento"
+        label="Número do Apartamento"
+        type="number"
+        placeholder="Ex: 456"
+        {...register("numeroApartamento", { valueAsNumber: true })}
+        mensagemErro={errors.numeroApartamento?.message}
+      />
+       <Controller
+                    name="imagemPerfil"
+                    control={control}
+                    render={({ field }) => (
+                      <UploadImagem
+                        onChange={(file: File | null) => field.onChange(file)}
+                      />
+                    )}
+                  />
+
+      {/* Botão de Envio */}
+      <div className="flex justify-center">
+              <BotaoPadrao
+                texto={isSubmitting ? "Enviando..." : "Enviar"}
+                className="border border-black"
+                disabled={isSubmitting}
+              />
+            </div>
+
+      
+    </form>
+
+            </FundoBrancoPadrao>
+          </SubLayoutPaginasCRUD>
+        </Layout>
+      );
+
+}
+
+export default page

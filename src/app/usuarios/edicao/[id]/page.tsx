@@ -17,7 +17,7 @@ import { UseErros } from "@/hooks/UseErros";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import { createUsuarioValidator } from "@/validators/usuariosValidator";
+import { createUsuarioValidator } from "@/validators/Validators";
 
 // Interface para os valores do formulário
 
