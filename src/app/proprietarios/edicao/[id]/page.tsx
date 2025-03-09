@@ -15,13 +15,16 @@ import UploadImagem from '@/components/ComponentesCrud/UploadImagem';
 import BotaoPadrao from '@/components/BotaoPadrao';
 import SelectPadrao from '@/components/SelectPadrao';
 import { useRouter, useParams } from "next/navigation";
+import ModelProprietario from '@/models/ModelProprietario';
+import { buscarProprietarioPorId } from '@/Functions/proprietario/buscaProprietario';
 
 
 
 const page = () => {
 
       const router = useRouter();
-      const {id} = useParams()
+      let  {id} = useParams()
+      id = id ? Array.isArray(id) ? id[0] : id : undefined
 
       const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
       const opcoesTipoResidencia = ["CASA", "APARTAMENTO"]
@@ -29,25 +32,42 @@ const page = () => {
       type validatorSchema = z.infer<typeof validator>;
 
       const [preview, setPreview] = useState<string>();
+      const [proprietario, setProprietario] = useState<ModelProprietario>()
 
       useEffect(() => {
         preencherInformacoesProprietario()
     }, [])
 
-      const buscarProprietario = async () => {
-
-        const response = await fetch(`${BASE_URL}/proprietarios/${id}`)
-
-        const data = await response.json()
-
-        return data; 
-      }
 
       const preencherInformacoesProprietario =  async () => {
-           const informacoes = await buscarProprietario();
+ 
+            if(id) {
+                const proprietarioRequisicao : ModelProprietario = await buscarProprietarioPorId(id);
 
+                if(proprietarioRequisicao){
+                    console.log(proprietarioRequisicao)
+                    setValue("nome", proprietarioRequisicao.nome);
+                    setValue("celular", proprietarioRequisicao.celular);
+                    setValue("telefone", proprietarioRequisicao.telefone);
+                    setValue("cpf", proprietarioRequisicao.cpf);
+                    setValue("email", proprietarioRequisicao.email);
+                    setValue("bairro", proprietarioRequisicao.endereco.bairro);
+                    setValue("cidade", proprietarioRequisicao.endereco.cidade);
+                    setValue("estado", proprietarioRequisicao.endereco.estado);
+                    setValue("rua", proprietarioRequisicao.endereco.rua);
+                    setValue("cep", proprietarioRequisicao.endereco.cep);
+                    setValue("tipoResidencia", proprietarioRequisicao.endereco.tipoResidencia);
+                    setValue("numeroCasaPredio", proprietarioRequisicao.endereco.numeroCasaPredio);
+                    setValue("numeroApartamento", proprietarioRequisicao.endereco.numeroApartamento);
+                    setPreview(proprietarioRequisicao.imagemUrl)
+                }
+                setProprietario(proprietarioRequisicao)
+              
+
+
+            }
       }
-      
+
 
 
 
@@ -85,14 +105,14 @@ const page = () => {
  const onSubmit = async (data: validatorSchema) => {
      try {
        const response = await UseFetchPostFormData(
-         `${BASE_URL}/proprietarios`,
+         `${BASE_URL}/proprietarios/${id}`,
          {
             nome: data.nome,
             celular: data.celular,
             telefone: data.telefone,
             email: data.email,
             cpf: data.cpf,
-            enderecoPostDTO : {
+            enderecoPutDTO : {
             bairro: data.bairro,
             cidade: data.cidade,
             estado: data.estado,
@@ -106,7 +126,7 @@ const page = () => {
          "proprietario",
          "foto",
          data.imagemPerfil,
-         "POST"
+         "PUT"
        );
  
        if (!response.ok) {
@@ -126,7 +146,7 @@ const page = () => {
                setFocus(primeiroCampoComErro);
             }
          }
-         throw new Error(responseData.mensagem || "Erro ao criar o usuario.");
+         throw new Error(responseData.mensagem || "Erro ao editar proprietario.");
       }
  
        clearErrors(); // Limpa os erros ao cadastrar com sucesso

@@ -1,19 +1,15 @@
+import ModelEndereco from "./ModelEndereco";
+
 export default class ModelProprietario {
     id: number;
     nome : string;
     telefone : string;
+    celular : string;
     cpf : string;
     email : string;
     imagemUrl: string;
-    idEndereco : number;
-    bairro : string;
-    cidade : string;
-    estado : string;
-    rua : string ;
-    cep : string;
-    tipoResidencia : string;
-    numeroCasaPredio : number;
-    numeroApartamento : number;
+    endereco : ModelEndereco
+   
  
  
     constructor(
@@ -21,17 +17,10 @@ export default class ModelProprietario {
         nome : string,
         telefone : string,
         cpf : string,
+        celular : string,
         email : string,
         imagemUrl: string,
-        idEndereco : number,
-        bairro : string,
-        cidade : string,
-        estado : string,
-        rua : string ,
-        cep : string,
-        tipoResidencia : string,
-        numeroCasaPredio : number,
-        numeroApartamento : number,
+        endereco : ModelEndereco
     ) {
        this.id = id;
        this.nome = nome;
@@ -39,15 +28,8 @@ export default class ModelProprietario {
        this.cpf = cpf;
        this.email = email;
        this.imagemUrl = imagemUrl;
-       this.idEndereco = idEndereco;
-       this.bairro = bairro;
-       this.cidade = cidade;
-       this.estado = estado;
-       this.rua = rua ;
-       this.cep = cep;
-       this.tipoResidencia = tipoResidencia;
-       this.numeroCasaPredio = numeroCasaPredio;
-       this.numeroApartamento = numeroApartamento;
+       this.endereco = endereco
+       this.celular = celular;
     }
  }
  

@@ -43,9 +43,8 @@ const page = () => {
       const renderizarUsuariosApi = async () => {
       
          
-         const proprietarios : ModelProprietarioListagem[]  = await buscarProprietarios()
+         const proprietarios : ModelProprietarioListagem[]  = await buscarProprietarios(nomePesquisa)
          setProprietarios(proprietarios)
-   
          renderizarProprietariosPagina()
       };
       const deletarUsuario = async () => {
