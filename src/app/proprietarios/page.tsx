@@ -8,6 +8,7 @@ import InputPadrao from "@/components/InputPadrao";
 import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import SelectPadrao from "@/components/SelectPadrao";
+import { buscarProprietarios } from "@/Functions/proprietario/buscaProprietario";
 import { UseFetchDelete } from "@/hooks/UseFetchDelete";
 import ModelProprietarioListagem from "@/models/ModelProprietarioListagem";
 import { PlusIcon } from "lucide-react";
@@ -26,6 +27,8 @@ const page = () => {
          null
       );
    const [itemDeletadoId, setItemDeletadoId] = useState<number | null>(null);
+
+
    
    
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -38,27 +41,14 @@ const page = () => {
 
    
       const renderizarUsuariosApi = async () => {
-         const response = await fetch(
-            `${BASE_URL}/proprietarios`
-         );
+      
+         
+         const proprietarios : ModelProprietarioListagem[]  = await buscarProprietarios()
+         setProprietarios(proprietarios)
    
-         const data = await response.json();
-   
-         transformarParaModel(data)
          renderizarProprietariosPagina()
       };
-      const transformarParaModel = (data : any) => {
-         const proprietarios : ModelProprietarioListagem[] = data.content.map((proprietario : any) => {
-            return new ModelProprietarioListagem(proprietario.id,
-            proprietario.nome,
-            proprietario.telefone,
-            proprietario.cpf,
-            proprietario.email, 
-            proprietario.imagemUrl)
-         }) 
-         setProprietarios(proprietarios)
-      }
-        const deletarUsuario = async () => {
+      const deletarUsuario = async () => {
             const response = await UseFetchDelete(
                `${BASE_URL}/proprietarios/${idItemParaDeletar}`
             );
@@ -98,6 +88,7 @@ const page = () => {
                id={proprietario.id}
                imagem={proprietario.imagemUrl}
                deletarUsuario={exibirModal}
+               linkEdicao={`/proprietarios/edicao/${proprietario.id}`}
             />
          ));
       };

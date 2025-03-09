@@ -17,6 +17,7 @@ interface CardUsuarioProps {
    labelQuartoValor : string,
    quartoValor : string,
    imagem?: string;
+   linkEdicao : string,
    deletarUsuario: (id: number) => void;
 }
 
@@ -74,7 +75,7 @@ const CardUsuario = (props: CardUsuarioProps) => {
                md:flex-row  md:gap-4 
                lg:justify-center lg:text-sm 2xl:text-base 2xl:max-w-96 2xl:gap-8 2xl:mt-3"
             >
-               <Link href={`/usuarios/edicao/${props.id}`}>
+               <Link href={props.linkEdicao}>
                   <button className="bg-white border-black border rounded-md px-2 py-1">
                      Editar usuário
                   </button>

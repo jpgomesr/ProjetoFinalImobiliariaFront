@@ -3,31 +3,51 @@
 import FundoBrancoPadrao from '@/components/ComponentesCrud/FundoBrancoPadrao';
 import Layout from '@/components/layout/LayoutPadrao';
 import SubLayoutPaginasCRUD from '@/components/layout/SubLayoutPaginasCRUD';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { UseFetchPostFormData } from "@/hooks/UseFetchFormData";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UseErros } from "@/hooks/UseErros";
 import { proprietarioValidator } from '@/validators/Validators';
-import { TipoImovelEnum } from '@/models/Enum/TipoImovelEnum';
 import InputPadrao from '@/components/InputPadrao';
-import uploadImagem from '@/components/ComponentesCrud/UploadImagem';
 import UploadImagem from '@/components/ComponentesCrud/UploadImagem';
 import BotaoPadrao from '@/components/BotaoPadrao';
 import SelectPadrao from '@/components/SelectPadrao';
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
 
 
 const page = () => {
 
       const router = useRouter();
+      const {id} = useParams()
 
       const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
       const opcoesTipoResidencia = ["CASA", "APARTAMENTO"]
       const validator  = proprietarioValidator; 
       type validatorSchema = z.infer<typeof validator>;
+
+      const [preview, setPreview] = useState<string>();
+
+      useEffect(() => {
+        preencherInformacoesProprietario()
+    }, [])
+
+      const buscarProprietario = async () => {
+
+        const response = await fetch(`${BASE_URL}/proprietarios/${id}`)
+
+        const data = await response.json()
+
+        return data; 
+      }
+
+      const preencherInformacoesProprietario =  async () => {
+           const informacoes = await buscarProprietario();
+
+      }
+      
 
 
 
@@ -122,7 +142,7 @@ const page = () => {
         <Layout className="py-0">
           <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao
-              titulo="Cadastro de proprietario"
+              titulo="Cadastro de usuário"
               className={`w-full ${isSubmitting ? "opacity-40" : "opacity-100"}`}
             >
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -274,6 +294,7 @@ const page = () => {
                     render={({ field }) => (
                       <UploadImagem
                         onChange={(file: File | null) => field.onChange(file)}
+                        preview={preview}
                       />
                     )}
                   />

@@ -165,7 +165,7 @@ const Page = () => {
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao
-               titulo="Edição de usuário"
+               titulo="Edição de proprietario"
                className={`w-full ${
                   isSubmitting ? "opacity-40" : "opacity-100"
                }`}

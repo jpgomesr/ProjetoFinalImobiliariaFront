@@ -108,6 +108,7 @@ const page = () => {
             id={usuario.id}
             imagem={usuario.foto}
             deletarUsuario={exibirModal}
+            linkEdicao={`/usuarios/edicao/${usuario.id}`}
          />
       ));
    };
