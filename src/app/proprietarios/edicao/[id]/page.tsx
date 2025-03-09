@@ -112,8 +112,9 @@ const page = () => {
 
   useEffect(() => {
     if (watch("cep")?.length === 8) {
-      const editando = true;
-      preencherCampos(watch("cep"), setCamposDesabilitados, setValue,editando)
+      const editando = true;  
+      // editando é opcional
+      preencherCampos(watch("cep"), setCamposDesabilitados, setValue, editando)
     }
     else{
       restaurarCampos(setCamposDesabilitados, setValue)

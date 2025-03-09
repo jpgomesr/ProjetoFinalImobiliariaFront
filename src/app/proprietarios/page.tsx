@@ -61,7 +61,7 @@ const page = () => {
       const renderizarUsuariosApi = async () => {
       
          
-         const {conteudoCompleto, proprietariosRenderizados}  = await buscarProprietarios(numeroPaginaAtual,nomePesquisa, 1)
+         const {conteudoCompleto, proprietariosRenderizados}  = await buscarProprietarios(numeroPaginaAtual,nomePesquisa)
          
          adicionarInformacoesPagina(conteudoCompleto)
          setProprietarios(proprietariosRenderizados)
