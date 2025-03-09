@@ -17,6 +17,7 @@ import SelectPadrao from '@/components/SelectPadrao';
 import { useRouter, useParams } from "next/navigation";
 import ModelProprietario from '@/models/ModelProprietario';
 import { buscarProprietarioPorId } from '@/Functions/proprietario/buscaProprietario';
+import { preencherCampos, restaurarCampos } from '@/Functions/requisicaoViaCep';
 
 
 
@@ -25,6 +26,12 @@ const page = () => {
       const router = useRouter();
       let  {id} = useParams()
       id = id ? Array.isArray(id) ? id[0] : id : undefined
+       const [camposDesabilitados, setCamposDesabilitados] = useState({
+          cidadeDesabilitada : true,
+          bairroDesabilitado  : true,
+          ruaDesabilitada  : true ,
+          estadoDesabilitado : true
+         })
 
       const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
       const opcoesTipoResidencia = ["CASA", "APARTAMENTO"]
@@ -38,10 +45,7 @@ const page = () => {
         preencherInformacoesProprietario()
     }, [])
 
-
-
-   
-
+  
 
       const preencherInformacoesProprietario =  async () => {
  
@@ -105,6 +109,16 @@ const page = () => {
       numeroApartamento: undefined, 
     },
   });
+
+  useEffect(() => {
+    if (watch("cep")?.length === 8) {
+      const editando = true;
+      preencherCampos(watch("cep"), setCamposDesabilitados, setValue,editando)
+    }
+    else{
+      restaurarCampos(setCamposDesabilitados, setValue)
+    }
+   }, [watch("cep")]);
 
 
 
@@ -221,49 +235,7 @@ const page = () => {
         {...register("cpf")}
         mensagemErro={errors.cpf?.message}
       />
-
-      {/* Campo Bairro */}
-      <InputPadrao
-        htmlFor="bairro"
-        label="Bairro"
-        type="text"
-        placeholder="Ex: Centro"
-        {...register("bairro")}
-        mensagemErro={errors.bairro?.message}
-      />
-
-      {/* Campo Cidade */}
-      <InputPadrao
-        htmlFor="cidade"
-        label="Cidade"
-        type="text"
-        placeholder="Ex: São Paulo"
-        {...register("cidade")}
-        mensagemErro={errors.cidade?.message}
-      />
-
-      {/* Campo Estado */}
-      <InputPadrao
-        htmlFor="estado"
-        label="Estado"
-        type="text"
-        placeholder="Ex: SP"
-        {...register("estado")}
-        mensagemErro={errors.estado?.message}
-      />
-
-      {/* Campo Rua */}
-      <InputPadrao
-        htmlFor="rua"
-        label="Rua"
-        type="text"
-        placeholder="Ex: Rua das Flores"
-        {...register("rua")}
-        mensagemErro={errors.rua?.message}
-      />
-
-      {/* Campo CEP */}
-      <InputPadrao
+       <InputPadrao
         htmlFor="cep"
         label="CEP"
         type="text"
@@ -271,6 +243,48 @@ const page = () => {
         {...register("cep")}
         mensagemErro={errors.cep?.message}
       />
+        <InputPadrao
+        htmlFor="estado"
+        label="Estado"
+        type="text"
+        placeholder="Ex: SP"
+        {...register("estado")}
+        mensagemErro={errors.estado?.message}
+        disabled={camposDesabilitados.estadoDesabilitado}
+
+      />
+        <InputPadrao
+        htmlFor="cidade"
+        label="Cidade"
+        type="text"
+        placeholder="Ex: São Paulo"
+        {...register("cidade")}
+        mensagemErro={errors.cidade?.message}
+        disabled={camposDesabilitados.cidadeDesabilitada}
+
+      />
+
+      <InputPadrao
+        htmlFor="bairro"
+        label="Bairro"
+        type="text"
+        placeholder="Ex: Centro"
+        {...register("bairro")}
+        mensagemErro={errors.bairro?.message}
+        disabled={camposDesabilitados.bairroDesabilitado}
+
+      />
+      <InputPadrao
+        htmlFor="rua"
+        label="Rua"
+        type="text"
+        placeholder="Ex: Rua das Flores"
+        {...register("rua")}
+        mensagemErro={errors.rua?.message}
+        disabled={camposDesabilitados.ruaDesabilitada}
+
+      />
+     
 
       <div className="flex flex-col">
         <label

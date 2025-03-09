@@ -6,7 +6,7 @@ import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import React, { useEffect, useState } from "react";
 import { UseFetchPostFormData } from "@/hooks/UseFetchFormData";
 import { useForm, Controller } from "react-hook-form";
-import { z } from "zod";
+import { string, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UseErros } from "@/hooks/UseErros";
 import { proprietarioValidator } from "@/validators/Validators";
@@ -18,6 +18,7 @@ import BotaoPadrao from "@/components/BotaoPadrao";
 import SelectPadrao from "@/components/SelectPadrao";
 import { useRouter } from "next/navigation";
 import RespostaViaCepModel from "@/models/ResposataViaCepModel";
+import { preencherCampos, restaurarCampos } from "@/Functions/requisicaoViaCep";
 
 const page = () => {
    const router = useRouter();
@@ -25,10 +26,13 @@ const page = () => {
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const opcoesTipoResidencia = ["CASA", "APARTAMENTO"];
    const validator = proprietarioValidator;
-   const [cidadeDesabilitada, setCidadeDesabilitada] = useState(true);
-   const [bairroDesabilitado, setBairroDesabilitado] = useState(true);
-   const [ruaDesabilitada, setRuaDesabilitada] = useState(true);
-   const [estadoDesabilitado, setEstadoDesabilitado] = useState(true);
+   const [camposDesabilitados, setCamposDesabilitados] = useState({
+    cidadeDesabilitada : true,
+    bairroDesabilitado  : true,
+    ruaDesabilitada  : true ,
+    estadoDesabilitado : true
+   })
+
    type validatorSchema = z.infer<typeof validator>;
 
    const {
@@ -39,7 +43,6 @@ const page = () => {
       setError,
       setFocus,
       clearErrors,
-      resetField,
       control,
       formState: { errors, isSubmitting },
    } = useForm({
@@ -64,74 +67,12 @@ const page = () => {
 
    useEffect(() => {
     if (watch("cep")?.length === 8) {
-      preencherCamposPorRequisicaoViaCep();
+      preencherCampos(watch("cep"), setCamposDesabilitados, setValue)
     }
     else{
-      resetarCamposEndereco()
+      restaurarCampos(setCamposDesabilitados, setValue)
     }
    }, [watch("cep")]);
-
-   const requisicaoViaCep = async () => {
-      const response = await fetch(`https://viacep.com.br/ws/${watch("cep")}/json/`)
-
-      const data = await response.json()
-      
-      return data as RespostaViaCepModel
-   };
-   const resetarCamposEndereco = () => {
-
-      setBairroDesabilitado(true)
-      setValue("bairro", "")
-      setCidadeDesabilitada(true)
-      setValue("cidade", "")
-      setValue("rua", "")
-      setRuaDesabilitada(true)
-      setEstadoDesabilitado(true)
-      setValue("estado", "")
-
-   }
-
-   const preencherCamposPorRequisicaoViaCep =  async () => {
-
-    const respostaViaCep = await requisicaoViaCep(); 
-
-    if(respostaViaCep?.bairro){
-      setValue("bairro", respostaViaCep.bairro)
-      setBairroDesabilitado(true)
-    }
-    else{
-      setBairroDesabilitado(false)
-      setValue("bairro", "")
-    }
-    if(respostaViaCep?.localidade){
-      setValue("cidade", respostaViaCep.localidade)
-      setCidadeDesabilitada(true)
-    }
-    else{
-      setCidadeDesabilitada(false)
-      setValue("cidade", "")
-
-    }
-    if(respostaViaCep?.logradouro){
-      setValue("rua", respostaViaCep.logradouro)
-      setRuaDesabilitada(true)
-    }
-    else {
-      setRuaDesabilitada(false)
-      setValue("rua", "")
-
-    }
-    if(respostaViaCep?.estado){
-      setValue("estado", respostaViaCep.estado)
-      setEstadoDesabilitado(true)
-    }
-    else{
-      setEstadoDesabilitado(false)
-      setValue("estado", "")
-
-    }
-
-   }
 
    const onSubmit = async (data: validatorSchema) => {
       try {
@@ -268,7 +209,7 @@ const page = () => {
                      placeholder="Ex: SP"
                      {...register("estado")}
                      mensagemErro={errors.estado?.message}
-                     disabled={estadoDesabilitado}
+                     disabled={camposDesabilitados.estadoDesabilitado}
 
                   />
                 
@@ -281,7 +222,7 @@ const page = () => {
                      placeholder="Ex: São Paulo"
                      {...register("cidade")}
                      mensagemErro={errors.cidade?.message}
-                     disabled={cidadeDesabilitada}
+                     disabled={camposDesabilitados.cidadeDesabilitada}
                   />
 
                     {/* Campo Bairro */}
@@ -292,7 +233,7 @@ const page = () => {
                      placeholder="Ex: Centro"
                      {...register("bairro")}
                      mensagemErro={errors.bairro?.message}
-                     disabled={bairroDesabilitado}
+                     disabled={camposDesabilitados.bairroDesabilitado}
 
                   />
 
@@ -306,7 +247,7 @@ const page = () => {
                      placeholder="Ex: Rua das Flores"
                      {...register("rua")}
                      mensagemErro={errors.rua?.message}
-                     disabled={ruaDesabilitada}
+                     disabled={camposDesabilitados.ruaDesabilitada}
 
                   />
 
