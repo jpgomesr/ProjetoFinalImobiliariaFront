@@ -243,6 +243,7 @@ const page = () => {
         placeholder="Ex: 12345678"
         {...register("cep")}
         mensagemErro={errors.cep?.message}
+        maxLength={8}
       />
         <InputPadrao
         htmlFor="estado"
