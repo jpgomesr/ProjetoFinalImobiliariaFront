@@ -14,13 +14,15 @@ import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
 import ModalCofirmacao from "@/components/ComponentesCrud/ModalConfirmacao";
 import SelectPadrao from "@/components/SelectPadrao";
 import ComponentePaginacao from "@/components/ComponentePaginacao";
+import { listarUsuarios } from "@/Functions/usuario/buscaUsuario";
+import ModelUsuarioListagem from "@/models/ModelUsuarioListagem";
 
 const page = () => {
    const opcoesStatus = ["Ativo", "Desativado"];
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const [status, setStatus] = useState<string>("Ativo");
    const [tipoUsuario, setTipoUsuario] = useState<string>("USUARIO");
-   const [usuarios, setUsuarios] = useState<ModelUsuario[]>();
+   const [usuarios, setUsuarios] = useState<ModelUsuarioListagem[]>();
    const [revalidarQuery, setRevalidarQuery] = useState<boolean>(false);
    const [modalConfirmacaoAberto, setModalConfirmacaoAberto] = useState(false);
    const [itemDeletadoId, setItemDeletadoId] = useState<number | null>(null);
@@ -36,7 +38,6 @@ const page = () => {
       maximoPaginasVisiveis: 5,
    });
 
-   console.log(nomePesquisa);
 
    useEffect(() => {
       renderizarUsuariosApi();
@@ -69,16 +70,11 @@ const page = () => {
       };
 
    const renderizarUsuariosApi = async () => {
-      const response = await fetch(
-         `${BASE_URL}/usuarios?role=${tipoUsuario}&ativo=${
-            status === "Ativo" ? true : false
-         }&nome=${nomePesquisa}&page=${numeroPaginaAtual}  `
-      );
 
-      const data = await response.json();
+      const {usuariosRenderizados, conteudoCompleto} = await listarUsuarios(numeroPaginaAtual,tipoUsuario,  status === "Ativo" ? true : false,nomePesquisa, )
 
-      adicionarInformacoesPagina(data);
-      setUsuarios(transformarParaModel(data));
+      adicionarInformacoesPagina(conteudoCompleto);
+      setUsuarios(usuariosRenderizados)
    };
    const deletarUsuario = async () => {
       const response = await UseFetchDelete(
@@ -97,33 +93,21 @@ const page = () => {
    const renderizarUsuariosPagina = () => {
       return usuarios?.map((usuario) => (
          <CardUsuario
-            email={usuario.email}
-            id={usuario.id}
-            nome={usuario.nome}
-            status={usuario.ativo ? "Ativo" : "Desativado"}
-            tipoConta={usuario.role}
+            labelPrimeiroValor="E-mail:"
+            primeiroValor={usuario.email}
+            labelSegundoValor="Nome:"
+            segundoValor={usuario.nome}
+            labelTerceiroValor="Status:"
+            terceiroValor={usuario.ativo ? "Ativo" : "Desativado"}
+            labelQuartoValor="Tipo usuario:"
+            quartoValor={usuario.role}
             key={usuario.id}
+            id={usuario.id}
             imagem={usuario.foto}
             deletarUsuario={exibirModal}
+            linkEdicao={`/usuarios/edicao/${usuario.id}`}
          />
       ));
-   };
-
-   const transformarParaModel = (data: any) => {
-      const usuarios: ModelUsuario[] = data.content.map((usuario: any) => {
-         return new ModelUsuario(
-            usuario.id,
-            usuario.role,
-            usuario.nome,
-            usuario.telefone,
-            usuario.email,
-            usuario.descricao,
-            usuario.foto,
-            usuario.ativo
-         );
-      });
-
-      return usuarios;
    };
 
    const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];

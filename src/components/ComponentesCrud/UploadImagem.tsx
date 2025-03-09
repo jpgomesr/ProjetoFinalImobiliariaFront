@@ -7,7 +7,7 @@ interface UploadImagemProps {
    preview?: string;
 }
 
-export default function uploadImagem(props: UploadImagemProps) {
+export default function UploadImagem(props: UploadImagemProps) {
    const [preview, setPreview] = useState<string | undefined>(undefined);
 
    useEffect(() => {
