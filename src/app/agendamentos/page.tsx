@@ -8,13 +8,22 @@ import Horario from "@/components/calendario/Horarios";
 
 const Page = () => {
    // Estado para armazenar o horário selecionado
-   const [horarioSelecionado, setHorarioSelecionado] = useState<string | null>(
-      null
-   );
+   const [horarioSelecionado, setHorarioSelecionado] = useState<string | null>(null);
+   const [mostrarModal, setMostrarModal] = useState(false);
 
    // Função para atualizar o horário selecionado
    const handleSelecionarHorario = (horario: string) => {
       setHorarioSelecionado(horario);
+   };
+
+   const handleAgendar = () => {
+      if (horarioSelecionado) {
+         setMostrarModal(true);
+      }
+   };
+
+   const handleFecharModal = () => {
+      setMostrarModal(false);
    };
 
    return (
@@ -55,13 +64,32 @@ const Page = () => {
                </div>
                {horarioSelecionado && (
                   <div className="flex justify-center">
-                     <div className="bg-havprincipal/90 flex justify-center items-center h-7 w-24 rounded-md font-inter text-begepadrao" >
-                        <p>Agendar</p>
-                     </div>
+                     <button
+                        className="bg-havprincipal/90 flex justify-center items-center h-7 w-24 rounded-md font-inter text-begepadrao"
+                        onClick={handleAgendar}
+                     >
+                        Agendar
+                     </button>
                   </div>
                )}
             </div>
          </SubLayoutPaginasCRUD>
+
+         {/* Modal */}
+         {mostrarModal && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60">
+               <div className="bg p-6 rounded-lg shadow-lg w-80 text-center">
+                  <h2 className="text-xl font-bold">Confirmação</h2>
+                  <p className="mt-2">Você agendou para {horarioSelecionado}</p>
+                  <button
+                     className="mt-4 bg-red-500 text-white px-4 py-2 rounded-md"
+                     onClick={handleFecharModal}
+                  >
+                     Fechar
+                  </button>
+               </div>
+            </div>
+         )}
       </Layout>
    );
 };
