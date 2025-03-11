@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useNotification } from "@/context/NotificationContext"
 import Layout from "@/components/layout/LayoutPadrao"
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD"
 import { Calendario } from "@/components/calendario/Calendario"
@@ -10,26 +11,20 @@ import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
 const Page = () => {
-  // Estado para armazenar o horário selecionado
   const [horarioSelecionado, setHorarioSelecionado] = useState<string | null>(null)
   const [mostrarModal, setMostrarModal] = useState(false)
-  // Estado para armazenar a data selecionada
   const [dataSelecionada, setDataSelecionada] = useState<Date>(new Date())
+  const { showNotification } = useNotification() // Hook para disparar notificações
 
-  // Função para atualizar o horário selecionado
   const handleSelecionarHorario = (horario: string) => {
     setHorarioSelecionado(horario)
   }
 
-  // Função para atualizar a data selecionada
   const handleSelecionarData = (data: Date) => {
     setDataSelecionada(data)
   }
 
-  // Formatar a data selecionada para exibição (dia da semana, dia e mês)
   const dataFormatada = dataSelecionada ? format(dataSelecionada, "EEEE, dd 'de' MMMM", { locale: ptBR }) : ""
-
-  // Capitalizar a primeira letra do dia da semana
   const dataFormatadaCapitalizada = dataFormatada ? dataFormatada.charAt(0).toUpperCase() + dataFormatada.slice(1) : ""
 
   const handleAgendar = () => {
@@ -38,8 +33,11 @@ const Page = () => {
     }
   }
 
-  const handleFecharModal = () => {
-    setMostrarModal(false)
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Rolagem suave
+    })
   }
 
   return (
@@ -51,8 +49,7 @@ const Page = () => {
         </div>
         <div className="w-full px-4 flex-grow flex flex-col">
           <div className="bg-havprincipal w-full rounded-xl flex-grow flex flex-col overflow-hidden">
-            {/* Exibir a data selecionada ao lado do ícone de calendário */}
-            <div className="grid grid-cols-[auto,1fr] gap-2 items-center text-begepadrao pt-2 px-4">
+            <div className="flex gap-2 items-center justify-center text-begepadrao pt-2 px-4">
               <CalendarDays className="h-5 w-5" />
               <span className="text-sm text-left">{dataFormatadaCapitalizada}</span>
             </div>
@@ -96,12 +93,11 @@ const Page = () => {
         </div>
       </SubLayoutPaginasCRUD>
 
-      {/* Modal */}
       {mostrarModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60">
           <div className="bg p-6 rounded-lg shadow-lg w-80 text-center bg-white">
             <h2 className="text-xl font-bold flex justify-center">Corretor xxx</h2>
-            <div className="grid grid-cols-[auto,1fr] gap-2 items-center justify-items-start mt-2">
+            <div className="grid grid-cols-[auto,1fr] gap-2 items-center justify-center mt-2">
               <CalendarDays className="h-5 w-5" />
               <p className="text-left">{dataFormatadaCapitalizada}</p>
             </div>
@@ -109,9 +105,15 @@ const Page = () => {
               <Clock className="h-5 w-5" />
               <p className="text-left">Você agendou para {horarioSelecionado}</p>
             </div>
-
-            <button className="mt-4 bg-red-500 text-white px-4 py-2 rounded-md" onClick={handleFecharModal}>
-              Fechar
+            <button
+              className="mt-4 bg-havprincipal text-white px-4 py-2 rounded-md"
+              onClick={() => {
+                setMostrarModal(false)
+                showNotification("Agendado com sucesso!") // Disparar a notificação
+                scrollToTop() // Rolar para o topo
+              }}
+            >
+              Concluir
             </button>
           </div>
         </div>
@@ -121,4 +123,3 @@ const Page = () => {
 }
 
 export default Page
-
