@@ -2,7 +2,7 @@ import {TipoImovelEnum } from "@/models/Enum/TipoImovelEnum";
 import z from "zod";
 
 export const createUsuarioValidator = (
-   isPasswordChangeEnabled?: boolean,
+   isPasswordChangeEnabled = true,
 ) => {
    return z
       .object({
