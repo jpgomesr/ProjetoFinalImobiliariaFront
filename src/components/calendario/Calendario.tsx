@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import {
    format,
    startOfMonth,
@@ -22,7 +22,11 @@ import BotaoPadrao from "@/components/BotaoPadrao";
 import { twMerge } from "tailwind-merge";
 import BotaoCalendario from "../BotaoCalendario";
 
-export function Calendario() {
+interface CalendarioProps {
+   onDateSelect?: (date: Date) => void;
+}
+
+export function Calendario({ onDateSelect }: CalendarioProps) {
    const [currentMonth, setCurrentMonth] = useState(new Date());
    const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
 
@@ -72,6 +76,10 @@ export function Calendario() {
       // Só permite selecionar a data se não for anterior a hoje
       if (!isBefore(day, today)) {
          setSelectedDate(day);
+         // Notificar o componente pai sobre a mudança de data
+         if (onDateSelect) {
+            onDateSelect(day);
+         }
       }
    };
 
