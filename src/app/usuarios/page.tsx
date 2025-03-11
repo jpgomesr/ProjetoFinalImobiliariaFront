@@ -122,10 +122,7 @@ const page = () => {
    const tiposDeUsuarios = [
       { id: TipoUsuarioEnum.USUARIO, label: "Usuário" },
       { id: TipoUsuarioEnum.CORRETOR, label: "Corretor" },
-      {
-         id: TipoUsuarioEnum.ADMINISTRADOR,
-         label: "Administrador",
-      },
+      { id: TipoUsuarioEnum.ADMINISTRADOR,label: "Administrador",},
       { id: TipoUsuarioEnum.EDITOR, label: "Editor" },
    ];
    console.log(TipoUsuarioEnum.ADMINISTRADOR);

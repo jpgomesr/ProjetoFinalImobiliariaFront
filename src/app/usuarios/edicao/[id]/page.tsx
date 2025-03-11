@@ -19,13 +19,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { createUsuarioValidator } from "@/validators/Validators";
 import { buscarUsuarioPorId } from "@/Functions/usuario/buscaUsuario";
+import List from "@/components/List";
+import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
 
 // Interface para os valores do formulário
 
 const Page = () => {
    const router = useRouter();
    let { id } = useParams();
-   id = id ? Array.isArray(id) ? id[0] : id : undefined
+   id = id ? (Array.isArray(id) ? id[0] : id) : undefined;
 
    const [preview, setPreview] = useState<string>();
    const [alterarSenha, setAlterarSenha] = useState(false);
@@ -72,15 +74,20 @@ const Page = () => {
    }, [errors]);
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-   const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
-   const opcoesAtivoDesativo = ["Ativo", "Desativado"];
+   const tiposDeUsuarios = [
+      { id: TipoUsuarioEnum.USUARIO, label: "Usuário" },
+      { id: TipoUsuarioEnum.CORRETOR, label: "Corretor" },
+      { id: TipoUsuarioEnum.ADMINISTRADOR, label: "Administrador" },
+      { id: TipoUsuarioEnum.EDITOR, label: "Editor" },
+   ];
+   const opcoesStatus = [
+      { id: "Ativo", label: "Ativo" },
+      { id: "Desativado", label: "Desativado" },
+   ];
 
-
-  
    const preencherInformacoesAtuaisDoUsuario = async () => {
-      if(id){
-         
-         const usuario : ModelUsuario = await buscarUsuarioPorId(id);
+      if (id) {
+         const usuario: ModelUsuario = await buscarUsuarioPorId(id.toString());
 
          setValue("nomeCompleto", usuario.nome);
          setValue("descricao", usuario.descricao);
@@ -90,9 +97,6 @@ const Page = () => {
          setValue("ativo", usuario.ativo ? "Ativo" : "Desativado");
          setPreview(usuario.foto);
       }
- 
-
-      
    };
 
    useEffect(() => {
@@ -224,43 +228,29 @@ const Page = () => {
                      mensagemErro={errors.descricao?.message}
                   />
                   <div className="flex flex-col">
-                     <label
-                        htmlFor="tipo-usuario"
-                        className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl"
-                     >
-                        Tipo usuario
-                     </label>
                      <Controller
                         name="tipoUsuario"
                         control={control}
                         render={({ field }) => (
-                           <SelectPadrao
+                           <List
+                              title="Tipo usuario"
                               opcoes={tiposDeUsuarios}
-                              onChange={field.onChange}
+                              mundandoValor={field.onChange}
                               placeholder="Tipo usuario"
-                              selecionado={field.value}
-                              className="w-2/4 lg:max-w-sm"
                            />
                         )}
                      />
                   </div>
                   <div className="flex flex-col">
-                     <label
-                        htmlFor="tipo-usuario"
-                        className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl"
-                     >
-                        Status
-                     </label>
                      <Controller
                         name="ativo"
                         control={control}
                         render={({ field }) => (
-                           <SelectPadrao
-                              opcoes={opcoesAtivoDesativo}
-                              onChange={field.onChange}
+                           <List
+                              title="Status"
+                              opcoes={opcoesStatus}
+                              mundandoValor={field.onChange}
                               placeholder="Ativo"
-                              selecionado={field.value}
-                              className="w-2/4 lg:max-w-sm"
                            />
                         )}
                      />
