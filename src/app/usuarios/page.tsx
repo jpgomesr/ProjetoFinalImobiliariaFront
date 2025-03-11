@@ -16,9 +16,14 @@ import SelectPadrao from "@/components/SelectPadrao";
 import ComponentePaginacao from "@/components/ComponentePaginacao";
 import { listarUsuarios } from "@/Functions/usuario/buscaUsuario";
 import ModelUsuarioListagem from "@/models/ModelUsuarioListagem";
+import List from "@/components/List";
+import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
 
 const page = () => {
-   const opcoesStatus = ["Ativo", "Desativado"];
+   const opcoesStatus = [
+      { id: "Ativo", label: "Ativo" },
+      { id: "Desativado", label: "Desativado" },
+   ];
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const [status, setStatus] = useState<string>("Ativo");
    const [tipoUsuario, setTipoUsuario] = useState<string>("USUARIO");
@@ -37,7 +42,7 @@ const page = () => {
       ultima: true,
       maximoPaginasVisiveis: 5,
    });
-
+   console.log(tipoUsuario);
 
    useEffect(() => {
       renderizarUsuariosApi();
@@ -70,11 +75,15 @@ const page = () => {
       };
 
    const renderizarUsuariosApi = async () => {
-
-      const {usuariosRenderizados, conteudoCompleto} = await listarUsuarios(numeroPaginaAtual,tipoUsuario,  status === "Ativo" ? true : false,nomePesquisa, )
+      const { usuariosRenderizados, conteudoCompleto } = await listarUsuarios(
+         numeroPaginaAtual,
+         tipoUsuario,
+         status === "Ativo" ? true : false,
+         nomePesquisa
+      );
 
       adicionarInformacoesPagina(conteudoCompleto);
-      setUsuarios(usuariosRenderizados)
+      setUsuarios(usuariosRenderizados);
    };
    const deletarUsuario = async () => {
       const response = await UseFetchDelete(
@@ -110,7 +119,16 @@ const page = () => {
       ));
    };
 
-   const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
+   const tiposDeUsuarios = [
+      { id: TipoUsuarioEnum.USUARIO, label: "Usuário" },
+      { id: TipoUsuarioEnum.CORRETOR, label: "Corretor" },
+      {
+         id: TipoUsuarioEnum.ADMINISTRADOR,
+         label: "Administrador",
+      },
+      { id: TipoUsuarioEnum.EDITOR, label: "Editor" },
+   ];
+   console.log(TipoUsuarioEnum.ADMINISTRADOR);
 
    return (
       <Layout className="py-0">
@@ -125,25 +143,31 @@ const page = () => {
                xl:grid-cols-[1fr_6fr_1fr_1fr]   
                "
                >
-                  <SelectPadrao
-                     onChange={setRevalidandoQuery(setStatus)}
+                  <List
+                     mundandoValor={setRevalidandoQuery(setStatus)}
                      opcoes={opcoesStatus}
-                     selecionado={status}
+                     bordaPreta
                      placeholder="Ativo"
+
                   />
                   <InputPadrao
                      type="text"
                      htmlFor="input-busca-nome"
-                     onChange={(e) => setRevalidandoQuery(setNomePesquisa)(e.target.value)}
+                     onChange={(e) =>
+                        setRevalidandoQuery(setNomePesquisa)(e.target.value)
+                     }
                      placeholder="Digite o nome que deseja pesquisar"
                      required={false}
                   />
-                  <SelectPadrao
-                     opcoes={tiposDeUsuarios}
-                     onChange={setRevalidandoQuery(setTipoUsuario)}
-                     placeholder="USUARIO"
-                     selecionado={tipoUsuario}
-                  />
+                  <div className="flex h-full">
+                     <List
+                        opcoes={tiposDeUsuarios}
+                        mundandoValor={setRevalidandoQuery(setTipoUsuario)}
+                        placeholder="USUARIO"
+                        bordaPreta
+                     />
+                  </div>
+
                   <Link href={"/usuarios/cadastro"}>
                      <button
                         className="flex items-center justify-center bg-havprincipal rounded-md text-white h-full
