@@ -6,15 +6,12 @@ import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import SelectPadrao from "@/components/SelectPadrao";
 import React, { useState } from "react";
-import UploadImagem from "@/components/ComponentesCrud/UploadImagem";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import TextAreaPadrao from "@/components/TextAreaPadrao";
-import { useRouter } from "next/navigation";
 import UploadGaleriaImagens from "@/components/ComponentesCrud/UploadGaleriaImagens";
 import Switch from "@/components/ComponentesCrud/Switch";
 
 const page = () => {
-   const router = useRouter();
 
    const [titulo, setTitulo] = useState("");
    const [descricao, setDescricao] = useState("");

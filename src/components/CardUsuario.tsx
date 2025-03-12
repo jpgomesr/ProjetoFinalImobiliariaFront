@@ -8,11 +8,16 @@ import Link from "next/link";
 
 interface CardUsuarioProps {
    id: number;
-   nome: string;
-   email: string;
-   tipoConta: string;
-   status: string;
+   labelPrimeiroValor : string,
+   primeiroValor : string,
+   labelSegundoValor : string,
+   segundoValor : string,
+   labelTerceiroValor : string,
+   terceiroValor : string,
+   labelQuartoValor : string,
+   quartoValor : string,
    imagem?: string;
+   linkEdicao : string,
    deletarUsuario: (id: number) => void;
 }
 
@@ -37,7 +42,7 @@ const CardUsuario = (props: CardUsuarioProps) => {
                alt="Imagem usuario"
                width={1920}
                height={1080}
-               className="flex justify-center items-center rounded-full h-16 w-16 lg:w-20 lg:h-20 2xl:w-28 2xl:h-28"
+               className="flex justify-center border-2 border-gray-500 items-center rounded-full h-16 w-16 lg:w-20 lg:h-20 2xl:w-28 2xl:h-28"
             />
          ) : (
             <FotoUsuarioDeslogado />
@@ -49,18 +54,18 @@ const CardUsuario = (props: CardUsuarioProps) => {
             <div className="flex flex-col text-xs md:flex-row md:gap-4 lg:text-sm 2xl:text-base min-w-0">
                <div className="flex flex-col justify-between w-fit min-w-0">
                   <p className="truncate min-w-0 max-w-32 md:max-w-40 xl:max-w-44 2xl:max-w-64">
-                     Nome: {props.nome}
-                  </p>
+                  {props.labelPrimeiroValor + " " + props.primeiroValor}                  </p>
                   <p className="truncate min-w-0 max-w-32 md:max-w-40 xl:max-w-44 2xl:max-w-64">
-                     Email: {props.email}
+                  {props.labelSegundoValor + " " + props.segundoValor}
                   </p>
                </div>
                <div className="flex flex-col justify-between w-fit min-w-0">
                   <p className="truncate min-w-0 max-w-32 md:max-w-40 xl:max-w-44">
-                     Status: {props.status}
+                  {props.labelTerceiroValor + " " + props.terceiroValor}
+
                   </p>
                   <p className="truncate min-w-0 max-w-32 md:max-w-40 xl:max-w-44 2xl:max-w-64">
-                     Tipo conta: {props.tipoConta}
+                  {props.labelQuartoValor + " " + props.quartoValor}
                   </p>
                </div>
             </div>
@@ -70,7 +75,7 @@ const CardUsuario = (props: CardUsuarioProps) => {
                md:flex-row  md:gap-4 
                lg:justify-center lg:text-sm 2xl:text-base 2xl:max-w-96 2xl:gap-8 2xl:mt-3"
             >
-               <Link href={`/usuarios/edicao/${props.id}`}>
+               <Link href={props.linkEdicao}>
                   <button className="bg-white border-black border rounded-md px-2 py-1">
                      Editar usuário
                   </button>

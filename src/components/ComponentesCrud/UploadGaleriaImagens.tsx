@@ -169,7 +169,9 @@ export default function UploadGaleriaImagens({
                            </div>
                         )}
                         <input
-                           ref={(el) => (galleryInputRefs.current[index] = el)}
+                           ref={(el) => {
+                              galleryInputRefs.current[index] = el;
+                           }}
                            id={`gallery-image-upload-${index}`}
                            type="file"
                            accept="image/*"

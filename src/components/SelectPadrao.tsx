@@ -9,11 +9,9 @@ interface SelectPadraoProps {
 }
 
 const SelectPadrao = (props: SelectPadraoProps) => {
-   const [selecionado, setSelecionado] = useState("");
 
    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       const valorSelecionado = e.target.value;
-      setSelecionado(valorSelecionado);
       props.onChange(valorSelecionado);
    };
    return (
