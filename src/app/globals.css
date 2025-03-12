@@ -14,6 +14,11 @@
    @apply px-3 py-2  rounded-md text-xs md:px-4 md:py-3 lg:text-base 2xl:px-6 2xl:py-3 2xl:text-xl cursor-pointer;
 }
 
+.botao-2 {
+   @apply px-3 py-2 text-xs md:px-4 md:py-3 lg:text-base 2xl:px-6 2xl:py-3 2xl:text-xl cursor-pointer;
+}
+
+
 @media (prefers-color-scheme: dark) {
    :root {
       --background: #0a0a0a;
