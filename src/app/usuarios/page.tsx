@@ -24,6 +24,7 @@ const page = () => {
       { id: "Ativo", label: "Ativo" },
       { id: "Desativado", label: "Desativado" },
    ];
+
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const [status, setStatus] = useState<string>("Ativo");
    const [tipoUsuario, setTipoUsuario] = useState<string>("USUARIO");
@@ -122,7 +123,7 @@ const page = () => {
    const tiposDeUsuarios = [
       { id: TipoUsuarioEnum.USUARIO, label: "Usuário" },
       { id: TipoUsuarioEnum.CORRETOR, label: "Corretor" },
-      { id: TipoUsuarioEnum.ADMINISTRADOR,label: "Administrador",},
+      { id: TipoUsuarioEnum.ADMINISTRADOR, label: "Administrador" },
       { id: TipoUsuarioEnum.EDITOR, label: "Editor" },
    ];
    console.log(TipoUsuarioEnum.ADMINISTRADOR);
@@ -145,7 +146,6 @@ const page = () => {
                      opcoes={opcoesStatus}
                      bordaPreta
                      placeholder="Ativo"
-
                   />
                   <InputPadrao
                      type="text"

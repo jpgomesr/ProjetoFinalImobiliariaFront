@@ -71,7 +71,7 @@ const Page = () => {
                nome: data.nomeCompleto,
                email: data.email,
                senha: data.senha,
-               telefone: data.telefone,
+               telefone: data.telefone?.trim() === "" ? null : data.telefone,
                role: data.tipoUsuario,
                descricao: data.descricao,
                ativo: data.ativo === "Ativo",
@@ -125,7 +125,6 @@ const Page = () => {
                   <InputPadrao
                      htmlFor="nomeCompleto"
                      label="Nome completo"
-                     required={true}
                      type="text"
                      placeholder="Ex: Carlos"
                      {...register("nomeCompleto")}
@@ -134,7 +133,6 @@ const Page = () => {
                   <InputPadrao
                      htmlFor="email"
                      label="E-mail"
-                     required={true}
                      type="email"
                      placeholder="Ex: Carlos@gmail.com"
                      {...register("email")}
@@ -143,7 +141,6 @@ const Page = () => {
                   <InputPadrao
                      htmlFor="senha"
                      label="Senha"
-                     required={true}
                      type="password"
                      placeholder="Ex: 123C@31s$"
                      {...register("senha")}
@@ -152,7 +149,6 @@ const Page = () => {
                   <InputPadrao
                      htmlFor="confirmaSenha"
                      label="Confirmar senha"
-                     required={true}
                      type="password"
                      placeholder="Digite a senha novamente"
                      {...register("confirmaSenha")}
@@ -161,7 +157,6 @@ const Page = () => {
                   <InputPadrao
                      htmlFor="telefone"
                      label="Telefone"
-                     required={true}
                      type="text"
                      placeholder="Ex: 47912312121"
                      {...register("telefone")}

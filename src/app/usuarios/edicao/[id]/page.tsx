@@ -92,7 +92,7 @@ const Page = () => {
          setValue("nomeCompleto", usuario.nome);
          setValue("descricao", usuario.descricao);
          setValue("email", usuario.email);
-         setValue("telefone", usuario.telefone);
+         setValue("telefone", usuario.telefone);   
          setValue("tipoUsuario", usuario.role);
          setValue("ativo", usuario.ativo ? "Ativo" : "Desativado");
          setPreview(usuario.foto);
@@ -236,6 +236,7 @@ const Page = () => {
                               title="Tipo usuario"
                               opcoes={tiposDeUsuarios}
                               mundandoValor={field.onChange}
+                              bordaPreta
                               placeholder="Tipo usuario"
                            />
                         )}
@@ -250,6 +251,7 @@ const Page = () => {
                               title="Status"
                               opcoes={opcoesStatus}
                               mundandoValor={field.onChange}
+                              bordaPreta
                               placeholder="Ativo"
                            />
                         )}

@@ -25,14 +25,17 @@ const page = () => {
    const router = useRouter();
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-   const opcoesTipoResidencia = [{id:"CASA", label : "Casa"},{id:"APARTAMENTO", label : "Apartamento"}];
+   const opcoesTipoResidencia = [
+      { id: "CASA", label: "Casa" },
+      { id: "APARTAMENTO", label: "Apartamento" },
+   ];
    const validator = proprietarioValidator;
    const [camposDesabilitados, setCamposDesabilitados] = useState({
-    cidadeDesabilitada : true,
-    bairroDesabilitado  : true,
-    ruaDesabilitada  : true ,
-    estadoDesabilitado : true
-   })
+      cidadeDesabilitada: true,
+      bairroDesabilitado: true,
+      ruaDesabilitada: true,
+      estadoDesabilitado: true,
+   });
 
    type validatorSchema = z.infer<typeof validator>;
 
@@ -62,17 +65,16 @@ const page = () => {
          cep: "",
          tipoResidencia: "CASA",
          numeroCasaPredio: 0,
-         numeroApartamento: undefined,
+         numeroApartamento: null,
       },
    });
 
    useEffect(() => {
-    if (watch("cep")?.length === 8) {
-      preencherCampos(watch("cep"), setCamposDesabilitados, setValue)
-    }
-    else{
-      restaurarCampos(setCamposDesabilitados, setValue)
-    }
+      if (watch("cep")?.length === 8) {
+         preencherCampos(watch("cep"), setCamposDesabilitados, setValue);
+      } else {
+         restaurarCampos(setCamposDesabilitados, setValue);
+      }
    }, [watch("cep")]);
 
    const onSubmit = async (data: validatorSchema) => {
@@ -199,11 +201,10 @@ const page = () => {
                      {...register("cep")}
                      mensagemErro={errors.cep?.message}
                      maxLength={8}
-                     
                   />
 
-                      {/* Campo Estado */}
-                      <InputPadrao
+                  {/* Campo Estado */}
+                  <InputPadrao
                      htmlFor="estado"
                      label="Estado"
                      type="text"
@@ -211,9 +212,7 @@ const page = () => {
                      {...register("estado")}
                      mensagemErro={errors.estado?.message}
                      disabled={camposDesabilitados.estadoDesabilitado}
-
                   />
-                
 
                   {/* Campo Cidade */}
                   <InputPadrao
@@ -226,8 +225,8 @@ const page = () => {
                      disabled={camposDesabilitados.cidadeDesabilitada}
                   />
 
-                    {/* Campo Bairro */}
-                    <InputPadrao
+                  {/* Campo Bairro */}
+                  <InputPadrao
                      htmlFor="bairro"
                      label="Bairro"
                      type="text"
@@ -235,10 +234,7 @@ const page = () => {
                      {...register("bairro")}
                      mensagemErro={errors.bairro?.message}
                      disabled={camposDesabilitados.bairroDesabilitado}
-
                   />
-
-              
 
                   {/* Campo Rua */}
                   <InputPadrao
@@ -249,11 +245,10 @@ const page = () => {
                      {...register("rua")}
                      mensagemErro={errors.rua?.message}
                      disabled={camposDesabilitados.ruaDesabilitada}
-
                   />
 
                   {/* Campo CEP */}
-                
+
                   <div className="flex flex-col lg:gap-1 2xl:gap-2">
                      <label
                         htmlFor="tipoResidencia"
@@ -289,16 +284,17 @@ const page = () => {
                      mensagemErro={errors.numeroCasaPredio?.message}
                   />
 
-                  {watch("tipoResidencia") === "APARTAMENTO" &&  
-                  <InputPadrao
-                     htmlFor="numeroApartamento"
-                     label="Número do Apartamento"
-                     type="number"
-                     placeholder="Ex: 456"
-                     {...register("numeroApartamento", { valueAsNumber: true })}
-                     mensagemErro={errors.numeroApartamento?.message}
-                  /> }
-                 
+                  {watch("tipoResidencia") === "APARTAMENTO" && (
+                     <InputPadrao
+                        htmlFor="numeroApartamento"
+                        label="Número do Apartamento"
+                        type="number"
+                        placeholder="Ex: 456"
+                        {...register("numeroApartamento")}
+                        mensagemErro={errors.numeroApartamento?.message}
+                     />
+                  )}
+
                   <Controller
                      name="imagemPerfil"
                      control={control}
