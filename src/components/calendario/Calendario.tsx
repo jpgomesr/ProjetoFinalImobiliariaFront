@@ -89,13 +89,13 @@ export function Calendario({ onDateSelect }: CalendarioProps) {
          <div className="pt-3 pb-2 flex items-center justify-center text-begepadrao">
             <BotaoPadrao
                texto={<ChevronLeft className="h-4 w-4" />}
-               handler={prevMonth}
+               onClick={prevMonth}
                className="text-white hover:bg-havprincipal hover:text-white "
             />
             <h2 className="font-medium text-lg ">{handleMesFormatado()}</h2>
             <BotaoPadrao
                texto={<ChevronRight className="h-4 w-4" />}
-               handler={nextMonth}
+               onClick={nextMonth}
                className="text-white hover:bg-havprincipal hover:text-white"
             />
          </div>
