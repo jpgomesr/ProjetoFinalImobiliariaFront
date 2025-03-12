@@ -8,6 +8,7 @@ import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
 import InputPadrao from "@/components/InputPadrao";
 import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
+import List from "@/components/List";
 import SelectPadrao from "@/components/SelectPadrao";
 import { buscarProprietarios } from "@/Functions/proprietario/buscaProprietario";
 import { UseFetchDelete } from "@/hooks/UseFetchDelete";
@@ -19,7 +20,7 @@ import { useEffect, useState } from "react";
 const page = () => {
    const [status, setStatus] = useState<string>("Ativo");
    const [revalidarQuery, setRevalidarQuery] = useState<boolean>(false);
-   const opcoesStatus = ["Ativo", "Desativado"];
+   const opcoesStatus = [{id: "Ativo", label : "Ativo" }, {id: "Desativado", label : "Inativo" }];
    const [proprietarios, setProprietarios] = useState<ModelProprietarioListagem[] | undefined>([])
    const [nomePesquisa, setNomePesquisa] = useState<string>("");
    const [modalConfirmacaoAberto, setModalConfirmacaoAberto] = useState(false);
@@ -129,11 +130,11 @@ const page = () => {
                xl:grid-cols-[1fr_7fr_1fr]   
                "
                >
-                    <SelectPadrao
-                     onChange={setRevalidandoQuery(setStatus)}
+                    <List
+                     mundandoValor={setRevalidandoQuery(setStatus)}
                      opcoes={opcoesStatus}
-                     selecionado={status}
                      placeholder="Ativo"
+                     bordaPreta
                   />
                   <InputPadrao
                      type="text"

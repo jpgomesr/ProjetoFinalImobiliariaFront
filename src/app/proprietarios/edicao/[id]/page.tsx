@@ -18,6 +18,7 @@ import { useRouter, useParams } from "next/navigation";
 import ModelProprietario from '@/models/ModelProprietario';
 import { buscarProprietarioPorId } from '@/Functions/proprietario/buscaProprietario';
 import { preencherCampos, restaurarCampos } from '@/Functions/requisicaoViaCep';
+import List from '@/components/List';
 
 
 
@@ -34,7 +35,7 @@ const page = () => {
          })
 
       const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-      const opcoesTipoResidencia = ["CASA", "APARTAMENTO"]
+      const opcoesTipoResidencia = [{id:"CASA", label : "Casa"},{id:"APARTAMENTO", label : "Apartamento"}];
       const validator  = proprietarioValidator; 
       type validatorSchema = z.infer<typeof validator>;
 
@@ -44,6 +45,7 @@ const page = () => {
       useEffect(() => {
         preencherInformacoesProprietario()
     }, [])
+
 
   
 
@@ -109,6 +111,8 @@ const page = () => {
       numeroApartamento: undefined, 
     },
   });
+  console.log(watch("tipoResidencia"))
+
 
   useEffect(() => {
     if (watch("cep")?.length === 8) {
@@ -124,6 +128,9 @@ const page = () => {
 
 
  const onSubmit = async (data: validatorSchema) => {
+    if(data.numeroApartamento){
+      
+    }
      try {
        const response = await UseFetchPostFormData(
          `${BASE_URL}/proprietarios/${id}`,
@@ -299,12 +306,12 @@ const page = () => {
           name="tipoResidencia"
           control={control}
           render={({ field }) => (
-            <SelectPadrao
+            <List
               opcoes={opcoesTipoResidencia}
-              onChange={field.onChange}
+              mundandoValor={field.onChange}
+              value={watch("tipoResidencia")}
               placeholder="Selecione o tipo de residência"
-              selecionado={field.value}
-              className="w-2/4 lg:max-w-sm"
+              bordaPreta
             />
           )}
         />
@@ -321,15 +328,24 @@ const page = () => {
         {...register("numeroCasaPredio", { valueAsNumber: true })}
         mensagemErro={errors.numeroCasaPredio?.message}
       />
-
-      <InputPadrao
+      {watch("tipoResidencia") === "APARTAMENTO" &&  (
+        <InputPadrao
         htmlFor="numeroApartamento"
         label="Número do Apartamento"
         type="number"
         placeholder="Ex: 456"
-        {...register("numeroApartamento", { valueAsNumber: true })}
+        {...register("numeroApartamento", { valueAsNumber: true,
+          validate: (value) => {
+            if (watch("tipoResidencia") === "APARTAMENTO" && !value) {
+              return "O número do apartamento é obrigatório";
+            }
+            return true;
+          }
+         }, )}
         mensagemErro={errors.numeroApartamento?.message}
-      />
+        />
+      )}
+     
        <Controller
                     name="imagemPerfil"
                     control={control}

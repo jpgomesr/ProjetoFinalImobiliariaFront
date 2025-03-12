@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
       ],
    },
    env:{
-      NEXT_PUBLIC_BASE_URL : "http://localhost:8082"
+      NEXT_PUBLIC_BASE_URL : "http://localhost:8081"
    }
 };
 

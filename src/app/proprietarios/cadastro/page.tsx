@@ -19,12 +19,13 @@ import SelectPadrao from "@/components/SelectPadrao";
 import { useRouter } from "next/navigation";
 import RespostaViaCepModel from "@/models/ResposataViaCepModel";
 import { preencherCampos, restaurarCampos } from "@/Functions/requisicaoViaCep";
+import List from "@/components/List";
 
 const page = () => {
    const router = useRouter();
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-   const opcoesTipoResidencia = ["CASA", "APARTAMENTO"];
+   const opcoesTipoResidencia = [{id:"CASA", label : "Casa"},{id:"APARTAMENTO", label : "Apartamento"}];
    const validator = proprietarioValidator;
    const [camposDesabilitados, setCamposDesabilitados] = useState({
     cidadeDesabilitada : true,
@@ -253,10 +254,10 @@ const page = () => {
 
                   {/* Campo CEP */}
                 
-                  <div className="flex flex-col">
+                  <div className="flex flex-col lg:gap-1 2xl:gap-2">
                      <label
                         htmlFor="tipoResidencia"
-                        className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl"
+                        className="opacity-90 text-xs font-montserrat  md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl"
                      >
                         Tipo de Residência
                      </label>
@@ -264,12 +265,11 @@ const page = () => {
                         name="tipoResidencia"
                         control={control}
                         render={({ field }) => (
-                           <SelectPadrao
+                           <List
                               opcoes={opcoesTipoResidencia}
-                              onChange={field.onChange}
+                              mundandoValor={field.onChange}
                               placeholder="Selecione o tipo de residência"
-                              selecionado={field.value}
-                              className="w-2/4 lg:max-w-sm"
+                              bordaPreta
                            />
                         )}
                      />
@@ -289,6 +289,7 @@ const page = () => {
                      mensagemErro={errors.numeroCasaPredio?.message}
                   />
 
+                  {watch("tipoResidencia") === "APARTAMENTO" &&  
                   <InputPadrao
                      htmlFor="numeroApartamento"
                      label="Número do Apartamento"
@@ -296,7 +297,8 @@ const page = () => {
                      placeholder="Ex: 456"
                      {...register("numeroApartamento", { valueAsNumber: true })}
                      mensagemErro={errors.numeroApartamento?.message}
-                  />
+                  /> }
+                 
                   <Controller
                      name="imagemPerfil"
                      control={control}

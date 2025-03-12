@@ -45,7 +45,8 @@ const List = (props: ListProps) => {
       <div className="flex flex-col">
          <div
             className={twMerge(
-               `relative h-full max-w-24 min-w-24 w-24 md:max-w-32 md:min-w-32 md:w-32 lg:gap-1 2xl:gap-2 flex flex-col`,
+               `relative h-full max-w-24 min-w-24 w-24 md:max-w-32 md:min-w-32 md:w-32 lg:gap-1 2xl:gap-2 flex flex-col
+                2xl:max-w-44 2xl:w-44`,
                rest.divClassName
             )}
          >
@@ -61,7 +62,7 @@ const List = (props: ListProps) => {
                           props.bordaPreta
                              ? "border-black border-[1px]"
                              : "border-gray-300 border-2"
-                       } rounded-md bg-white shadow-sm cursor-pointer h-full  ${
+                       } rounded-md bg-white shadow-sm cursor-pointer h-full   ${
                           aberto ? "rounded-bl-none rounded-br-none" : null
                        }`
                      : props.className
@@ -74,11 +75,11 @@ const List = (props: ListProps) => {
                   </p>
                )}
                <div
-                  className={`flex  items-center justify-between px-2 py-1 gap-2 h-full ${
+                  className={`flex  items-center justify-between px-2 py-1 gap-2 h-full  ${
                      props.bordaPreta ? "border" : "border-2"
                   } border-transparent ${props.differentSize}`}
                >
-                  <span className="text-xs sm:text-sm truncate">
+                  <span className="text-xs sm:text-sm truncate xl:text-base">
                      {opcaoSelecionada}
                   </span>
                   <ChevronDown
@@ -126,7 +127,7 @@ const List = (props: ListProps) => {
                                           arr.length == 3
                                              ? "border-t"
                                              : ""
-                                       }`}
+                                       } xl:text-base`}
                               onClick={() => handleSelect(opc.id)}
                            >
                               {opc.label}
