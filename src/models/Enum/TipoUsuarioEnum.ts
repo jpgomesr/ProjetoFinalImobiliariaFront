@@ -1,0 +1,6 @@
+export enum TipoUsuarioEnum {
+   CORRETOR = "CORRETOR",
+   USUARIO = "USUARIO",
+   ADMINISTRADOR = "ADMINISTRADOR",
+   EDITOR = "EDITOR",
+}

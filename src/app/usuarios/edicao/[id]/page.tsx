@@ -19,7 +19,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { createUsuarioValidator } from "@/validators/Validators";
 import { buscarUsuarioPorId } from "@/Functions/usuario/buscaUsuario";
+
+import List from "@/components/List";
+import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
 import { useNotification } from "@/context/NotificationContext";
+
 // Interface para os valores do formulário
 
 const Page = () => {
@@ -27,7 +31,7 @@ const Page = () => {
    const { showNotification } = useNotification()
    const router = useRouter();
    let { id } = useParams();
-   id = id ? Array.isArray(id) ? id[0] : id : undefined
+   id = id ? (Array.isArray(id) ? id[0] : id) : undefined;
 
    const [preview, setPreview] = useState<string>();
    const [alterarSenha, setAlterarSenha] = useState(false);
@@ -69,32 +73,32 @@ const Page = () => {
       },
    });
 
-   useEffect(() => {
-      console.log(errors);
-   }, [errors]);
+   
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-   const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
-   const opcoesAtivoDesativo = ["Ativo", "Desativado"];
+   const tiposDeUsuarios = [
+      { id: TipoUsuarioEnum.USUARIO, label: "Usuário" },
+      { id: TipoUsuarioEnum.CORRETOR, label: "Corretor" },
+      { id: TipoUsuarioEnum.ADMINISTRADOR, label: "Administrador" },
+      { id: TipoUsuarioEnum.EDITOR, label: "Editor" },
+   ];
+   const opcoesStatus = [
+      { id: "Ativo", label: "Ativo" },
+      { id: "Desativado", label: "Desativado" },
+   ];
 
-
-  
    const preencherInformacoesAtuaisDoUsuario = async () => {
-      if(id){
-         
-         const usuario : ModelUsuario = await buscarUsuarioPorId(id.toString());
+      if (id) {
+         const usuario: ModelUsuario = await buscarUsuarioPorId(id.toString());
 
          setValue("nomeCompleto", usuario.nome);
          setValue("descricao", usuario.descricao);
          setValue("email", usuario.email);
-         setValue("telefone", usuario.telefone);
+         setValue("telefone", usuario.telefone);   
          setValue("tipoUsuario", usuario.role);
          setValue("ativo", usuario.ativo ? "Ativo" : "Desativado");
          setPreview(usuario.foto);
       }
- 
-
-      
    };
 
    useEffect(() => {
@@ -115,7 +119,7 @@ const Page = () => {
                nome: data.nomeCompleto,
                email: data.email,
                senha: alterarSenha ? data.senha : null,
-               telefone: data.telefone,
+               telefone: data.telefone?.trim() === "" ? null : data.telefone,
                role: data.tipoUsuario,
                descricao: data.descricao,
                ativo: data.ativo === "Ativo",
@@ -126,6 +130,8 @@ const Page = () => {
             "PUT"
          );
 
+         console.log(data.ativo === "Ativo")
+         console.log(data.ativo)
          if (!response.ok) {
             const responseData = await response.json();
             if (responseData.erros) {
@@ -158,7 +164,7 @@ const Page = () => {
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao
-               titulo="Edição de proprietario"
+               titulo="Edição de usuário"
                className={`w-full ${
                   isSubmitting ? "opacity-40" : "opacity-100"
                }`}
@@ -227,43 +233,32 @@ const Page = () => {
                      mensagemErro={errors.descricao?.message}
                   />
                   <div className="flex flex-col">
-                     <label
-                        htmlFor="tipo-usuario"
-                        className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl"
-                     >
-                        Tipo usuario
-                     </label>
                      <Controller
                         name="tipoUsuario"
                         control={control}
                         render={({ field }) => (
-                           <SelectPadrao
+                           <List
+                              title="Tipo usuario"
                               opcoes={tiposDeUsuarios}
-                              onChange={field.onChange}
+                              mundandoValor={field.onChange}
+                              bordaPreta
                               placeholder="Tipo usuario"
-                              selecionado={field.value}
-                              className="w-2/4 lg:max-w-sm"
+                              value={field.value}
                            />
                         )}
                      />
                   </div>
                   <div className="flex flex-col">
-                     <label
-                        htmlFor="tipo-usuario"
-                        className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl"
-                     >
-                        Status
-                     </label>
                      <Controller
                         name="ativo"
                         control={control}
                         render={({ field }) => (
-                           <SelectPadrao
-                              opcoes={opcoesAtivoDesativo}
-                              onChange={field.onChange}
-                              placeholder="Ativo"
-                              selecionado={field.value}
-                              className="w-2/4 lg:max-w-sm"
+                           <List
+                              title="Status"
+                              opcoes={opcoesStatus}
+                              mundandoValor={field.onChange}
+                              bordaPreta
+                              value={field.value}
                            />
                         )}
                      />

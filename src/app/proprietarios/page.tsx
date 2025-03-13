@@ -8,6 +8,7 @@ import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
 import InputPadrao from "@/components/InputPadrao";
 import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
+import List from "@/components/List";
 import SelectPadrao from "@/components/SelectPadrao";
 import { buscarProprietarios } from "@/Functions/proprietario/buscaProprietario";
 import { UseFetchDelete } from "@/hooks/UseFetchDelete";
@@ -24,7 +25,7 @@ const page = () => {
  
    const [status, setStatus] = useState<string>("Ativo");
    const [revalidarQuery, setRevalidarQuery] = useState<boolean>(false);
-   const opcoesStatus = ["Ativo", "Desativado"];
+   const opcoesStatus = [{id: "Ativo", label : "Ativo" }, {id: "Desativado", label : "Desativado" }];
    const [proprietarios, setProprietarios] = useState<ModelProprietarioListagem[] | undefined>([])
    const [nomePesquisa, setNomePesquisa] = useState<string>("");
    const [modalConfirmacaoAberto, setModalConfirmacaoAberto] = useState(false);
@@ -41,6 +42,7 @@ const page = () => {
       });
 
    
+      
    
    
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -66,7 +68,7 @@ const page = () => {
       const renderizarUsuariosApi = async () => {
       
          
-         const {conteudoCompleto, proprietariosRenderizados}  = await buscarProprietarios(numeroPaginaAtual,nomePesquisa)
+         const {conteudoCompleto, proprietariosRenderizados}  = await buscarProprietarios(numeroPaginaAtual,nomePesquisa,status === "Ativo")
          
          adicionarInformacoesPagina(conteudoCompleto)
          setProprietarios(proprietariosRenderizados)
@@ -120,6 +122,7 @@ const page = () => {
       renderizarUsuariosApi()
    }, [revalidarQuery]);
 
+   
 
    return (
       <Layout className="py-0">
@@ -134,11 +137,11 @@ const page = () => {
                xl:grid-cols-[1fr_7fr_1fr]   
                "
                >
-                    <SelectPadrao
-                     onChange={setRevalidandoQuery(setStatus)}
+                    <List
+                     mundandoValor={setRevalidandoQuery(setStatus)}
                      opcoes={opcoesStatus}
-                     selecionado={status}
                      placeholder="Ativo"
+                     bordaPreta
                   />
                   <InputPadrao
                      type="text"
@@ -181,7 +184,7 @@ const page = () => {
                                  isOpen={modalConfirmacaoAberto}
                                  onClose={() => setModalConfirmacaoAberto(false)}
                                  onConfirm={deletarUsuario}
-                                 message="Você realmente deseja remover este proprietario?"
+                                 message="Você realmente deseja desativar este proprietario?"
                               />
                 <NotificacaoCrud
                                  message="Desfazer"
