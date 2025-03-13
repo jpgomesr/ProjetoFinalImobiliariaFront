@@ -37,6 +37,7 @@ const page = () => {
       });
 
    
+      
    
    
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -116,6 +117,7 @@ const page = () => {
       renderizarUsuariosApi()
    }, [revalidarQuery]);
 
+   
 
    return (
       <Layout className="py-0">

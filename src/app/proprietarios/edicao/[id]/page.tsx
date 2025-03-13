@@ -52,7 +52,7 @@ const page = () => {
       const preencherInformacoesProprietario =  async () => {
  
             if(id) {
-                const proprietarioRequisicao : ModelProprietario = await buscarProprietarioPorId(id);
+                const proprietarioRequisicao : ModelProprietario = await buscarProprietarioPorId(id.toString());
 
                 if(proprietarioRequisicao){
                     console.log(proprietarioRequisicao)
@@ -183,6 +183,11 @@ const page = () => {
        console.error("Erro ao editar proprietario", error);
      }
    };
+   useEffect(() => {
+    if(watch("tipoResidencia") === "CASA"){
+       setValue("numeroApartamento", null)
+    }
+ }, [watch("tipoResidencia")])
 
 
 

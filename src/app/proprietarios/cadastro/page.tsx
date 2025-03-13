@@ -36,6 +36,7 @@ const page = () => {
       ruaDesabilitada: true,
       estadoDesabilitado: true,
    });
+   
 
    type validatorSchema = z.infer<typeof validator>;
 
@@ -68,6 +69,12 @@ const page = () => {
          numeroApartamento: null,
       },
    });
+
+   useEffect(() => {
+      if(watch("tipoResidencia") === "CASA"){
+         setValue("numeroApartamento", null)
+      }
+   }, [watch("tipoResidencia")])
 
    useEffect(() => {
       if (watch("cep")?.length === 8) {

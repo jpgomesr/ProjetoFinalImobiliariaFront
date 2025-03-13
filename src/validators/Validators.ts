@@ -4,11 +4,18 @@ import z, { string } from "zod";
 export const createUsuarioValidator = (isPasswordChangeEnabled = true) => {
    return z
       .object({
-         nomeCompleto: z.string().min(1, { message: "Campo obrigatório" }),
+         nomeCompleto: z
+            .string()
+            .min(1, { message: "Campo obrigatório" })
+            .max(100, { message: "O nome deve conter até 100 caracteres" })
+            .regex(/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/, {
+               message: "O nome deve conter apenas letras e espaços",
+            }),
          email: z
             .string()
             .min(1, { message: "Campo obrigatório" })
-            .email({ message: "Insira um email valido" }),
+            .max(100, { message: "O email deve conter até 100 caracteres" })
+            .email({ message: "Insira um email válido" }),
          senha: isPasswordChangeEnabled
             ? z
                  .string()
@@ -38,13 +45,21 @@ export const createUsuarioValidator = (isPasswordChangeEnabled = true) => {
                  })
             : z.string().optional(),
          confirmaSenha: isPasswordChangeEnabled
-            ? z.string().min(8, {
-                 message: "A senha deve ter no mínimo oito caracteres",
-              })
+            ? z
+                 .string()
+                 .min(8, {
+                    message: "A senha deve ter no mínimo 8 caracteres",
+                 })
+                 .max(45, {
+                    message: "A senha deve conter no máximo 45 caracteres",
+                 })
             : z.string().optional(),
          telefone: z.string().nullable(),
          tipoUsuario: z.string().min(1, { message: "Campo obrigatório" }),
-         descricao: z.string().optional(),
+         descricao: z
+            .string()
+            .max(500, { message: "A descrição deve conter até 500 caracteres" })
+            .optional(),
          ativo: z.string().optional(),
          imagemPerfil: z
             .instanceof(File)
@@ -61,7 +76,7 @@ export const createUsuarioValidator = (isPasswordChangeEnabled = true) => {
                }
             ),
       })
-      .refine(
+      .refine( 
          (data) => {
             if (isPasswordChangeEnabled) {
                return data.senha === data.confirmaSenha;
@@ -146,5 +161,5 @@ export const proprietarioValidator = z.object({
       .nonnegative({ message: "O número da casa/prédio não pode ser negativo" })
       .positive({ message: "O número da casa/prédio não pode ser zero" }),
 
-   numeroApartamento: z.number().nullable()
+   numeroApartamento: z.number().nullable(),
 });
