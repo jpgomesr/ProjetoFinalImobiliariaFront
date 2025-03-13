@@ -16,11 +16,13 @@ import { createUsuarioValidator } from "@/validators/Validators";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UseErros } from "@/hooks/UseErros";
+import { useNotification } from "@/context/NotificationContext";
 
 
 const Page = () => {
   const router = useRouter();
 
+  const { showNotification } = useNotification()
 
 
   const usuarioValidator = createUsuarioValidator();
@@ -95,6 +97,7 @@ const Page = () => {
         throw new Error(responseData.mensagem || "Erro ao editar usuário.");
      }
 
+      showNotification("Usuário cadastrado com sucesso");
       clearErrors(); // Limpa os erros ao cadastrar com sucesso
       router.push("/usuarios");
     } catch (error) {

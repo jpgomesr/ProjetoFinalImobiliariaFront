@@ -19,10 +19,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { createUsuarioValidator } from "@/validators/Validators";
 import { buscarUsuarioPorId } from "@/Functions/usuario/buscaUsuario";
-
+import { useNotification } from "@/context/NotificationContext";
 // Interface para os valores do formulário
 
 const Page = () => {
+
+   const { showNotification } = useNotification()
    const router = useRouter();
    let { id } = useParams();
    id = id ? Array.isArray(id) ? id[0] : id : undefined
@@ -80,7 +82,7 @@ const Page = () => {
    const preencherInformacoesAtuaisDoUsuario = async () => {
       if(id){
          
-         const usuario : ModelUsuario = await buscarUsuarioPorId(id);
+         const usuario : ModelUsuario = await buscarUsuarioPorId(id.toString());
 
          setValue("nomeCompleto", usuario.nome);
          setValue("descricao", usuario.descricao);
@@ -144,6 +146,7 @@ const Page = () => {
             throw new Error(responseData.mensagem || "Erro ao editar usuário.");
          }
 
+         showNotification("Usuário editado com sucesso")
          clearErrors();
          router.push("/usuarios");
       } catch (error) {

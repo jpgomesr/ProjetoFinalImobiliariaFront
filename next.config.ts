@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
          },
       ],
    },
+   env:{
+      NEXT_PUBLIC_BASE_URL : "http://localhost:8081"
+   }
 };
 
 export default nextConfig;

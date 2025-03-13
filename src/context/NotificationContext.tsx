@@ -1,7 +1,7 @@
 "use client"
 
-import { createContext, useContext, useState, ReactNode } from "react"
-import SuccessNotification from "@/components/pop-up/Pop-up" // Importe o componente
+import { createContext, useContext, useState, type ReactNode } from "react"
+import SuccessNotification from "@/components/pop-up/Pop-up" // Import the component
 
 interface NotificationContextType {
   showNotification: (message: string) => void
@@ -12,26 +12,37 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const [message, setMessage] = useState<string>("")
-  const [show, setShow] = useState<boolean>(false)
+  const [isVisible, setIsVisible] = useState<boolean>(false)
+  const [shouldRender, setShouldRender] = useState<boolean>(false)
 
-  const showNotification = (message: string) => {
-    setMessage(message)
-    setShow(true)
 
-    // Esconder a notificação após 5 segundos
+  const showNotification = (newMessage: string) => {
+    setMessage(newMessage)
+    setShouldRender(true)
+
+    
     setTimeout(() => {
-      setShow(false)
+      setIsVisible(true)
+    }, 10)
+
+   
+    setTimeout(() => {
+      hideNotification()
     }, 5000)
   }
 
   const hideNotification = () => {
-    setShow(false)
+    setIsVisible(false)
+
+    setTimeout(() => {
+      setShouldRender(false)
+    }, 500)
   }
 
   return (
     <NotificationContext.Provider value={{ showNotification, hideNotification }}>
       {children}
-      {show && <SuccessNotification message={message} />} {/* Renderiza a notificação */}
+      {shouldRender && <SuccessNotification message={message} isVisible={isVisible} />}
     </NotificationContext.Provider>
   )
 }
@@ -43,3 +54,4 @@ export const useNotification = () => {
   }
   return context
 }
+
