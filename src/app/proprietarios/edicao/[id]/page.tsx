@@ -20,6 +20,9 @@ import { buscarProprietarioPorId } from "@/Functions/proprietario/buscaProprieta
 import { preencherCampos, restaurarCampos } from "@/Functions/requisicaoViaCep";
 import List from "@/components/List";
 import Erro404 from "@/components/Erro404"; // Componente de erro 404
+import { buscarProprietarioPorId } from '@/Functions/proprietario/buscaProprietario';
+import { preencherCampos, restaurarCampos } from '@/Functions/requisicaoViaCep';
+import { useNotification } from "@/context/NotificationContext"
 
 const Page = () => {
    const router = useRouter();
@@ -90,6 +93,7 @@ const Page = () => {
             setErro404(true); // Exibe o erro 404 se o ID não existir
             return;
          }
+
 
          try {
             const proprietarioRequisicao: ModelProprietario =
@@ -198,11 +202,12 @@ const Page = () => {
             );
          }
 
-         clearErrors();
-         router.push("/proprietarios");
-      } catch (error) {
-         console.error("Erro ao editar proprietário:", error);
-      }
+         showNotification("Proprietário editado com sucesso!")
+       clearErrors(); // Limpa os erros ao cadastrar com sucesso
+       router.push("/proprietarios");
+     } catch (error) {
+       console.error("Erro ao editar proprietario", error);
+     }
    };
 
    useEffect(() => {

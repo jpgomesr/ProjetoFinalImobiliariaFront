@@ -18,9 +18,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { UseErros } from "@/hooks/UseErros";
 import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
 import List from "@/components/List";
+import { useNotification } from "@/context/NotificationContext";
 
 const Page = () => {
-   const router = useRouter();
+  const router = useRouter();
+
+  const { showNotification } = useNotification()
+
 
    const usuarioValidator = createUsuarioValidator();
    type usuarioValidatorSchema = z.infer<typeof usuarioValidator>;
@@ -102,12 +106,16 @@ const Page = () => {
             throw new Error(responseData.mensagem || "Erro ao editar usuário.");
          }
 
-         clearErrors(); // Limpa os erros ao cadastrar com sucesso
-         router.push("/usuarios");
-      } catch (error) {
-         console.error("Erro ao criar usuário:", error);
-      }
+        showNotification("Usuário cadastrado com sucesso");
+      clearErrors(); // Limpa os erros ao cadastrar com sucesso
+      router.push("/usuarios");
+    } catch (error) {
+      console.error("Erro ao criar usuário:", error);
+    }
+  };
    };
+
+
 
    return (
       <Layout className="py-0">
@@ -166,8 +174,7 @@ const Page = () => {
                      htmlFor="descricao"
                      label="Descricao"
                      {...register("descricao")}
-                     mensagemErro={errors.descricao?.message}
-                  />
+                     mensagemErro={errors.descricao?.message} />
                   <div className="flex flex-col">
                      <Controller
                         name="tipoUsuario"

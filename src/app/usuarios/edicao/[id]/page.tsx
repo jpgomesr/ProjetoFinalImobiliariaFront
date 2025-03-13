@@ -19,12 +19,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { createUsuarioValidator } from "@/validators/Validators";
 import { buscarUsuarioPorId } from "@/Functions/usuario/buscaUsuario";
+
 import List from "@/components/List";
 import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
+import { useNotification } from "@/context/NotificationContext";
 
 // Interface para os valores do formulário
 
 const Page = () => {
+
+   const { showNotification } = useNotification()
    const router = useRouter();
    let { id } = useParams();
    id = id ? (Array.isArray(id) ? id[0] : id) : undefined;
@@ -148,6 +152,7 @@ const Page = () => {
             throw new Error(responseData.mensagem || "Erro ao editar usuário.");
          }
 
+         showNotification("Usuário editado com sucesso")
          clearErrors();
          router.push("/usuarios");
       } catch (error) {

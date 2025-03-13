@@ -1,7 +1,7 @@
 import React from "react";
 
 interface BotaoProps  extends React.ButtonHTMLAttributes<HTMLButtonElement>{
-   texto: string;
+   texto: string | React.ReactElement;
    className?: string;
 }
 
