@@ -1,28 +1,14 @@
 "use client"
 
-import { useEffect, useState } from "react"
+interface SuccessNotificationProps {
+  message: string
+  isVisible?: boolean // Make it optional to maintain backward compatibility
+}
 
-export default function SuccessNotification({ message }: { message: string }) {
-  const [isVisible, setIsVisible] = useState(false)
-
-  // Mostrar a notificação quando a mensagem é recebida
-  useEffect(() => {
-    if (message) {
-      setIsVisible(true)
-    }
-  }, [message])
-
- // Esconder a notificação após 5 segundos
-  useEffect(() => {
-    if (isVisible) {
-      const timer = setTimeout(() => {
-        setIsVisible(false)
-      }, 5000) // 5000ms = 5 segundos
-
-      return () => clearTimeout(timer)
-    }
-  }, [isVisible])
-
+export default function SuccessNotification({
+  message,
+  isVisible = true, // Default to true for backward compatibility
+}: SuccessNotificationProps) {
   return (
     <div
       className={`fixed -left-6 top-20 md:top-24 z-50 transition-transform duration-500 ease-in-out ${

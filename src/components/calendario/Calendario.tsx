@@ -92,7 +92,7 @@ export function Calendario({ onDateSelect }: CalendarioProps) {
           onClick={prevMonth}
           className="text-white hover:bg-havprincipal hover:text-white"
         />
-        <h2 className="font-medium text-base md:text-lg lg:text-xl mx-2 md:mx-4">{handleMesFormatado()}</h2>
+        <h2 className="font-medium text-base md:text-lg lg:text-2xl mx-2 md:mx-4 ">{handleMesFormatado()}</h2>
         <BotaoPadrao
           texto={<ChevronRight className="h-3 w-3 md:h-4 md:w-4" />}
           onClick={nextMonth}
@@ -101,11 +101,11 @@ export function Calendario({ onDateSelect }: CalendarioProps) {
       </div>
 
       {/* Dias da semana */}
-      <div className="grid grid-cols-7 text-center text-[10px] md:text-xs">
+      <div className="grid grid-cols-7 text-center text-[10px] md:text-xs lg:max-w-2xl lg:ml-3">
         {weekDays.map((day) => (
           <div
             key={day}
-            className="py-1 md:py-2 font-medium flex items-center justify-center w-6 h-6 md:w-8 md:h-8 mx-auto text-begepadrao"
+            className="py-1 md:py-2 font-medium flex items-center justify-center w-6 h-6 md:w-8 md:h-8 lg:text-base lg: mx-auto text-begepadrao"
           >
             {day}
           </div>
@@ -113,7 +113,7 @@ export function Calendario({ onDateSelect }: CalendarioProps) {
       </div>
 
       {/* Dias do mês */}
-      <div className="grid grid-cols-7 text-center gap-0.5 md:gap-1 flex-grow pb-2 md:pb-4">
+      <div className="grid grid-cols-7 text-center gap-0.5 md:gap-1 flex-grow pb-2 md:pb-4 lg:max-w-2xl lg:ml-3">
         {days.map((day, index) => {
           const isToday = isSameDay(day, today)
           const isSelected = selectedDate ? isSameDay(day, selectedDate) : false
@@ -140,7 +140,7 @@ export function Calendario({ onDateSelect }: CalendarioProps) {
               }}
               disabled={isPastDay}
               className={twMerge(
-                "flex items-center justify-center w-6 h-6 md:w-8 md:h-8 mx-auto transition-colors rounded-full text-xs md:text-sm",
+                "flex items-center justify-center w-6 h-6 md:w-8 md:h-8 mx-auto transition-colors rounded-full text-xs md:text-sm lg:text-base",
                 !isCurrentMonth && "text-gray-400/40", // Dias de outros meses
                 isPastDay && "cursor-not-allowed text-begepadrao", // Dias passados
                 isToday && !isSelected && "border border-begepadrao text-begepadrao rounded-full", // Dia atual
