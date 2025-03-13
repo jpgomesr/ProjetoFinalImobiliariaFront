@@ -69,9 +69,7 @@ const Page = () => {
       },
    });
 
-   useEffect(() => {
-      console.log(errors);
-   }, [errors]);
+   
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const tiposDeUsuarios = [
@@ -128,6 +126,8 @@ const Page = () => {
             "PUT"
          );
 
+         console.log(data.ativo === "Ativo")
+         console.log(data.ativo)
          if (!response.ok) {
             const responseData = await response.json();
             if (responseData.erros) {
@@ -238,6 +238,7 @@ const Page = () => {
                               mundandoValor={field.onChange}
                               bordaPreta
                               placeholder="Tipo usuario"
+                              value={field.value}
                            />
                         )}
                      />
@@ -252,7 +253,7 @@ const Page = () => {
                               opcoes={opcoesStatus}
                               mundandoValor={field.onChange}
                               bordaPreta
-                              placeholder="Ativo"
+                              value={field.value}
                            />
                         )}
                      />

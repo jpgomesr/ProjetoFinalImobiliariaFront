@@ -11,12 +11,13 @@ interface retornoListaProprietario {
 export const buscarProprietarios = async (
    numeroPagina?: number,
    nome?: string,
+   ativo?: boolean,
    tamanhoPagina?: number
 ): Promise<retornoListaProprietario> => {
    const response = await fetch(
       `${BASE_URL}/proprietarios?nome=${
          nome ? nome : ""
-      }&page=${numeroPagina}&size=${tamanhoPagina}`
+      }&page=${numeroPagina}&size=${tamanhoPagina}&ativo=${ativo}`
    );
 
    const data = await response.json();

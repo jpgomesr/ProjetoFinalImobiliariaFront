@@ -43,7 +43,6 @@ const page = () => {
       ultima: true,
       maximoPaginasVisiveis: 5,
    });
-   console.log(tipoUsuario);
 
    useEffect(() => {
       renderizarUsuariosApi();
@@ -126,7 +125,7 @@ const page = () => {
       { id: TipoUsuarioEnum.ADMINISTRADOR, label: "Administrador" },
       { id: TipoUsuarioEnum.EDITOR, label: "Editor" },
    ];
-   console.log(TipoUsuarioEnum.ADMINISTRADOR);
+
 
    return (
       <Layout className="py-0">

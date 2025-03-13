@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import RespostaViaCepModel from "@/models/ResposataViaCepModel";
 import { preencherCampos, restaurarCampos } from "@/Functions/requisicaoViaCep";
 import List from "@/components/List";
+import { cidades, bairros, estados } from "@/data/data";
 
 const page = () => {
    const router = useRouter();
@@ -29,6 +30,7 @@ const page = () => {
       { id: "CASA", label: "Casa" },
       { id: "APARTAMENTO", label: "Apartamento" },
    ];
+
    const validator = proprietarioValidator;
    const [camposDesabilitados, setCamposDesabilitados] = useState({
       cidadeDesabilitada: true,
@@ -36,7 +38,13 @@ const page = () => {
       ruaDesabilitada: true,
       estadoDesabilitado: true,
    });
-   
+
+   const opcoesStatus = [
+      { id: "Ativo", label: "Ativo" },
+      { id: "Desativado", label: "Desativado" },
+   ];
+
+   useEffect(() => {}, []);
 
    type validatorSchema = z.infer<typeof validator>;
 
@@ -67,14 +75,18 @@ const page = () => {
          tipoResidencia: "CASA",
          numeroCasaPredio: 0,
          numeroApartamento: null,
+         ativo: "Ativo",
       },
    });
 
    useEffect(() => {
-      if(watch("tipoResidencia") === "CASA"){
-         setValue("numeroApartamento", null)
+      if (watch("tipoResidencia") === "CASA") {
+         setValue("numeroApartamento", null);
       }
-   }, [watch("tipoResidencia")])
+      else {
+         setValue("numeroApartamento", NaN)
+       }
+   }, [watch("tipoResidencia")]);
 
    useEffect(() => {
       if (watch("cep")?.length === 8) {
@@ -94,6 +106,7 @@ const page = () => {
                telefone: data.telefone,
                email: data.email,
                cpf: data.cpf,
+               ativo : data.ativo === "Ativo",
                enderecoPostDTO: {
                   bairro: data.bairro,
                   cidade: data.cidade,
@@ -297,10 +310,26 @@ const page = () => {
                         label="Número do Apartamento"
                         type="number"
                         placeholder="Ex: 456"
-                        {...register("numeroApartamento")}
+                        {...register("numeroApartamento", { valueAsNumber: true })}
                         mensagemErro={errors.numeroApartamento?.message}
                      />
                   )}
+
+                  <div className="flex flex-col">
+                     <Controller
+                        name="ativo"
+                        control={control}
+                        render={({ field }) => (
+                           <List
+                              title="Status"
+                              opcoes={opcoesStatus}
+                              mundandoValor={field.onChange}
+                              placeholder="Ativo"
+                              bordaPreta
+                           />
+                        )}
+                     />
+                  </div>
 
                   <Controller
                      name="imagemPerfil"

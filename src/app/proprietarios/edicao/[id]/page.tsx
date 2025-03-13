@@ -33,6 +33,8 @@ const page = () => {
           ruaDesabilitada  : true ,
           estadoDesabilitado : true
          })
+   const opcoesStatus = [{id: "Ativo", label : "Ativo" }, {id: "Desativado", label : "Desativado" }];
+        
 
       const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
       const opcoesTipoResidencia = [{id:"CASA", label : "Casa"},{id:"APARTAMENTO", label : "Apartamento"}];
@@ -106,9 +108,10 @@ const page = () => {
       estado: "",
       rua: "",
       cep: "",
+      ativo : "Ativo", 
       tipoResidencia: "CASA",
       numeroCasaPredio: 0,
-      numeroApartamento: undefined, 
+      numeroApartamento: null, 
     },
   });
   console.log(watch("tipoResidencia"))
@@ -140,6 +143,7 @@ const page = () => {
             telefone: data.telefone,
             email: data.email,
             cpf: data.cpf,
+            ativo : data.ativo === "Ativo",
             enderecoPutDTO : {
             bairro: data.bairro,
             cidade: data.cidade,
@@ -186,6 +190,8 @@ const page = () => {
    useEffect(() => {
     if(watch("tipoResidencia") === "CASA"){
        setValue("numeroApartamento", null)
+    }else {
+      setValue("numeroApartamento", NaN)
     }
  }, [watch("tipoResidencia")])
 
@@ -350,6 +356,21 @@ const page = () => {
         mensagemErro={errors.numeroApartamento?.message}
         />
       )}
+        <div className="flex flex-col">
+                     <Controller
+                        name="ativo"
+                        control={control}
+                        render={({ field }) => (
+                           <List
+                              title="Status"
+                              opcoes={opcoesStatus}
+                              mundandoValor={field.onChange}
+                              placeholder="Ativo"
+                              bordaPreta
+                           />
+                        )}
+                     />
+                  </div>
      
        <Controller
                     name="imagemPerfil"

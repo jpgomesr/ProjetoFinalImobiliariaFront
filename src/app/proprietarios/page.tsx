@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 const page = () => {
    const [status, setStatus] = useState<string>("Ativo");
    const [revalidarQuery, setRevalidarQuery] = useState<boolean>(false);
-   const opcoesStatus = [{id: "Ativo", label : "Ativo" }, {id: "Desativado", label : "Inativo" }];
+   const opcoesStatus = [{id: "Ativo", label : "Ativo" }, {id: "Desativado", label : "Desativado" }];
    const [proprietarios, setProprietarios] = useState<ModelProprietarioListagem[] | undefined>([])
    const [nomePesquisa, setNomePesquisa] = useState<string>("");
    const [modalConfirmacaoAberto, setModalConfirmacaoAberto] = useState(false);
@@ -63,7 +63,7 @@ const page = () => {
       const renderizarUsuariosApi = async () => {
       
          
-         const {conteudoCompleto, proprietariosRenderizados}  = await buscarProprietarios(numeroPaginaAtual,nomePesquisa)
+         const {conteudoCompleto, proprietariosRenderizados}  = await buscarProprietarios(numeroPaginaAtual,nomePesquisa,status === "Ativo")
          
          adicionarInformacoesPagina(conteudoCompleto)
          setProprietarios(proprietariosRenderizados)
@@ -179,7 +179,7 @@ const page = () => {
                                  isOpen={modalConfirmacaoAberto}
                                  onClose={() => setModalConfirmacaoAberto(false)}
                                  onConfirm={deletarUsuario}
-                                 message="Você realmente deseja remover este proprietario?"
+                                 message="Você realmente deseja desativar este proprietario?"
                               />
                 <NotificacaoCrud
                                  message="Desfazer"
