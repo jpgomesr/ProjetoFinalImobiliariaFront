@@ -20,14 +20,14 @@ import { buscarProprietarioPorId } from "@/Functions/proprietario/buscaProprieta
 import { preencherCampos, restaurarCampos } from "@/Functions/requisicaoViaCep";
 import List from "@/components/List";
 import Erro404 from "@/components/Erro404"; // Componente de erro 404
-import { buscarProprietarioPorId } from '@/Functions/proprietario/buscaProprietario';
-import { preencherCampos, restaurarCampos } from '@/Functions/requisicaoViaCep';
 import { useNotification } from "@/context/NotificationContext"
 
 const Page = () => {
    const router = useRouter();
    let { id } = useParams();
    id = id ? (Array.isArray(id) ? id[0] : id) : undefined;
+
+   const {showNotification} = useNotification()
 
    const [camposDesabilitados, setCamposDesabilitados] = useState({
       cidadeDesabilitada: true,
