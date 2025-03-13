@@ -115,7 +115,7 @@ const Page = () => {
                nome: data.nomeCompleto,
                email: data.email,
                senha: alterarSenha ? data.senha : null,
-               telefone: data.telefone,
+               telefone: data.telefone?.trim() === "" ? null : data.telefone,
                role: data.tipoUsuario,
                descricao: data.descricao,
                ativo: data.ativo === "Ativo",
@@ -159,7 +159,7 @@ const Page = () => {
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao
-               titulo="Edição de proprietario"
+               titulo="Edição de usuário"
                className={`w-full ${
                   isSubmitting ? "opacity-40" : "opacity-100"
                }`}
