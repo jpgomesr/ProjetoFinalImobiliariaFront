@@ -18,11 +18,12 @@ import { useRouter, useParams } from "next/navigation";
 import ModelProprietario from '@/models/ModelProprietario';
 import { buscarProprietarioPorId } from '@/Functions/proprietario/buscaProprietario';
 import { preencherCampos, restaurarCampos } from '@/Functions/requisicaoViaCep';
-
+import { useNotification } from "@/context/NotificationContext"
 
 
 const page = () => {
 
+      const { showNotification } = useNotification()
       const router = useRouter();
       let  {id} = useParams()
       id = id ? Array.isArray(id) ? id[0] : id : undefined
@@ -50,7 +51,7 @@ const page = () => {
       const preencherInformacoesProprietario =  async () => {
  
             if(id) {
-                const proprietarioRequisicao : ModelProprietario = await buscarProprietarioPorId(id);
+                const proprietarioRequisicao : ModelProprietario = await buscarProprietarioPorId(id.toString());
 
                 if(proprietarioRequisicao){
                     console.log(proprietarioRequisicao)
@@ -170,6 +171,7 @@ const page = () => {
          throw new Error(responseData.mensagem || "Erro ao editar proprietario.");
       }
  
+      showNotification("Proprietário editado com sucesso!")
        clearErrors(); // Limpa os erros ao cadastrar com sucesso
        router.push("/proprietarios");
      } catch (error) {

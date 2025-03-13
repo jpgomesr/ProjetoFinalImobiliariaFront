@@ -11,7 +11,13 @@ interface NotificacaoCrudProps {
   duration?: number
 }
 
-export default function NotificacaoCrud({ message, isVisible, onClose, onUndo, duration = 5000 }: NotificacaoCrudProps) {
+export default function NotificacaoCrud({
+  message,
+  isVisible,
+  onClose,
+  onUndo,
+  duration = 5000,
+}: NotificacaoCrudProps) {
   const [isShowing, setIsShowing] = useState(false)
 
   useEffect(() => {
@@ -45,8 +51,8 @@ export default function NotificacaoCrud({ message, isVisible, onClose, onUndo, d
 
   return (
     <div
-      className={`absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ease-in-out ${
-        isShowing ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+      className={`fixed top-24 left-4 z-50 transition-all duration-300 ease-in-out ${
+        isShowing ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-full"
       }`}
     >
       <div className="bg-havprincipal text-white px-4 py-3 rounded-lg shadow-lg flex items-center justify-between max-w-md w-full">

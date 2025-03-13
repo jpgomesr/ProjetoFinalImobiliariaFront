@@ -12,7 +12,7 @@ export default function SuccessNotification({ message }: { message: string }) {
     }
   }, [message])
 
-  // Esconder a notificação após 5 segundos
+ // Esconder a notificação após 5 segundos
   useEffect(() => {
     if (isVisible) {
       const timer = setTimeout(() => {
@@ -25,15 +25,16 @@ export default function SuccessNotification({ message }: { message: string }) {
 
   return (
     <div
-      className={`fixed -left-6 top-20 z-50 transition-transform duration-500 ease-in-out ${
+      className={`fixed -left-6 top-20 md:top-24 z-50 transition-transform duration-500 ease-in-out ${
         isVisible ? "translate-x-0" : "-translate-x-full"
       }`}
     >
-      <div className="relative bg-[#7a2735] text-white px-1.5 py-1 rounded-lg shadow-[4px_4px_4px_0px_rgba(0,0,0,0.25)]">
-        <div className="border-2 rounded-lg flex pr-4">
-          <p className="text-center text-xs ml-3 w-32 py-1.5">{message}</p>
+      <div className="relative bg-[#7a2735] text-white px-1.5 py-1 md:px-3 md:py-2 rounded-lg shadow-[4px_4px_4px_0px_rgba(0,0,0,0.25)]">
+        <div className="border-2 rounded-lg flex pr-4 md:pr-6">
+          <p className="text-center text-xs md:text-base ml-3 md:ml-5 w-32 md:w-44 py-1.5 md:py-2.5">{message}</p>
         </div>
       </div>
     </div>
   )
 }
+
