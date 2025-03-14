@@ -19,10 +19,12 @@ import { createImovelValidator } from "@/validators/Validators";
 import { restaurarCampos, preencherCampos } from "@/Functions/requisicaoViaCep";
 import SearchProprietarioList from "@/components/SearchProprietarioList";
 import CorretoresBoxSelect from "@/components/CorretoresBoxSelect";
+import { useNotification } from "@/context/NotificationContext";
 
 const Page = () => {
    const router = useRouter();
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+   const { showNotification } = useNotification();
 
    const [step, setStep] = useState(1);
    const [camposDesabilitados, setCamposDesabilitados] = useState({
@@ -101,16 +103,23 @@ const Page = () => {
             "objImovel",
             "tipo",
          ]);
-
          if (isValid) {
             setStep((prev) => prev + 1);
          }
       }
 
       if (step === 2) {
-         const imagens = watch("imagens");
-         const isValid = await trigger();
-         if (isValid && imagens.imagemPrincipal) {
+         const isValid = await trigger([
+            "cep",
+            "bairro",
+            "estado",
+            "cidade",
+            "rua",
+            "imagens",
+            "numero",
+            "numeroApto",
+         ]);
+         if (isValid) {
             setStep((prev) => prev + 1);
          }
       }
@@ -178,6 +187,8 @@ const Page = () => {
          body: formData,
       });
       if (response.ok) {
+         showNotification("Imóvel cadastrado com sucesso");
+         clearErrors();
          router.push("/imoveis");
       }
       console.log(response.json());
@@ -548,11 +559,8 @@ const Page = () => {
                                        }
                                        field.onChange(newValue);
                                     }}
-                                    mensagemErroPrincipal={
+                                    mensagemErro={
                                        errors.imagens?.imagemPrincipal?.message
-                                    }
-                                    mensagemErroGaleria={
-                                       errors.imagens?.imagensGaleria?.message
                                     }
                                     clearErrors={clearErrors}
                                  />
@@ -680,7 +688,7 @@ const Page = () => {
                            <BotaoPadrao
                               type="button"
                               texto="Próximo"
-                              onClick={() => setStep(step + 1)}
+                              onClick={handleNextStep}
                            />
                         </div>
                      </>
@@ -689,9 +697,11 @@ const Page = () => {
                      <div className="flex flex-col gap-4">
                         <SearchProprietarioList
                            registerProps={register("proprietario")}
+                           mensagemErro={errors.proprietario?.message}
                         />
                         <CorretoresBoxSelect
                            registerProps={register("corretores")}
+                           mensagemErro={errors.corretores?.message}
                         />
                         <div className="flex flex-row gap-2 justify-center">
                            <BotaoPadrao

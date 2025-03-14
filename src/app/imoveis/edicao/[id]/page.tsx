@@ -20,11 +20,13 @@ import CorretoresBoxSelect from "@/components/CorretoresBoxSelect";
 import { useParams, useRouter } from "next/navigation";
 import { ModelImovelGet } from "@/models/ModelImovelGet";
 import Link from "next/link";
+import { useNotification } from "@/context/NotificationContext";
 
 const Page = () => {
    const router = useRouter();
    let { id } = useParams();
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+   const { showNotification } = useNotification();
 
    const [refImagensDeletadas, setRefImagensDeletadas] = useState<string[]>();
    const [step, setStep] = useState(1);
@@ -250,7 +252,8 @@ const Page = () => {
       console.log(await response.json());
 
       if (response.ok) {
-         console.log("Imóvel salvo com sucesso!");
+         showNotification("Imóvel editado com sucesso");
+         clearErrors();
          router.push("/imoveis");
       } else {
          console.error("Erro ao salvar o imóvel");
@@ -625,11 +628,8 @@ const Page = () => {
                                        }
                                        field.onChange(newValue);
                                     }}
-                                    mensagemErroPrincipal={
+                                    mensagemErro={
                                        errors.imagens?.imagemPrincipal?.message
-                                    }
-                                    mensagemErroGaleria={
-                                       errors.imagens?.imagensGaleria?.message
                                     }
                                     clearErrors={clearErrors}
                                     coverImage={
