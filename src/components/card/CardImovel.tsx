@@ -6,7 +6,6 @@ import { useState } from "react";
 import CardBanner from "./CardBanner";
 import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
-import BotaoPadrao from "../BotaoPadrao";
 import Image from "next/image";
 import Imovel from "@/models/ModelImovel";
 import ModalCofirmacao from "../ComponentesCrud/ModalConfirmacao";
@@ -16,6 +15,7 @@ interface HomeProps {
    edicao?: boolean;
    edicaoLink?: string;
    atualizacaoRender?: () => void;
+   deletarImovel: (id: number) => void;
 }
 
 export default function CardImovel(props: HomeProps) {
@@ -61,31 +61,6 @@ export default function CardImovel(props: HomeProps) {
    };
 
    const cardEdicao = props.edicao ? props.edicao : false;
-
-   const handleModalVisible = () => {
-      setIsModalVisible(!isModalVisible);
-   };
-   console.log(props.imovel.permitirDestaque);
-
-   const handleDeleteImovel = async () => {
-      try {
-         const response = await fetch(
-            `${BASE_URL}/imoveis/${props.imovel.id}`,
-            {
-               method: "DELETE",
-            }
-         );
-
-         if (response.ok) {
-            console.log("Imóvel deletado com sucesso!");
-            props.atualizacaoRender?.();
-         } else {
-            console.error("Erro ao deletar o imóvel:", response.statusText);
-         }
-      } catch (error) {
-         console.error("Erro ao deletar o imóvel:", error);
-      }
-   };
 
    const imagemCapa = getImagemCapa(props.imovel);
 
@@ -137,7 +112,9 @@ export default function CardImovel(props: HomeProps) {
                         {cardEdicao ? (
                            <Trash
                               className="text-havprincipal cursor-pointer w-5 h-5"
-                              onClick={handleModalVisible}
+                              onClick={() =>
+                                 props.deletarImovel(props.imovel.id)
+                              }
                            />
                         ) : (
                            <FavButton
@@ -274,13 +251,6 @@ export default function CardImovel(props: HomeProps) {
                </div>
             </div>
          </div>
-         <ModalCofirmacao
-         isOpen={isModalVisible}
-         onClose={handleModalVisible}
-         onConfirm={handleDeleteImovel}
-         message="Deseja realmente desativar este imóvel ?"
-         /> 
-        
       </>
    );
 }

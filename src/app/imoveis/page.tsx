@@ -12,6 +12,7 @@ import ComponentePaginacao from "@/components/ComponentePaginacao";
 import { ModelImovelGet } from "@/models/ModelImovelGet";
 import Link from "next/link";
 import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
+import ModalCofirmacao from "@/components/ComponentesCrud/ModalConfirmacao";
 
 const page = () => {
    const [imoveis, setImoveis] = useState<ModelImovelGet[]>([]);
@@ -36,6 +37,11 @@ const page = () => {
          method: "POST",
       });
       setRevalidarQuery(!revalidarQuery);
+   };
+   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+   const exibirModal = (id: number) => {
+      setIdItemParaDeletar(id);
+      setIsModalVisible(true);
    };
 
    const [revalidarQuery, setRevalidarQuery] = useState<boolean>(false);
@@ -88,6 +94,29 @@ const page = () => {
    ];
 
    const qtdEncontrados = 100;
+
+   const handleDeleteImovel = async () => {
+      try {
+         const response = await fetch(
+            `${BASE_URL}/imoveis/${idItemParaDeletar}`,
+            {
+               method: "DELETE",
+            }
+         );
+
+         if (response.ok) {
+            console.log("Imóvel deletado com sucesso!");
+            setItemDeletadoId(idItemParaDeletar);
+            setMostrarNotificacao(true);
+            setRevalidarQuery(!revalidarQuery);
+            setIdItemParaDeletar(null);
+         } else {
+            console.error("Erro ao deletar o imóvel:", response.statusText);
+         }
+      } catch (error) {
+         console.error("Erro ao deletar o imóvel:", error);
+      }
+   };
 
    return (
       <Layout className="py-0">
@@ -143,6 +172,7 @@ const page = () => {
                            edicao={true}
                            edicaoLink={`/imoveis/edicao/${imovel.id}`}
                            atualizacaoRender={handleRenderImoveis}
+                           deletarImovel={exibirModal}
                         />
                      </div>
                   ))}
@@ -163,6 +193,12 @@ const page = () => {
                   onClose={fechandoNotificacao}
                   onUndo={desfazendoDelete}
                   duration={5000}
+               />
+               <ModalCofirmacao
+                  isOpen={isModalVisible}
+                  onClose={() => setIsModalVisible(false)}
+                  onConfirm={handleDeleteImovel}
+                  message="Você realmente deseja remover este imóvel?"
                />
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
