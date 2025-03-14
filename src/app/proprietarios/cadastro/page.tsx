@@ -151,7 +151,7 @@ const page = () => {
 
          showNotification("Usuário cadastrado com sucesso");
          clearErrors(); // Limpa os erros ao cadastrar com sucesso
-         router.push("/usuarios");
+         router.push("/proprietarios");
       } catch (error) {
          console.error("Erro ao criar usuário:", error);
       }
@@ -286,7 +286,7 @@ const page = () => {
                         render={({ field }) => (
                            <List
                               opcoes={opcoesTipoResidencia}
-                              mundandoValor={field.onChange}
+                              mudandoValor={field.onChange}
                               placeholder="Selecione o tipo de residência"
                               bordaPreta
                            />
@@ -329,7 +329,7 @@ const page = () => {
                            <List
                               title="Status"
                               opcoes={opcoesStatus}
-                              mundandoValor={field.onChange}
+                              mudandoValor={field.onChange}
                               placeholder="Ativo"
                               bordaPreta
                            />
