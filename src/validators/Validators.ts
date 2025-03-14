@@ -1,7 +1,5 @@
-import { TipoImovelEnum } from "@/models/Enum/TipoImovelEnum";
-import z, { string } from "zod";
+import z from "zod";
 import { ModelCorretorSchema } from "@/models/ModelCorretor";
-
 
 export const createUsuarioValidator = (isPasswordChangeEnabled = true) => {
    return z
@@ -78,7 +76,7 @@ export const createUsuarioValidator = (isPasswordChangeEnabled = true) => {
                }
             ),
       })
-      .refine( 
+      .refine(
          (data) => {
             if (isPasswordChangeEnabled) {
                return data.senha === data.confirmaSenha;
@@ -162,9 +160,9 @@ export const proprietarioValidator = z.object({
       .int({ message: "O número da casa/prédio deve ser um inteiro" })
       .nonnegative({ message: "O número da casa/prédio não pode ser negativo" })
       .positive({ message: "O número da casa/prédio não pode ser zero" }),
-   numeroApartamento: z.number({message : "Campo obrigatório"}).nullable(),
+   numeroApartamento: z.number({ message: "Campo obrigatório" }).nullable(),
 
-   ativo : z.string()
+   ativo: z.string(),
 });
 
 export const createImovelValidator = () => {
