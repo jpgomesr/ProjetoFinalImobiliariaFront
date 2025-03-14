@@ -34,7 +34,6 @@ const Page = () => {
       ruaDesabilitada: true,
       estadoDesabilitado: true,
    });
-
    useEffect(() => {
       console.log(errors);
    });
@@ -138,6 +137,9 @@ const Page = () => {
                .map((img) => img.referencia) || [],
       });
    };
+
+  
+
 
    const handleNextStep = async (e: React.MouseEvent) => {
       e.preventDefault();

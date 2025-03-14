@@ -22,6 +22,7 @@ interface Pessoa {
 
 export interface ModelImovelGet {
    banner: boolean;
+   destaque : boolean;
    descricao: string;
    endereco: Endereco;
    finalidade: string;

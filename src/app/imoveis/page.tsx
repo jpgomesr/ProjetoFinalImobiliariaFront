@@ -121,7 +121,6 @@ const page = () => {
                      >
                         <CardImovel
                            imovel={imovel}
-                           destaque={false}
                            edicao={true}
                            edicaoLink={`/imoveis/edicao/${imovel.id}`}
                            atualizacaoRender={handleRenderImoveis}

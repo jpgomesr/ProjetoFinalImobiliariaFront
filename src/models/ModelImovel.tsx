@@ -21,7 +21,7 @@ export default interface Imovel {
    banner: boolean;
    tipoBanner: TipoBanner;
    academia: boolean;
-   destaque: boolean;
+   permitirDestaque: boolean;
    visibilidade: boolean;
    imagens: {
       imagemPrincipal: File | null | string;

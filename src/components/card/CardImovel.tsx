@@ -12,7 +12,6 @@ import Imovel from "@/models/ModelImovel";
 
 interface HomeProps {
    imovel: ModelImovelGet | Imovel;
-   destaque: boolean;
    edicao?: boolean;
    edicaoLink?: string;
    atualizacaoRender?: () => void;
@@ -65,6 +64,7 @@ export default function CardImovel(props: HomeProps) {
    const handleModalVisible = () => {
       setIsModalVisible(!isModalVisible);
    };
+   console.log(props.imovel.permitirDestaque);
 
    const handleDeleteImovel = async () => {
       try {
@@ -92,7 +92,11 @@ export default function CardImovel(props: HomeProps) {
       <>
          <div
             className={`w-[70%] h-full min-w-[262.5px] max-w-[305px] rounded-2xl shadow-[4px_4px_4px_rgba(0,0,0,0.2)] relative
-                     ${!props.destaque ? "bg-begepadrao" : "bg-havprincipal"}`}
+                     ${
+                        !props.imovel?.permitirDestaque
+                           ? "bg-begepadrao"
+                           : "bg-havprincipal"
+                     }`}
          >
             {isBannerVisible && (
                <CardBanner
@@ -118,7 +122,7 @@ export default function CardImovel(props: HomeProps) {
                      <div className="flex flex-row justify-between w-full pr-1 items-center">
                         <p
                            className={`text-xs font-medium whitespace-nowrap ${
-                              !props.destaque
+                              !props.imovel.permitirDestaque
                                  ? "text-havprincipal"
                                  : "text-brancoFundo"
                            }`}
@@ -141,14 +145,14 @@ export default function CardImovel(props: HomeProps) {
                                     ? props.imovel.favoritado
                                     : false
                               }
-                              dark={props.destaque}
+                              dark={props.imovel.permitirDestaque}
                            />
                         )}
                      </div>
                      <div className="flex flex-row justify-between w-full">
                         <div
                            className={`flex flex-row gap-2 items-center w-full ${
-                              !props.destaque
+                              !props.imovel.permitirDestaque
                                  ? "text-havprincipal"
                                  : "text-brancoFundo"
                            }`}
@@ -174,7 +178,7 @@ export default function CardImovel(props: HomeProps) {
                            {props.imovel.precoPromocional > 0 && (
                               <div
                                  className={`flex gap-1 justify-start items-end w-full text-xs opacity-50 ${
-                                    !props.destaque
+                                    !props.imovel.permitirDestaque
                                        ? "text-havprincipal"
                                        : "text-brancoFundo"
                                  }`}
@@ -209,7 +213,7 @@ export default function CardImovel(props: HomeProps) {
                   <div>
                      <p
                         className={`text-xs ${
-                           !props.destaque
+                           !props.imovel.permitirDestaque
                               ? "text-havprincipal"
                               : "text-brancoFundo"
                         }`}
@@ -223,13 +227,15 @@ export default function CardImovel(props: HomeProps) {
                         qtdQuartos={props.imovel.qtdQuartos}
                         qtdVagas={props.imovel.qtdGaragens}
                         metragem={props.imovel.tamanho}
-                        dark={props.destaque}
+                        dark={props.imovel.permitirDestaque}
                      />
                   </div>
                </div>
                <div
                   className={`text-[0.625rem] flex flex-col gap-1 text-justify ${
-                     !props.destaque ? "text-havprincipal" : "text-brancoFundo"
+                     !props.imovel.permitirDestaque
+                        ? "text-havprincipal"
+                        : "text-brancoFundo"
                   }`}
                >
                   <p>
@@ -250,7 +256,7 @@ export default function CardImovel(props: HomeProps) {
                <div className="flex justify-center pb-5 items-center gap-2">
                   <SaibaMaisBotao
                      codigo={"codigo" in props.imovel ? props.imovel.codigo : 0}
-                     dark={props.destaque}
+                     dark={props.imovel.permitirDestaque}
                   />
                   {cardEdicao ? (
                      <button
