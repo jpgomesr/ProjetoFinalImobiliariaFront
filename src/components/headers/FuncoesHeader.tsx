@@ -23,12 +23,12 @@ const FuncoesHeader = (props: FuncoesHeaderProps) => {
          items: [
             {
                label: "Gerenciar imóveis",
-               route: "/chat",
+               route: "/imoveis",
                icone: <CasaIcon className="h-5" />,
             },
             {
                label: "Usuários",
-               route: "/",
+               route: "/usuarios",
                icone: <PerfilIcon className="h-5" />,
             },
             {
@@ -49,7 +49,7 @@ const FuncoesHeader = (props: FuncoesHeaderProps) => {
          items: [
             {
                label: "Gerenciar imóveis",
-               route: "/chat",
+               route: "/imoveis",
                icone: <CasaIcon className="h-5" />,
             },
             {

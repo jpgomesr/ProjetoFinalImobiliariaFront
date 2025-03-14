@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,24 +15,37 @@ import TextArea from "@/components/ComponentesCrud/TextArea";
 import List from "@/components/List";
 import { TipoBanner } from "@/models/Enum/TipoBanner";
 import { createImovelValidator } from "@/validators/Validators";
-import { restaurarCampos, preencherCampos } from "@/Functions/requisicaoViaCep";
 import SearchProprietarioList from "@/components/SearchProprietarioList";
 import CorretoresBoxSelect from "@/components/CorretoresBoxSelect";
+import { useParams, useRouter } from "next/navigation";
+import { ModelImovelGet } from "@/models/ModelImovelGet";
+import Link from "next/link";
 
 const Page = () => {
    const router = useRouter();
+   let { id } = useParams();
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
+   const [refImagensDeletadas, setRefImagensDeletadas] = useState<string[]>();
    const [step, setStep] = useState(1);
-   const [camposDesabilitados, setCamposDesabilitados] = useState({
+   const [camposDesabilitados] = useState({
       cidadeDesabilitada: true,
       bairroDesabilitado: true,
       ruaDesabilitada: true,
       estadoDesabilitado: true,
    });
+   useEffect(() => {
+      console.log(errors);
+   });
 
    const imovelValidator = createImovelValidator();
    type imovelValidatorSchema = z.infer<typeof imovelValidator>;
+
+   const hadleRefImagensDel = (ref: string) => {
+      setRefImagensDeletadas((prev: string[] | undefined) => {
+         return [ref, ...(prev || [])];
+      });
+   };
 
    const tipoBanner = [
       { id: TipoBanner.ADQUIRIDO, label: "Adquirido" },
@@ -65,24 +77,69 @@ const Page = () => {
    });
 
    useEffect(() => {
-      console.log(errors);
-   });
+      if (id) {
+         const buscarImovel = async () => {
+            try {
+               const response = await fetch(`${BASE_URL}/imoveis/${id}`);
+               if (response.ok) {
+                  const imovel: ModelImovelGet = await response.json();
+                  preencherFormulario(imovel);
+               } else {
+                  console.error("Erro ao buscar os dados do imóvel");
+               }
+            } catch (error) {
+               console.error("Erro ao buscar os dados do imóvel:", error);
+            }
+         };
 
-   useEffect(() => {
-      console.log(watch("valorPromo"));
-   }, [watch("valorPromo"), watch("banner")]);
-
-   useEffect(() => {
-      if (watch("cep")) {
-         const cepMock = watch("cep").toString();
-
-         if (cepMock?.length === 8) {
-            preencherCampos(cepMock, setCamposDesabilitados, setValue);
-         } else {
-            restaurarCampos(setCamposDesabilitados, setValue);
-         }
+         buscarImovel();
       }
-   }, [watch("cep")]);
+   }, [id]);
+
+   const preencherFormulario = (imovel: ModelImovelGet) => {
+      if (typeof id === "string") {
+         setValue("id", id);
+      }
+      setValue("titulo", imovel.titulo);
+      setValue("descricao", imovel.descricao);
+      setValue("metragem", Number(imovel.tamanho));
+      setValue("qtdQuartos", Number(imovel.qtdQuartos));
+      setValue("qtdBanheiros", Number(imovel.qtdBanheiros));
+      setValue("qtdVagas", Number(imovel.qtdGaragens));
+      setValue("qtdChurrasqueiras", Number(imovel.qtdChurrasqueira));
+      setValue("qtdPiscinas", Number(imovel.qtdPiscina));
+      setValue("valor", Number(imovel.preco));
+      setValue("valorPromo", Number(imovel.precoPromocional));
+      setValue("iptu", Number(imovel.iptu));
+      setValue("valorCondominio", Number(imovel.valorCondominio));
+      setValue("objImovel", imovel.finalidade || objImovel[0].id);
+      setValue("tipo", imovel.endereco.tipoResidencia);
+      setValue("banner", imovel.banner || false);
+      setValue("tipoBanner", imovel.tipoBanner || tipoBanner[0].id);
+      setValue("destaque", imovel.permitirDestaque || false);
+      setValue("visibilidade", imovel.habilitarVisibilidade || false);
+      setValue("academia", imovel.academia || false);
+      setValue("cep", Number(imovel.endereco.cep));
+      setValue("bairro", imovel.endereco.bairro);
+      setValue("estado", imovel.endereco.estado || "");
+      setValue("cidade", imovel.endereco.cidade);
+      setValue("rua", imovel.endereco.rua);
+      setValue("numero", Number(imovel.endereco.numeroCasaPredio));
+      setValue("numeroApto", Number(imovel.endereco.numeroApartamento));
+      setValue("proprietario", imovel.proprietario?.id);
+      setValue("corretores", imovel.corretores || []);
+      setValue("imagens", {
+         imagemPrincipal:
+            imovel.imagens.find((img) => img.imagemCapa)?.referencia || null,
+         imagensGaleria:
+            imovel.imagens
+               .filter((img) => !img.imagemCapa)
+               .map((img) => img.referencia) || [],
+      });
+   };
+
+  
+
 
    const handleNextStep = async (e: React.MouseEvent) => {
       e.preventDefault();
@@ -121,7 +178,9 @@ const Page = () => {
       setStep((prev) => prev - 1);
    };
 
-   const handleCriarImovel = async (data: imovelValidatorSchema) => {
+   const handleEditarImovel = async (data: imovelValidatorSchema) => {
+      console.log(data);
+
       const jsonRequest = {
          titulo: data.titulo,
          descricao: data.descricao,
@@ -155,12 +214,17 @@ const Page = () => {
          },
          corretores: data.corretores,
       };
+
       const formData = new FormData();
+      const params = new URLSearchParams();
       formData.append(
          "imovel",
          new Blob([JSON.stringify(jsonRequest)], { type: "application/json" })
       );
-      if (data.imagens.imagemPrincipal) {
+      if (
+         data.imagens.imagemPrincipal &&
+         data.imagens.imagemPrincipal instanceof File
+      ) {
          formData.append("imagemPrincipal", data.imagens.imagemPrincipal);
       }
       if (
@@ -168,16 +232,32 @@ const Page = () => {
          data.imagens.imagensGaleria.length > 0
       ) {
          data.imagens.imagensGaleria.forEach((imagem) => {
-            if (imagem != null) {
+            if (imagem instanceof File) {
                formData.append("imagens", imagem);
             }
          });
       }
-      const response = await fetch(`${BASE_URL}/imoveis`, {
-         method: "POST",
+      if (refImagensDeletadas) {
+         refImagensDeletadas.forEach((ref) => {
+            params.append(`refImagensDeletadas`, ref);
+         });
+      }
+
+      const url = new URL(`${BASE_URL}/imoveis/${data.id}`);
+      url.search = params.toString();
+
+      const response = await fetch(url, {
+         method: "PUT",
          body: formData,
       });
-      console.log(response.json());
+      console.log(await response.json());
+
+      if (response.ok) {
+         console.log("Imóvel salvo com sucesso!");
+         router.push("/imoveis");
+      } else {
+         console.error("Erro ao salvar o imóvel");
+      }
    };
 
    const handleInputChange = (variable: keyof imovelValidatorSchema) => {
@@ -188,19 +268,19 @@ const Page = () => {
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao
-               titulo="Cadastro de imóvel"
+               titulo="Edição de imóvel"
                className={`w-full ${
                   isSubmitting ? "opacity-40" : "opacity-100"
                }`}
             >
                <form
-                  onSubmit={handleSubmit(handleCriarImovel)}
+                  onSubmit={handleSubmit(handleEditarImovel)}
                   className="flex flex-col gap-2 md:gap-3 lg:gap-4 xl:gap-5 2xl:gap-6"
                >
                   {step === 1 && (
                      <>
                         <InputPadrao
-                           htmlFor="Titulo"
+                           htmlFor="titulo"
                            label="Titulo"
                            placeholder="Digite o titulo"
                            {...register("titulo")}
@@ -369,7 +449,7 @@ const Page = () => {
                                  render={({ field }) => (
                                     <Switch
                                        label="Banner"
-                                       checked={field.value}
+                                       checked={watch("banner")}
                                        onChange={(e) =>
                                           field.onChange(e.target.checked)
                                        }
@@ -378,7 +458,7 @@ const Page = () => {
                                  )}
                               />
                               {watch("banner") && (
-                                 <div className="flex h-[60%]">
+                                 <div className="flex">
                                     <Controller
                                        name="tipoBanner"
                                        control={control}
@@ -487,7 +567,10 @@ const Page = () => {
                               )}
                            />
                         </div>
-                        <div className="flex justify-center mt-4">
+                        <div className="flex justify-center mt-4 gap-2">
+                           <Link href={"/imoveis"}>
+                              <BotaoPadrao type="button" texto="Cancelar" />
+                           </Link>
                            <BotaoPadrao
                               type="button"
                               texto="Próximo"
@@ -536,6 +619,24 @@ const Page = () => {
                                        errors.imagens?.imagensGaleria?.message
                                     }
                                     clearErrors={clearErrors}
+                                    coverImage={
+                                       typeof field.value.imagemPrincipal ===
+                                       "string"
+                                          ? field.value.imagemPrincipal
+                                          : field.value.imagemPrincipal
+                                          ? URL.createObjectURL(
+                                               field.value.imagemPrincipal
+                                            )
+                                          : null
+                                    }
+                                    galleryImages={imagensGaleria.map((file) =>
+                                       typeof file === "string"
+                                          ? file
+                                          : file
+                                          ? URL.createObjectURL(file)
+                                          : null
+                                    )}
+                                    refImagensDeletadas={hadleRefImagensDel}
                                  />
                               );
                            }}
@@ -547,7 +648,7 @@ const Page = () => {
                                     htmlFor="cep"
                                     label="CEP"
                                     placeholder="Digite o cep"
-                                    type="text"
+                                    type="number"
                                     {...register("cep", {
                                        setValueAs(value) {
                                           if (value === "" || isNaN(value)) {
@@ -567,7 +668,7 @@ const Page = () => {
                                     }}
                                  />
                                  <InputPadrao
-                                    htmlFor="Bairro"
+                                    htmlFor="bairro"
                                     label="Bairro"
                                     placeholder="Digite o bairro"
                                     type="text"
@@ -622,10 +723,7 @@ const Page = () => {
                                        label={`Número do imóvel`}
                                        placeholder="Digite o número do imóvel"
                                        type="number"
-                                       {...register("numero", {
-                                          setValueAs: (value) =>
-                                             parseInt(value, 10),
-                                       })}
+                                       {...register("numero")}
                                        mensagemErro={errors.numero?.message}
                                        onChange={() =>
                                           handleInputChange("numero")
@@ -639,7 +737,10 @@ const Page = () => {
                                           label={`Número do apartamento`}
                                           placeholder="Digite o número do apartamento"
                                           type="numberApto"
-                                          {...register("numeroApto")}
+                                          {...register("numeroApto", {
+                                             setValueAs: (value) =>
+                                                parseInt(value, 10),
+                                          })}
                                           mensagemErro={
                                              errors.numeroApto?.message
                                           }
@@ -670,9 +771,11 @@ const Page = () => {
                      <div className="flex flex-col gap-4">
                         <SearchProprietarioList
                            registerProps={register("proprietario")}
+                           selected={watch("proprietario")}
                         />
                         <CorretoresBoxSelect
                            registerProps={register("corretores")}
+                           arraySelect={watch("corretores")}
                         />
                         <div className="flex flex-row gap-2 justify-center">
                            <BotaoPadrao
@@ -682,11 +785,7 @@ const Page = () => {
                            />
                            <BotaoPadrao
                               type="submit"
-                              texto="Criar imóvel"
-                              onClick={() => {
-                                 while (isSubmitting) {}
-                                 router.push("/imoveis");
-                              }}
+                              texto="Salvar imóvel"
                               disabled={isSubmitting}
                            />
                         </div>

@@ -1,7 +1,7 @@
 export enum TipoBanner {
-   "DESCONTO",
-   "MELHOR PREÇO",
-   "PROMOÇÃO",
-   "ADQUIRIDO",
-   "ALUGADO",
+   DESCONTO = "DESCONTO",
+   MELHOR_PRECO = "MELHOR_PRECO",
+   PROMOCAO = "PROMOCAO",
+   ADQUIRIDO = "ADQUIRIDO",
+   ALUGADO = "ALUGADO",
 }

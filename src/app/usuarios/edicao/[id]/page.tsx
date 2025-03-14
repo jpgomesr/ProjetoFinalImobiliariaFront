@@ -218,9 +218,9 @@ const Page = () => {
                      </p>
 
                      <Switch
-                        handleAcao={handleTrocaDeSenha}
+                        onChange={(e) => handleTrocaDeSenha(e.target.checked)}
                         className="w-8 h-4 sm:w-12 sm:h-6 md:w-14 md:h-7 lg:w-16 lg:h-8"
-                        value={alterarSenha}
+                        checked={alterarSenha}
                      />
                   </div>
                   <InputPadrao
@@ -263,7 +263,7 @@ const Page = () => {
                            <List
                               title="Tipo usuario"
                               opcoes={tiposDeUsuarios}
-                              mundandoValor={field.onChange}
+                              mudandoValor={field.onChange}
                               bordaPreta
                               placeholder="Tipo usuario"
                               value={field.value}
@@ -279,7 +279,7 @@ const Page = () => {
                            <List
                               title="Status"
                               opcoes={opcoesStatus}
-                              mundandoValor={field.onChange}
+                              mudandoValor={field.onChange}
                               bordaPreta
                               value={field.value}
                            />
