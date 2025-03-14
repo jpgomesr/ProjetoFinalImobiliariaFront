@@ -1,5 +1,7 @@
 import { TipoImovelEnum } from "@/models/Enum/TipoImovelEnum";
 import z, { string } from "zod";
+import { ModelCorretorSchema } from "@/models/ModelCorretor";
+
 
 export const createUsuarioValidator = (isPasswordChangeEnabled = true) => {
    return z
@@ -164,3 +166,52 @@ export const proprietarioValidator = z.object({
 
    ativo : z.string()
 });
+
+export const createImovelValidator = () => {
+   return z.object({
+      titulo: z.string().min(1, { message: "Campo obrigatório" }),
+      tipo: z.string().min(1, { message: "Campo obrigatório" }),
+      favoritado: z.boolean().optional(),
+      objImovel: z.string().min(1, { message: "Campo obrigatório" }),
+      valor: z.number({ message: "Campo obrigatório" }),
+      valorPromo: z.number().optional(),
+      iptu: z.number().optional(),
+      valorCondominio: z.number().optional(),
+      codigo: z.number().optional(),
+      rua: z.string().min(1, { message: "Campo obrigatório" }),
+      bairro: z.string().min(1, { message: "Campo obrigatório" }),
+      cidade: z.string().min(1, { message: "Campo obrigatório" }),
+      descricao: z.string().min(1, { message: "Campo obrigatório" }),
+      qtdBanheiros: z.number({ message: "Campo obrigatório" }),
+      qtdQuartos: z.number({ message: "Campo obrigatório" }),
+      qtdVagas: z.number({ message: "Campo obrigatório" }),
+      qtdChurrasqueiras: z.number().optional(),
+      qtdPiscinas: z.number().optional(),
+      metragem: z.number({ message: "Campo obrigatório" }),
+      banner: z.boolean(),
+      tipoBanner: z.string().optional(),
+      academia: z.boolean(),
+      destaque: z.boolean(),
+      visibilidade: z.boolean(),
+      imagens: z.object({
+         imagemPrincipal: z.union([z.instanceof(File), z.string()]).nullable(),
+         imagensGaleria: z
+            .array(z.union([z.instanceof(File), z.string()]))
+            .refine((files) => files.every((file) => file !== null), {
+               message: "As imagens da galeria não podem ser nulas",
+            })
+            .nullable(),
+      }),
+      cep: z.number().refine((val) => val.toString().length === 8, {
+         message: "O CEP deve ter exatamente 8 dígitos.",
+      }),
+      numero: z.number({ message: "Campo obrigatório" }),
+      numeroApto: z.number().optional(),
+      estado: z.string().min(1, { message: "Campo obrigatório" }),
+      proprietario: z.number().min(1, { message: "Campo obrigatório" }),
+      corretores: z
+         .array(ModelCorretorSchema)
+         .min(1, { message: "Precisa ter pelo menos um corretor" }),
+      id: z.string().optional(),
+   });
+};

@@ -344,7 +344,7 @@ const Page = () => {
                         render={({ field }) => (
                            <List
                               opcoes={opcoesTipoResidencia}
-                              mundandoValor={field.onChange}
+                              mudandoValor={field.onChange}
                               value={watch("tipoResidencia")}
                               placeholder="Selecione o tipo de residência"
                               bordaPreta
@@ -395,7 +395,7 @@ const Page = () => {
                            <List
                               title="Status"
                               opcoes={opcoesStatus}
-                              mundandoValor={field.onChange}
+                              mudandoValor={field.onChange}
                               placeholder="Ativo"
                               bordaPreta
                            />

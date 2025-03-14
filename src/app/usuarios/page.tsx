@@ -141,7 +141,7 @@ const page = () => {
                "
                >
                   <List
-                     mundandoValor={setRevalidandoQuery(setStatus)}
+                     mudandoValor={setRevalidandoQuery(setStatus)}
                      opcoes={opcoesStatus}
                      bordaPreta
                      placeholder="Ativo"
@@ -158,7 +158,7 @@ const page = () => {
                   <div className="flex h-full">
                      <List
                         opcoes={tiposDeUsuarios}
-                        mundandoValor={setRevalidandoQuery(setTipoUsuario)}
+                        mudandoValor={setRevalidandoQuery(setTipoUsuario)}
                         placeholder="USUARIO"
                         bordaPreta
                      />
