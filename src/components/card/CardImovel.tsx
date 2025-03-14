@@ -15,7 +15,7 @@ interface HomeProps {
    edicao?: boolean;
    edicaoLink?: string;
    atualizacaoRender?: () => void;
-   deletarImovel: (id: number) => void;
+   deletarImovel?: (id: number) => void;
 }
 
 export default function CardImovel(props: HomeProps) {
@@ -112,8 +112,12 @@ export default function CardImovel(props: HomeProps) {
                                     ? "text-brancoEscurecido"
                                     : "text-havprincipal"
                               } cursor-pointer w-5 h-5`}
-                              onClick={() =>
-                                 props.deletarImovel(props.imovel.id)
+                              onClick={() =>{
+                                 if(props.deletarImovel){
+                                    props.deletarImovel(props.imovel.id)
+                                 }
+                              }
+                               
                               }
                            />
                         ) : (

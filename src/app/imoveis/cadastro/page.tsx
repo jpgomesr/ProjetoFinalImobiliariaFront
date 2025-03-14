@@ -177,6 +177,9 @@ const Page = () => {
          method: "POST",
          body: formData,
       });
+      if (response.ok) {
+         router.push("/imoveis");
+      }
       console.log(response.json());
    };
 
@@ -699,10 +702,6 @@ const Page = () => {
                            <BotaoPadrao
                               type="submit"
                               texto="Criar imóvel"
-                              onClick={() => {
-                                 while (isSubmitting) {}
-                                 router.push("/imoveis");
-                              }}
                               disabled={isSubmitting}
                            />
                         </div>
