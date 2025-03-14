@@ -392,7 +392,12 @@ const Page = () => {
                               placeholder="Digite o preço promocional"
                               type="number"
                               {...register("valorPromo", {
-                                 valueAsNumber: true,
+                                 setValueAs(value) {
+                                    if (value === "" || isNaN(value)) {
+                                       return undefined;
+                                    }
+                                    return Number(value);
+                                 },
                               })}
                               mensagemErro={errors.valorPromo?.message}
                               onChange={() => handleInputChange("valorPromo")}
@@ -403,7 +408,12 @@ const Page = () => {
                               placeholder="Valor do IPTU"
                               type="number"
                               {...register("iptu", {
-                                 valueAsNumber: true,
+                                 setValueAs(value) {
+                                    if (value === "" || isNaN(value)) {
+                                       return undefined;
+                                    }
+                                    return Number(value);
+                                 },
                               })}
                               mensagemErro={errors.iptu?.message}
                               onChange={() => handleInputChange("iptu")}
@@ -414,7 +424,12 @@ const Page = () => {
                               placeholder="Digite o valor do condomínio"
                               type="number"
                               {...register("valorCondominio", {
-                                 valueAsNumber: true,
+                                 setValueAs(value) {
+                                    if (value === "" || isNaN(value)) {
+                                       return undefined;
+                                    }
+                                    return Number(value);
+                                 },
                               })}
                               mensagemErro={errors.valorCondominio?.message}
                               onChange={() =>
@@ -633,8 +648,12 @@ const Page = () => {
                                     placeholder="Digite o cep"
                                     type="number"
                                     {...register("cep", {
-                                       setValueAs: (value) =>
-                                          parseInt(value, 10),
+                                       setValueAs(value) {
+                                          if (value === "" || isNaN(value)) {
+                                             return undefined;
+                                          }
+                                          return Number(value);
+                                       },
                                     })}
                                     mensagemErro={errors.cep?.message}
                                     onChange={(e) => {
