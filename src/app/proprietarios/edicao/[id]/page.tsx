@@ -19,7 +19,7 @@ import ModelProprietario from "@/models/ModelProprietario";
 import { buscarProprietarioPorId } from "@/Functions/proprietario/buscaProprietario";
 import { preencherCampos, restaurarCampos } from "@/Functions/requisicaoViaCep";
 import List from "@/components/List";
-import Erro404 from "@/components/Erro404"; // Componente de erro 404
+import Erro404 from "@/components/Erro404"; 
 import { useNotification } from "@/context/NotificationContext"
 
 const Page = () => {
@@ -100,6 +100,7 @@ const Page = () => {
                await buscarProprietarioPorId(id.toString());
             if (!proprietarioRequisicao) {
                setErro404(true); // Exibe o erro 404 se o proprietário não for encontrado
+               console.log("teste")
                return;
             }
 

@@ -23,12 +23,12 @@ import { buscarUsuarioPorId } from "@/Functions/usuario/buscaUsuario";
 import List from "@/components/List";
 import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
 import { useNotification } from "@/context/NotificationContext";
+import Erro404 from "@/components/Erro404";
 
 // Interface para os valores do formulário
 
 const Page = () => {
-
-   const { showNotification } = useNotification()
+   const { showNotification } = useNotification();
    const router = useRouter();
    let { id } = useParams();
    id = id ? (Array.isArray(id) ? id[0] : id) : undefined;
@@ -43,6 +43,8 @@ const Page = () => {
          setValue("confirmaSenha", "");
       }
    };
+   const [loading, setLoading] = useState(true);
+   const [erro404, setErro404] = useState(false);
 
    const usuarioValidator = createUsuarioValidator(alterarSenha);
    type usuarioValidatorSchema = z.infer<typeof usuarioValidator>;
@@ -73,8 +75,6 @@ const Page = () => {
       },
    });
 
-   
-
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const tiposDeUsuarios = [
       { id: TipoUsuarioEnum.USUARIO, label: "Usuário" },
@@ -88,16 +88,31 @@ const Page = () => {
    ];
 
    const preencherInformacoesAtuaisDoUsuario = async () => {
-      if (id) {
+      if (!id) {
+         setErro404(true);
+         return;
+      }
+      try {
          const usuario: ModelUsuario = await buscarUsuarioPorId(id.toString());
+
+         if(!usuario.id){
+            setErro404(true)
+            return;
+         }
 
          setValue("nomeCompleto", usuario.nome);
          setValue("descricao", usuario.descricao);
          setValue("email", usuario.email);
-         setValue("telefone", usuario.telefone);   
+         setValue("telefone", usuario.telefone);
          setValue("tipoUsuario", usuario.role);
          setValue("ativo", usuario.ativo ? "Ativo" : "Desativado");
          setPreview(usuario.foto);
+
+      } catch (error) {
+         console.error("Erro ao buscar Usuario:", error);
+         setErro404(true); 
+      } finally {
+         setLoading(false); 
       }
    };
 
@@ -110,6 +125,14 @@ const Page = () => {
          resetField("confirmaSenha");
       }
    }, [alterarSenha, resetField]);
+
+   if (loading) {
+      return <div>Carregando...</div>; // Exibe um indicador de carregamento
+   }
+
+   if (erro404) {
+      return <Erro404 />; // Exibe a página de erro 404
+   }
 
    const onSubmit = async (data: usuarioValidatorSchema) => {
       try {
@@ -130,8 +153,8 @@ const Page = () => {
             "PUT"
          );
 
-         console.log(data.ativo === "Ativo")
-         console.log(data.ativo)
+         console.log(data.ativo === "Ativo");
+         console.log(data.ativo);
          if (!response.ok) {
             const responseData = await response.json();
             if (responseData.erros) {
@@ -152,7 +175,7 @@ const Page = () => {
             throw new Error(responseData.mensagem || "Erro ao editar usuário.");
          }
 
-         showNotification("Usuário editado com sucesso")
+         showNotification("Usuário editado com sucesso");
          clearErrors();
          router.push("/usuarios");
       } catch (error) {
