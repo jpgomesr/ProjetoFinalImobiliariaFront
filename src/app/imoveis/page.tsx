@@ -77,23 +77,23 @@ const page = () => {
                className="w-full"
                titulo="Gerenciador de imóveis"
             >
-               <div className="grid grid-cols-[auto_1fr_auto] w-full gap-2 items-center">
+               <div className="flex flex-col w-full gap-2 items-left md:flex-row h-full">
                   <div className="flex h-full">
                      <List opcoes={opcoes} />
                   </div>
                   <div
                      className="flex flex-row items-center px-2 py-1 gap-2 rounded-md border-2 border-gray-300 
-                              bg-white w-full h-full"
+                              bg-white w-full min-h-full min-w-1"
                   >
                      <Search className="w-5" />
                      <input
                         type="text"
-                        className="focus:outline-none bg-white placeholder:text-gray-500 flex-1"
+                        className="focus:outline-none min-w-1 bg-white placeholder:text-gray-500"
                         placeholder="Pesquise aqui"
                      />
                   </div>
                   <div className="flex flex-row gap-2 h-full">
-                     <div className="w-36 h-full">
+                     <div className="w-36 min-h-full">
                         <ButtonFiltro />
                      </div>
                      <Link href={"/imoveis/cadastro"}>
