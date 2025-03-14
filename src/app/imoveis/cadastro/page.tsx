@@ -138,7 +138,7 @@ const Page = () => {
          iptu: data.iptu,
          valorCondominio: data.valorCondominio,
          idProprietario: data.proprietario,
-         ativo: true,
+         ativo: data.visibilidade,
          endereco: {
             rua: data.rua,
             bairro: data.bairro,

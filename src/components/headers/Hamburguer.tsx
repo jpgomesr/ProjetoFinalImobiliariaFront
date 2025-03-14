@@ -48,7 +48,7 @@ const Hamburguer = (props: HamburguerProps) => {
       {
          label: "Imóveis",
          icone: <ImoveisIcon className="w-5" />,
-         route: "/imoveis",
+         route: "/",
       },
       {
          label: "Agendamentos",

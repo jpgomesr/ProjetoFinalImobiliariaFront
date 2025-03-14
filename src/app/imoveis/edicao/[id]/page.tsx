@@ -19,6 +19,7 @@ import SearchProprietarioList from "@/components/SearchProprietarioList";
 import CorretoresBoxSelect from "@/components/CorretoresBoxSelect";
 import { useParams, useRouter } from "next/navigation";
 import { ModelImovelGet } from "@/models/ModelImovelGet";
+import Link from "next/link";
 
 const Page = () => {
    const router = useRouter();
@@ -198,7 +199,7 @@ const Page = () => {
          iptu: data.iptu,
          valorCondominio: data.valorCondominio,
          idProprietario: data.proprietario,
-         ativo: true,
+         ativo: data.visibilidade,
          endereco: {
             rua: data.rua,
             bairro: data.bairro,
@@ -549,7 +550,10 @@ const Page = () => {
                               )}
                            />
                         </div>
-                        <div className="flex justify-center mt-4">
+                        <div className="flex justify-center mt-4 gap-2">
+                           <Link href={"/imoveis"}>
+                              <BotaoPadrao type="button" texto="Cancelar" />
+                           </Link>
                            <BotaoPadrao
                               type="button"
                               texto="Próximo"
