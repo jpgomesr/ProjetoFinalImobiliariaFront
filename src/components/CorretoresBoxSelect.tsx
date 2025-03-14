@@ -24,11 +24,13 @@ const CorretorBox = (props: CorretorBoxProps) => {
 interface CorretoresBoxSelectProps {
    registerProps: UseFormRegisterReturn;
    arraySelect?: { id: number; nome: string }[];
+   mensagemErro?: string;
 }
 
 const CorretoresBoxSelect = ({
    registerProps,
    arraySelect,
+   mensagemErro,
 }: CorretoresBoxSelectProps) => {
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const [search, setSearch] = useState<string>("");
@@ -111,43 +113,50 @@ const CorretoresBoxSelect = ({
    };
 
    return (
-      <div className="flex flex-col md:flex-row gap-8 w-full">
-         <div className="bg-begeClaroPadrao p-4 gap-3 flex flex-col h-64 w-full rounded-md">
-            <InputPadrao
-               type="text"
-               placeholder="Pesquise o nome do corretor"
-               value={search}
-               onChange={handleSearchChange}
-            />
-            <div className="flex flex-col gap-2 overflow-y-auto hide-scrollbar">
-               {corretores
-                  .filter(
-                     (cor) =>
-                        !search ||
-                        cor.nome.toLowerCase().includes(search.toLowerCase())
-                  )
-                  .map((cor, idx) => (
-                     <CorretorBox
-                        key={idx}
-                        corretor={cor}
-                        isSelected={selectedValues.includes(cor)}
-                        handle={handleAddSelectedValues}
-                     />
-                  ))}
+      <div>
+         <div className="flex flex-col md:flex-row gap-8 w-full">
+            <div className="bg-begeClaroPadrao p-4 gap-3 flex flex-col h-64 w-full rounded-md">
+               <InputPadrao
+                  type="text"
+                  placeholder="Pesquise o nome do corretor"
+                  value={search}
+                  onChange={handleSearchChange}
+               />
+               <div className="flex flex-col gap-2 overflow-y-auto hide-scrollbar">
+                  {corretores
+                     .filter(
+                        (cor) =>
+                           !search ||
+                           cor.nome.toLowerCase().includes(search.toLowerCase())
+                     )
+                     .map((cor, idx) => (
+                        <CorretorBox
+                           key={idx}
+                           corretor={cor}
+                           isSelected={selectedValues.includes(cor)}
+                           handle={handleAddSelectedValues}
+                        />
+                     ))}
+               </div>
             </div>
-         </div>
 
-         {/* Exibir os valores selecionados */}
-         <div className="w-full h-64 bg-begeClaroPadrao rounded-md">
-            <div className="p-4 h-full">
-               <h3>Valores selecionados:</h3>
-               <div>
-                  {selectedValues.map((cor, index) => (
-                     <div key={index}>{cor.nome}</div>
-                  ))}
+            {/* Exibir os valores selecionados */}
+            <div className="w-full h-64 bg-begeClaroPadrao rounded-md">
+               <div className="p-4 h-full">
+                  <h3>Valores selecionados:</h3>
+                  <div>
+                     {selectedValues.map((cor, index) => (
+                        <div key={index}>{cor.nome}</div>
+                     ))}
+                  </div>
                </div>
             </div>
          </div>
+         {mensagemErro && (
+            <span className="text-red-500 text-xs mt-1 md:text-sm xl:text-base">
+               {mensagemErro}
+            </span>
+         )}
       </div>
    );
 };

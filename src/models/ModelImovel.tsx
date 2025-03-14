@@ -5,7 +5,7 @@ export default interface Imovel {
    id: number;
    titulo: string;
    favoritado: boolean;
-   objImovel: string;
+   finalidade: string;
    preco: number;
    precoPromocional: number;
    iptu: number;

@@ -19,10 +19,12 @@ import { createImovelValidator } from "@/validators/Validators";
 import { restaurarCampos, preencherCampos } from "@/Functions/requisicaoViaCep";
 import SearchProprietarioList from "@/components/SearchProprietarioList";
 import CorretoresBoxSelect from "@/components/CorretoresBoxSelect";
+import { useNotification } from "@/context/NotificationContext";
 
 const Page = () => {
    const router = useRouter();
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+   const { showNotification } = useNotification();
 
    const [step, setStep] = useState(1);
    const [camposDesabilitados, setCamposDesabilitados] = useState({
@@ -101,16 +103,23 @@ const Page = () => {
             "objImovel",
             "tipo",
          ]);
-
          if (isValid) {
             setStep((prev) => prev + 1);
          }
       }
 
       if (step === 2) {
-         const imagens = watch("imagens");
-         const isValid = await trigger();
-         if (isValid && imagens.imagemPrincipal) {
+         const isValid = await trigger([
+            "cep",
+            "bairro",
+            "estado",
+            "cidade",
+            "rua",
+            "imagens",
+            "numero",
+            "numeroApto",
+         ]);
+         if (isValid) {
             setStep((prev) => prev + 1);
          }
       }
@@ -177,6 +186,11 @@ const Page = () => {
          method: "POST",
          body: formData,
       });
+      if (response.ok) {
+         showNotification("Imóvel cadastrado com sucesso");
+         clearErrors();
+         router.push("/imoveis");
+      }
       console.log(response.json());
    };
 
@@ -214,86 +228,102 @@ const Page = () => {
                            mensagemErro={errors.descricao?.message}
                            onChange={() => handleInputChange("descricao")}
                         />
-                        <div className="flex flex-row gap-2 w-full">
-                           <div className="flex flex-row md:flex-col gap-2 w-full">
-                              <InputPadrao
-                                 htmlFor="tamanho"
-                                 label="Tamanho"
-                                 placeholder="Área privada"
-                                 {...register("metragem", {
-                                    valueAsNumber: true,
-                                 })}
-                                 mensagemErro={errors.metragem?.message}
-                                 onChange={() => handleInputChange("metragem")}
-                                 type="number"
-                              />
-                              <InputPadrao
-                                 htmlFor="quartos"
-                                 label="Quartos"
-                                 placeholder="Quantidade quartos"
-                                 {...register("qtdQuartos", {
-                                    valueAsNumber: true,
-                                 })}
-                                 mensagemErro={errors.qtdQuartos?.message}
-                                 onChange={() =>
-                                    handleInputChange("qtdQuartos")
-                                 }
-                                 type="number"
-                              />
-                              <InputPadrao
-                                 htmlFor="banheiros"
-                                 label="Banheiros"
-                                 placeholder="Quantidade banheiros"
-                                 {...register("qtdBanheiros", {
-                                    valueAsNumber: true,
-                                 })}
-                                 mensagemErro={errors.qtdBanheiros?.message}
-                                 onChange={() =>
-                                    handleInputChange("qtdBanheiros")
-                                 }
-                                 type="number"
-                              />
+                        <div className="flex flex-col md:flex-row gap-2 w-full">
+                           <div className="flex flex-col gap-2 w-full">
+                              <div className="w-full">
+                                 <InputPadrao
+                                    htmlFor="tamanho"
+                                    label="Tamanho"
+                                    placeholder="Área privada"
+                                    {...register("metragem", {
+                                       valueAsNumber: true,
+                                    })}
+                                    mensagemErro={errors.metragem?.message}
+                                    onChange={() =>
+                                       handleInputChange("metragem")
+                                    }
+                                    type="number"
+                                 />
+                              </div>
+                              <div className="w-full">
+                                 <InputPadrao
+                                    htmlFor="quartos"
+                                    label="Quartos"
+                                    placeholder="Quantidade quartos"
+                                    {...register("qtdQuartos", {
+                                       valueAsNumber: true,
+                                    })}
+                                    mensagemErro={errors.qtdQuartos?.message}
+                                    onChange={() =>
+                                       handleInputChange("qtdQuartos")
+                                    }
+                                    type="number"
+                                 />
+                              </div>
+                              <div className="w-full">
+                                 <InputPadrao
+                                    htmlFor="banheiros"
+                                    label="Banheiros"
+                                    placeholder="Quantidade banheiros"
+                                    {...register("qtdBanheiros", {
+                                       valueAsNumber: true,
+                                    })}
+                                    mensagemErro={errors.qtdBanheiros?.message}
+                                    onChange={() =>
+                                       handleInputChange("qtdBanheiros")
+                                    }
+                                    type="number"
+                                 />
+                              </div>
                            </div>
-                           <div className="flex flex-row md:flex-col gap-2 w-full">
-                              <InputPadrao
-                                 htmlFor="garagem"
-                                 label="Garagens"
-                                 placeholder="Quantidade vagas"
-                                 type="number"
-                                 {...register("qtdVagas", {
-                                    valueAsNumber: true,
-                                 })}
-                                 mensagemErro={errors.qtdVagas?.message}
-                                 onChange={() => handleInputChange("qtdVagas")}
-                              />
-                              <InputPadrao
-                                 htmlFor="churrasqueiras"
-                                 label="Churrasqueira"
-                                 placeholder="Quantidade churrasqueiras"
-                                 {...register("qtdChurrasqueiras", {
-                                    valueAsNumber: true,
-                                 })}
-                                 mensagemErro={
-                                    errors.qtdChurrasqueiras?.message
-                                 }
-                                 onChange={() =>
-                                    handleInputChange("qtdChurrasqueiras")
-                                 }
-                                 type="number"
-                              />
-                              <InputPadrao
-                                 htmlFor="piscinas"
-                                 label="Piscinas"
-                                 placeholder="Quantidade piscinas"
-                                 {...register("qtdPiscinas", {
-                                    valueAsNumber: true,
-                                 })}
-                                 mensagemErro={errors.qtdPiscinas?.message}
-                                 onChange={() =>
-                                    handleInputChange("qtdPiscinas")
-                                 }
-                                 type="number"
-                              />
+                           <div className="flex flex-col gap-2 w-full">
+                              <div className="w-full">
+                                 <InputPadrao
+                                    htmlFor="garagem"
+                                    label="Garagens"
+                                    placeholder="Quantidade vagas"
+                                    type="number"
+                                    {...register("qtdVagas", {
+                                       valueAsNumber: true,
+                                    })}
+                                    mensagemErro={errors.qtdVagas?.message}
+                                    onChange={() =>
+                                       handleInputChange("qtdVagas")
+                                    }
+                                 />
+                              </div>
+                              <div className="w-full">
+                                 <InputPadrao
+                                    htmlFor="churrasqueiras"
+                                    label="Churrasqueira"
+                                    placeholder="Quantidade churrasqueiras"
+                                    {...register("qtdChurrasqueiras", {
+                                       valueAsNumber: true,
+                                    })}
+                                    mensagemErro={
+                                       errors.qtdChurrasqueiras?.message
+                                    }
+                                    onChange={() =>
+                                       handleInputChange("qtdChurrasqueiras")
+                                    }
+                                    type="number"
+                                 />
+                              </div>
+                              <div className="w-full">
+                                 <InputPadrao
+                                    htmlFor="piscinas"
+                                    label="Piscinas"
+                                    placeholder="Quantidade piscinas"
+                                    {...register("qtdPiscinas", {
+                                       valueAsNumber: true,
+                                    })}
+                                    mensagemErro={errors.qtdPiscinas?.message}
+                                    onChange={() =>
+                                       handleInputChange("qtdPiscinas")
+                                    }
+                                    type="number"
+                                 />
+                              </div>
                            </div>
                         </div>
                         <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -342,7 +372,7 @@ const Page = () => {
                            />
                            <InputPadrao
                               htmlFor="valor_condominio"
-                              label="Valor do Condomínio"
+                              label="Condomínio"
                               placeholder="Digite o valor do condomínio"
                               type="number"
                               {...register("valorCondominio", {
@@ -529,11 +559,8 @@ const Page = () => {
                                        }
                                        field.onChange(newValue);
                                     }}
-                                    mensagemErroPrincipal={
+                                    mensagemErro={
                                        errors.imagens?.imagemPrincipal?.message
-                                    }
-                                    mensagemErroGaleria={
-                                       errors.imagens?.imagensGaleria?.message
                                     }
                                     clearErrors={clearErrors}
                                  />
@@ -661,7 +688,7 @@ const Page = () => {
                            <BotaoPadrao
                               type="button"
                               texto="Próximo"
-                              onClick={() => setStep(step + 1)}
+                              onClick={handleNextStep}
                            />
                         </div>
                      </>
@@ -670,9 +697,11 @@ const Page = () => {
                      <div className="flex flex-col gap-4">
                         <SearchProprietarioList
                            registerProps={register("proprietario")}
+                           mensagemErro={errors.proprietario?.message}
                         />
                         <CorretoresBoxSelect
                            registerProps={register("corretores")}
+                           mensagemErro={errors.corretores?.message}
                         />
                         <div className="flex flex-row gap-2 justify-center">
                            <BotaoPadrao
@@ -683,10 +712,6 @@ const Page = () => {
                            <BotaoPadrao
                               type="submit"
                               texto="Criar imóvel"
-                              onClick={() => {
-                                 while (isSubmitting) {}
-                                 router.push("/imoveis");
-                              }}
                               disabled={isSubmitting}
                            />
                         </div>

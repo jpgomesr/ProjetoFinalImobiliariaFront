@@ -6,7 +6,6 @@ import { useState } from "react";
 import CardBanner from "./CardBanner";
 import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
-import BotaoPadrao from "../BotaoPadrao";
 import Image from "next/image";
 import Imovel from "@/models/ModelImovel";
 import ModalCofirmacao from "../ComponentesCrud/ModalConfirmacao";
@@ -16,13 +15,12 @@ interface HomeProps {
    edicao?: boolean;
    edicaoLink?: string;
    atualizacaoRender?: () => void;
+   deletarImovel?: (id: number) => void;
 }
 
 export default function CardImovel(props: HomeProps) {
    const router = useRouter();
-   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const [isBannerVisible] = useState(props.imovel.banner);
-   const [isModalVisible, setIsModalVisible] = useState(false);
 
    const valor = props.imovel.preco;
    const valorFormatado = valor.toLocaleString("pt-BR", {
@@ -62,31 +60,6 @@ export default function CardImovel(props: HomeProps) {
 
    const cardEdicao = props.edicao ? props.edicao : false;
 
-   const handleModalVisible = () => {
-      setIsModalVisible(!isModalVisible);
-   };
-   console.log(props.imovel.permitirDestaque);
-
-   const handleDeleteImovel = async () => {
-      try {
-         const response = await fetch(
-            `${BASE_URL}/imoveis/${props.imovel.id}`,
-            {
-               method: "DELETE",
-            }
-         );
-
-         if (response.ok) {
-            console.log("Imóvel deletado com sucesso!");
-            props.atualizacaoRender?.();
-         } else {
-            console.error("Erro ao deletar o imóvel:", response.statusText);
-         }
-      } catch (error) {
-         console.error("Erro ao deletar o imóvel:", error);
-      }
-   };
-
    const imagemCapa = getImagemCapa(props.imovel);
 
    return (
@@ -112,7 +85,7 @@ export default function CardImovel(props: HomeProps) {
                <Image
                   src={imagemCapa || "/images/fallback.jpg"} // Fallback para imagem inválida
                   alt={`${props.imovel.titulo}`}
-                  className="w-full max-h-[13rem] max-w-[350px] rounded-t-2xl object-cover"
+                  className="w-full max-w-[350px] min-h-44 max-h-44 rounded-t-2xl object-cover"
                   width={1920}
                   height={1080}
                />
@@ -125,19 +98,27 @@ export default function CardImovel(props: HomeProps) {
                            className={`text-xs font-medium whitespace-nowrap ${
                               !props.imovel.permitirDestaque
                                  ? "text-havprincipal"
-                                 : "text-brancoFundo"
+                                 : "text-brancoEscurecido"
                            }`}
                         >
-                           {"finalidade" in props.imovel
-                              ? props.imovel.finalidade === "Venda"
-                                 ? "Venda por"
-                                 : "Locação por"
-                              : "Venda por"}
+                           {props.imovel.finalidade === "VENDA"
+                              ? "Venda por"
+                              : "Locação por"}
                         </p>
                         {cardEdicao ? (
                            <Trash
-                              className="text-havprincipal cursor-pointer w-5 h-5"
-                              onClick={handleModalVisible}
+                              className={`${
+                                 props.imovel.permitirDestaque
+                                    ? "text-brancoEscurecido"
+                                    : "text-havprincipal"
+                              } cursor-pointer w-5 h-5`}
+                              onClick={() =>{
+                                 if(props.deletarImovel){
+                                    props.deletarImovel(props.imovel.id)
+                                 }
+                              }
+                               
+                              }
                            />
                         ) : (
                            <FavButton
@@ -155,7 +136,7 @@ export default function CardImovel(props: HomeProps) {
                            className={`flex flex-row gap-2 items-center w-full ${
                               !props.imovel.permitirDestaque
                                  ? "text-havprincipal"
-                                 : "text-brancoFundo"
+                                 : "text-brancoEscurecido"
                            }`}
                         >
                            <p
@@ -181,7 +162,7 @@ export default function CardImovel(props: HomeProps) {
                                  className={`flex gap-1 justify-start items-end w-full text-xs opacity-50 ${
                                     !props.imovel.permitirDestaque
                                        ? "text-havprincipal"
-                                       : "text-brancoFundo"
+                                       : "text-brancoEscurecido"
                                  }`}
                               >
                                  <div className="line-through flex gap-1 justify-end items-end h-full">
@@ -216,7 +197,7 @@ export default function CardImovel(props: HomeProps) {
                         className={`text-xs ${
                            !props.imovel.permitirDestaque
                               ? "text-havprincipal"
-                              : "text-brancoFundo"
+                              : "text-brancoEscurecido"
                         }`}
                      >
                         {"tipoResidencia" in props.imovel.endereco
@@ -236,7 +217,7 @@ export default function CardImovel(props: HomeProps) {
                   className={`text-[0.625rem] flex flex-col gap-1 text-justify ${
                      !props.imovel.permitirDestaque
                         ? "text-havprincipal"
-                        : "text-brancoFundo"
+                        : "text-brancoEscurecido"
                   }`}
                >
                   <p>
@@ -261,7 +242,11 @@ export default function CardImovel(props: HomeProps) {
                   />
                   {cardEdicao ? (
                      <button
-                        className="text-sm px-4 py-2 bg-havprincipal rounded-md text-white"
+                        className={`text-sm px-4 py-2 ${
+                           props.imovel.permitirDestaque
+                              ? "bg-brancoEscurecido text-havprincipal font-bold"
+                              : "bg-havprincipal text-white"
+                        } rounded-md`}
                         onClick={() => {
                            if (props.edicaoLink) {
                               router.push(props.edicaoLink);
@@ -274,13 +259,6 @@ export default function CardImovel(props: HomeProps) {
                </div>
             </div>
          </div>
-         <ModalCofirmacao
-         isOpen={isModalVisible}
-         onClose={handleModalVisible}
-         onConfirm={handleDeleteImovel}
-         message="Deseja realmente desativar este imóvel ?"
-         /> 
-        
       </>
    );
 }

@@ -48,12 +48,12 @@ export default function Home() {
             <TituloBgDegrade text="Imóveis em" boldText="condições especias" />
             <div className="flex flex-row gap-4 overflow-x-auto px-8 pb-2 bg-scroll hide-scrollbar">
                {imoveis.map((imovel, index) => (
-                  <CardImovel key={index} imovel={imovel} />
+                  <CardImovel key={index} imovel={imovel}  />
                ))}
             </div>
             <div className="flex flex-row gap-4 overflow-x-auto px-8 pb-2 bg-scroll hide-scrollbar">
                {imoveis.map((imovel, index) => (
-                  <CardImovel key={index} imovel={imovel} />
+                  <CardImovel key={index} imovel={imovel}  />
                ))}
             </div>
          </div>
@@ -61,12 +61,12 @@ export default function Home() {
             <TituloBgDegrade text="Imóveis em" boldText="condições especias" />
             <div className="flex flex-row gap-4 overflow-x-auto px-8 pb-2 bg-scroll hide-scrollbar">
                {imoveis.map((imovel, index) => (
-                  <CardImovel key={index} imovel={imovel} />
+                  <CardImovel key={index} imovel={imovel}  />
                ))}
             </div>
             <div className="flex flex-row gap-4 overflow-x-auto px-8 pb-2 bg-scroll hide-scrollbar">
                {imoveis.map((imovel, index) => (
-                  <CardImovel key={index} imovel={imovel}/>
+                  <CardImovel key={index} imovel={imovel}  />
                ))}
             </div>
             <div className="flex flex-row gap-4 overflow-x-auto px-8 pb-2 bg-scroll hide-scrollbar">
