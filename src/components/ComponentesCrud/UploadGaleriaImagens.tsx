@@ -4,8 +4,7 @@ import { Plus, Trash } from "lucide-react";
 
 interface UploadGaleriaImagensProps {
    onImageChange?: (image: File | string | null, index?: number) => void;
-   mensagemErroPrincipal?: string;
-   mensagemErroGaleria?: string;
+   mensagemErro?: string;
    clearErrors?: () => void;
    coverImage?: string | null;
    galleryImages?: (string | null)[];
@@ -14,8 +13,7 @@ interface UploadGaleriaImagensProps {
 
 const UploadGaleriaImagens = ({
    onImageChange,
-   mensagemErroPrincipal,
-   mensagemErroGaleria,
+   mensagemErro,
    clearErrors,
    coverImage,
    galleryImages = [null, null, null],
@@ -57,17 +55,24 @@ const UploadGaleriaImagens = ({
 
             if (index === undefined) {
                setCoverImagePreview(imageUrl);
-               if (onImageChange) {
-                  onImageChange(file);
-               }
+               if (onImageChange) onImageChange(file);
             } else {
-               const newGalleryImages = [...galleryImagesPreview];
-               newGalleryImages[index] = imageUrl;
-               setGalleryImagesPreview(newGalleryImages);
+               setGalleryImagesPreview((prev) => {
+                  const updatedImages = [...prev];
+                  const firstEmptyIndex = updatedImages.findIndex(
+                     (img) => img == null
+                  );
+                  if (firstEmptyIndex !== -1) {
+                     updatedImages[firstEmptyIndex] = imageUrl;
+                  } else {
+                     updatedImages.unshift(imageUrl);
+                     if (updatedImages.length > 3) updatedImages.pop();
+                  }
 
-               if (onImageChange) {
-                  onImageChange(file, index);
-               }
+                  return updatedImages;
+               });
+
+               if (onImageChange) onImageChange(file, index);
             }
          }
       };
@@ -103,6 +108,10 @@ const UploadGaleriaImagens = ({
          }
       }
    };
+
+   useEffect(() => {
+      console.log(mensagemErro);
+   });
 
    return (
       <div className="space-y-6">
@@ -150,9 +159,9 @@ const UploadGaleriaImagens = ({
                   />
                </label>
             </div>
-            {mensagemErroPrincipal && (
+            {mensagemErro && (
                <span className="text-red-500 text-xs mt-1 md:text-sm xl:text-base">
-                  {mensagemErroPrincipal}
+                  {mensagemErro}
                </span>
             )}
          </div>
@@ -207,11 +216,6 @@ const UploadGaleriaImagens = ({
                ))}
             </div>
          </div>
-         {mensagemErroGaleria && (
-            <span className="text-red-500 text-xs mt-1 md:text-sm xl:text-base">
-               {mensagemErroGaleria}
-            </span>
-         )}
       </div>
    );
 };

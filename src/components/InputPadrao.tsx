@@ -2,7 +2,7 @@ import React from "react";
 
 interface InputPadraoProps extends React.InputHTMLAttributes<HTMLInputElement> {
    label?: string;
-   htmlFor: string;
+   htmlFor?: string;
    mensagemErro?: string;
 }
 
