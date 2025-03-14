@@ -140,7 +140,7 @@ const page = () => {
                         placeholder="Pesquise aqui"
                      />
                   </div>
-                  <div className="flex flex-row gap-2 h-full">
+                  <div className="flex flex-row-reverse md:flex-row justify-between gap-2 min-h-full">
                      <div className="w-36 min-h-full">
                         <ButtonFiltro />
                      </div>
