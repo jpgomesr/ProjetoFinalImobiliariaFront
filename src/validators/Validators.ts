@@ -161,7 +161,6 @@ export const proprietarioValidator = z.object({
       .nonnegative({ message: "O número da casa/prédio não pode ser negativo" })
       .positive({ message: "O número da casa/prédio não pode ser zero" }),
    numeroApartamento: z.number({ message: "Campo obrigatório" }).nullable(),
-
    ativo: z.string(),
 });
 
