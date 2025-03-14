@@ -200,15 +200,21 @@ export const createImovelValidator = () => {
             })
             .nullable(),
       }),
-      cep: z.number().refine((val) => val.toString().length === 8, {
-         message: "O CEP deve ter exatamente 8 dígitos.",
-      }),
+      cep: z
+         .number({ message: "Campo obrigatório" })
+         .refine((val) => val.toString().length === 8, {
+            message: "O CEP deve ter exatamente 8 dígitos.",
+         }),
       numero: z.number({ message: "Campo obrigatório" }),
       numeroApto: z.number().optional(),
       estado: z.string().min(1, { message: "Campo obrigatório" }),
-      proprietario: z.number().min(1, { message: "Campo obrigatório" }),
+      proprietario: z
+         .number({ message: "Precisa ser selecionado um proprietário" })
+         .min(1, { message: "Campo obrigatório" }),
       corretores: z
-         .array(ModelCorretorSchema)
+         .array(ModelCorretorSchema, {
+            message: "Precisa ter pelo menos um corretor",
+         })
          .min(1, { message: "Precisa ter pelo menos um corretor" }),
       id: z.string().optional(),
    });
