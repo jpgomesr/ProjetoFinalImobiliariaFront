@@ -14,13 +14,21 @@ import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
 import ModalCofirmacao from "@/components/ComponentesCrud/ModalConfirmacao";
 import SelectPadrao from "@/components/SelectPadrao";
 import ComponentePaginacao from "@/components/ComponentePaginacao";
+import { listarUsuarios } from "@/Functions/usuario/buscaUsuario";
+import ModelUsuarioListagem from "@/models/ModelUsuarioListagem";
+import List from "@/components/List";
+import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
 
 const page = () => {
-   const opcoesStatus = ["Ativo", "Desativado"];
+   const opcoesStatus = [
+      { id: "Ativo", label: "Ativo" },
+      { id: "Desativado", label: "Desativado" },
+   ];
+
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const [status, setStatus] = useState<string>("Ativo");
    const [tipoUsuario, setTipoUsuario] = useState<string>("USUARIO");
-   const [usuarios, setUsuarios] = useState<ModelUsuario[]>();
+   const [usuarios, setUsuarios] = useState<ModelUsuarioListagem[]>();
    const [revalidarQuery, setRevalidarQuery] = useState<boolean>(false);
    const [modalConfirmacaoAberto, setModalConfirmacaoAberto] = useState(false);
    const [itemDeletadoId, setItemDeletadoId] = useState<number | null>(null);
@@ -35,8 +43,6 @@ const page = () => {
       ultima: true,
       maximoPaginasVisiveis: 5,
    });
-
-   console.log(nomePesquisa);
 
    useEffect(() => {
       renderizarUsuariosApi();
@@ -69,16 +75,15 @@ const page = () => {
       };
 
    const renderizarUsuariosApi = async () => {
-      const response = await fetch(
-         `${BASE_URL}/usuarios?role=${tipoUsuario}&ativo=${
-            status === "Ativo" ? true : false
-         }&nome=${nomePesquisa}&page=${numeroPaginaAtual}  `
+      const { usuariosRenderizados, conteudoCompleto } = await listarUsuarios(
+         numeroPaginaAtual,
+         tipoUsuario,
+         status === "Ativo" ? true : false,
+         nomePesquisa
       );
 
-      const data = await response.json();
-
-      adicionarInformacoesPagina(data);
-      setUsuarios(transformarParaModel(data));
+      adicionarInformacoesPagina(conteudoCompleto);
+      setUsuarios(usuariosRenderizados);
    };
    const deletarUsuario = async () => {
       const response = await UseFetchDelete(
@@ -97,36 +102,30 @@ const page = () => {
    const renderizarUsuariosPagina = () => {
       return usuarios?.map((usuario) => (
          <CardUsuario
-            email={usuario.email}
-            id={usuario.id}
-            nome={usuario.nome}
-            status={usuario.ativo ? "Ativo" : "Desativado"}
-            tipoConta={usuario.role}
+            labelPrimeiroValor="E-mail:"
+            primeiroValor={usuario.email}
+            labelSegundoValor="Nome:"
+            segundoValor={usuario.nome}
+            labelTerceiroValor="Status:"
+            terceiroValor={usuario.ativo ? "Ativo" : "Desativado"}
+            labelQuartoValor="Tipo usuario:"
+            quartoValor={usuario.role}
             key={usuario.id}
+            id={usuario.id}
             imagem={usuario.foto}
             deletarUsuario={exibirModal}
+            linkEdicao={`/usuarios/edicao/${usuario.id}`}
          />
       ));
    };
 
-   const transformarParaModel = (data: any) => {
-      const usuarios: ModelUsuario[] = data.content.map((usuario: any) => {
-         return new ModelUsuario(
-            usuario.id,
-            usuario.role,
-            usuario.nome,
-            usuario.telefone,
-            usuario.email,
-            usuario.descricao,
-            usuario.foto,
-            usuario.ativo
-         );
-      });
+   const tiposDeUsuarios = [
+      { id: TipoUsuarioEnum.USUARIO, label: "Usuário" },
+      { id: TipoUsuarioEnum.CORRETOR, label: "Corretor" },
+      { id: TipoUsuarioEnum.ADMINISTRADOR, label: "Administrador" },
+      { id: TipoUsuarioEnum.EDITOR, label: "Editor" },
+   ];
 
-      return usuarios;
-   };
-
-   const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
 
    return (
       <Layout className="py-0">
@@ -141,25 +140,30 @@ const page = () => {
                xl:grid-cols-[1fr_6fr_1fr_1fr]   
                "
                >
-                  <SelectPadrao
-                     onChange={setRevalidandoQuery(setStatus)}
+                  <List
+                     mundandoValor={setRevalidandoQuery(setStatus)}
                      opcoes={opcoesStatus}
-                     selecionado={status}
+                     bordaPreta
                      placeholder="Ativo"
                   />
                   <InputPadrao
                      type="text"
                      htmlFor="input-busca-nome"
-                     onChange={(e) => setRevalidandoQuery(setNomePesquisa)(e.target.value)}
+                     onChange={(e) =>
+                        setRevalidandoQuery(setNomePesquisa)(e.target.value)
+                     }
                      placeholder="Digite o nome que deseja pesquisar"
                      required={false}
                   />
-                  <SelectPadrao
-                     opcoes={tiposDeUsuarios}
-                     onChange={setRevalidandoQuery(setTipoUsuario)}
-                     placeholder="USUARIO"
-                     selecionado={tipoUsuario}
-                  />
+                  <div className="flex h-full">
+                     <List
+                        opcoes={tiposDeUsuarios}
+                        mundandoValor={setRevalidandoQuery(setTipoUsuario)}
+                        placeholder="USUARIO"
+                        bordaPreta
+                     />
+                  </div>
+
                   <Link href={"/usuarios/cadastro"}>
                      <button
                         className="flex items-center justify-center bg-havprincipal rounded-md text-white h-full

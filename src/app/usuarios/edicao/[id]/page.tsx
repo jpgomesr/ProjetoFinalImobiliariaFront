@@ -17,13 +17,21 @@ import { UseErros } from "@/hooks/UseErros";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import { createUsuarioValidator } from "@/validators/usuariosValidator";
+import { createUsuarioValidator } from "@/validators/Validators";
+import { buscarUsuarioPorId } from "@/Functions/usuario/buscaUsuario";
+
+import List from "@/components/List";
+import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
+import { useNotification } from "@/context/NotificationContext";
+import Erro404 from "@/components/Erro404";
 
 // Interface para os valores do formulário
 
 const Page = () => {
+   const { showNotification } = useNotification();
    const router = useRouter();
-   const { id } = useParams();
+   let { id } = useParams();
+   id = id ? (Array.isArray(id) ? id[0] : id) : undefined;
 
    const [preview, setPreview] = useState<string>();
    const [alterarSenha, setAlterarSenha] = useState(false);
@@ -35,6 +43,8 @@ const Page = () => {
          setValue("confirmaSenha", "");
       }
    };
+   const [loading, setLoading] = useState(true);
+   const [erro404, setErro404] = useState(false);
 
    const usuarioValidator = createUsuarioValidator(alterarSenha);
    type usuarioValidatorSchema = z.infer<typeof usuarioValidator>;
@@ -65,44 +75,45 @@ const Page = () => {
       },
    });
 
-   useEffect(() => {
-      console.log(errors);
-   }, [errors]);
-
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-   const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
-   const opcoesAtivoDesativo = ["Ativo", "Desativado"];
-
-   const transformarParaModel = (usuario: any): ModelUsuario => {
-      return new ModelUsuario(
-         usuario.id,
-         usuario.role,
-         usuario.nome,
-         usuario.telefone,
-         usuario.email,
-         usuario.descricao,
-         usuario.foto,
-         usuario.ativo
-      );
-   };
-
-   const buscarUsuarioCadastrado = async () => {
-      const requisicao = await fetch(`${BASE_URL}/usuarios/${id}`);
-      const data = await requisicao.json();
-      return data;
-   };
+   const tiposDeUsuarios = [
+      { id: TipoUsuarioEnum.USUARIO, label: "Usuário" },
+      { id: TipoUsuarioEnum.CORRETOR, label: "Corretor" },
+      { id: TipoUsuarioEnum.ADMINISTRADOR, label: "Administrador" },
+      { id: TipoUsuarioEnum.EDITOR, label: "Editor" },
+   ];
+   const opcoesStatus = [
+      { id: "Ativo", label: "Ativo" },
+      { id: "Desativado", label: "Desativado" },
+   ];
 
    const preencherInformacoesAtuaisDoUsuario = async () => {
-      const informacoes = await buscarUsuarioCadastrado();
-      const usuario = transformarParaModel(informacoes);
+      if (!id) {
+         setErro404(true);
+         return;
+      }
+      try {
+         const usuario: ModelUsuario = await buscarUsuarioPorId(id.toString());
 
-      setValue("nomeCompleto", usuario.nome);
-      setValue("descricao", usuario.descricao);
-      setValue("email", usuario.email);
-      setValue("telefone", usuario.telefone);
-      setValue("tipoUsuario", usuario.role);
-      setValue("ativo", usuario.ativo ? "Ativo" : "Desativado");
-      setPreview(usuario.foto);
+         if(!usuario.id){
+            setErro404(true)
+            return;
+         }
+
+         setValue("nomeCompleto", usuario.nome);
+         setValue("descricao", usuario.descricao);
+         setValue("email", usuario.email);
+         setValue("telefone", usuario.telefone);
+         setValue("tipoUsuario", usuario.role);
+         setValue("ativo", usuario.ativo ? "Ativo" : "Desativado");
+         setPreview(usuario.foto);
+
+      } catch (error) {
+         console.error("Erro ao buscar Usuario:", error);
+         setErro404(true); 
+      } finally {
+         setLoading(false); 
+      }
    };
 
    useEffect(() => {
@@ -115,6 +126,14 @@ const Page = () => {
       }
    }, [alterarSenha, resetField]);
 
+   if (loading) {
+      return <div>Carregando...</div>; // Exibe um indicador de carregamento
+   }
+
+   if (erro404) {
+      return <Erro404 />; // Exibe a página de erro 404
+   }
+
    const onSubmit = async (data: usuarioValidatorSchema) => {
       try {
          const response = await UseFetchPostFormData(
@@ -123,7 +142,7 @@ const Page = () => {
                nome: data.nomeCompleto,
                email: data.email,
                senha: alterarSenha ? data.senha : null,
-               telefone: data.telefone,
+               telefone: data.telefone?.trim() === "" ? null : data.telefone,
                role: data.tipoUsuario,
                descricao: data.descricao,
                ativo: data.ativo === "Ativo",
@@ -134,6 +153,8 @@ const Page = () => {
             "PUT"
          );
 
+         console.log(data.ativo === "Ativo");
+         console.log(data.ativo);
          if (!response.ok) {
             const responseData = await response.json();
             if (responseData.erros) {
@@ -154,6 +175,7 @@ const Page = () => {
             throw new Error(responseData.mensagem || "Erro ao editar usuário.");
          }
 
+         showNotification("Usuário editado com sucesso");
          clearErrors();
          router.push("/usuarios");
       } catch (error) {
@@ -234,43 +256,32 @@ const Page = () => {
                      mensagemErro={errors.descricao?.message}
                   />
                   <div className="flex flex-col">
-                     <label
-                        htmlFor="tipo-usuario"
-                        className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl"
-                     >
-                        Tipo usuario
-                     </label>
                      <Controller
                         name="tipoUsuario"
                         control={control}
                         render={({ field }) => (
-                           <SelectPadrao
+                           <List
+                              title="Tipo usuario"
                               opcoes={tiposDeUsuarios}
-                              onChange={field.onChange}
+                              mundandoValor={field.onChange}
+                              bordaPreta
                               placeholder="Tipo usuario"
-                              selecionado={field.value}
-                              className="w-2/4 lg:max-w-sm"
+                              value={field.value}
                            />
                         )}
                      />
                   </div>
                   <div className="flex flex-col">
-                     <label
-                        htmlFor="tipo-usuario"
-                        className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl"
-                     >
-                        Status
-                     </label>
                      <Controller
                         name="ativo"
                         control={control}
                         render={({ field }) => (
-                           <SelectPadrao
-                              opcoes={opcoesAtivoDesativo}
-                              onChange={field.onChange}
-                              placeholder="Ativo"
-                              selecionado={field.value}
-                              className="w-2/4 lg:max-w-sm"
+                           <List
+                              title="Status"
+                              opcoes={opcoesStatus}
+                              mundandoValor={field.onChange}
+                              bordaPreta
+                              value={field.value}
                            />
                         )}
                      />

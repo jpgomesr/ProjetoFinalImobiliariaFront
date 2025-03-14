@@ -12,16 +12,17 @@ import TextAreaPadrao from "@/components/TextAreaPadrao";
 import { UseFetchPostFormData } from "@/hooks/UseFetchFormData";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
-import { createUsuarioValidator } from "@/validators/usuariosValidator";
+import { createUsuarioValidator } from "@/validators/Validators";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UseErros } from "@/hooks/UseErros";
-
+import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
+import List from "@/components/List";
+import { useNotification } from "@/context/NotificationContext";
 
 const Page = () => {
   const router = useRouter();
-
-
+  const { showNotification } = useNotification();
 
   const usuarioValidator = createUsuarioValidator();
   type usuarioValidatorSchema = z.infer<typeof usuarioValidator>;
@@ -37,34 +38,34 @@ const Page = () => {
     resetField,
     control,
     formState: { errors, isSubmitting },
- } = useForm<usuarioValidatorSchema>({
+  } = useForm<usuarioValidatorSchema>({
     resolver: zodResolver(usuarioValidator),
     defaultValues: {
-       nomeCompleto: "",
-       email: "",
-       senha: "",
-       confirmaSenha: "",
-       telefone: "",
-       tipoUsuario: "USUARIO",
-       descricao: "",
-       ativo: "Ativo",
-       imagemPerfil: null,
+      nomeCompleto: "",
+      email: "",
+      senha: "",
+      confirmaSenha: "",
+      telefone: "",
+      tipoUsuario: "USUARIO",
+      descricao: "",
+      ativo: "Ativo",
+      imagemPerfil: null,
     },
- });
+  });
 
   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-  const tiposDeUsuarios = ["USUARIO", "ADMINISTRADOR", "EDITOR", "CORRETOR"];
-  const opcoesAtivoDesativo = ["Ativo", "Desativado"];
+  const tiposDeUsuarios = [
+    { id: TipoUsuarioEnum.USUARIO, label: "Usuário" },
+    { id: TipoUsuarioEnum.CORRETOR, label: "Corretor" },
+    { id: TipoUsuarioEnum.ADMINISTRADOR, label: "Administrador" },
+    { id: TipoUsuarioEnum.EDITOR, label: "Editor" },
+  ];
+  const opcoesStatus = [
+    { id: "Ativo", label: "Ativo" },
+    { id: "Desativado", label: "Desativado" },
+  ];
 
   const onSubmit = async (data: usuarioValidatorSchema) => {
-    if (data.senha !== data.confirmaSenha) {
-      setError("confirmaSenha", {
-        type: "manual",
-        message: "As senhas não coincidem",
-      });
-      return;
-    }
-
     try {
       const response = await UseFetchPostFormData(
         `${BASE_URL}/usuarios`,
@@ -72,7 +73,7 @@ const Page = () => {
           nome: data.nomeCompleto,
           email: data.email,
           senha: data.senha,
-          telefone: data.telefone,
+          telefone: data.telefone?.trim() === "" ? null : data.telefone,
           role: data.tipoUsuario,
           descricao: data.descricao,
           ativo: data.ativo === "Ativo",
@@ -86,23 +87,24 @@ const Page = () => {
       if (!response.ok) {
         const responseData = await response.json();
         if (responseData.erros) {
-           const errosFormatados = UseErros(responseData);
-           Object.keys(errosFormatados).forEach((campo) => {
-              setError(campo as keyof usuarioValidatorSchema, {
-                 type: "manual",
-                 message: errosFormatados[campo],
-              });
-           });
-           const primeiroCampoComErro = Object.keys(
-              errosFormatados
-           )[0] as keyof usuarioValidatorSchema;
-           if (primeiroCampoComErro) {
-              setFocus(primeiroCampoComErro);
-           }
+          const errosFormatados = UseErros(responseData);
+          Object.keys(errosFormatados).forEach((campo) => {
+            setError(campo as keyof usuarioValidatorSchema, {
+              type: "manual",
+              message: errosFormatados[campo],
+            });
+          });
+          const primeiroCampoComErro = Object.keys(
+            errosFormatados
+          )[0] as keyof usuarioValidatorSchema;
+          if (primeiroCampoComErro) {
+            setFocus(primeiroCampoComErro);
+          }
         }
         throw new Error(responseData.mensagem || "Erro ao editar usuário.");
-     }
+      }
 
+      showNotification("Usuário cadastrado com sucesso");
       clearErrors(); // Limpa os erros ao cadastrar com sucesso
       router.push("/usuarios");
     } catch (error) {
@@ -115,7 +117,9 @@ const Page = () => {
       <SubLayoutPaginasCRUD>
         <FundoBrancoPadrao
           titulo="Cadastro de usuário"
-          className={`w-full ${isSubmitting ? "opacity-40" : "opacity-100"}`}
+          className={`w-full ${
+            isSubmitting ? "opacity-40" : "opacity-100"
+          }`}
         >
           <form
             onSubmit={handleSubmit(onSubmit)}
@@ -124,7 +128,6 @@ const Page = () => {
             <InputPadrao
               htmlFor="nomeCompleto"
               label="Nome completo"
-              required={true}
               type="text"
               placeholder="Ex: Carlos"
               {...register("nomeCompleto")}
@@ -133,7 +136,6 @@ const Page = () => {
             <InputPadrao
               htmlFor="email"
               label="E-mail"
-              required={true}
               type="email"
               placeholder="Ex: Carlos@gmail.com"
               {...register("email")}
@@ -142,7 +144,6 @@ const Page = () => {
             <InputPadrao
               htmlFor="senha"
               label="Senha"
-              required={true}
               type="password"
               placeholder="Ex: 123C@31s$"
               {...register("senha")}
@@ -151,7 +152,6 @@ const Page = () => {
             <InputPadrao
               htmlFor="confirmaSenha"
               label="Confirmar senha"
-              required={true}
               type="password"
               placeholder="Digite a senha novamente"
               {...register("confirmaSenha")}
@@ -160,7 +160,6 @@ const Page = () => {
             <InputPadrao
               htmlFor="telefone"
               label="Telefone"
-              required={true}
               type="text"
               placeholder="Ex: 47912312121"
               {...register("telefone")}
@@ -173,43 +172,31 @@ const Page = () => {
               mensagemErro={errors.descricao?.message}
             />
             <div className="flex flex-col">
-              <label
-                htmlFor="tipo-usuario"
-                className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl"
-              >
-                Tipo usuario
-              </label>
               <Controller
                 name="tipoUsuario"
                 control={control}
                 render={({ field }) => (
-                  <SelectPadrao
+                  <List
+                    title="Tipo usuario"
                     opcoes={tiposDeUsuarios}
-                    onChange={field.onChange}
+                    mundandoValor={field.onChange}
                     placeholder="Tipo usuario"
-                    selecionado={field.value}
-                    className="w-2/4 lg:max-w-sm"
+                    bordaPreta
                   />
                 )}
               />
             </div>
             <div className="flex flex-col">
-              <label
-                htmlFor="tipo-usuario"
-                className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl"
-              >
-                Status
-              </label>
               <Controller
                 name="ativo"
                 control={control}
                 render={({ field }) => (
-                  <SelectPadrao
-                    opcoes={opcoesAtivoDesativo}
-                    onChange={field.onChange}
+                  <List
+                    title="status"
+                    opcoes={opcoesStatus}
+                    mundandoValor={field.onChange}
                     placeholder="Ativo"
-                    selecionado={field.value}
-                    className="w-2/4 lg:max-w-sm"
+                    bordaPreta
                   />
                 )}
               />
@@ -219,7 +206,9 @@ const Page = () => {
               control={control}
               render={({ field }) => (
                 <UploadImagem
-                  onChange={(file: File | null) => field.onChange(file)}
+                  onChange={(file: File | null) =>
+                    field.onChange(file)
+                  }
                 />
               )}
             />
