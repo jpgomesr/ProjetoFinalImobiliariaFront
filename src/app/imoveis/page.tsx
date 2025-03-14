@@ -11,6 +11,7 @@ import ButtonFiltro from "@/components/componetes_filtro/filtro_pesquisa/ButtonF
 import ComponentePaginacao from "@/components/ComponentePaginacao";
 import { ModelImovelGet } from "@/models/ModelImovelGet";
 import Link from "next/link";
+import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
 
 const page = () => {
    const [imoveis, setImoveis] = useState<ModelImovelGet[]>([]);
@@ -19,6 +20,24 @@ const page = () => {
       totalPaginas: 0,
       ultima: true,
    });
+   const [mostrarNotificacao, setMostrarNotificacao] = useState(false);
+
+   const [idItemParaDeletar, setIdItemParaDeletar] = useState<number | null>(
+      null
+   );
+   const [itemDeletadoId, setItemDeletadoId] = useState<number | null>(null);
+
+   const fechandoNotificacao = () => {
+      setMostrarNotificacao(false);
+      setItemDeletadoId(null);
+   };
+   const desfazendoDelete = async () => {
+      await fetch(`${BASE_URL}/imoveis/restaurar/${itemDeletadoId}`, {
+         method: "POST",
+      });
+      setRevalidarQuery(!revalidarQuery);
+   };
+
    const [revalidarQuery, setRevalidarQuery] = useState<boolean>(false);
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -138,6 +157,13 @@ const page = () => {
                      ultimaPagina={peageableInfo.ultima}
                   />
                )}
+               <NotificacaoCrud
+                  message="Desfazer"
+                  isVisible={mostrarNotificacao}
+                  onClose={fechandoNotificacao}
+                  onUndo={desfazendoDelete}
+                  duration={5000}
+               />
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
       </Layout>

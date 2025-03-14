@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import BotaoPadrao from "../BotaoPadrao";
 import Image from "next/image";
 import Imovel from "@/models/ModelImovel";
+import ModalCofirmacao from "../ComponentesCrud/ModalConfirmacao";
 
 interface HomeProps {
    imovel: ModelImovelGet | Imovel;
@@ -273,38 +274,13 @@ export default function CardImovel(props: HomeProps) {
                </div>
             </div>
          </div>
-         {isModalVisible && (
-            <div className="fixed inset-0 flex items-center justify-center z-50">
-               {/* Overlay escuro */}
-               <div
-                  className="fixed inset-0 bg-black/40 z-30"
-                  onClick={handleModalVisible}
-               />
-
-               {/* Conteúdo do modal */}
-               <div className="bg-white p-6 rounded-lg shadow-lg z-40 max-w-sm w-full">
-                  <p className="text-center text-lg mb-4">
-                     Deseja deletar o imóvel?
-                  </p>
-
-                  <div className="flex justify-center gap-4">
-                     <BotaoPadrao
-                        texto="Sim"
-                        onClick={() => {
-                           handleDeleteImovel();
-                           handleModalVisible();
-                        }}
-                        className="bg-red-500 hover:bg-red-600 text-white"
-                     />
-                     <BotaoPadrao
-                        texto="Não"
-                        onClick={handleModalVisible}
-                        className="bg-gray-500 hover:bg-gray-600 text-white"
-                     />
-                  </div>
-               </div>
-            </div>
-         )}
+         <ModalCofirmacao
+         isOpen={isModalVisible}
+         onClose={handleModalVisible}
+         onConfirm={handleDeleteImovel}
+         message="Deseja realmente desativar este imóvel ?"
+         /> 
+        
       </>
    );
 }
