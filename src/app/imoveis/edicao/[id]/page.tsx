@@ -27,7 +27,7 @@ const Page = () => {
 
    const [refImagensDeletadas, setRefImagensDeletadas] = useState<string[]>();
    const [step, setStep] = useState(1);
-   const [camposDesabilitados, setCamposDesabilitados] = useState({
+   const [camposDesabilitados] = useState({
       cidadeDesabilitada: true,
       bairroDesabilitado: true,
       ruaDesabilitada: true,
@@ -348,9 +348,7 @@ const Page = () => {
                                  label="Churrasqueira"
                                  placeholder="Quantidade churrasqueiras"
                                  {...register("qtdChurrasqueiras", {
-                                    setValueAs: (value) => {
-                                       value ? parseInt(value, 10) : null;
-                                    },
+                                    valueAsNumber: true,
                                  })}
                                  mensagemErro={
                                     errors.qtdChurrasqueiras?.message
@@ -365,9 +363,7 @@ const Page = () => {
                                  label="Piscinas"
                                  placeholder="Quantidade piscinas"
                                  {...register("qtdPiscinas", {
-                                    setValueAs: (value) => {
-                                       value ? parseInt(value, 10) : null;
-                                    },
+                                    valueAsNumber: true,
                                  })}
                                  mensagemErro={errors.qtdPiscinas?.message}
                                  onChange={() =>
@@ -406,9 +402,7 @@ const Page = () => {
                               placeholder="Valor do IPTU"
                               type="number"
                               {...register("iptu", {
-                                 setValueAs: (value) => {
-                                    value ? parseInt(value, 10) : null;
-                                 },
+                                 valueAsNumber: true,
                               })}
                               mensagemErro={errors.iptu?.message}
                               onChange={() => handleInputChange("iptu")}
@@ -419,9 +413,7 @@ const Page = () => {
                               placeholder="Digite o valor do condomínio"
                               type="number"
                               {...register("valorCondominio", {
-                                 setValueAs: (value) => {
-                                    value ? parseInt(value, 10) : null;
-                                 },
+                                 valueAsNumber: true,
                               })}
                               mensagemErro={errors.valorCondominio?.message}
                               onChange={() =>

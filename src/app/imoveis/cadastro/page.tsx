@@ -213,7 +213,7 @@ const Page = () => {
                         <div className="flex flex-row gap-2 w-full">
                            <div className="flex flex-row md:flex-col gap-2 w-full">
                               <InputPadrao
-                                 htmlFor="Tamanho"
+                                 htmlFor="tamanho"
                                  label="Tamanho"
                                  placeholder="Área privada"
                                  {...register("metragem", {
@@ -224,7 +224,7 @@ const Page = () => {
                                  type="number"
                               />
                               <InputPadrao
-                                 htmlFor="Quartos"
+                                 htmlFor="quartos"
                                  label="Quartos"
                                  placeholder="Quantidade quartos"
                                  {...register("qtdQuartos", {
@@ -252,7 +252,7 @@ const Page = () => {
                            </div>
                            <div className="flex flex-row md:flex-col gap-2 w-full">
                               <InputPadrao
-                                 htmlFor="Garagens"
+                                 htmlFor="garagem"
                                  label="Garagens"
                                  placeholder="Quantidade vagas"
                                  type="number"
@@ -263,13 +263,11 @@ const Page = () => {
                                  onChange={() => handleInputChange("qtdVagas")}
                               />
                               <InputPadrao
-                                 htmlFor="banheiros"
+                                 htmlFor="churrasqueiras"
                                  label="Churrasqueira"
                                  placeholder="Quantidade churrasqueiras"
                                  {...register("qtdChurrasqueiras", {
-                                    setValueAs: (value) => {
-                                       value ? parseInt(value, 10) : null;
-                                    },
+                                    valueAsNumber: true,
                                  })}
                                  mensagemErro={
                                     errors.qtdChurrasqueiras?.message
@@ -284,9 +282,7 @@ const Page = () => {
                                  label="Piscinas"
                                  placeholder="Quantidade piscinas"
                                  {...register("qtdPiscinas", {
-                                    setValueAs: (value) => {
-                                       value ? parseInt(value, 10) : null;
-                                    },
+                                    valueAsNumber: true,
                                  })}
                                  mensagemErro={errors.qtdPiscinas?.message}
                                  onChange={() =>
@@ -309,7 +305,7 @@ const Page = () => {
                               onChange={() => handleInputChange("valor")}
                            />
                            <InputPadrao
-                             htmlFor="promocao"
+                              htmlFor="promocao"
                               label="Preço Promocional"
                               placeholder="Digite o preço promocional"
                               type="number"
@@ -325,9 +321,7 @@ const Page = () => {
                               placeholder="Valor do IPTU"
                               type="number"
                               {...register("iptu", {
-                                 setValueAs: (value) => {
-                                    value ? parseInt(value, 10) : null;
-                                 },
+                                 valueAsNumber: true,
                               })}
                               mensagemErro={errors.iptu?.message}
                               onChange={() => handleInputChange("iptu")}
@@ -338,9 +332,7 @@ const Page = () => {
                               placeholder="Digite o valor do condomínio"
                               type="number"
                               {...register("valorCondominio", {
-                                 setValueAs: (value) => {
-                                    value ? parseInt(value, 10) : null;
-                                 },
+                                 valueAsNumber: true,
                               })}
                               mensagemErro={errors.valorCondominio?.message}
                               onChange={() =>
