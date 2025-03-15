@@ -7,6 +7,7 @@ import ModelUsuarioListagem from "@/models/ModelUsuarioListagem";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { deletarUsuario } from "./actions";
+import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
 
 interface ListaUsuariosProps {
    usuarios: ModelUsuarioListagem[] | undefined;
@@ -22,6 +23,20 @@ export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtu
    const router = useRouter();
    
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
+
+   const [mostrarNotificacao, setMostrarNotificacao] = useState(false);
+   const [itemDeletadoId, setItemDeletadoId] = useState<number | null>(null);
+
+   const fechandoNotificacao = () => {
+    setMostrarNotificacao(false);
+    setItemDeletadoId(null);
+ };
+ const desfazendoDelete = async () => {
+    await fetch(`${BASE_URL}/usuarios/restaurar/${itemDeletadoId}`, {
+       method: "POST",
+    });
+    router.refresh();
+ };
 
    const mudarPagina = (pagina: number) => {
       const params = new URLSearchParams(window.location.search);
@@ -46,6 +61,8 @@ export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtu
           method: "DELETE",
        });
        // Fecha o modal e recarrega a página para refletir as mudanças
+       setItemDeletadoId(idItemParaDeletar)
+       setMostrarNotificacao(true)
        fecharModal();
        router.refresh(); // Atualiza a página para refletir a deleção
     }
@@ -90,6 +107,13 @@ export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtu
             onConfirm={confirmarDelecao}
             message="Você realmente deseja remover este usuário?"
          />
+          <NotificacaoCrud
+                                          message="Desfazer"
+                                          isVisible={mostrarNotificacao}
+                                          onClose={fechandoNotificacao}
+                                          onUndo={desfazendoDelete}
+                                          duration={5000}
+                                       />
       </div>
    );
 }
