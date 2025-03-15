@@ -13,8 +13,8 @@ const Filtro = (props: FiltroProps) => {
       useState<string>("");
    const [metrosQuadradosMaximo, setMetrosQuadradosMaximo] =
       useState<string>("");
-   const [quantidadeDeQuartos, setQuantidadeQuartos] = useState<number[]>([]);
-   const [quantidadeDeVagas, setQuantidadeVagas] = useState<number[]>([]);
+   const [quantidadeDeQuartos, setQuantidadeQuartos] = useState<number | null>(null);
+   const [quantidadeDeVagas, setQuantidadeVagas] = useState<number | null>(null);
    const [cidade, setCidade] = useState<string>("");
    const [bairro, setBairro] = useState<string>("");
    const [tipoImovel, setTipoImovel] = useState<string>("");
@@ -41,8 +41,8 @@ const Filtro = (props: FiltroProps) => {
       setCidade("");
       setBairro("");
       setTipoImovel("");
-      setQuantidadeQuartos([]);
-      setQuantidadeVagas([]);
+      setQuantidadeQuartos(null);
+      setQuantidadeVagas(null);
    }
 
    return (
@@ -102,12 +102,12 @@ const Filtro = (props: FiltroProps) => {
                <ComponenteRadioFiltro
                   titulo="Vagas"
                   onChange={setQuantidadeVagas}
-                  selecionados={quantidadeDeVagas}
+                  selecionado={quantidadeDeVagas}
                />
                <ComponenteRadioFiltro
                   titulo="Dormitório"
                   onChange={setQuantidadeQuartos}
-                  selecionados={quantidadeDeQuartos}
+                  selecionado={quantidadeDeQuartos}
                />
             </div>
          </div>

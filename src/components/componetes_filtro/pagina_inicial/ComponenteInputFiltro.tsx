@@ -14,7 +14,7 @@ const ComponenteInputFiltro = (props: ComponenteInputFiltroProps) => {
    return (
       <div
          className="flex border-b-2 gap-2 text-xs flex-1 max-w-32
-        md:max-w-28 md:text-sm"
+        md:max-w-28 md:text-sm appearance-none"
       >
          <label htmlFor={props.htmlFor}>{props.label}</label>
          <InputFiltro
