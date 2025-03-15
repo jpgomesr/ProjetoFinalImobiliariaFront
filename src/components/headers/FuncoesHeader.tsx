@@ -1,7 +1,9 @@
+"use client"
+
 import React from "react";
 import { useState } from "react";
 import { LayoutGrid, X } from "lucide-react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Roles } from "@/models/Enum/Roles";
 import CasaIcon from "@/svg/icons/header/CasaIcon";
 import PerfilIcon from "@/svg/icons/header/PerfilIcon";
@@ -14,7 +16,6 @@ interface FuncoesHeaderProps {
 
 const FuncoesHeader = (props: FuncoesHeaderProps) => {
    const [isFuncVisible, setIsFuncVisible] = useState(false);
-   const router = useRouter();
 
    const opcoesRole = [
       {
@@ -33,7 +34,7 @@ const FuncoesHeader = (props: FuncoesHeaderProps) => {
             },
             {
                label: "Proprietários",
-               route: "/",
+               route: "/proprietarios",
                icone: <CorretoresIcon className="h-5" />,
             },
             {
@@ -84,13 +85,11 @@ const FuncoesHeader = (props: FuncoesHeaderProps) => {
                      className="flex flex-row w-full gap-4 items-center"
                      key={idx}
                   >
-                     <button
-                        onClick={() => router.push(item.route)}
-                        className="font-inter text-white font-light
-                                2xl:text-xl"
-                     >
-                        {item.label}
-                     </button>
+                     <Link href={item.route}>
+                        <button className="font-inter text-white font-light 2xl:text-xl">
+                           {item.label}
+                        </button>
+                     </Link>
                      {item.icone}
                   </div>
                ))}

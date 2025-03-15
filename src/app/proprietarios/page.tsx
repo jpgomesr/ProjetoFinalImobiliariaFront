@@ -138,7 +138,7 @@ const page = () => {
                "
                >
                     <List
-                     mundandoValor={setRevalidandoQuery(setStatus)}
+                     mudandoValor={setRevalidandoQuery(setStatus)}
                      opcoes={opcoesStatus}
                      placeholder="Ativo"
                      bordaPreta

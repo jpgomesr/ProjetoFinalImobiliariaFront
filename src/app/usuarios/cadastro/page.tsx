@@ -19,6 +19,9 @@ import { UseErros } from "@/hooks/UseErros";
 import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
 import List from "@/components/List";
 import { useNotification } from "@/context/NotificationContext";
+import { revalidatePath } from "next/cache";
+import ModelUsuario from "@/models/ModelUsuario";
+import { salvarUsuario } from "./action";
 
 const Page = () => {
   const router = useRouter();
@@ -67,49 +70,47 @@ const Page = () => {
 
   const onSubmit = async (data: usuarioValidatorSchema) => {
     try {
-      const response = await UseFetchPostFormData(
-        `${BASE_URL}/usuarios`,
-        {
-          nome: data.nomeCompleto,
-          email: data.email,
-          senha: data.senha,
-          telefone: data.telefone?.trim() === "" ? null : data.telefone,
-          role: data.tipoUsuario,
-          descricao: data.descricao,
-          ativo: data.ativo === "Ativo",
+      const objetoRequest = {
+        usuario: {
+           nome: data.nomeCompleto,
+           email: data.email,
+           senha: data.senha || "", // Substitui undefined por string vazia
+           telefone: data.telefone || "", // Substitui null por string vazia
+           role: data.tipoUsuario || "", // Substitui undefined por string vazia
+           descricao: data.descricao || "", // Substitui undefined por string vazia
+           ativo: data.ativo === "Ativo", // Converte para booleano
         },
-        "usuario",
-        "file",
-        data.imagemPerfil,
-        "POST"
-      );
+        imagemPerfil: data.imagemPerfil || null, // Mantém null ou substitui por um valor padrão
+     };
 
-      if (!response.ok) {
-        const responseData = await response.json();
-        if (responseData.erros) {
-          const errosFormatados = UseErros(responseData);
-          Object.keys(errosFormatados).forEach((campo) => {
-            setError(campo as keyof usuarioValidatorSchema, {
-              type: "manual",
-              message: errosFormatados[campo],
+      const  response  = await salvarUsuario(objetoRequest);
+
+      if (!response?.ok) {
+         if (response.erros) {
+            const errosFormatados = UseErros(response);
+            Object.keys(errosFormatados).forEach((campo) => {
+               setError(campo as keyof usuarioValidatorSchema, {
+                  type: "manual",
+                  message: errosFormatados[campo],
+               });
             });
-          });
-          const primeiroCampoComErro = Object.keys(
-            errosFormatados
-          )[0] as keyof usuarioValidatorSchema;
-          if (primeiroCampoComErro) {
-            setFocus(primeiroCampoComErro);
-          }
-        }
-        throw new Error(responseData.mensagem || "Erro ao editar usuário.");
+            const primeiroCampoComErro = Object.keys(
+               errosFormatados
+            )[0] as keyof usuarioValidatorSchema;
+            if (primeiroCampoComErro) {
+               setFocus(primeiroCampoComErro);
+            }
+         }
+         throw new Error(response.mensagem || "Erro ao editar usuário.");
       }
-
+    
       showNotification("Usuário cadastrado com sucesso");
       clearErrors(); // Limpa os erros ao cadastrar com sucesso
-      router.push("/usuarios");
-    } catch (error) {
+      router.push("/usuarios"); // Redireciona para a lista de usuários
+   } catch (error) {
       console.error("Erro ao criar usuário:", error);
-    }
+      showNotification("Erro ao criar usuário. Tente novamente.");
+   }
   };
 
   return (

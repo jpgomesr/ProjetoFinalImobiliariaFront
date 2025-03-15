@@ -12,7 +12,7 @@ interface LayoutProps {
 const Layout = (props: LayoutProps) => {
    return (
       <div>
-         <HeaderVermelho role={props.role} />
+         <HeaderVermelho role={props.role}/>
          <div className={`${props.className ? props.className : "py-8"}`}>
             {props.children}
          </div>
