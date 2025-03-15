@@ -179,7 +179,7 @@ const Page = () => {
                   <List
                     title="Tipo usuario"
                     opcoes={tiposDeUsuarios}
-                    mundandoValor={field.onChange}
+                    mudandoValor={field.onChange}
                     placeholder="Tipo usuario"
                     bordaPreta
                   />
@@ -194,7 +194,7 @@ const Page = () => {
                   <List
                     title="status"
                     opcoes={opcoesStatus}
-                    mundandoValor={field.onChange}
+                    mudandoValor={field.onChange}
                     placeholder="Ativo"
                     bordaPreta
                   />

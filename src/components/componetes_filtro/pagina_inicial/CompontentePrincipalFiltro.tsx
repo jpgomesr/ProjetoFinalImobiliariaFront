@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import LupaIcon from "@/svg/icons/LupaIcon";
-import BotaoPadrao from "../BotaoPadrao";
+import BotaoPadrao from "../../BotaoPadrao";
 import ComponenteInputFiltro from "./ComponenteInputFiltro";
 import ComponenteRadioFiltro from "./ComponenteRadioFiltro";
 import ComponenteSelectFiltro from "./ComponenteSelectFiltro";

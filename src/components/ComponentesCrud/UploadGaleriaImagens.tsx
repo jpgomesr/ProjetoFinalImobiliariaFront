@@ -1,94 +1,121 @@
-"use client";
-
-import type React from "react";
-
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Plus, Trash } from "lucide-react";
 
 interface UploadGaleriaImagensProps {
-   onCoverImageChange?: (file: File | null) => void;
-   onGalleryImageChange?: (files: File[]) => void;
+   onImageChange?: (image: File | string | null, index?: number) => void;
+   mensagemErro?: string;
+   clearErrors?: () => void;
+   coverImage?: string | null;
+   galleryImages?: (string | null)[];
+   refImagensDeletadas?: (ref: string) => void;
 }
 
-export default function UploadGaleriaImagens({
-   onCoverImageChange,
-   onGalleryImageChange,
-}: UploadGaleriaImagensProps) {
-   const [coverImage, setCoverImage] = useState<string | null>(null);
-   const [galleryImages, setGalleryImages] = useState<string[]>(["", "", ""]);
+const UploadGaleriaImagens = ({
+   onImageChange,
+   mensagemErro,
+   clearErrors,
+   coverImage,
+   galleryImages = [null, null, null],
+   refImagensDeletadas,
+}: UploadGaleriaImagensProps) => {
+   const [coverImagePreview, setCoverImagePreview] = useState<string | null>(
+      coverImage || null
+   );
+   const [galleryImagesPreview, setGalleryImagesPreview] = useState<
+      (string | null)[]
+   >(galleryImages || [null, null, null]);
    const coverInputRef = useRef<HTMLInputElement>(null);
    const galleryInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files && e.target.files[0]) {
-         const file = e.target.files[0];
-         const imageUrl = URL.createObjectURL(file);
-         setCoverImage(imageUrl);
-         if (onCoverImageChange) {
-            onCoverImageChange(file);
-         }
-      }
-   };
+   useEffect(() => {
+      setCoverImagePreview(coverImage || null);
+   }, [coverImage]);
 
-   const handleRemoveCoverImage = (e: React.MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setCoverImage(null);
-      if (coverInputRef.current) {
-         coverInputRef.current.value = "";
+   useEffect(() => {
+      const newGalleryImages = [...(galleryImages || [null, null, null])];
+      while (newGalleryImages.length < 3) {
+         newGalleryImages.push(null);
       }
-      if (onCoverImageChange) {
-         onCoverImageChange(null);
-      }
-   };
+      setGalleryImagesPreview(newGalleryImages.slice(0, 3));
+   }, []);
 
-   const handleGalleryImageChange =
-      (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+   useEffect(() => {
+      galleryInputRefs.current = galleryInputRefs.current.slice(
+         0,
+         galleryImagesPreview.length
+      );
+   }, [galleryImagesPreview]);
+
+   const handleImageChange =
+      (index?: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
          if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
             const imageUrl = URL.createObjectURL(file);
 
-            const newGalleryImages = [...galleryImages];
-            newGalleryImages[index] = imageUrl;
-            setGalleryImages(newGalleryImages);
+            if (index === undefined) {
+               setCoverImagePreview(imageUrl);
+               if (onImageChange) onImageChange(file);
+            } else {
+               setGalleryImagesPreview((prev) => {
+                  const updatedImages = [...prev];
+                  const firstEmptyIndex = updatedImages.findIndex(
+                     (img) => img == null
+                  );
+                  if (firstEmptyIndex !== -1) {
+                     updatedImages[firstEmptyIndex] = imageUrl;
+                  } else {
+                     updatedImages.unshift(imageUrl);
+                     if (updatedImages.length > 3) updatedImages.pop();
+                  }
 
-            if (onGalleryImageChange) {
-               const validFiles = newGalleryImages
-                  .filter((img) => img !== "")
-                  .map((_, i) => galleryInputRefs.current[i]?.files?.[0])
-                  .filter(Boolean) as File[];
+                  return updatedImages;
+               });
 
-               onGalleryImageChange(validFiles);
+               if (onImageChange) onImageChange(file, index);
             }
          }
       };
 
-   const handleRemoveGalleryImage =
-      (index: number) => (e: React.MouseEvent) => {
-         e.preventDefault();
-         e.stopPropagation();
+   const handleRemoveImage = (index?: number) => (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-         const newGalleryImages = [...galleryImages];
-         newGalleryImages[index] = "";
-         setGalleryImages(newGalleryImages);
-
+      if (index === undefined) {
+         if (coverImagePreview && refImagensDeletadas) {
+            refImagensDeletadas(coverImagePreview);
+         }
+         setCoverImagePreview(null);
+         if (coverInputRef.current) {
+            coverInputRef.current.value = "";
+         }
+         if (onImageChange) {
+            onImageChange(null);
+         }
+      } else {
+         const newGalleryImages = [...galleryImagesPreview];
+         const removedImage = newGalleryImages[index];
+         if (removedImage && refImagensDeletadas) {
+            refImagensDeletadas(removedImage);
+         }
+         newGalleryImages[index] = null;
+         setGalleryImagesPreview(newGalleryImages);
          if (galleryInputRefs.current[index]) {
             galleryInputRefs.current[index]!.value = "";
          }
-
-         if (onGalleryImageChange) {
-            const validFiles = newGalleryImages
-               .filter((img) => img !== "")
-               .map((_, i) => galleryInputRefs.current[i]?.files?.[0])
-               .filter(Boolean) as File[];
-
-            onGalleryImageChange(validFiles);
+         if (onImageChange) {
+            onImageChange(null, index);
          }
-      };
+      }
+   };
+
+   useEffect(() => {
+      console.log(mensagemErro);
+   });
 
    return (
       <div className="space-y-6">
+         {/* Imagem de Capa */}
          <div className="space-y-2">
             <label className="block text-sm font-medium">
                Imagem de capa <span className="text-red-500">*</span>
@@ -101,16 +128,16 @@ export default function UploadGaleriaImagens({
                             sm:w-80 sm:h-80
                             xl:w-96 xl:h-96"
                >
-                  {coverImage ? (
+                  {coverImagePreview ? (
                      <>
                         <Image
-                           src={coverImage || "/placeholder.svg"}
+                           src={coverImagePreview}
                            alt="Cover image preview"
                            fill
                            className="object-cover object-center rounded-md"
                         />
                         <button
-                           onClick={handleRemoveCoverImage}
+                           onClick={handleRemoveImage()}
                            className="absolute top-[-10px] right-[-10px] bg-havprincipal bg-opacity-90 p-1.5 rounded-full text-white hover:bg-opacity-100 transition-colors"
                         >
                            <Trash className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
@@ -128,18 +155,24 @@ export default function UploadGaleriaImagens({
                      type="file"
                      accept="image/*"
                      className="hidden"
-                     onChange={handleCoverImageChange}
+                     onChange={handleImageChange()}
                   />
                </label>
             </div>
+            {mensagemErro && (
+               <span className="text-red-500 text-xs mt-1 md:text-sm xl:text-base">
+                  {mensagemErro}
+               </span>
+            )}
          </div>
 
+         {/* Galeria de Imagens */}
          <div className="space-y-2">
             <label className="block text-sm font-medium">
                Galeria de imagens <span className="text-red-500">*</span>
             </label>
             <div className="grid grid-cols-3 gap-4 justify-items-center mx-auto">
-               {galleryImages.map((image, index) => (
+               {galleryImagesPreview.map((image, index) => (
                   <div
                      key={index}
                      className="relative aspect-square w-full max-w-xs flex items-center justify-center"
@@ -151,13 +184,13 @@ export default function UploadGaleriaImagens({
                         {image ? (
                            <>
                               <Image
-                                 src={image || "/placeholder.svg"}
+                                 src={image}
                                  alt={`Gallery image ${index + 1}`}
                                  fill
                                  className="object-cover object-center rounded-md"
                               />
                               <button
-                                 onClick={handleRemoveGalleryImage(index)}
+                                 onClick={handleRemoveImage(index)}
                                  className="absolute top-[-10px] right-[-10px] bg-havprincipal bg-opacity-90 p-1.5 rounded-full text-white hover:bg-opacity-100 transition-colors"
                               >
                                  <Trash className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5" />
@@ -170,13 +203,13 @@ export default function UploadGaleriaImagens({
                         )}
                         <input
                            ref={(el) => {
-                              galleryInputRefs.current[index] = el;
+                              if (el) galleryInputRefs.current[index] = el;
                            }}
                            id={`gallery-image-upload-${index}`}
                            type="file"
                            accept="image/*"
                            className="hidden"
-                           onChange={handleGalleryImageChange(index)}
+                           onChange={handleImageChange(index)}
                         />
                      </label>
                   </div>
@@ -185,4 +218,6 @@ export default function UploadGaleriaImagens({
          </div>
       </div>
    );
-}
+};
+
+export default UploadGaleriaImagens;
