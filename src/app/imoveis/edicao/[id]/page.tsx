@@ -95,11 +95,11 @@ const Page = () => {
       if (id) {
          const buscarImovel = async () => {
             try {
-               const imovel = await buscarImovelPorId(id)
+               const imovel : ModelImovelGet = await buscarImovelPorId(id)
                if (imovel) {
                   preencherFormulario(imovel);
                } else {
-                  setErro404(true)
+                  setErro404(true) 
                   console.error("Erro ao buscar os dados do imóvel");
                }
             } catch (error) {
