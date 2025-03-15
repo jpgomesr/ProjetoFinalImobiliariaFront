@@ -13,6 +13,7 @@ import { ModelImovelGet } from "@/models/ModelImovelGet";
 import Link from "next/link";
 import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
 import ModalCofirmacao from "@/components/ComponentesCrud/ModalConfirmacao";
+import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 
 const page = () => {
    const [imoveis, setImoveis] = useState<ModelImovelGet[]>([]);
@@ -53,31 +54,14 @@ const page = () => {
       console.log(paginaAtual);
    }, [revalidarQuery]);
 
-   const handleRenderImoveis = () => {
+   const handleRenderImoveis = async () => {
       try {
-         const buscarImovel = async () => {
-            try {
-               const response = await fetch(
-                  `${BASE_URL}/imoveis?page=${paginaAtual}&ativo=true`
-               );
-               if (response.ok) {
-                  const imoveis = await response.json();
-                  console.log(imoveis);
-                  setTotalImoveis(imoveis.totalElements)
-                  setImoveis(imoveis.content);
-                  setPeageableInfo({
-                     totalPaginas: imoveis.totalPages,
-                     ultima: imoveis.last,
-                  });
-               } else {
-                  console.error("Erro ao buscar os dados do imóvel");
-               }
-            } catch (error) {
-               console.error("Erro ao buscar os dados do imóvel:", error);
-            }
-         };
+         const { imoveis, pageableInfo, quantidadeElementos } =
+            await buscarTodosImoveis(paginaAtual);
 
-         buscarImovel();
+         setImoveis(imoveis);
+         setPeageableInfo(pageableInfo);
+         setTotalImoveis(quantidadeElementos);
       } catch (error) {
          console.log(error);
       }
@@ -93,7 +77,6 @@ const page = () => {
       { id: "compra", label: "Compra" },
       { id: "aluguel", label: "Aluguel" },
    ];
-
 
    const handleDeleteImovel = async () => {
       try {
@@ -157,9 +140,7 @@ const page = () => {
                   </div>
                </div>
                <div className="flex flex-col sm:flex-row">
-                  <p className="text-sm">
-                     {totalImoveis} imóveis encontrados
-                  </p>
+                  <p className="text-sm">{totalImoveis} imóveis encontrados</p>
                </div>
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {imoveis.map((imovel, index) => (

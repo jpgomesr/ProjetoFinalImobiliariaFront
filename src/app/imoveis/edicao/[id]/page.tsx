@@ -22,11 +22,15 @@ import { ModelImovelGet } from "@/models/ModelImovelGet";
 import Link from "next/link";
 import { useNotification } from "@/context/NotificationContext";
 import Erro404 from "@/components/Erro404";
+import { buscarImovelPorId } from "@/Functions/imovel/buscaImovel";
 
 
 const Page = () => {
    const router = useRouter();
    let { id } = useParams();
+   if (Array.isArray(id)){
+      id = id[0]
+   }
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const { showNotification } = useNotification();
    const [loading, setLoading] = useState(true);
@@ -91,9 +95,8 @@ const Page = () => {
       if (id) {
          const buscarImovel = async () => {
             try {
-               const response = await fetch(`${BASE_URL}/imoveis/${id}`);
-               if (response.ok) {
-                  const imovel: ModelImovelGet = await response.json();
+               const imovel = await buscarImovelPorId(id)
+               if (imovel) {
                   preencherFormulario(imovel);
                } else {
                   setErro404(true)
