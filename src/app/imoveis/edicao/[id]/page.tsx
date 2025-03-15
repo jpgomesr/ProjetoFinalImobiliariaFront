@@ -21,12 +21,16 @@ import { useParams, useRouter } from "next/navigation";
 import { ModelImovelGet } from "@/models/ModelImovelGet";
 import Link from "next/link";
 import { useNotification } from "@/context/NotificationContext";
+import Erro404 from "@/components/Erro404";
+
 
 const Page = () => {
    const router = useRouter();
    let { id } = useParams();
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const { showNotification } = useNotification();
+   const [loading, setLoading] = useState(true);
+   const [erro404, setErro404] = useState(false);
 
    const [refImagensDeletadas, setRefImagensDeletadas] = useState<string[]>();
    const [step, setStep] = useState(1);
@@ -79,6 +83,11 @@ const Page = () => {
    });
 
    useEffect(() => {
+
+      if(!id){
+         setErro404(true);
+         return;
+      }
       if (id) {
          const buscarImovel = async () => {
             try {
@@ -87,10 +96,14 @@ const Page = () => {
                   const imovel: ModelImovelGet = await response.json();
                   preencherFormulario(imovel);
                } else {
+                  setErro404(true)
                   console.error("Erro ao buscar os dados do imóvel");
                }
             } catch (error) {
                console.error("Erro ao buscar os dados do imóvel:", error);
+               setErro404(true)
+            }finally{
+               setLoading(false)
             }
          };
 
@@ -260,6 +273,14 @@ const Page = () => {
       }
    };
 
+    if (loading) {
+      return <div>Carregando...</div>; // Exibe um indicador de carregamento
+   }
+
+   if (erro404) {
+      return <Erro404 />; // Exibe a página de erro 404
+   }
+
    const handleInputChange = (variable: keyof imovelValidatorSchema) => {
       clearErrors(variable);
    };
@@ -364,7 +385,12 @@ const Page = () => {
                                     label="Churrasqueira"
                                     placeholder="Quantidade churrasqueiras"
                                     {...register("qtdChurrasqueiras", {
-                                       valueAsNumber: true,
+                                       setValueAs(value) {
+                                          if (value === "" || isNaN(value)) {
+                                             return undefined;
+                                          }
+                                          return Number(value);
+                                       },
                                     })}
                                     mensagemErro={
                                        errors.qtdChurrasqueiras?.message
@@ -381,7 +407,12 @@ const Page = () => {
                                     label="Piscinas"
                                     placeholder="Quantidade piscinas"
                                     {...register("qtdPiscinas", {
-                                       valueAsNumber: true,
+                                       setValueAs(value) {
+                                          if (value === "" || isNaN(value)) {
+                                             return undefined;
+                                          }
+                                          return Number(value);
+                                       },
                                     })}
                                     mensagemErro={errors.qtdPiscinas?.message}
                                     onChange={() =>
