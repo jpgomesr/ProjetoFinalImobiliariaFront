@@ -13,7 +13,7 @@ import { ModelImovelGet } from "@/models/ModelImovelGet";
 import Link from "next/link";
 import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
 import ModalCofirmacao from "@/components/ComponentesCrud/ModalConfirmacao";
-import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
+import { buscarTodosImoveis, parametrosBuscaImovel } from "@/Functions/imovel/buscaImovel";
 
 const page = () => {
    const [imoveis, setImoveis] = useState<ModelImovelGet[]>([]);
@@ -34,6 +34,11 @@ const page = () => {
       setMostrarNotificacao(false);
       setItemDeletadoId(null);
    };
+   const [filtros, setFiltros ] = useState<parametrosBuscaImovel>({
+      paginaAtual : paginaAtual
+   })
+
+
    const desfazendoDelete = async () => {
       await fetch(`${BASE_URL}/imoveis/restaurar/${itemDeletadoId}`, {
          method: "POST",
@@ -57,7 +62,7 @@ const page = () => {
    const handleRenderImoveis = async () => {
       try {
          const { imoveis, pageableInfo, quantidadeElementos } =
-            await buscarTodosImoveis(paginaAtual);
+            await buscarTodosImoveis(filtros);
 
          setImoveis(imoveis);
          setPeageableInfo(pageableInfo);
