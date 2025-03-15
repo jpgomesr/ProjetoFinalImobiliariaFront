@@ -298,7 +298,12 @@ const Page = () => {
                                     label="Churrasqueira"
                                     placeholder="Quantidade churrasqueiras"
                                     {...register("qtdChurrasqueiras", {
-                                       valueAsNumber: true,
+                                       setValueAs(value) {
+                                          if (value === "" || isNaN(value)) {
+                                             return undefined;
+                                          }
+                                          return Number(value);
+                                       },
                                     })}
                                     mensagemErro={
                                        errors.qtdChurrasqueiras?.message
@@ -315,7 +320,12 @@ const Page = () => {
                                     label="Piscinas"
                                     placeholder="Quantidade piscinas"
                                     {...register("qtdPiscinas", {
-                                       valueAsNumber: true,
+                                       setValueAs(value) {
+                                          if (value === "" || isNaN(value)) {
+                                             return undefined;
+                                          }
+                                          return Number(value);
+                                       },
                                     })}
                                     mensagemErro={errors.qtdPiscinas?.message}
                                     onChange={() =>
