@@ -35,7 +35,7 @@ const page = () => {
       setItemDeletadoId(null);
    };
    const [filtros, setFiltros ] = useState<parametrosBuscaImovel>({
-      paginaAtual : paginaAtual
+      
    })
 
 

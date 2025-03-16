@@ -86,3 +86,12 @@ export const buscarImovelPorId = async (
 
    return data as ModelImovelGet;
 };
+
+export const buscarIdsImoveis = async () : Promise<number[]> => {
+
+   const response = await fetch(`${BASE_URL}/imoveis/ids-imoveis`)
+
+   const data = await response.json()
+
+   return data as number[]
+}
