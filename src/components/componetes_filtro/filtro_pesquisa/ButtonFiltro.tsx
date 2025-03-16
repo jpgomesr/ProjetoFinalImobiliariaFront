@@ -6,6 +6,15 @@ import Filtro from "./Filtro";
 
 interface ButtonFiltroProps {
    className?: string;
+   precoMinimo: string;
+   precoMaximo: string;
+   metrosQuadradosMinimo: string;
+   metrosQuadradosMaximo: string;
+   quantidadeDeVagas: string;
+   quantidadeDeQuartos: string;
+   cidade: string;
+   bairro: string;
+   tipoImovel: string;
 }
 
 const ButtonFiltro = (props: ButtonFiltroProps) => {
@@ -38,7 +47,17 @@ const ButtonFiltro = (props: ButtonFiltroProps) => {
          </div>
          {filtroAberto && (
             <div className="absolute right-0 top-full z-20 w-max min-w-[200px]">
-               <Filtro />
+               <Filtro
+                  precoMinimo={props.precoMinimo}
+                  precoMaximo={props.precoMaximo}
+                  metrosQuadradosMinimo={props.metrosQuadradosMinimo}
+                  metrosQuadradosMaximo={props.metrosQuadradosMaximo}
+                  quantidadeDeVagas={props.quantidadeDeVagas}
+                  quantidadeDeQuartos={props.quantidadeDeQuartos}
+                  cidade={props.cidade}
+                  bairro={props.bairro}
+                  tipoImovel={props.tipoImovel}
+               />
             </div>
          )}
       </div>

@@ -14,16 +14,17 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 
 export interface parametrosBuscaImovel {
-    paginaAtual?: number,
+    paginaAtual?: string,
     ativo?: string,
     descricao?: string,
-    tamanho?: number,
-    tipoResidencia?: TipoImovelEnum,
-    qtdQuartos?: number,
-    qtdBanheiros?: number,
-    qtdGaragens?: number,
-    precoMin?: number,
-    precoMax?: number,
+    tamanhoMin?: string,
+    tamanhoMax?: string,
+    tipoResidencia?: string,
+    qtdQuartos?: string,
+    qtdBanheiros?: string,
+    qtdGaragens?: string,
+    precoMinimo?: string,
+    precoMaximo?: string,
     finalidade?: string,
     cidade?: string,
     bairro?: string
@@ -37,18 +38,19 @@ export const buscarTodosImoveis = async (
         page: parametros?.paginaAtual?.toString() || '', 
         ativo: parametros?.ativo?.toString() || "true",
         descricao: parametros?.descricao || '',
-        tamanho: parametros?.tamanho?.toString() || '',
+        tamanhoMinimo: parametros?.tamanhoMin?.toString() || '',
+        tamanhoMaximo: parametros?.tamanhoMax?.toString() || '',
         tipoResidencia: parametros?.tipoResidencia?.toString() || '', 
         qtdQuartos: parametros?.qtdQuartos?.toString() || '',
         qtdBanheiros: parametros?.qtdBanheiros?.toString() || '',
         qtdGaragens: parametros?.qtdGaragens?.toString() || '',
-        precoMin: parametros?.precoMin?.toString() || '', 
-        precoMax: parametros?.precoMax?.toString() || '', 
+        precoMinimo: parametros?.precoMinimo?.toString() || '', 
+        precoMaximo: parametros?.precoMaximo?.toString() || '', 
         finalidade: parametros?.finalidade || '', 
         cidade: parametros?.cidade || '', 
         bairro: parametros?.bairro || '', 
       });
-
+      
    try {
       const response = await fetch(
          `${BASE_URL}/imoveis?${params.toString()}`
@@ -57,6 +59,7 @@ export const buscarTodosImoveis = async (
          const data = await response.json();
 
          const imoveis: ModelImovelGet[] = data.content;
+         
          const pageableInfo = {
             totalPaginas: data.totalPages,
             ultima: data.last,

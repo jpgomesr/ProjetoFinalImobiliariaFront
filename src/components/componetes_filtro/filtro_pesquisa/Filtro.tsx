@@ -1,39 +1,171 @@
-import React, { useState } from "react";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import ComponenteInputFiltro from "../pagina_inicial/ComponenteInputFiltro";
 import ComponenteRadioFiltro from "../pagina_inicial/ComponenteRadioFiltro";
-import ComponenteSelectFiltro from "../pagina_inicial/ComponenteSelectFiltro";
 import List from "@/components/List";
 
-interface FiltroProps {}
+interface FiltroProps {
+   precoMinimo: string;
+   precoMaximo: string;
+   metrosQuadradosMinimo: string;
+   metrosQuadradosMaximo: string;
+   quantidadeDeQuartos: string;
+   quantidadeDeVagas: string;
+   cidade: string;
+   bairro: string;
+   tipoImovel: string;
+}
 
 const Filtro = (props: FiltroProps) => {
-   const [precoMinimo, setPrecoMinimo] = useState<string>("");
-   const [precoMaximo, setPrecoMaximo] = useState<string>("");
-   const [metrosQuadradosMinimo, setMetrosQuadradosMinimo] =
-      useState<string>("");
-   const [metrosQuadradosMaximo, setMetrosQuadradosMaximo] =
-      useState<string>("");
-   const [quantidadeDeQuartos, setQuantidadeQuartos] = useState<number | null>(null);
-   const [quantidadeDeVagas, setQuantidadeVagas] = useState<number | null>(null);
-   const [cidade, setCidade] = useState<string>("");
-   const [bairro, setBairro] = useState<string>("");
-   const [tipoImovel, setTipoImovel] = useState<string>("");
+   const router = useRouter();
 
-   const cidadesExemplo = [
-      { id: "corupa", label: "Corupá" },
-      { id: "jaragua-do-sul", label: "Jaraguá do Sul" },
-   ];
-   const bairrosExemplo = [
-      { id: "centro", label: "Centro" },
-      { id: "rau", label: "Rau" },
-   ];
+   const [precoMinimo, setPrecoMinimo] = useState(props.precoMinimo);
+   const [precoMaximo, setPrecoMaximo] = useState(props.precoMaximo);
+   const [metrosQuadradosMinimo, setMetrosQuadradosMinimo] = useState(
+      props.metrosQuadradosMinimo
+   );
+   const [metrosQuadradosMaximo, setMetrosQuadradosMaximo] = useState(
+      props.metrosQuadradosMaximo
+   );
+   const [quantidadeDeQuartos, setQuantidadeQuartos] = useState(
+      props.quantidadeDeQuartos
+   );
+   const [quantidadeDeVagas, setQuantidadeVagas] = useState(
+      props.quantidadeDeVagas
+   );
+   const [cidade, setCidade] = useState(props.cidade);
+   const [bairro, setBairro] = useState(props.bairro);
+   const [tipoImovel, setTipoImovel] = useState(props.tipoImovel);
+   const [carregandoCidades, setCarregandoCidades] = useState(true);
+   const [carregandoBairros, setCarregandoBairros] = useState(false);
+
+
+   const [opcoesCidade, setOpcoesCidade] = useState([
+      { id: "", label: "Selecione uma cidade" }
+   ]);
+
+   const [opcoesBairro, setOpcoesBairro] = useState([
+      { id: "", label: "Selecione um bairro" }
+   ]);
+
    const tipoImovelExemplo = [
-      { id: "casa", label: "Casa" },
-      { id: "apartamento", label: "Apartamento" },
+      { id: "CASA", label: "Casa" },
+      { id: "APARTAMENTO", label: "Apartamento" },
    ];
+   const estado = "Santa catarina";
 
-   // Limpa todos os filtros
-   function limparFiltro(): void {
+   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
+   const buscarCidades = async () => {
+      try {
+         setCarregandoCidades(true);
+         const response = await fetch(`${BASE_URL}/enderecos/cidades/${estado}`);
+
+         if (!response.ok) {
+            throw new Error("Erro ao carregar cidades");
+         }
+
+         const data = await response.json();
+         return data as string[];
+      } catch (error) {
+         console.error("Erro ao buscar cidades:", error);
+         return [];
+      }
+   };
+
+   const buscarBairros = async (cidade: string) => {
+      try {
+         setCarregandoBairros(true);
+         const response = await fetch(`${BASE_URL}/enderecos/bairros/${cidade}`);
+
+         if (!response.ok) {
+            throw new Error("Erro ao carregar bairros");
+         }
+
+         const data = await response.json();
+         return data as string[];
+      } catch (error) {
+         console.error("Erro ao buscar bairros:", error);
+         return [];
+      } finally {
+         setCarregandoBairros(false);
+      }
+   };
+
+   const definirOpcoesCidade = async () => {
+      const cidades = await buscarCidades();
+
+      if (cidades.length === 0) {
+         setOpcoesCidade([{ id: "erro", label: "Erro ao carregar cidades" }]);
+         return;
+      }
+
+      const opcoesFormatadas = [
+         { id: "", label: "Selecione uma cidade" },
+         ...cidades.map((cidade) => ({ 
+            id: cidade.toLowerCase().replace(/\s+/g, '-'), 
+            label: cidade 
+         }))
+      ];
+
+      setOpcoesCidade(opcoesFormatadas);
+      setCarregandoCidades(false);
+   };
+
+   const definirOpcoesBairro = async (cidade: string) => {
+      if (!cidade || cidade === "") {
+         setOpcoesBairro([{ id: "", label: "Selecione um bairro" }]);
+         return;
+      }
+
+      const bairros = await buscarBairros(cidade);
+
+      const opcoesFormatadas = [
+         { id: "", label: "Selecione um bairro" },
+         ...bairros.map((bairro) => ({
+            id: bairro.toLowerCase().replace(/\s+/g, '-'),
+            label: bairro
+         }))
+      ];
+
+      setOpcoesBairro(opcoesFormatadas);
+   };
+
+   useEffect(() => {
+      const inicializarCidades = async () => {
+         await definirOpcoesCidade();
+      };
+      
+      inicializarCidades();
+   }, []);
+
+   useEffect(() => {
+      definirOpcoesBairro(cidade);
+   }, [cidade]);
+
+   const atualizarURL = (novosFiltros: Record<string, string | number>) => {
+      const params = new URLSearchParams({
+         precoMinimo,
+         precoMaximo,
+         metrosQuadradosMinimo,
+         metrosQuadradosMaximo,
+         quantidadeDeQuartos: quantidadeDeQuartos.toString(),
+         quantidadeDeVagas: quantidadeDeVagas.toString(),
+         cidade,
+         bairro,
+         tipoImovel,
+         ...novosFiltros,
+      });
+      router.push(`/imoveis?${params.toString()}`);
+   };
+
+   const handlePesquisa = () => {
+      atualizarURL({});
+   };
+
+   const limparFiltro = () => {
       setPrecoMinimo("");
       setPrecoMaximo("");
       setMetrosQuadradosMinimo("");
@@ -41,9 +173,10 @@ const Filtro = (props: FiltroProps) => {
       setCidade("");
       setBairro("");
       setTipoImovel("");
-      setQuantidadeQuartos(null);
-      setQuantidadeVagas(null);
-   }
+      setQuantidadeQuartos("");
+      setQuantidadeVagas("");
+      atualizarURL({});
+   };
 
    return (
       <div className="w-[60vw] max-w-[800px] h-full border-2 bg-white border-gray-300 rounded-md rounded-tr-none px-4 py-4">
@@ -54,7 +187,10 @@ const Filtro = (props: FiltroProps) => {
                   <div className="flex justify-center gap-6 w-full">
                      <ComponenteInputFiltro
                         tipoInput="number"
-                        onChange={setPrecoMinimo}
+                        onChange={(value) => {
+                           setPrecoMinimo(value);
+                           atualizarURL({ precoMinimo: value });
+                        }}
                         valor={precoMinimo}
                         placeholder="mínimo"
                         htmlFor="preco-minimo"
@@ -62,37 +198,40 @@ const Filtro = (props: FiltroProps) => {
                      />
                      <ComponenteInputFiltro
                         tipoInput="number"
-                        onChange={setPrecoMaximo}
+                        onChange={(value) => {
+                           setPrecoMaximo(value);
+                           atualizarURL({ precoMaximo: value });
+                        }}
                         valor={precoMaximo}
-                        placeholder="mínimo"
+                        placeholder="máximo"
                         htmlFor="preco-maximo"
                         label="R$"
                      />
                   </div>
                </div>
                <div>
-                  <p
-                     className="mb-2 text-sm text-center
-                     xl:text-xl"
-                  >
-                     Area
-                  </p>
-
+                  <p className="mb-2 text-sm text-center xl:text-xl">Área</p>
                   <div className="flex justify-center gap-6 mb-3 w-full">
                      <ComponenteInputFiltro
                         tipoInput="number"
-                        onChange={setMetrosQuadradosMinimo}
+                        onChange={(value) => {
+                           setMetrosQuadradosMinimo(value);
+                           atualizarURL({ metrosQuadradosMinimo: value });
+                        }}
                         valor={metrosQuadradosMinimo}
                         placeholder="mínimo"
-                        htmlFor="preco minimo"
+                        htmlFor="metros-quadrados-minimo"
                         label="m²"
                      />
                      <ComponenteInputFiltro
                         tipoInput="number"
-                        onChange={setMetrosQuadradosMaximo}
+                        onChange={(value) => {
+                           setMetrosQuadradosMaximo(value);
+                           atualizarURL({ metrosQuadradosMaximo: value });
+                        }}
                         valor={metrosQuadradosMaximo}
-                        placeholder="mínimo"
-                        htmlFor="preco minimo"
+                        placeholder="máximo"
+                        htmlFor="metros-quadrados-maximo"
                         label="m²"
                      />
                   </div>
@@ -101,25 +240,65 @@ const Filtro = (props: FiltroProps) => {
             <div className="flex flex-col lg:flex-row gap-6 max-w-76 justify-center items-center w-full">
                <ComponenteRadioFiltro
                   titulo="Vagas"
-                  onChange={setQuantidadeVagas}
-                  selecionado={quantidadeDeVagas}
+                  onChange={(value) => {
+                     setQuantidadeVagas(value.toString());
+                     atualizarURL({ quantidadeDeVagas: value.toString() });
+                  }}
+                  selecionado={Number(quantidadeDeVagas)}
                />
                <ComponenteRadioFiltro
                   titulo="Dormitório"
-                  onChange={setQuantidadeQuartos}
-                  selecionado={quantidadeDeQuartos}
+                  onChange={(value) => {
+                     setQuantidadeQuartos(value.toString());
+                     atualizarURL({ quantidadeDeQuartos: value.toString() });
+                  }}
+                  selecionado={Number(quantidadeDeQuartos)}
                />
             </div>
          </div>
-         <div
-            className="flex flex-col w-full justify-center items-center text-xs gap-3 
-                  md:flex-row mt-4"
-         >
+         <div className="flex flex-col w-full justify-center items-center text-xs gap-3 md:flex-row mt-4">
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-               <List opcoes={cidadesExemplo} buttonHolder="Cidade" />
-               <List opcoes={bairrosExemplo} buttonHolder="Bairro" />
-               <List opcoes={tipoImovelExemplo} buttonHolder="Tipo" />
+               <List
+                  opcoes={opcoesCidade}
+                  buttonHolder="Cidade"
+                  mudandoValor={(value) => {
+                     setCidade(value);
+                     atualizarURL({ cidade: value });
+                  }}
+                  disabled={carregandoCidades}
+               />
+               <List
+                  opcoes={opcoesBairro}
+                  buttonHolder="Bairro"
+                  mudandoValor={(value) => {
+                     setBairro(value);
+                     atualizarURL({ bairro: value });
+                  }}
+                  disabled={carregandoBairros}
+               />
+               <List
+                  opcoes={tipoImovelExemplo}
+                  buttonHolder="Tipo"
+                  mudandoValor={(value) => {
+                     setTipoImovel(value);
+                     atualizarURL({ tipoImovel: value });
+                  }}
+               />
             </div>
+         </div>
+         <div className="flex justify-center mt-4 gap-4">
+            <button
+               onClick={handlePesquisa}
+               className="bg-blue-500 text-white px-4 py-2 rounded-md"
+            >
+               Pesquisar
+            </button>
+            <button
+               onClick={limparFiltro}
+               className="bg-gray-500 text-white px-4 py-2 rounded-md"
+            >
+               Limpar Filtros
+            </button>
          </div>
       </div>
    );
