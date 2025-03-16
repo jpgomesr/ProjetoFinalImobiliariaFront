@@ -6,7 +6,7 @@ import ModalCofirmacao from "@/components/ComponentesCrud/ModalConfirmacao";
 import ModelUsuarioListagem from "@/models/ModelUsuarioListagem";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { deletarUsuario } from "./actions";
+import { deletarUsuario, restaurarUsuario } from "./actions";
 import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
 
 interface ListaUsuariosProps {
