@@ -24,6 +24,8 @@ import { useNotification } from "@/context/NotificationContext";
 import Erro404 from "@/components/Erro404";
 import { buscarImovelPorId } from "@/Functions/imovel/buscaImovel";
 import Imovel from "@/models/ModelImovel";
+import { restaurarCampos, preencherCampos } from "@/Functions/requisicaoViaCep";
+
 
 interface FormularioProps {
     imovel : ModelImovelGet
@@ -39,13 +41,15 @@ const Formulario = ({imovel } : FormularioProps) => {
 
    const [refImagensDeletadas, setRefImagensDeletadas] = useState<string[]>();
    const [step, setStep] = useState(1);
-   const [camposDesabilitados] = useState({
+   const [camposDesabilitados, setCamposDesabilitados] = useState({
       cidadeDesabilitada: true,
       bairroDesabilitado: true,
       ruaDesabilitada: true,
       estadoDesabilitado: true,
    });
    
+
+
    
 
    const imovelValidator = createImovelValidator();
@@ -185,11 +189,27 @@ const Formulario = ({imovel } : FormularioProps) => {
          }
       }
    };
+   useEffect(() => {
+      if (watch("cep")) {
+         const cepMock = watch("cep").toString();
+
+         if (cepMock?.length === 8) {
+            preencherCampos(cepMock, setCamposDesabilitados, setValue, true);
+         } else {
+            restaurarCampos(setCamposDesabilitados, setValue);
+         }
+      }
+   }, [watch("cep")]);
 
    const handlePrevStep = (e: React.MouseEvent) => {
       e.preventDefault();
       setStep((prev) => prev - 1);
    };
+
+   useEffect(() => {
+      console.log(errors);
+      console.log(typeof watch("numero"));
+   },[errors]);
 
    const handleEditarImovel = async (data: imovelValidatorSchema) => {
       console.log(data);
@@ -760,7 +780,10 @@ const Formulario = ({imovel } : FormularioProps) => {
                                        label={`Número do imóvel`}
                                        placeholder="Digite o número do imóvel"
                                        type="number"
-                                       {...register("numero")}
+                                       {...register("numero", {
+                                          setValueAs: (value) =>
+                                             parseInt(value, 10),
+                                       })}
                                        mensagemErro={errors.numero?.message}
                                        onChange={() =>
                                           handleInputChange("numero")
