@@ -9,7 +9,7 @@ import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 import FiltroList from "@/components/componetes_filtro/FiltroList";
 
 interface PageProps {
-   searchParams: {
+   searchParams: Promise<{
       precoMinimo?: string;
       precoMaximo?: string;
       metrosQuadradosMinimo?: string;
@@ -20,36 +20,39 @@ interface PageProps {
       bairro?: string;
       tipoImovel?: string;
       finalidade?: string;
-   };
+   }>;
 }
 
 const Page = async ({ searchParams }: PageProps) => {
-   const params = await Promise.resolve({
-      precoMinimo: searchParams?.precoMinimo ?? "0",
-      precoMaximo: searchParams?.precoMaximo ?? "0",
-      metrosQuadradosMinimo: searchParams?.metrosQuadradosMinimo ?? "0",
-      metrosQuadradosMaximo: searchParams?.metrosQuadradosMaximo ?? "0",
-      quantidadeDeQuartos: searchParams?.quantidadeDeQuartos ?? "0",
-      quantidadeDeVagas: searchParams?.quantidadeDeVagas ?? "0",
-      cidade: searchParams?.cidade ?? "",
-      bairro: searchParams?.bairro ?? "",
-      tipoImovel: searchParams?.tipoImovel ?? "",
-      finalidade: searchParams?.finalidade ?? "",
-   });
 
-   const { imoveis, pageableInfo, quantidadeElementos } = await buscarTodosImoveis({
-      precoMinimo: params.precoMinimo,
-      precoMaximo: params.precoMaximo,
-      tamanhoMin: params.metrosQuadradosMinimo,
-      tamanhoMax: params.metrosQuadradosMaximo,
-      qtdQuartos: params.quantidadeDeQuartos,
-      qtdGaragens: params.quantidadeDeVagas,
-      cidade: params.cidade,
-      bairro: params.bairro,
-      tipoResidencia: params.tipoImovel,
-      finalidade: params.finalidade
-      
-   });
+   const parametrosResolvidos = await searchParams;
+
+   const params = {
+      precoMinimo: parametrosResolvidos.precoMinimo ?? "0",
+      precoMaximo: parametrosResolvidos.precoMaximo ?? "0",
+      metrosQuadradosMinimo: parametrosResolvidos.metrosQuadradosMinimo ?? "0",
+      metrosQuadradosMaximo: parametrosResolvidos.metrosQuadradosMaximo ?? "0",
+      quantidadeDeQuartos: parametrosResolvidos.quantidadeDeQuartos ?? "0",
+      quantidadeDeVagas: parametrosResolvidos.quantidadeDeVagas ?? "0",
+      cidade: parametrosResolvidos.cidade ?? "",
+      bairro: parametrosResolvidos.bairro ?? "",
+      tipoImovel: parametrosResolvidos.tipoImovel ?? "",
+      finalidade: parametrosResolvidos.finalidade ?? "",
+   };
+
+   const { imoveis, pageableInfo, quantidadeElementos } =
+      await buscarTodosImoveis({
+         precoMinimo: params.precoMinimo,
+         precoMaximo: params.precoMaximo,
+         tamanhoMin: params.metrosQuadradosMinimo,
+         tamanhoMax: params.metrosQuadradosMaximo,
+         qtdQuartos: params.quantidadeDeQuartos,
+         qtdGaragens: params.quantidadeDeVagas,
+         cidade: params.cidade,
+         bairro: params.bairro,
+         tipoResidencia: params.tipoImovel,
+         finalidade: params.finalidade,
+      });
 
    return (
       <Layout className="py-0">
@@ -59,21 +62,21 @@ const Page = async ({ searchParams }: PageProps) => {
                titulo="Gerenciador de imóveis"
             >
                <div className="flex flex-col w-full gap-2 items-left md:flex-row h-full">
-                     <FiltroList
-                        finalidade={params.finalidade}
-                        precoMinimo={params.precoMinimo}
-                        precoMaximo={params.precoMaximo}
-                        metrosQuadradosMinimo={params.metrosQuadradosMinimo}
-                        metrosQuadradosMaximo={params.metrosQuadradosMaximo}
-                        quantidadeDeQuartos={params.quantidadeDeQuartos}
-                        quantidadeDeVagas={params.quantidadeDeVagas}
-                        cidade={params.cidade}
-                        bairro={params.bairro}
-                        tipoImovel={params.tipoImovel}
-                        url="/gerenciamento/imoveis"
-                        value={params.finalidade}
-                     />
-                  
+                  <FiltroList
+                     finalidade={params.finalidade}
+                     precoMinimo={params.precoMinimo}
+                     precoMaximo={params.precoMaximo}
+                     metrosQuadradosMinimo={params.metrosQuadradosMinimo}
+                     metrosQuadradosMaximo={params.metrosQuadradosMaximo}
+                     quantidadeDeQuartos={params.quantidadeDeQuartos}
+                     quantidadeDeVagas={params.quantidadeDeVagas}
+                     cidade={params.cidade}
+                     bairro={params.bairro}
+                     tipoImovel={params.tipoImovel}
+                     url="/gerenciamento/imoveis"
+                     value={params.finalidade}
+                  />
+
                   <div
                      className="flex flex-row items-center px-2 py-1 gap-2 rounded-md border-2 border-gray-300 
                               bg-white w-full min-h-full min-w-1"

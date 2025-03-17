@@ -1,6 +1,4 @@
-"use client";
 
-import { useState } from "react";
 import CardImovel from "../components/card/CardImovel";
 import ModelImovel from "../models/ModelImovel";
 import Layout from "../components/layout/LayoutPadrao";
@@ -8,11 +6,14 @@ import CompontentePrincipalFiltro from "@/components/componetes_filtro/pagina_in
 import { Roles } from "@/models/Enum/Roles";
 import Image from "next/image";
 import TituloBgDegrade from "@/components/TituloBgDegrade";
+import { Suspense } from "react";
 
 export default function Home() {
-   const [imoveis, setImoveis] = useState<ModelImovel[]>([]);
+   
+   const imoveis : ModelImovel[] = [];
 
    return (
+      
       <Layout role={Roles.ADMIN} className="pt-0 py-8 bg-begeClaroPadrao">
          <div className="h-full">
             <div
@@ -32,7 +33,9 @@ export default function Home() {
                            lg:mt-[-20vh]"
             >
                <div className="flex justify-center">
-                  <CompontentePrincipalFiltro />
+               <Suspense fallback={<div>Carregando filtros...</div>}>
+                     <CompontentePrincipalFiltro />
+                  </Suspense>
                </div>
             </div>
          </div>

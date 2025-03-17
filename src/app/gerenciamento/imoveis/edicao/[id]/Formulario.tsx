@@ -275,6 +275,9 @@ const Formulario = ({ imovel }: FormularioProps) => {
       if (response.ok) {
          showNotification("Imóvel editado com sucesso");
          clearErrors();
+
+         // Força revalidação e redireciona
+         router.refresh();
          router.push("/gerenciamento/imoveis");
       } else {
          console.error("Erro ao salvar o imóvel");
@@ -282,7 +285,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
    };
 
    if (loading) {
-      return <div>Carregando...</div>; // Exibe um indicador de carregamento
+      return <div>Carregando...</div>; // Exibe um indicado         r de carregamento
    }
 
    if (erro404) {

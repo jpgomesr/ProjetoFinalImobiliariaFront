@@ -1,12 +1,17 @@
-
-import React from "react";
+import React, { Suspense } from "react";
 import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
 import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import { ModelImovelGet } from "@/models/ModelImovelGet";
-import { buscarIdsImoveis, buscarImovelPorId } from "@/Functions/imovel/buscaImovel";
+import {
+   buscarIdsImoveis,
+   buscarImovelPorId,
+} from "@/Functions/imovel/buscaImovel";
 import Formulario from "./Formulario";
 
+// Força revalidação dinâmica
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface PageProps {
    params: Promise<{
@@ -19,14 +24,11 @@ export async function generateStaticParams() {
    return ids.map((id) => ({ id: id.toString() }));
 }
 
+const Page = async ({ params }: PageProps) => {
+   const { id } = await params;
 
-const Page = async ({params} : PageProps) => {
-   
-   const {id} = await params;
+   const imovel: ModelImovelGet = await buscarImovelPorId(id);
 
-   const imovel : ModelImovelGet = await buscarImovelPorId(id)
-
- 
    if (!imovel) {
       return (
          <Layout className="py-0">
@@ -42,12 +44,14 @@ const Page = async ({params} : PageProps) => {
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
-            <FundoBrancoPadrao
-               titulo="Edição de imóvel"
-               className={`w-full`}
-            >
-               <Formulario imovel={imovel}/>
-            </FundoBrancoPadrao>
+            <Suspense fallback={<div>Carregando...</div>}>
+               <FundoBrancoPadrao
+                  titulo="Edição de imóvel"
+                  className={`w-full`}
+               >
+                  <Formulario imovel={imovel} />
+               </FundoBrancoPadrao>
+            </Suspense>
          </SubLayoutPaginasCRUD>
       </Layout>
    );

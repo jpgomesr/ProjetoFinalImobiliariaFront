@@ -1,3 +1,5 @@
+"use client";
+
 import FavButton from "../FavBotao";
 import CardInfo from "./CardInfo";
 import SaibaMaisBotao from "./SaibaMaisBotao";

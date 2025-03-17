@@ -8,7 +8,7 @@ import ListagemImovelPadrao from "@/components/listagem_imoveis/ListagemImovelPa
 import InputPadrao from "@/components/InputPadrao";
 
 interface PageProps {
-   searchParams: {
+   searchParams: Promise<{
       precoMinimo?: string;
       precoMaximo?: string;
       metrosQuadradosMinimo?: string;
@@ -19,22 +19,22 @@ interface PageProps {
       bairro?: string;
       tipoImovel?: string;
       finalidade?: string;
-   };
+   }>;
 }
 
 const Page = async ({ searchParams }: PageProps) => {
-   const params = await Promise.resolve({
-      precoMinimo: searchParams?.precoMinimo ?? "0",
-      precoMaximo: searchParams?.precoMaximo ?? "0",
-      metrosQuadradosMinimo: searchParams?.metrosQuadradosMinimo ?? "0",
-      metrosQuadradosMaximo: searchParams?.metrosQuadradosMaximo ?? "0",
-      quantidadeDeQuartos: searchParams?.quantidadeDeQuartos ?? "0",
-      quantidadeDeVagas: searchParams?.quantidadeDeVagas ?? "0",
-      cidade: searchParams?.cidade ?? "",
-      bairro: searchParams?.bairro ?? "",
-      tipoImovel: searchParams?.tipoImovel ?? "",
-      finalidade: searchParams?.finalidade ?? "",
-   });
+   const params = {
+      precoMinimo: (await searchParams).precoMinimo ?? "0",
+      precoMaximo: (await searchParams).precoMaximo ?? "0",
+      metrosQuadradosMinimo: (await searchParams).metrosQuadradosMinimo ?? "0",
+      metrosQuadradosMaximo: (await searchParams).metrosQuadradosMaximo ?? "0",
+      quantidadeDeQuartos: (await searchParams).quantidadeDeQuartos ?? "0",
+      quantidadeDeVagas: (await searchParams).quantidadeDeVagas ?? "0",
+      cidade: (await searchParams).cidade ?? "",
+      bairro: (await searchParams).bairro ?? "",
+      tipoImovel: (await searchParams).tipoImovel ?? "",
+      finalidade: (await searchParams).finalidade ?? "",
+   };
 
    const { imoveis, pageableInfo, quantidadeElementos } =
       await buscarTodosImoveis({
