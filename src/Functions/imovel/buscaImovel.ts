@@ -46,7 +46,7 @@ export const buscarTodosImoveis = async (
         qtdGaragens: parametros?.qtdGaragens?.toString() || '',
         precoMinimo: parametros?.precoMinimo?.toString() || '', 
         precoMaximo: parametros?.precoMaximo?.toString() || '', 
-        finalidade: parametros?.finalidade || '', 
+        finalidade: parametros?.finalidade?.toUpperCase() || '', 
         cidade: parametros?.cidade || '', 
         bairro: parametros?.bairro || '', 
       });

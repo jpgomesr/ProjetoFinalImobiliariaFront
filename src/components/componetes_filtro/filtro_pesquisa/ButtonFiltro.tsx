@@ -15,6 +15,7 @@ interface ButtonFiltroProps {
    cidade: string;
    bairro: string;
    tipoImovel: string;
+   finalidade: string;
 }
 
 const ButtonFiltro = (props: ButtonFiltroProps) => {
@@ -57,6 +58,7 @@ const ButtonFiltro = (props: ButtonFiltroProps) => {
                   cidade={props.cidade}
                   bairro={props.bairro}
                   tipoImovel={props.tipoImovel}
+                  finalidade={props.finalidade}
                />
             </div>
          )}

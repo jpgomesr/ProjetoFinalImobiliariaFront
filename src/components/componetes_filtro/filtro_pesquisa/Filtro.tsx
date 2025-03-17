@@ -16,6 +16,7 @@ interface FiltroProps {
    cidade: string;
    bairro: string;
    tipoImovel: string;
+   finalidade: string;
 }
 
 const Filtro = (props: FiltroProps) => {
@@ -145,7 +146,7 @@ const Filtro = (props: FiltroProps) => {
       definirOpcoesBairro(cidade);
    }, [cidade]);
 
-   const atualizarURL = (novosFiltros: Record<string, string | number>) => {
+   const atualizarURL = () => {
       const params = new URLSearchParams({
          precoMinimo,
          precoMaximo,
@@ -156,13 +157,13 @@ const Filtro = (props: FiltroProps) => {
          cidade,
          bairro,
          tipoImovel,
-         ...novosFiltros,
+         finalidade: props.finalidade,
       });
       router.push(`/imoveis?${params.toString()}`);
    };
 
    const handlePesquisa = () => {
-      atualizarURL({});
+      atualizarURL();
    };
 
    const limparFiltro = () => {
@@ -175,7 +176,7 @@ const Filtro = (props: FiltroProps) => {
       setTipoImovel("");
       setQuantidadeQuartos("");
       setQuantidadeVagas("");
-      atualizarURL({});
+      atualizarURL();
    };
 
    return (
@@ -187,10 +188,7 @@ const Filtro = (props: FiltroProps) => {
                   <div className="flex justify-center gap-6 w-full">
                      <ComponenteInputFiltro
                         tipoInput="number"
-                        onChange={(value) => {
-                           setPrecoMinimo(value);
-                           atualizarURL({ precoMinimo: value });
-                        }}
+                        onChange={setPrecoMinimo}
                         valor={precoMinimo}
                         placeholder="mínimo"
                         htmlFor="preco-minimo"
@@ -198,10 +196,7 @@ const Filtro = (props: FiltroProps) => {
                      />
                      <ComponenteInputFiltro
                         tipoInput="number"
-                        onChange={(value) => {
-                           setPrecoMaximo(value);
-                           atualizarURL({ precoMaximo: value });
-                        }}
+                        onChange={setPrecoMaximo}
                         valor={precoMaximo}
                         placeholder="máximo"
                         htmlFor="preco-maximo"
@@ -214,10 +209,7 @@ const Filtro = (props: FiltroProps) => {
                   <div className="flex justify-center gap-6 mb-3 w-full">
                      <ComponenteInputFiltro
                         tipoInput="number"
-                        onChange={(value) => {
-                           setMetrosQuadradosMinimo(value);
-                           atualizarURL({ metrosQuadradosMinimo: value });
-                        }}
+                        onChange={setMetrosQuadradosMinimo}
                         valor={metrosQuadradosMinimo}
                         placeholder="mínimo"
                         htmlFor="metros-quadrados-minimo"
@@ -225,10 +217,7 @@ const Filtro = (props: FiltroProps) => {
                      />
                      <ComponenteInputFiltro
                         tipoInput="number"
-                        onChange={(value) => {
-                           setMetrosQuadradosMaximo(value);
-                           atualizarURL({ metrosQuadradosMaximo: value });
-                        }}
+                        onChange={setMetrosQuadradosMaximo}
                         valor={metrosQuadradosMaximo}
                         placeholder="máximo"
                         htmlFor="metros-quadrados-maximo"
@@ -240,18 +229,12 @@ const Filtro = (props: FiltroProps) => {
             <div className="flex flex-col lg:flex-row gap-6 max-w-76 justify-center items-center w-full">
                <ComponenteRadioFiltro
                   titulo="Vagas"
-                  onChange={(value) => {
-                     setQuantidadeVagas(value.toString());
-                     atualizarURL({ quantidadeDeVagas: value.toString() });
-                  }}
+                  onChange={(value) => setQuantidadeVagas(value.toString())}
                   selecionado={Number(quantidadeDeVagas)}
                />
                <ComponenteRadioFiltro
                   titulo="Dormitório"
-                  onChange={(value) => {
-                     setQuantidadeQuartos(value.toString());
-                     atualizarURL({ quantidadeDeQuartos: value.toString() });
-                  }}
+                  onChange={(value) => setQuantidadeQuartos(value.toString())}
                   selecionado={Number(quantidadeDeQuartos)}
                />
             </div>
@@ -263,33 +246,28 @@ const Filtro = (props: FiltroProps) => {
                   buttonHolder="Cidade"
                   mudandoValor={(value) => {
                      setCidade(value);
-                     atualizarURL({ cidade: value });
+                     setBairro("");
                   }}
                   disabled={carregandoCidades}
                />
                <List
                   opcoes={opcoesBairro}
                   buttonHolder="Bairro"
-                  mudandoValor={(value) => {
-                     setBairro(value);
-                     atualizarURL({ bairro: value });
-                  }}
-                  disabled={carregandoBairros}
+                  mudandoValor={setBairro}
+                  value={bairro} 
+                  disabled={carregandoBairros || !cidade} 
                />
                <List
                   opcoes={tipoImovelExemplo}
                   buttonHolder="Tipo"
-                  mudandoValor={(value) => {
-                     setTipoImovel(value);
-                     atualizarURL({ tipoImovel: value });
-                  }}
+                  mudandoValor={setTipoImovel}
                />
             </div>
          </div>
          <div className="flex justify-center mt-4 gap-4">
             <button
                onClick={handlePesquisa}
-               className="bg-blue-500 text-white px-4 py-2 rounded-md"
+               className="bg-havprincipal text-white px-4 py-2 rounded-md"
             >
                Pesquisar
             </button>

@@ -8,6 +8,7 @@ import { PlusIcon } from "lucide-react";
 import ListarImoveis from "./ListarImoveis";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 import { TipoImovelEnum } from "@/models/Enum/TipoImovelEnum";
+import FiltroList from "./FiltroList";
 
 interface PageProps {
    searchParams: {
@@ -20,6 +21,7 @@ interface PageProps {
       cidade?: string;
       bairro?: string;
       tipoImovel?: string;
+      finalidade?: string;
    };
 }
 
@@ -34,6 +36,7 @@ const Page = async ({ searchParams }: PageProps) => {
       cidade: searchParams?.cidade ?? "",
       bairro: searchParams?.bairro ?? "",
       tipoImovel: searchParams?.tipoImovel ?? "",
+      finalidade: searchParams?.finalidade ?? "",
    });
 
    const { imoveis, pageableInfo, quantidadeElementos } = await buscarTodosImoveis({
@@ -45,7 +48,9 @@ const Page = async ({ searchParams }: PageProps) => {
       qtdGaragens: params.quantidadeDeVagas,
       cidade: params.cidade,
       bairro: params.bairro,
-      tipoResidencia: params.tipoImovel
+      tipoResidencia: params.tipoImovel,
+      finalidade: params.finalidade
+      
    });
 
    return (
@@ -56,14 +61,19 @@ const Page = async ({ searchParams }: PageProps) => {
                titulo="Gerenciador de imóveis"
             >
                <div className="flex flex-col w-full gap-2 items-left md:flex-row h-full">
-                  <div className="flex h-full">
-                     <List
-                        opcoes={[
-                           { id: "compra", label: "Compra" },
-                           { id: "aluguel", label: "Aluguel" },
-                        ]}
+                     <FiltroList
+                        finalidade={params.finalidade}
+                        precoMinimo={params.precoMinimo}
+                        precoMaximo={params.precoMaximo}
+                        metrosQuadradosMinimo={params.metrosQuadradosMinimo}
+                        metrosQuadradosMaximo={params.metrosQuadradosMaximo}
+                        quantidadeDeQuartos={params.quantidadeDeQuartos}
+                        quantidadeDeVagas={params.quantidadeDeVagas}
+                        cidade={params.cidade}
+                        bairro={params.bairro}
+                        tipoImovel={params.tipoImovel}
                      />
-                  </div>
+                  
                   <div
                      className="flex flex-row items-center px-2 py-1 gap-2 rounded-md border-2 border-gray-300 
                               bg-white w-full min-h-full min-w-1"
@@ -86,6 +96,7 @@ const Page = async ({ searchParams }: PageProps) => {
                            cidade={params.cidade}
                            bairro={params.bairro}
                            tipoImovel={params.tipoImovel}
+                           finalidade={params.finalidade}
                         />
                      </div>
                      <Link href={"/imoveis/cadastro"}>
