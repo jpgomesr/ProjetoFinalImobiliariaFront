@@ -21,6 +21,7 @@ const page = () => {
       totalPaginas: 0,
       ultima: true,
    });
+   const [totalImoveis, setTotalImoveis] = useState(0);
    const [mostrarNotificacao, setMostrarNotificacao] = useState(false);
 
    const [idItemParaDeletar, setIdItemParaDeletar] = useState<number | null>(
@@ -62,7 +63,7 @@ const page = () => {
                if (response.ok) {
                   const imoveis = await response.json();
                   console.log(imoveis);
-
+                  setTotalImoveis(imoveis.totalElements)
                   setImoveis(imoveis.content);
                   setPeageableInfo({
                      totalPaginas: imoveis.totalPages,
@@ -93,7 +94,6 @@ const page = () => {
       { id: "aluguel", label: "Aluguel" },
    ];
 
-   const qtdEncontrados = 100;
 
    const handleDeleteImovel = async () => {
       try {
@@ -158,7 +158,7 @@ const page = () => {
                </div>
                <div className="flex flex-col sm:flex-row">
                   <p className="text-sm">
-                     {qtdEncontrados} imóveis encontrados
+                     {totalImoveis} imóveis encontrados
                   </p>
                </div>
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
