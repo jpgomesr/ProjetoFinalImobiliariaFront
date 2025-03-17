@@ -34,7 +34,7 @@ const FiltroList = (props: FiltrosProps) => {
       }
 
       // Navegar para a nova URL mantendo os outros parâmetros
-      router.push(`/imoveis?${params.toString()}`);
+      router.push(`/gerenciamento/imoveis?${params.toString()}`);
    };
 
    useEffect(() => {  

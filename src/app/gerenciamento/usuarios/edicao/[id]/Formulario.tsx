@@ -172,7 +172,7 @@ const Formulario = ({usuario} : FormProps) => {
 
          showNotification("Usuário editado com sucesso");
          clearErrors();
-         router.push("/usuarios");
+         router.push("/gerenciamento/usuarios");
       } catch (error) {
          console.error("Erro ao editar o usuário:", error);
       }

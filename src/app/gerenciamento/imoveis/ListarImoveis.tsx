@@ -101,7 +101,7 @@ export default function ListarImoveis({
                   key={imovel.id} 
                   imovel={imovel}
                   edicao={true}
-                  edicaoLink={`/imoveis/edicao/${imovel.id}`}
+                  edicaoLink={`/gerenciamento/imoveis/edicao/${imovel.id}`}
                   deletarImovel={() => handleExcluir(imovel.id)}
                />
             ))}

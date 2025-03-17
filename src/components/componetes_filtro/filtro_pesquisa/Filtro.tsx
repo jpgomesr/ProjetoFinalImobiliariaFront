@@ -17,6 +17,7 @@ interface FiltroProps {
    bairro: string;
    tipoImovel: string;
    finalidade: string;
+   url : string;
 }
 
 const Filtro = (props: FiltroProps) => {
@@ -159,7 +160,7 @@ const Filtro = (props: FiltroProps) => {
          tipoImovel,
          finalidade: props.finalidade,
       });
-      router.push(`/imoveis?${params.toString()}`);
+      router.push(`${props.url}?${params.toString()}`);
    };
 
    const handlePesquisa = () => {

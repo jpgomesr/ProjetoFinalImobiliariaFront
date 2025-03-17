@@ -189,7 +189,7 @@ const Formulario = ({ proprietario }: FormProps) => {
 
          showNotification("Proprietário editado com sucesso!");
          clearErrors(); // Limpa os erros ao cadastrar com sucesso
-         router.push("/proprietarios");
+         router.push("/gerenciamento/proprietarios");
       } catch (error) {
          console.error("Erro ao editar proprietario", error);
       }

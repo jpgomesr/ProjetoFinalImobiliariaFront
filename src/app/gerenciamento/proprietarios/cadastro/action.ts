@@ -64,7 +64,7 @@ export async function salvarProprietario(props: salvarProprietarioProps) {
 
       const proprietario: ModelProprietario = await data;
       // Revalida o caminho após a criação do proprietário
-      revalidatePath(`/proprietarios/edicao/${proprietario.id}`);
+      revalidatePath(`/gerenciamento/proprietarios/edicao/${proprietario.id}`);
 
       return await data;
    } catch (error) {

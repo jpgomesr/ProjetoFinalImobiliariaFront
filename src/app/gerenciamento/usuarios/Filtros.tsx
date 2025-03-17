@@ -37,7 +37,7 @@ export default function Filtros({ status, tipoUsuario, nomePesquisa }: FiltrosPr
          nomePesquisa: pesquisaTemporaria, // Usa o valor temporário da pesquisa
          ...novosFiltros,
       });
-      router.push(`/usuarios?${params.toString()}`);
+      router.push(`/gerenciamento/usuarios?${params.toString()}`);
    };
 
    const handlePesquisa = () => {
@@ -73,7 +73,7 @@ export default function Filtros({ status, tipoUsuario, nomePesquisa }: FiltrosPr
                value={tipoUsuario}
             />
          </div>
-         <Link href="/usuarios/cadastro">
+         <Link href="/gerenciamento/usuarios/cadastro">
             <button className="flex items-center justify-center bg-havprincipal rounded-md text-white h-full text-sm py-1 px-2 lg:text-base lg:py-2 lg:px-3 2xl:py-3 2xl:px-4">
                Adicionar <PlusIcon className="w-4" />
             </button>
