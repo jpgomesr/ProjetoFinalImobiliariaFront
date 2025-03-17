@@ -106,7 +106,7 @@ const Page = () => {
     
       showNotification("Usuário cadastrado com sucesso");
       clearErrors(); // Limpa os erros ao cadastrar com sucesso
-      router.push("/usuarios"); // Redireciona para a lista de usuários
+      router.push("/gerenciamento/usuarios"); // Redireciona para a lista de usuários
    } catch (error) {
       console.error("Erro ao criar usuário:", error);
       showNotification("Erro ao criar usuário. Tente novamente.");

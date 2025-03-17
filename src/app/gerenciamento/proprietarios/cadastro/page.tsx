@@ -20,7 +20,6 @@ import { useRouter } from "next/navigation";
 import RespostaViaCepModel from "@/models/ResposataViaCepModel";
 import { preencherCampos, restaurarCampos } from "@/Functions/requisicaoViaCep";
 import List from "@/components/List";
-import { cidades, bairros, estados } from "@/data/data";
 import { useNotification } from "@/context/NotificationContext";
 import { salvarProprietario } from "./action";
 
@@ -152,7 +151,7 @@ const page = () => {
 
          showNotification("Usuário cadastrado com sucesso");
          clearErrors(); // Limpa os erros ao cadastrar com sucesso
-         router.push("/proprietarios");
+         router.push("/gerenciamento/proprietarios");
       } catch (error) {
          console.error("Erro ao criar usuário:", error);
       }

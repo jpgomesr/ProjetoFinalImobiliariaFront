@@ -15,12 +15,14 @@ interface FiltrosProps {
    cidade: string;
    bairro: string;
    tipoImovel: string;
+   value : string;
+   url : string;
 }
 
 const FiltroList = (props: FiltrosProps) => {
    const router = useRouter();
    const searchParams = useSearchParams();
-   const [finalidadeMomento, setFinalidadeMomento] = useState<string>(props.finalidade);
+   const [finalidadeMomento, setFinalidadeMomento] = useState<string>(props.finalidade || "venda");
 
    const atualizarURL = (finalidade: string) => {
       // Criar nova instância de URLSearchParams com os parâmetros atuais
@@ -30,15 +32,16 @@ const FiltroList = (props: FiltrosProps) => {
       if (finalidade) {
          params.set('finalidade', finalidade);
       } else {
-         params.delete('finalidade');
+         params.set('finalidade', 'venda'); // Define venda como padrão
       }
 
       // Navegar para a nova URL mantendo os outros parâmetros
-      router.push(`/imoveis?${params.toString()}`);
+      router.push(`${props.url}?${params.toString()}`);
    };
 
    useEffect(() => {  
-      setFinalidadeMomento(props.finalidade);
+      setFinalidadeMomento(props.finalidade || "venda");
+      atualizarURL(props.finalidade || "venda");
    }, [props.finalidade]);
 
    return (
@@ -47,12 +50,12 @@ const FiltroList = (props: FiltrosProps) => {
             { id: "venda", label: "Venda" },
             { id: "aluguel", label: "Aluguel" },
          ]}
+         value={props.value || "venda"}
          buttonHolder="Finalidade"
          mudandoValor={(value) => {
             setFinalidadeMomento(value);
             atualizarURL(value);
          }}
-
       />
    )
 }

@@ -42,7 +42,7 @@ const List = (props: ListProps) => {
 
    const opcaoSelecionada =
       props.opcoes.find((opc) => opc.id === selecionado)?.label ||
-      props.opcoes[selecionado].label;
+      props.opcoes[selecionado]?.label;
 
    return (
       <div className="flex flex-col">

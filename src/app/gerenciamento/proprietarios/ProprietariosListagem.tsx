@@ -114,7 +114,7 @@ const ProprietariosListagem = ({
               handlePesquisa={handlePesquisa}
               required={false}
             />
-            <Link href={"/proprietarios/cadastro"}>
+            <Link href={"/gerenciamento/proprietarios/cadastro"}>
               <button className="flex items-center justify-center bg-havprincipal rounded-md text-white h-full text-sm py-1 px-2 lg:text-base lg:py-2 lg:px-3 2xl:py-3 2xl:px-4">
                 Adicionar <PlusIcon className="w-4" />
               </button>
@@ -135,7 +135,7 @@ const ProprietariosListagem = ({
                 id={proprietario.id}
                 imagem={proprietario.imagemUrl}
                 deletarUsuario={exibirModal}
-                linkEdicao={`/proprietarios/edicao/${proprietario.id}`}
+                linkEdicao={`/gerenciamento/proprietarios/edicao/${proprietario.id}`}
               />
             ))}
           </div>

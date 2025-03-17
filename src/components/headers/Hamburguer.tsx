@@ -64,17 +64,17 @@ const Hamburguer = (props: HamburguerProps) => {
          items: [
             {
                label: "Gerenciar imóveis",
-               route: "/imoveis",
+               route: "/gerenciamento/imoveis",
                icone: <CasaIcon className="h-5" />,
             },
             {
                label: "Usuários",
-               route: "/usuarios",
+               route: "/gerenciamento/usuarios",
                icone: <PerfilIcon className="h-5" />,
             },
             {
                label: "Proprietários",
-               route: "/",
+               route: "/gerenciamento/proprietarios",
                icone: <CorretoresIcon className="h-5" />,
             },
             {

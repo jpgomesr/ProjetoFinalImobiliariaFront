@@ -288,7 +288,7 @@ const Formulario = ({imovel } : FormularioProps) => {
       if (response.ok) {
          showNotification("Imóvel editado com sucesso");
          clearErrors();
-         router.push("/imoveis");
+         router.push("/gerenciamento/imoveis");
       } else {
          console.error("Erro ao salvar o imóvel");
       }

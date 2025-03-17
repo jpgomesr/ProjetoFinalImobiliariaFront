@@ -172,7 +172,7 @@ const Page = () => {
       if (response.ok) {
          showNotification("Imóvel cadastrado com sucesso");
          clearErrors();
-         router.push("/imoveis");
+         router.push("/gerenciamento/imoveis");
       }
    };
 
