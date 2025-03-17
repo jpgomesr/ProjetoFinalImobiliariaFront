@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,31 +16,16 @@ import TextArea from "@/components/ComponentesCrud/TextArea";
 import List from "@/components/List";
 import { TipoBanner } from "@/models/Enum/TipoBanner";
 import { createImovelValidator } from "@/validators/Validators";
+import { restaurarCampos, preencherCampos } from "@/Functions/requisicaoViaCep";
 import SearchProprietarioList from "@/components/SearchProprietarioList";
 import CorretoresBoxSelect from "@/components/CorretoresBoxSelect";
-import { useParams, useRouter } from "next/navigation";
-import { ModelImovelGet } from "@/models/ModelImovelGet";
-import Link from "next/link";
 import { useNotification } from "@/context/NotificationContext";
-import Erro404 from "@/components/Erro404";
-import { buscarImovelPorId } from "@/Functions/imovel/buscaImovel";
-import Imovel from "@/models/ModelImovel";
-import { restaurarCampos, preencherCampos } from "@/Functions/requisicaoViaCep";
+import { salvarImovel } from "./actions";
 
-
-interface FormularioProps {
-    imovel : ModelImovelGet
-}
-
-const Formulario = ({imovel } : FormularioProps) => {
+const Page = () => {
    const router = useRouter();
-   
-   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const { showNotification } = useNotification();
-   const [loading, setLoading] = useState(true);
-   const [erro404, setErro404] = useState(false);
 
-   const [refImagensDeletadas, setRefImagensDeletadas] = useState<string[]>();
    const [step, setStep] = useState(1);
    const [camposDesabilitados, setCamposDesabilitados] = useState({
       cidadeDesabilitada: true,
@@ -47,19 +33,9 @@ const Formulario = ({imovel } : FormularioProps) => {
       ruaDesabilitada: true,
       estadoDesabilitado: true,
    });
-   
-
-
-   
 
    const imovelValidator = createImovelValidator();
    type imovelValidatorSchema = z.infer<typeof imovelValidator>;
-
-   const hadleRefImagensDel = (ref: string) => {
-      setRefImagensDeletadas((prev: string[] | undefined) => {
-         return [ref, ...(prev || [])];
-      });
-   };
 
    const tipoBanner = [
       { id: TipoBanner.ADQUIRIDO, label: "Adquirido" },
@@ -91,72 +67,20 @@ const Formulario = ({imovel } : FormularioProps) => {
    });
 
    useEffect(() => {
+      console.log(errors);
+   });
 
-      if(!imovel){
-         setErro404(true);
-         return;
+   useEffect(() => {
+      if (watch("cep")) {
+         const cepMock = watch("cep").toString();
+
+         if (cepMock?.length === 8) {
+            preencherCampos(cepMock, setCamposDesabilitados, setValue);
+         } else {
+            restaurarCampos(setCamposDesabilitados, setValue);
+         }
       }
-
-         const buscarImovel = async () => {
-            try {
-               if (imovel) {
-                  preencherFormulario(imovel);
-               } else {
-                  setErro404(true) 
-                  console.error("Erro ao buscar os dados do imóvel");
-               }
-            } catch (error) {
-               console.error("Erro ao buscar os dados do imóvel:", error);
-               setErro404(true)
-            }finally{
-               setLoading(false)
-            }
-         };
-
-         buscarImovel();
-      
-   }, [] );
-
-   const preencherFormulario = (imovel: ModelImovelGet) => {
-
-      setValue("id", imovel.id.toString());  
-      setValue("titulo", imovel.titulo);
-      setValue("descricao", imovel.descricao);
-      setValue("metragem", Number(imovel.tamanho));
-      setValue("qtdQuartos", Number(imovel.qtdQuartos));
-      setValue("qtdBanheiros", Number(imovel.qtdBanheiros));
-      setValue("qtdVagas", Number(imovel.qtdGaragens));
-      setValue("qtdChurrasqueiras", Number(imovel.qtdChurrasqueira));
-      setValue("qtdPiscinas", Number(imovel.qtdPiscina));
-      setValue("valor", Number(imovel.preco));
-      setValue("valorPromo", Number(imovel.precoPromocional));
-      setValue("iptu", Number(imovel.iptu));
-      setValue("valorCondominio", Number(imovel.valorCondominio));
-      setValue("objImovel", imovel.finalidade || objImovel[0].id);
-      setValue("tipo", imovel.endereco.tipoResidencia);
-      setValue("banner", imovel.banner || false);
-      setValue("tipoBanner", imovel.tipoBanner || tipoBanner[0].id);
-      setValue("destaque", imovel.permitirDestaque || false);
-      setValue("visibilidade", imovel.habilitarVisibilidade || false);
-      setValue("academia", imovel.academia || false);
-      setValue("cep", Number(imovel.endereco.cep));
-      setValue("bairro", imovel.endereco.bairro);
-      setValue("estado", imovel.endereco.estado || "");
-      setValue("cidade", imovel.endereco.cidade);
-      setValue("rua", imovel.endereco.rua);
-      setValue("numero", Number(imovel.endereco.numeroCasaPredio));
-      setValue("numeroApto", Number(imovel.endereco.numeroApartamento));
-      setValue("proprietario", imovel.proprietario?.id);
-      setValue("corretores", imovel.corretores || []);
-      setValue("imagens", {
-         imagemPrincipal:
-            imovel.imagens.find((img) => img.imagemCapa)?.referencia || null,
-         imagensGaleria:
-            imovel.imagens
-               .filter((img) => !img.imagemCapa)
-               .map((img) => img.referencia) || [],
-      });
-   };
+   }, [watch("cep")]);
 
    const handleNextStep = async (e: React.MouseEvent) => {
       e.preventDefault();
@@ -175,146 +99,99 @@ const Formulario = ({imovel } : FormularioProps) => {
             "objImovel",
             "tipo",
          ]);
-
          if (isValid) {
             setStep((prev) => prev + 1);
          }
       }
 
       if (step === 2) {
-         const imagens = watch("imagens");
-         const isValid = await trigger();
-         if (isValid && imagens.imagemPrincipal) {
+         const isValid = await trigger([
+            "cep",
+            "bairro",
+            "estado",
+            "cidade",
+            "rua",
+            "imagens",
+            "numero",
+            "numeroApto",
+         ]);
+         if (isValid) {
             setStep((prev) => prev + 1);
          }
       }
    };
-   useEffect(() => {
-      if (watch("cep")) {
-         const cepMock = watch("cep").toString();
-
-         if (cepMock?.length === 8) {
-            preencherCampos(cepMock, setCamposDesabilitados, setValue, true);
-         } else {
-            restaurarCampos(setCamposDesabilitados, setValue);
-         }
-      }
-   }, [watch("cep")]);
 
    const handlePrevStep = (e: React.MouseEvent) => {
       e.preventDefault();
       setStep((prev) => prev - 1);
    };
 
-   useEffect(() => {
-      console.log(errors);
-      console.log(typeof watch("numero"));
-   },[errors]);
-
-   const handleEditarImovel = async (data: imovelValidatorSchema) => {
-      console.log(data);
-
+   const handleCriarImovel = async (data: imovelValidatorSchema) => {
       const jsonRequest = {
-         titulo: data.titulo,
-         descricao: data.descricao,
-         tamanho: data.metragem,
-         qtdQuartos: data.qtdQuartos,
-         qtdBanheiros: data.qtdBanheiros,
-         qtdGaragens: data.qtdVagas,
-         qtdChurrasqueira: data.qtdChurrasqueiras,
-         qtdPiscina: data.qtdPiscinas,
-         finalidade: data.objImovel,
-         academia: data.academia,
-         preco: data.valor,
-         precoPromocional: data.valorPromo,
-         permitirDestaque: data.destaque,
-         habilitarVisibilidade: data.visibilidade,
-         banner: data.banner,
-         tipoBanner: data.tipoBanner,
-         iptu: data.iptu,
-         valorCondominio: data.valorCondominio,
-         idProprietario: data.proprietario,
-         ativo: data.visibilidade,
-         endereco: {
-            rua: data.rua,
-            bairro: data.bairro,
-            cidade: data.cidade,
-            estado: data.estado,
-            tipoResidencia: data.tipo,
-            cep: data.cep,
-            numeroCasaPredio: data.numero,
-            numeroApartamento: data.numeroApto,
+         imovel: {
+            titulo: data.titulo,
+            descricao: data.descricao,
+            tamanho: data.metragem.toString(),
+            qtdQuartos: data.qtdQuartos.toString(),
+            qtdBanheiros: data.qtdBanheiros.toString(),
+            qtdGaragens: data.qtdVagas.toString(),
+            qtdChurrasqueira: data.qtdChurrasqueiras?.toString() || "",
+            qtdPiscina: data.qtdPiscinas?.toString() || "",
+            finalidade: data.objImovel,
+            academia: data.academia,
+            preco: data.valor.toString(),
+            precoPromocional: data.valorPromo?.toString() || "",
+            permitirDestaque: data.destaque,
+            habilitarVisibilidade: data.visibilidade,
+            banner: data.banner,
+            tipoBanner: data.tipoBanner || "",
+            iptu: data.iptu?.toString() || "",
+            valorCondominio: data.valorCondominio?.toString() || "",
+            idProprietario: data.proprietario.toString(),
+            ativo: data.visibilidade,
+            endereco: {
+               rua: data.rua,
+               bairro: data.bairro,
+               cidade: data.cidade,
+               estado: data.estado,
+               tipoResidencia: data.tipo,
+               cep: data.cep.toString(),
+               numeroCasaPredio: data.numero.toString(),
+               numeroApartamento: data.numeroApto?.toString() || "",
+            },
+            corretores: data.corretores,
          },
-         corretores: data.corretores,
+         imagens: data.imagens,
       };
-
-      const formData = new FormData();
-      const params = new URLSearchParams();
-      formData.append(
-         "imovel",
-         new Blob([JSON.stringify(jsonRequest)], { type: "application/json" })
-      );
-      if (
-         data.imagens.imagemPrincipal &&
-         data.imagens.imagemPrincipal instanceof File
-      ) {
-         formData.append("imagemPrincipal", data.imagens.imagemPrincipal);
-      }
-      if (
-         data.imagens.imagensGaleria &&
-         data.imagens.imagensGaleria.length > 0
-      ) {
-         data.imagens.imagensGaleria.forEach((imagem) => {
-            if (imagem instanceof File) {
-               formData.append("imagens", imagem);
-            }
-         });
-      }
-      if (refImagensDeletadas) {
-         refImagensDeletadas.forEach((ref) => {
-            params.append(`refImagensDeletadas`, ref);
-         });
-      }
-
-      const url = new URL(`${BASE_URL}/imoveis/${data.id}`);
-      url.search = params.toString();
-
-      const response = await fetch(url, {
-         method: "PUT",
-         body: formData,
-      });
-      console.log(await response.json());
-
+      const response = await salvarImovel(jsonRequest);
       if (response.ok) {
-         showNotification("Imóvel editado com sucesso");
+         showNotification("Imóvel cadastrado com sucesso");
          clearErrors();
-         router.push("/imoveis");
-      } else {
-         console.error("Erro ao salvar o imóvel");
+         router.push("/gerenciamento/imoveis");
       }
    };
-
-    if (loading) {
-      return <div>Carregando...</div>; // Exibe um indicador de carregamento
-   }
-
-   if (erro404) {
-      return <Erro404 />; // Exibe a página de erro 404
-   }
 
    const handleInputChange = (variable: keyof imovelValidatorSchema) => {
       clearErrors(variable);
    };
 
    return (
+      <Layout className="py-0">
+         <SubLayoutPaginasCRUD>
+            <FundoBrancoPadrao
+               titulo="Cadastro de imóvel"
+               className={`w-full ${
+                  isSubmitting ? "opacity-40" : "opacity-100"
+               }`}
+            >
                <form
-                  onSubmit={handleSubmit(handleEditarImovel)}
+                  onSubmit={handleSubmit(handleCriarImovel)}
                   className="flex flex-col gap-2 md:gap-3 lg:gap-4 xl:gap-5 2xl:gap-6"
                >
                   {step === 1 && (
                      <>
                         <InputPadrao
-                           htmlFor="titulo"
+                           htmlFor="Titulo"
                            label="Titulo"
                            placeholder="Digite o titulo"
                            {...register("titulo")}
@@ -509,7 +386,7 @@ const Formulario = ({imovel } : FormularioProps) => {
                                  render={({ field }) => (
                                     <Switch
                                        label="Banner"
-                                       checked={watch("banner")}
+                                       checked={field.value}
                                        onChange={(e) =>
                                           field.onChange(e.target.checked)
                                        }
@@ -518,7 +395,7 @@ const Formulario = ({imovel } : FormularioProps) => {
                                  )}
                               />
                               {watch("banner") && (
-                                 <div className="flex">
+                                 <div className="flex h-[60%]">
                                     <Controller
                                        name="tipoBanner"
                                        control={control}
@@ -627,10 +504,7 @@ const Formulario = ({imovel } : FormularioProps) => {
                               )}
                            />
                         </div>
-                        <div className="flex justify-center mt-4 gap-2">
-                           <Link href={"/imoveis"}>
-                              <BotaoPadrao type="button" texto="Cancelar" />
-                           </Link>
+                        <div className="flex justify-center mt-4">
                            <BotaoPadrao
                               type="button"
                               texto="Próximo"
@@ -676,24 +550,6 @@ const Formulario = ({imovel } : FormularioProps) => {
                                        errors.imagens?.imagemPrincipal?.message
                                     }
                                     clearErrors={clearErrors}
-                                    coverImage={
-                                       typeof field.value.imagemPrincipal ===
-                                       "string"
-                                          ? field.value.imagemPrincipal
-                                          : field.value.imagemPrincipal
-                                          ? URL.createObjectURL(
-                                               field.value.imagemPrincipal
-                                            )
-                                          : null
-                                    }
-                                    galleryImages={imagensGaleria.map((file) =>
-                                       typeof file === "string"
-                                          ? file
-                                          : file
-                                          ? URL.createObjectURL(file)
-                                          : null
-                                    )}
-                                    refImagensDeletadas={hadleRefImagensDel}
                                  />
                               );
                            }}
@@ -705,7 +561,7 @@ const Formulario = ({imovel } : FormularioProps) => {
                                     htmlFor="cep"
                                     label="CEP"
                                     placeholder="Digite o cep"
-                                    type="number"
+                                    type="text"
                                     {...register("cep", {
                                        setValueAs(value) {
                                           if (value === "" || isNaN(value)) {
@@ -725,7 +581,7 @@ const Formulario = ({imovel } : FormularioProps) => {
                                     }}
                                  />
                                  <InputPadrao
-                                    htmlFor="bairro"
+                                    htmlFor="Bairro"
                                     label="Bairro"
                                     placeholder="Digite o bairro"
                                     type="text"
@@ -797,10 +653,7 @@ const Formulario = ({imovel } : FormularioProps) => {
                                           label={`Número do apartamento`}
                                           placeholder="Digite o número do apartamento"
                                           type="numberApto"
-                                          {...register("numeroApto", {
-                                             setValueAs: (value) =>
-                                                parseInt(value, 10),
-                                          })}
+                                          {...register("numeroApto")}
                                           mensagemErro={
                                              errors.numeroApto?.message
                                           }
@@ -822,7 +675,7 @@ const Formulario = ({imovel } : FormularioProps) => {
                            <BotaoPadrao
                               type="button"
                               texto="Próximo"
-                              onClick={() => setStep(step + 1)}
+                              onClick={handleNextStep}
                            />
                         </div>
                      </>
@@ -831,11 +684,11 @@ const Formulario = ({imovel } : FormularioProps) => {
                      <div className="flex flex-col gap-4">
                         <SearchProprietarioList
                            registerProps={register("proprietario")}
-                           selected={watch("proprietario")}
+                           mensagemErro={errors.proprietario?.message}
                         />
                         <CorretoresBoxSelect
                            registerProps={register("corretores")}
-                           arraySelect={watch("corretores")}
+                           mensagemErro={errors.corretores?.message}
                         />
                         <div className="flex flex-row gap-2 justify-center">
                            <BotaoPadrao
@@ -845,14 +698,17 @@ const Formulario = ({imovel } : FormularioProps) => {
                            />
                            <BotaoPadrao
                               type="submit"
-                              texto="Salvar imóvel"
+                              texto="Criar imóvel"
                               disabled={isSubmitting}
                            />
                         </div>
                      </div>
                   )}
                </form>
+            </FundoBrancoPadrao>
+         </SubLayoutPaginasCRUD>
+      </Layout>
    );
 };
 
-export default Formulario;
+export default Page;

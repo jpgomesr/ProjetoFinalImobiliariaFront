@@ -58,7 +58,7 @@ export default function Home() {
             </div>
          </div>
          <div className="mt-4 flex flex-col gap-6">
-            <TituloBgDegrade text="Imóveis em" boldText="condições especias" />
+            <TituloBgDegrade text="Imóveis " boldText="recentemente adicionados" />
             <div className="flex flex-row gap-4 overflow-x-auto px-8 pb-2 bg-scroll hide-scrollbar">
                {imoveis.map((imovel, index) => (
                   <CardImovel key={index} imovel={imovel}  />

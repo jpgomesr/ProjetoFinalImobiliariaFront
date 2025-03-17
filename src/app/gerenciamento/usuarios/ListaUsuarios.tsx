@@ -41,7 +41,7 @@ export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtu
    const mudarPagina = (pagina: number) => {
       const params = new URLSearchParams(window.location.search);
       params.set("numeroPaginaAtual", pagina.toString());
-      router.push(`/usuarios?${params.toString()}`);
+      router.push(`/gerenciamento/usuarios?${params.toString()}`);
    };
    const [idItemParaDeletar, setIdItemParaDeletar] = useState<number | null>(null);
    const [modalConfirmacaoAberto, setModalConfirmacaoAberto] = useState(false);
@@ -85,7 +85,7 @@ export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtu
                id={usuario.id}
                imagem={usuario.foto}
                deletarUsuario={exibirModal}
-               linkEdicao={`/usuarios/edicao/${usuario.id}`}
+               linkEdicao={`/gerenciamento/usuarios/edicao/${usuario.id}`}
             />
             ))}
          </div>

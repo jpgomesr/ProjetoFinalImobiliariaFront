@@ -17,6 +17,7 @@ interface FiltroProps {
    bairro: string;
    tipoImovel: string;
    finalidade: string;
+   url : string;
 }
 
 const Filtro = (props: FiltroProps) => {
@@ -42,6 +43,8 @@ const Filtro = (props: FiltroProps) => {
    const [carregandoCidades, setCarregandoCidades] = useState(true);
    const [carregandoBairros, setCarregandoBairros] = useState(false);
 
+   console.log(props.bairro)
+   
 
    const [opcoesCidade, setOpcoesCidade] = useState([
       { id: "", label: "Selecione uma cidade" }
@@ -55,7 +58,7 @@ const Filtro = (props: FiltroProps) => {
       { id: "CASA", label: "Casa" },
       { id: "APARTAMENTO", label: "Apartamento" },
    ];
-   const estado = "Santa catarina";
+   const estado = "Santa Catarina";
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -126,7 +129,7 @@ const Filtro = (props: FiltroProps) => {
       const opcoesFormatadas = [
          { id: "", label: "Selecione um bairro" },
          ...bairros.map((bairro) => ({
-            id: bairro.toLowerCase().replace(/\s+/g, '-'),
+            id: bairro.replace(/\s+/g, '-'),
             label: bairro
          }))
       ];
@@ -159,7 +162,7 @@ const Filtro = (props: FiltroProps) => {
          tipoImovel,
          finalidade: props.finalidade,
       });
-      router.push(`/imoveis?${params.toString()}`);
+      router.push(`${props.url}?${params.toString()}`);
    };
 
    const handlePesquisa = () => {
@@ -249,12 +252,13 @@ const Filtro = (props: FiltroProps) => {
                      setBairro("");
                   }}
                   disabled={carregandoCidades}
+                  value={cidade}
                />
                <List
                   opcoes={opcoesBairro}
                   buttonHolder="Bairro"
                   mudandoValor={setBairro}
-                  value={bairro} 
+                  value={props.bairro} 
                   disabled={carregandoBairros || !cidade} 
                />
                <List

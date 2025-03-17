@@ -65,7 +65,7 @@ import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
    
          const usuario: ModelUsuario = await data;
          // Revalida o caminho após a criação do usuário
-         revalidatePath(`/usuarios/edicao/${usuario.id}`);
+         revalidatePath(`/gerenciamento/usuarios/edicao/${usuario.id}`);
 
          return await data
 
