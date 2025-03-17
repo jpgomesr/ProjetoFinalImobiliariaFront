@@ -23,7 +23,7 @@ interface ComponentePrincipalFiltroProps {
 }
 
 const CompontentePrincipalFiltro = ({
-   initialFinalidade = "Compra",
+   initialFinalidade = "Venda",
    initialPrecoMinimo = "",
    initialPrecoMaximo = "",
    initialMetrosQuadradosMinimo = "",
@@ -32,14 +32,14 @@ const CompontentePrincipalFiltro = ({
    initialQuantidadeDeVagas = "",
    initialCidade = "",
    initialBairro = "",
-   initialTipoImovel = "Casa",
+   initialTipoImovel = "CASA",
    onSearch,
 }: ComponentePrincipalFiltroProps) => {
    const router = useRouter();
    const searchParams = useSearchParams();
 
-   const [tipoVenda, setTipoVenda] = useState<"Compra" | "Aluguel">(
-      initialFinalidade === "Aluguel" ? "Aluguel" : "Compra"
+   const [tipoVenda, setTipoVenda] = useState<"venda" | "aluguel">(
+      initialFinalidade === "aluguel" ? "aluguel" : "venda"
    );
    const [filtroAberto, setFiltroAberto] = useState<boolean>(false);
    const [precoMinimo, setPrecoMinimo] = useState<string>(initialPrecoMinimo);
@@ -75,8 +75,8 @@ const CompontentePrincipalFiltro = ({
    ]);
 
    const tipoImovelExemplo = [
-      { id: "Casa", label: "Casa" },
-      { id: "Apartamento", label: "Apartamento" },
+      { id: "CASA", label: "Casa" },
+      { id: "APARTAMENTO", label: "Apartamento" },
    ];
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -156,7 +156,7 @@ const CompontentePrincipalFiltro = ({
       const opcoesFormatadas = [
          { id: "", label: "Selecione um bairro" },
          ...bairros.map((bairro) => ({
-            id: bairro.toLowerCase().replace(/\s+/g, "-"),
+            id: bairro.replace(/\s+/g, "-"),
             label: bairro,
          })),
       ];
@@ -180,8 +180,8 @@ const CompontentePrincipalFiltro = ({
    useEffect(() => {
       if (searchParams) {
          const finalidade = searchParams.get("finalidade");
-         if (finalidade === "Aluguel") setTipoVenda("Aluguel");
-         else if (finalidade === "Compra") setTipoVenda("Compra");
+         if (finalidade === "Aluguel") setTipoVenda("aluguel");
+         else if (finalidade === "Venda") setTipoVenda("venda");
 
          const precoMin = searchParams.get("precoMinimo");
          if (precoMin) setPrecoMinimo(precoMin);
@@ -208,7 +208,7 @@ const CompontentePrincipalFiltro = ({
          if (bairroParam) setBairro(bairroParam);
 
          const tipoParam = searchParams.get("tipoImovel");
-         if (tipoParam) setTipoImovel(tipoParam);
+         if (tipoParam) setTipoImovel(tipoParam.toUpperCase());
       }
    }, [searchParams]);
 
@@ -246,7 +246,7 @@ const CompontentePrincipalFiltro = ({
          filtros.quantidadeDeVagas = quantidadeDeVagas.toString();
       if (cidade) filtros.cidade = cidade;
       if (bairro) filtros.bairro = bairro;
-      if (tipoImovel) filtros.tipoImovel = tipoImovel;
+      if (tipoImovel) filtros.tipoImovel = tipoImovel.toUpperCase();
       if (termoBusca) filtros.termo = termoBusca;
 
       // Se houver um callback de pesquisa externo, chame-o
@@ -270,23 +270,23 @@ const CompontentePrincipalFiltro = ({
                <p
                   className={`hover:cursor-pointer text-mobilePadrao md:text-1xl xl:text-2xl
                ${
-                  tipoVenda === "Compra"
+                  tipoVenda === "venda"
                      ? "text-havprincipal"
                      : "text-cinzaNeutro"
                }`}
-                  onClick={() => setTipoVenda("Compra")}
+                  onClick={() => setTipoVenda("venda")}
                >
-                  Comprar
+                  Venda
                </p>
                <p
                   className={`hover:cursor-pointer text-mobilePadrao md:text-1xl xl:text-2xl ${
-                     tipoVenda === "Aluguel"
+                     tipoVenda === "aluguel"
                         ? "text-havprincipal"
                         : "text-cinzaNeutro"
                   }`}
-                  onClick={() => setTipoVenda("Aluguel")}
+                  onClick={() => setTipoVenda("aluguel")}
                >
-                  Alugar
+                  Aluguel
                </p>
             </div>
 
@@ -408,7 +408,7 @@ const CompontentePrincipalFiltro = ({
                            disabled={carregandoBairros || !cidade}
                         />
                         <List
-                           mudandoValor={setTipoImovel}
+                           mudandoValor={(value) => setTipoImovel(value.toUpperCase())}
                            opcoes={tipoImovelExemplo}
                            buttonHolder="Tipo imóvel"
                            placeholder="Casa"

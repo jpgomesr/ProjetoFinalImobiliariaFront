@@ -8,7 +8,7 @@ import { PlusIcon } from "lucide-react";
 import ListarImoveis from "./ListarImoveis";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 import { TipoImovelEnum } from "@/models/Enum/TipoImovelEnum";
-import FiltroList from "./FiltroList";
+import FiltroList from "@/components/componetes_filtro/FiltroList";
 
 interface PageProps {
    searchParams: {
@@ -72,6 +72,8 @@ const Page = async ({ searchParams }: PageProps) => {
                         cidade={params.cidade}
                         bairro={params.bairro}
                         tipoImovel={params.tipoImovel}
+                        url="/gerenciamento/imoveis"
+                        value={params.finalidade}
                      />
                   
                   <div
