@@ -22,6 +22,7 @@ import { preencherCampos, restaurarCampos } from "@/Functions/requisicaoViaCep";
 import List from "@/components/List";
 import { cidades, bairros, estados } from "@/data/data";
 import { useNotification } from "@/context/NotificationContext";
+import { salvarProprietario } from "./action";
 
 const page = () => {
    const router = useRouter();
@@ -100,35 +101,35 @@ const page = () => {
    }, [watch("cep")]);
 
    const onSubmit = async (data: validatorSchema) => {
+
       try {
-         const response = await UseFetchPostFormData(
-            `${BASE_URL}/proprietarios`,
-            {
-               nome: data.nome,
-               celular: data.celular,
-               telefone: data.telefone,
-               email: data.email,
-               cpf: data.cpf,
-               ativo: data.ativo === "Ativo",
-               enderecoPostDTO: {
-                  bairro: data.bairro,
-                  cidade: data.cidade,
-                  estado: data.estado,
-                  rua: data.rua,
-                  cep: data.cep,
-                  tipoResidencia: data.tipoResidencia,
-                  numeroCasaPredio: data.numeroCasaPredio,
-                  numeroApartamento: data.numeroApartamento,
-               },
-            },
-            "proprietario",
-            "foto",
-            data.imagemPerfil,
-            "POST"
-         );
+      const objetoRequisicao = {
+         proprietario : {
+            nome: data.nome || "",
+            celular: data.celular || "",
+            telefone: data.telefone || "",
+            email: data.email || "",
+            cpf: data.cpf || "",
+            ativo: data.ativo === "Ativo",
+            enderecoPostDTO: {
+               bairro: data.bairro,
+               cidade: data.cidade,
+               estado: data.estado,
+               rua: data.rua,
+               cep: data.cep,
+               tipoResidencia: data.tipoResidencia,
+               numeroCasaPredio: data.numeroCasaPredio.toString(),
+               numeroApartamento: data.numeroApartamento?.toString() || "",
+            }
+         },
+         imagemPerfil : data.imagemPerfil
+      }
+      
+      const response = await salvarProprietario(objetoRequisicao)
+         
 
          if (!response.ok) {
-            const responseData = await response.json();
+            const responseData = await response;
             if (responseData.erros) {
                const errosFormatados = UseErros(responseData);
                Object.keys(errosFormatados).forEach((campo) => {

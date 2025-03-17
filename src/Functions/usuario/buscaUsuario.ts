@@ -5,7 +5,10 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
 interface retornoListaUsuarios {
     usuariosRenderizados : ModelUsuarioListagem[] | undefined,
-    conteudoCompleto : object
+    conteudoCompleto : {
+        totalPages : number,
+        last : boolean
+    }
 }
 
 
@@ -31,4 +34,11 @@ export const buscarUsuarioPorId = async (id : string) => {
 
     return data as ModelUsuario
 
+}
+export const buscarIdsUsuarios = async () : Promise<number[]>=> {
+
+
+    const response = await fetch(`${BASE_URL}/usuarios/lista-id-usuarios`)
+
+    return await response.json()
 }

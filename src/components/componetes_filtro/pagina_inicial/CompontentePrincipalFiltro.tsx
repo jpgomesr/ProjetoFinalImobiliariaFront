@@ -4,6 +4,8 @@ import BotaoPadrao from "../../BotaoPadrao";
 import ComponenteInputFiltro from "./ComponenteInputFiltro";
 import ComponenteRadioFiltro from "./ComponenteRadioFiltro";
 import ComponenteSelectFiltro from "./ComponenteSelectFiltro";
+import List from "@/components/List";
+import { Search } from "lucide-react";
 
 const CompontentePrincipalFiltro = () => {
    const [tipoVenda, setTipoVenda] = useState<"Compra" | "Aluguel">("Compra");
@@ -14,15 +16,15 @@ const CompontentePrincipalFiltro = () => {
       useState<string>("");
    const [metrosQuadradosMaximo, setMetrosQuadradosMaximo] =
       useState<string>("");
-   const [quantidadeDeQuartos, setQuantidadeQuartos] = useState<number[]>([]);
-   const [quantidadeDeVagas, setQuantidadeVagas] = useState<number[]>([]);
+   const [quantidadeDeQuartos, setQuantidadeQuartos] = useState<number | null>(null);
+   const [quantidadeDeVagas, setQuantidadeVagas] = useState<number | null>(null);
    const [cidade, setCidade] = useState<string>("");
    const [bairro, setBairro] = useState<string>("");
    const [tipoImovel, setTipoImovel] = useState<string>("");
 
-   const cidadesExemplo = ["Corupá", "Jaragua do Sul"];
-   const bairrosExemplo = ["Centro", "Rau"];
-   const tipoImovelExemplo = ["Casa", "Apartamento"];
+   const cidadesExemplo = [{ id : "Corupá", label : "Corupá"} , { id : "Jaragua do Sul", label : "Jaragua do Sul"}  ];
+   const bairrosExemplo = [{ id : "Centro", label : "Centro"} , { id : "Rau", label : "Rau"} ];
+   const tipoImovelExemplo = [{ id : "Casa", label : "Casa"}, { id : "Apartamento",  label : "Apartamento"} ];
 
    // Limpa todos os filtros
    function limparFiltro(): void {
@@ -33,8 +35,8 @@ const CompontentePrincipalFiltro = () => {
       setCidade("");
       setBairro("");
       setTipoImovel("");
-      setQuantidadeQuartos([]);
-      setQuantidadeVagas([]);
+      setQuantidadeQuartos(null);
+      setQuantidadeVagas(null);
    }
 
    return (
@@ -71,11 +73,11 @@ const CompontentePrincipalFiltro = () => {
             md:border md:border-black md:p-3 md:items-center md:justify-start md:rounded-xl md:w-11/12
             2xl:w-10/12"
             >
-               <LupaIcon width={16} height={16} />
+               <Search className="2xl:w-7 h-7"/>
                <input
                   type="text"
                   className="ml-2 placeholder:text-mobilePadrao text-xs
-                  md:p-1"
+                  md:p-1 w-full lg:p-2 lg:text-base focus:outline-none"
                   placeholder="Fale um pouco sobre o imóvel"
                />
             </div>
@@ -142,12 +144,12 @@ const CompontentePrincipalFiltro = () => {
                      <ComponenteRadioFiltro
                         titulo="Vagas"
                         onChange={setQuantidadeVagas}
-                        selecionados={quantidadeDeVagas}
+                        selecionado={quantidadeDeVagas}
                      />
                      <ComponenteRadioFiltro
                         titulo="Dormitório"
                         onChange={setQuantidadeQuartos}
-                        selecionados={quantidadeDeQuartos}
+                        selecionado={quantidadeDeQuartos}
                      />
                   </div>
 
@@ -156,25 +158,26 @@ const CompontentePrincipalFiltro = () => {
                   md:flex-row"
                   >
                      <div className="flex gap-4  justify-center items-center">
-                        <ComponenteSelectFiltro
-                           onChange={setCidade}
+                        <List
+                           mudandoValor={setCidade}
                            opcoes={cidadesExemplo}
+                           buttonHolder="Cidade" 
                            placeholder="Cidade"
-                           selecionado={cidade}
                         />
-                        <ComponenteSelectFiltro
-                           onChange={setBairro}
+                        <List
+                           mudandoValor={setBairro}
                            opcoes={bairrosExemplo}
+                           buttonHolder="Bairro" 
                            placeholder="Bairro"
-                           selecionado={bairro}
+                           
                         />
                      </div>
                      <div className="flex justify-center items-center ">
-                        <ComponenteSelectFiltro
-                           onChange={setTipoImovel}
+                        <List
+                           mudandoValor={setTipoImovel}
                            opcoes={tipoImovelExemplo}
+                           buttonHolder="Tipo imóvel" 
                            placeholder="Casa"
-                           selecionado={tipoImovel}
                         />
                      </div>
                   </div>

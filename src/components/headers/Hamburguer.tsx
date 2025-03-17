@@ -1,3 +1,5 @@
+"use client"
+
 import React from "react";
 import CasaIcon from "@/svg/icons/header/CasaIcon";
 import FaqIcon from "@/svg/icons/header/FaqIcon";
@@ -9,7 +11,7 @@ import AgendamentoIcon from "@/svg/icons/header/AgendamentoIcon";
 import PerfilIcon from "@/svg/icons/header/PerfilIcon";
 import CorretoresIcon from "@/svg/icons/header/CorretoresIcon";
 import RelatoriosIcon from "@/svg/icons/header/RelatoriosIcon";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Roles } from "@/models/Enum/Roles";
 
 interface HamburguerProps {
@@ -17,8 +19,6 @@ interface HamburguerProps {
 }
 
 const Hamburguer = (props: HamburguerProps) => {
-   const router = useRouter();
-
    const opcoesHamburguer = [
       {
          label: "Página inicial",
@@ -106,14 +106,12 @@ const Hamburguer = (props: HamburguerProps) => {
 
    const renderizeOpcoesHamburguer = () => {
       return opcoesHamburguer.map((botao, key) => (
-         <button
-            key={key}
-            className="flex flex-row gap-1 items-center justify-left"
-            onClick={() => router.push(botao.route)}
-         >
-            {botao.icone}
-            <p className="text-base font-bold text-white">{botao.label}</p>
-         </button>
+         <Link href={botao.route} key={key}>
+            <button className="flex flex-row gap-1 items-center justify-left">
+               {botao.icone}
+               <p className="text-base font-bold text-white">{botao.label}</p>
+            </button>
+         </Link>
       ));
    };
 
@@ -130,15 +128,14 @@ const Hamburguer = (props: HamburguerProps) => {
                      className="flex flex-row w-full gap-4 items-center"
                      key={idx}
                   >
-                     <button
-                        className="flex flex-row gap-1 items-center justify-left"
-                        onClick={() => router.push(item.route)}
-                     >
-                        {item.icone}
-                        <p className="text-base font-bold text-white">
-                           {item.label}
-                        </p>
-                     </button>
+                     <Link href={item.route}>
+                        <button className="flex flex-row gap-1 items-center justify-left">
+                           {item.icone}
+                           <p className="text-base font-bold text-white">
+                              {item.label}
+                           </p>
+                        </button>
+                     </Link>
                   </div>
                ))}
             </div>
