@@ -54,7 +54,7 @@ const Page = async ({ searchParams }: PageProps) => {
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao className="w-full" titulo="Imóveis Disponíveis">
-               <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-[1fr_5fr_1fr] xl:grid-cols-[1fr_6fr_1fr_1fr]">
+               <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-[1fr_7fr_1fr] xl:grid-cols-[1fr_6fr_1fr]">
                   <FiltroList
                      finalidade={params.finalidade}
                      precoMinimo={params.precoMinimo}
