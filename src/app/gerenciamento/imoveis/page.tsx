@@ -1,13 +1,11 @@
 import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
 import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
-import List from "@/components/List";
 import ButtonFiltro from "@/components/componetes_filtro/filtro_pesquisa/ButtonFiltro";
 import Link from "next/link";
 import { PlusIcon } from "lucide-react";
 import ListarImoveis from "./ListarImoveis";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
-import { TipoImovelEnum } from "@/models/Enum/TipoImovelEnum";
 import FiltroList from "@/components/componetes_filtro/FiltroList";
 
 interface PageProps {

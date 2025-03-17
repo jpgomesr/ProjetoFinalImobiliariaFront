@@ -1,17 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { createUsuarioValidator } from "@/validators/Validators"; // Ajuste o caminho conforme necessário
-import { UseFetchPostFormData } from "@/hooks/UseFetchFormData"; // Ajuste o caminho conforme necessário
-import { z } from "zod";
-import { UseErros } from "@/hooks/UseErros";
-import ModelUsuario from "@/models/ModelUsuario";
-import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
 import { ModelImovelGet } from "@/models/ModelImovelGet";
 
-const usuarioValidator = createUsuarioValidator();
-type usuarioValidatorSchema = z.infer<typeof usuarioValidator>;
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 interface salvarImovelProps {
@@ -58,7 +49,7 @@ interface salvarImovelProps {
 }
 
 export async function salvarImovel(props: salvarImovelProps) {
-   const { imovel, imagens } = props;
+   const { imovel } = props;
 
    const imovelFormatado = {
       ...imovel,
