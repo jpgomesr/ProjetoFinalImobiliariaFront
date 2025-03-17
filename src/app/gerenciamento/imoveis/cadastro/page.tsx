@@ -24,7 +24,6 @@ import { salvarImovel } from "./actions";
 
 const Page = () => {
    const router = useRouter();
-   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const { showNotification } = useNotification();
 
    const [step, setStep] = useState(1);
@@ -70,10 +69,6 @@ const Page = () => {
    useEffect(() => {
       console.log(errors);
    });
-
-   useEffect(() => {
-      console.log(watch("valorPromo"));
-   }, [watch("valorPromo"), watch("banner")]);
 
    useEffect(() => {
       if (watch("cep")) {
