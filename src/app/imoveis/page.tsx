@@ -79,7 +79,7 @@ const Page = async ({ searchParams }: PageProps) => {
 
                      />
           
-                  <div className="w-36 min-h-full">
+                  <div className="w-36 min-h-full place-self-end md:place-self-auto">
                      <ButtonFiltro
                         precoMinimo={params.precoMinimo}
                         precoMaximo={params.precoMaximo}

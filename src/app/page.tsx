@@ -24,22 +24,24 @@ export default async function Home() {
 
    return (
       <Layout role={Roles.ADMIN} className="pt-0 py-8 bg-begeClaroPadrao">
-         <div className="h-full">
+         <div className="h-full lg:h-[80vh]">
             <div
                className="h-[30vh] overflow-hidden relative z-10
                            md:h-[35vh]
-                           lg:h-[40vh]"
+                           lg:h-full"
             >
                <Image
                   src="/image-paginaprincipal.png"
-                  alt="a"
+                  alt="Imagem da pagina principal"
                   fill
+                  quality={100}
+                  sizes="(max-width: 1000px) 100vw, 1000px"
                   className="object-cover"
                />
             </div>
             <div
                className="w-full mt-[-9vh] relative z-20
-                           lg:mt-[-20vh]"
+                           lg:mt-[-50vh]"
             >
                <div className="flex justify-center">
                   <Suspense fallback={<div>Carregando filtros...</div>}>
@@ -60,6 +62,7 @@ export default async function Home() {
             <TituloBgDegrade text="Imóveis em" boldText="condições especias" />
             <div className="flex flex-row gap-4 overflow-x-auto px-8 pb-2 bg-scroll hide-scrollbar">
                {imoveisCondicoesEspeciais.imoveis.map((imovel, index) => (
+                  imovel.permitirDestaque = false,
                   <CardImovel key={index} imovel={imovel} />
                ))}
             </div>
@@ -71,6 +74,7 @@ export default async function Home() {
             />
             <div className="flex flex-row gap-4 overflow-x-auto px-8 pb-2 bg-scroll hide-scrollbar">
                {imoveisRecentes.imoveis.map((imovel, index) => (
+                  imovel.permitirDestaque = false,
                   <CardImovel key={index} imovel={imovel} />
                ))}
             </div>

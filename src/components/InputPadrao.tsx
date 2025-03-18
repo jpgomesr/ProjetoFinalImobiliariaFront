@@ -40,12 +40,12 @@ const InputPadrao = ({
          >
             <input
                {...props}
-               className={`h-6 w-full focus:outline-none text-[10px] bg-transparent border-none  px-2
-               md:h-8 md:text-sm
-               lg:h-10 lg:py-3 lg:px-3
+               className={`h-8 w-full focus:outline-none text-[10px] bg-transparent border-none  px-2
+               md:h-10 md:text-sm
+               lg:py-3 lg:px-3
                xl:h-12 xl:text-base xl:py-3 xl:px-4
                
-               ${search ? "pl-10" : ""}`} // Adiciona padding à esquerda se search for true
+               ${search ? "pl-2" : ""}`} // Adiciona padding à esquerda se search for true
             />
             {search && ( // Renderiza o botão de lupa se search for true
                <button
