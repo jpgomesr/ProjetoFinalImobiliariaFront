@@ -50,15 +50,15 @@ export default async function Home() {
                </div>
             </div>
          </div>
-         <div className="mt-4 flex flex-col gap-6">
+         <section className="mt-4 flex flex-col gap-6">
             <TituloBgDegrade text="Imóveis em" boldText="destaque" />
             <div className="flex flex-row gap-4 overflow-x-auto px-8 pb-2 bg-scroll hide-scrollbar">
                {imoveisDestaque.imoveis.map((imovel, index) => (
                   <CardImovel key={index} imovel={imovel} />
                ))}
             </div>
-         </div>
-         <div className="mt-4 flex flex-col gap-6">
+         </section>
+         <section className="mt-4 flex flex-col gap-6">
             <TituloBgDegrade text="Imóveis em" boldText="condições especias" />
             <div className="flex flex-row gap-4 overflow-x-auto px-8 pb-2 bg-scroll hide-scrollbar">
                {imoveisCondicoesEspeciais.imoveis.map((imovel, index) => (
@@ -66,8 +66,8 @@ export default async function Home() {
                   <CardImovel key={index} imovel={imovel} />
                ))}
             </div>
-         </div>
-         <div className="mt-4 flex flex-col gap-6">
+         </section>
+         <section className="mt-4 flex flex-col gap-6">
             <TituloBgDegrade
                text="Imóveis "
                boldText="recentemente adicionados"
@@ -78,7 +78,7 @@ export default async function Home() {
                   <CardImovel key={index} imovel={imovel} />
                ))}
             </div>
-         </div>
+         </section>
       </Layout>
    );
 }
