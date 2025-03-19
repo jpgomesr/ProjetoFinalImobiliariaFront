@@ -27,7 +27,11 @@ export interface parametrosBuscaImovel {
     precoMaximo?: string,
     finalidade?: string,
     cidade?: string,
-    bairro?: string
+    bairro?: string,
+    destaque?: string,
+    sort?: string,
+    condicoesEspeciais?: string,
+    revalidate?: number
 }
 
 
@@ -48,12 +52,18 @@ export const buscarTodosImoveis = async (
         precoMaximo: parametros?.precoMaximo?.toString() || '', 
         finalidade: parametros?.finalidade?.toUpperCase() || '', 
         cidade: parametros?.cidade || '', 
-        bairro: parametros?.bairro || '', 
+        bairro: parametros?.bairro || '',
+        condicoesEspeciais: parametros?.condicoesEspeciais === 'true' ? 'true' : 'false',
+        destaque: parametros?.destaque === 'true' ? 'true' : 'false',
+        sort: parametros?.sort || ''
       });
       
    try {
       const response = await fetch(
-         `${BASE_URL}/imoveis?${params.toString()}`
+         `${BASE_URL}/imoveis?${params.toString()}`,
+         {
+            next: parametros?.revalidate ? { revalidate: parametros.revalidate } : undefined
+         }
       );
       if (response.ok) {
          const data = await response.json();
