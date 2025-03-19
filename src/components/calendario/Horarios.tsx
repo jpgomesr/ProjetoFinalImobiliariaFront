@@ -1,25 +1,39 @@
-"use client"
+"use client";
 
 interface HorariosProps {
-  horario: string
-  selecionado: boolean
-  onSelecionar: () => void
+   horario: string;
+   selecionado: boolean;
+   onSelecionar: () => void;
+   disponivel?: boolean;
 }
 
-const Horarios = ({ horario, selecionado, onSelecionar }: HorariosProps) => {
-  return (
-    <>
-      <div
-        className={`flex w-20 sm:w-22 md:w-24 lg:w-32 hover:opacity-100 h-7 sm:h-8 md:h-9 lg:h-10 items-center rounded-lg justify-center text-begepadrao font-montserrat text-sm md:text-lg cursor-pointer transition-all ${
-          selecionado ? "bg-havprincipal text-white" : "bg-havprincipal opacity-75"
+const Horario = ({
+   horario,
+   selecionado,
+   onSelecionar,
+   disponivel = true,
+}: HorariosProps) => {
+
+   console.log(horario)
+   return (
+      <button
+         className={`flex justify-center items-center h-7 w-24 rounded-md font-inter lg:w-32 lg:h-10
+        ${
+           selecionado
+              ? "bg-havprincipal text-begepadrao"
+              : "bg-white text-havprincipal border-2 border-havprincipal"
+        }
+        ${
+           !disponivel
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-havprincipal hover:text-begepadrao"
         }`}
-        onClick={onSelecionar}
+         onClick={onSelecionar}
+         disabled={!disponivel}
       >
-        {horario}
-      </div>
-    </>
-  )
-}
+         {horario?.split('T')[1].slice(0, 5)}
+      </button>
+   );
+};
 
-export default Horarios
-
+export default Horario;
