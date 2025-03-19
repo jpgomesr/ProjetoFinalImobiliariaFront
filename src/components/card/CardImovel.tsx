@@ -10,6 +10,7 @@ import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Imovel from "@/models/ModelImovel";
+import Link from "next/link";
 import ModalCofirmacao from "../ComponentesCrud/ModalConfirmacao";
 
 interface HomeProps {
@@ -238,10 +239,12 @@ export default function CardImovel(props: HomeProps) {
                   </p>
                </div>
                <div className="flex justify-center pb-5 items-center gap-2">
+                  <Link href={`/imovel/${props.imovel.id}`}>
                   <SaibaMaisBotao
                      codigo={"codigo" in props.imovel ? props.imovel.codigo : 0}
                      dark={props.imovel.permitirDestaque}
                   />
+                  </Link>
                   {cardEdicao ? (
                      <button
                         className={`text-sm px-4 py-2 ${
