@@ -1,18 +1,37 @@
+"use client";
 
 import Layout from "@/components/layout/LayoutPadrao";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import CardInfoSobreNos from "@/components/componentes_sobre_nos/CardInfoSobreNos";
 import ModelExibirCorretor from "@/models/ModelExibirCorretor";
 import ExibirCorretores from "@/components/componentes_sobre_nos/ExibirCorretores";
+import { renderizarUsuariosApi } from "./action";
 
-const page = async () => { 
-      const response = await fetch(
-         `${process.env.NEXT_PUBLIC_BASE_URL}/usuarios/corretorApresentacao/CORRETOR`,
-         { next: { revalidate: 60 } }
-      );
+const Page = () => {
+   const [corretores, setCorretores] = useState<ModelExibirCorretor[]>([]);
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState<string | null>(null);
 
-   const corretores = (await response.json()) as ModelExibirCorretor[];
+   useEffect(() => {
+      const fetchCorretores = async () => {
+         try {
+            setLoading(true);
+            setError(null);
+            const data = await renderizarUsuariosApi();
+            setCorretores(data);
+         } catch (error) {
+            setError(
+               "Erro ao carregar corretores. Por favor, tente novamente mais tarde."
+            );
+            console.error("Erro ao buscar corretores:", error);
+         } finally {
+            setLoading(false);
+         }
+      };
+
+      fetchCorretores();
+   }, []);
 
    return (
       <Layout className="my-0">
@@ -118,12 +137,19 @@ const page = async () => {
                Nossa equipe
             </h2>
             <div className="flex-row">
-               <ExibirCorretores corretores={corretores} />
+               {loading ? (
+                  <div className="text-havprincipal text-xl">
+                     Carregando corretores...
+                  </div>
+               ) : error ? (
+                  <div className="text-red-500 text-xl">{error}</div>
+               ) : (
+                  <ExibirCorretores corretores={corretores} />
+               )}
             </div>
          </div>
       </Layout>
    );
 };
 
-export default page;
-
+export default Page;
