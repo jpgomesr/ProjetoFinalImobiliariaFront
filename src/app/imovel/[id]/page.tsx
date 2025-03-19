@@ -21,8 +21,8 @@ interface Imovel {
   id: number;
   titulo: string;
   descricao: string;
-  preco: string;
-  precoPromocional?: string;
+  preco: number;
+  precoPromocional?: number;
   iptu: string;
   condominio: string;
   tamanho: string;
@@ -123,9 +123,7 @@ const Page = () => {
         }
 
         try {
-          const precoAtual = typeof imovel.preco === 'string' 
-            ? Number(imovel.preco.replace(/\D/g, ''))
-            : Number(imovel.preco);
+          const precoAtual = imovel.preco;
           const precoComparado = imovelComparado.preco;
           const diferencaPreco = Math.abs(precoAtual - precoComparado);
 
