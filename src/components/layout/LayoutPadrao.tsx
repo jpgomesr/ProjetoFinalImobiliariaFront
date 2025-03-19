@@ -14,7 +14,9 @@ const Layout = (props: LayoutProps) => {
    return (
       <div className="h-screen flex flex-col">
          <HeaderVermelho role={props.role} />
-         <div className={`${props.className ? props.className : "py-8"}`}>
+         <div
+            className={`${props.className ? props.className : "py-8"} flex-1`}
+         >
             {props.children}
          </div>
          {props.footerRemove ? null : <Footer />}
