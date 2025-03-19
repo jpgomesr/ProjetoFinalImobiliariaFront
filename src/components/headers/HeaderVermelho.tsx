@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import LogoHavClaro from "../../svg/icons/logo/LogoHavClaro";
 import PerfilIcon from "../../svg/icons/header/PerfilIcon";
@@ -35,10 +35,12 @@ export default function HeaderVermelho(props: HeaderVermelhoProps) {
       >
          <div className="flex flex-row md:gap-14 2xl:gap-28">
             <FuncoesHeader role={Roles.ADMIN} />
-            <LogoHavClaro
-               className="w-14 h-14 2xl:w-20 2xl:h-20"
-               visible={true}
-            />
+            <Link href={"/"}>
+               <LogoHavClaro
+                  className="w-14 h-14 2xl:w-20 2xl:h-20"
+                  visible={true}
+               />
+            </Link>
             <Link href={"/"} className="flex justify-center">
                <button className="hidden md:block text-white md:text-base 2xl:text-xl font-montserrat font-light">
                   Página inicial
