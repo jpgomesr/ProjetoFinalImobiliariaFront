@@ -96,28 +96,28 @@ const MapboxMap: React.FC<MapboxMapProps> = ({ endereco, onLocaisProximosLoad, d
           </div>
           <div className="flex bg-havprincipal">
             <div className="flex-1">
-              <div className="grid grid-cols-3 grid-rows-2">
-                <div className="flex items-center pl-2">
+              <div className="grid grid-cols-3 grid-rows-2 h-full">
+                <div className="flex justify-center items-center pl-2">
                   <Ruler className="w-7 h-7 text-begepadrao" />
                   <p className="text-begepadrao ml-0.5">{detalhesImovel.tamanho}m²</p>
                 </div>
-                <div className="flex items-center">
+                <div className="flex justify-center items-center">
                   <BedDouble className="w-7 h-7 text-begepadrao" />
                   <p className="text-begepadrao ml-0.5">{detalhesImovel.qtdQuartos}</p>
                 </div>
-                <div className="flex items-center">
+                <div className="flex justify-center items-center">
                   <Car className="w-7 h-7 text-begepadrao" />
                   <p className="text-begepadrao ml-0.5">{detalhesImovel.qtdGaragens}</p>
                 </div>
-                <div className="flex items-center pl-2">
+                <div className="flex justify-center items-center pl-2">
                   <ShowerHead className="w-7 h-7 text-begepadrao" />
                   <p className="text-begepadrao ml-0.5">{detalhesImovel.qtdBanheiros}</p>
                 </div>
-                <div className="flex items-center">
+                <div className="flex justify-center items-center">
                   <WavesLadder className="w-7 h-7 text-begepadrao" />
                   <p className="text-begepadrao ml-0.5">{detalhesImovel.qtdPiscina}</p>
                 </div>
-                <div className="flex items-center">
+                <div className="flex justify-center items-center">
                   <ShowerHead className="w-7 h-7 text-begepadrao" />
                   <p className="text-begepadrao ml-0.5">{detalhesImovel.qtdChurrasqueira}</p>
                 </div>
@@ -146,7 +146,7 @@ const MapboxMap: React.FC<MapboxMapProps> = ({ endereco, onLocaisProximosLoad, d
         </div>
 
         {/* Container do mapa */}
-        <div ref={mapContainer} className="w-4/5 md:w-full h-[300px] md:h-[350px] mt-10 mx-auto md:mt-8" />
+        <div ref={mapContainer} className="w-4/5 md:w-3/4 h-[300px] md:h-[350px] mt-10 mx-auto md:mt-8" />
 
         {/* Container dos locais próximos - visível apenas em mobile */}
         <div className="w-screen md:hidden bg-havprincipal h-[350px] overflow-y-auto">
