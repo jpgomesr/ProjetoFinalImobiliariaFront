@@ -1,5 +1,6 @@
 import React from "react";
 import { SearchIcon } from "lucide-react"; // Importe o ícone de lupa
+import { twMerge } from "tailwind-merge";
 
 interface InputPadraoProps extends React.InputHTMLAttributes<HTMLInputElement> {
    label?: string;
@@ -40,12 +41,14 @@ const InputPadrao = ({
          >
             <input
                {...props}
-               className={`h-6 w-full focus:outline-none text-[10px] bg-transparent border-none  px-2
-               md:h-8 md:text-sm
-               lg:h-10 lg:py-3 lg:px-3
-               xl:h-12 xl:text-base xl:py-3 xl:px-4
-               
-               ${search ? "pl-10" : ""}`} // Adiciona padding à esquerda se search for true
+               className={twMerge(
+                  `h-6 w-full focus:outline-none text-[10px] bg-transparent border-none  px-2
+                  md:h-8 md:text-sm
+                  lg:h-10 lg:py-3 lg:px-3
+                  xl:h-12 xl:text-base xl:py-3 xl:px-4
+                  ${search ? "pl-10" : ""}`,
+                  props.className
+               )} // Adiciona padding à esquerda se search for true
             />
             {search && ( // Renderiza o botão de lupa se search for true
                <button
@@ -53,7 +56,8 @@ const InputPadrao = ({
                   className="absolute inset-y-0 right-2 flex items-center justify-center p-2 hover:cursor-pointer"
                   onClick={handlePesquisa} // Função de clique no botão
                >
-                  <SearchIcon className="w-4 h-4 text-black" /> {/* Ícone de lupa */}
+                  <SearchIcon className="w-4 h-4 text-black" />{" "}
+                  {/* Ícone de lupa */}
                </button>
             )}
          </div>
