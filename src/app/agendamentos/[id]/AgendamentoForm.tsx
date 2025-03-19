@@ -18,9 +18,7 @@ interface AgendamentoFormProps {
 }
 
 const AgendamentoForm = ({ id }: AgendamentoFormProps) => {
-   const [horarioSelecionado, setHorarioSelecionado] = useState<string | null>(
-      null
-   );
+   const [horarioSelecionado, setHorarioSelecionado] = useState<string>("");
    const [mostrarModal, setMostrarModal] = useState(false);
    const [dataSelecionada, setDataSelecionada] = useState<Date>(new Date());
    const [horariosDisponiveis, setHorariosDisponiveis] = useState<
@@ -132,9 +130,11 @@ const AgendamentoForm = ({ id }: AgendamentoFormProps) => {
          {mostrarModal && (
             <ModalAgendamento
                idCorretor={idCorretor ? idCorretor : 0}
+               idImovel={+id}
                dataFormatadaCapitalizada={dataFormatadaCapitalizada}
                horarioSelecionado={horarioSelecionado}
                onClose={() => setMostrarModal(false)}
+
             />
          )}
       </>

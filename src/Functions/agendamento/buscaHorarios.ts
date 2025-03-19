@@ -1,10 +1,12 @@
+import { ModelAgendamentoPost } from "@/models/ModelAgendamentoPost";
+
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export interface HorarioDisponivel {
-   id: number,
+   id: number;
    dataHora: string;
    disponivel: boolean;
-   idCorretor : number
+   idCorretor: number;
 }
 
 export const buscarHorariosDisponiveis = async (
@@ -12,9 +14,11 @@ export const buscarHorariosDisponiveis = async (
    idImovel: string
 ): Promise<HorarioDisponivel[]> => {
    try {
-      console.log("teste")
+      console.log("teste");
       const response = await fetch(
-         `${BASE_URL}/corretores/horarios/${idImovel}?dia=${data.split('-')[2]}&mes=${data.split('-')[1]}`
+         `${BASE_URL}/corretores/horarios/${idImovel}?dia=${
+            data.split("-")[2]
+         }&mes=${data.split("-")[1]}`
       );
 
       if (!response.ok) {
@@ -26,5 +30,25 @@ export const buscarHorariosDisponiveis = async (
    } catch (error) {
       console.error("Erro ao buscar horários:", error);
       return [];
+   }
+};
+
+export const salvarAgendamento = async (agendamento: ModelAgendamentoPost) => {
+   try {
+      
+      const response = await fetch(`${BASE_URL}/agendamentos`, {
+         method: "POST",
+         headers: {
+            "Content-Type": "application/json",
+         },
+         body: JSON.stringify(agendamento)
+      });
+
+      if(response.ok){
+         return "Agendamento concluído"
+      }
+      return "Ocorreu um erro durante o agendamento"
+   } catch (error) {
+      return "Ocorreu um erro durante o agendamento"
    }
 };
