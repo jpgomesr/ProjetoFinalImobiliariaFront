@@ -145,6 +145,37 @@ const MapboxMap: React.FC<MapboxMapProps> = ({ endereco, onLocaisProximosLoad, d
           </div>
         </div>
 
+        {/* Container dos detalhes do imóvel - visível apenas em mobile */}
+        <div className="md:hidden w-full bg-havprincipal mt-10">
+          <h2 className="text-xl text-center mt-5 text-begepadrao">Detalhes do imóvel</h2>
+          <div className="grid grid-cols-3 grid-rows-2 py-4">
+            <div className="flex flex-col items-center">
+              <Ruler className="w-7 h-7 text-begepadrao" />
+              <p className="text-begepadrao mt-1">{detalhesImovel.tamanho}m²</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <BedDouble className="w-7 h-7 text-begepadrao" />
+              <p className="text-begepadrao mt-1">{detalhesImovel.qtdQuartos}</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <Car className="w-7 h-7 text-begepadrao" />
+              <p className="text-begepadrao mt-1">{detalhesImovel.qtdGaragens}</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <ShowerHead className="w-7 h-7 text-begepadrao" />
+              <p className="text-begepadrao mt-1">{detalhesImovel.qtdBanheiros}</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <WavesLadder className="w-7 h-7 text-begepadrao" />
+              <p className="text-begepadrao mt-1">{detalhesImovel.qtdPiscina}</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <ShowerHead className="w-7 h-7 text-begepadrao" />
+              <p className="text-begepadrao mt-1">{detalhesImovel.qtdChurrasqueira}</p>
+            </div>
+          </div>
+        </div>
+
         {/* Container do mapa */}
         <div ref={mapContainer} className="w-4/5 md:w-3/4 h-[300px] md:h-[350px] mt-10 mx-auto md:mt-8" />
 
