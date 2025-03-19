@@ -11,6 +11,7 @@ import {
    buscarHorariosDisponiveis,
    HorarioDisponivel,
 } from "@/Functions/agendamento/buscaHorarios";
+import { number } from "zod";
 
 interface AgendamentoFormProps {
    id: string;
@@ -26,9 +27,11 @@ const AgendamentoForm = ({ id }: AgendamentoFormProps) => {
       HorarioDisponivel[]
    >([]);
    const [carregando, setCarregando] = useState(false);
+   const [idCorretor, setIdCorretor] = useState<number>()
 
-   const handleSelecionarHorario = (horario: string) => {
+   const handleSelecionarHorario = (horario: string, idCorretor : number) => {
       setHorarioSelecionado(horario);
+      setIdCorretor(idCorretor)
    };
 
    const handleSelecionarData = async (data: Date) => {
@@ -93,7 +96,7 @@ const AgendamentoForm = ({ id }: AgendamentoFormProps) => {
                            horario={horario.dataHora}
                            selecionado={horario.dataHora === horarioSelecionado}
                            onSelecionar={() =>
-                              handleSelecionarHorario(horario.dataHora)
+                              handleSelecionarHorario(horario.dataHora, horario.idCorretor)
                            }
                            disponivel={horario.disponivel}
                         />
@@ -106,7 +109,7 @@ const AgendamentoForm = ({ id }: AgendamentoFormProps) => {
                            horario={horario.dataHora}
                            selecionado={horario.dataHora === horarioSelecionado}
                            onSelecionar={() =>
-                              handleSelecionarHorario(horario.dataHora)
+                              handleSelecionarHorario(horario.dataHora,horario.idCorretor)
                            }
                            disponivel={horario.disponivel}
                         />
@@ -128,6 +131,7 @@ const AgendamentoForm = ({ id }: AgendamentoFormProps) => {
 
          {mostrarModal && (
             <ModalAgendamento
+               idCorretor={idCorretor ? idCorretor : 0}
                dataFormatadaCapitalizada={dataFormatadaCapitalizada}
                horarioSelecionado={horarioSelecionado}
                onClose={() => setMostrarModal(false)}

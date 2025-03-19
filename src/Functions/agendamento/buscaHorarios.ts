@@ -4,6 +4,7 @@ export interface HorarioDisponivel {
    id: number,
    dataHora: string;
    disponivel: boolean;
+   idCorretor : number
 }
 
 export const buscarHorariosDisponiveis = async (
