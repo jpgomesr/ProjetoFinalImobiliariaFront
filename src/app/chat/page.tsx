@@ -1,5 +1,3 @@
-"use client";
-
 import ChatLayout from "@/components/chat/ChatLayout";
 import Layout from "@/components/layout/LayoutPadrao";
 import React from "react";
