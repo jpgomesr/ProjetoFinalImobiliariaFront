@@ -35,6 +35,9 @@ const page = async ({ params }: PageProps) => {
 
    const agendamentos: ModelAgendamento[] = await fetchAgendamentos(); 
 
+
+   
+
    console.log(agendamentos);
 
    return (
@@ -53,13 +56,15 @@ const page = async ({ params }: PageProps) => {
                lg:grid-cols-3
                "
                >
-                  {agendamentos && agendamentos.map((agendamento: ModelAgendamento) => (
+                  {agendamentos && agendamentos.map((agendamento: ModelAgendamento, key) => (
                      <CardReserva
-                        key={agendamento.idImovel} 
+                        id={agendamento.id}
+                        key={key} 
                         urlImagem={agendamento.referenciaImagemPrincipal}
                         horario={agendamento.horario.split("T")[1].substring(0, 5)}
                         data={new Date(agendamento.horario).toLocaleDateString('pt-BR')}
                         corretor={agendamento.nomeUsuario}
+                        status={agendamento.status}
                         localizacao={`${agendamento.endereco.cidade} - ${agendamento.endereco.bairro}`}
                         endereco={`${agendamento.endereco.rua}, ${agendamento.endereco.numeroCasaPredio}`}
                      />

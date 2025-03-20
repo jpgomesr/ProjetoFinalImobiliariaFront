@@ -1,4 +1,5 @@
 export interface ModelAgendamento {
+    id: number;
     horario: string;
     endereco: {
         cidade: string;
@@ -9,4 +10,5 @@ export interface ModelAgendamento {
     nomeUsuario: string;
     idImovel: number;
     referenciaImagemPrincipal: string;
+    status : "PENDENTE" | "CONFIRMADO" | "CANCELADO";
 }
