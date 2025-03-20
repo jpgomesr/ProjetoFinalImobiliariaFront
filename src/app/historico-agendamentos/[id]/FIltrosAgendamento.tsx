@@ -1,13 +1,32 @@
 "use client";
 
 import List from "@/components/List";
+import ListFiltroPadrao from "@/components/ListFiltroPadrao";
 import React, { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-const FIltrosAgendamento = () => {[]
+interface FiltrosAgendamentoProps {
+   id: string;
+   url: string;
+}
+
+const FIltrosAgendamento = ({ id, url }: FiltrosAgendamentoProps) => {
    const [data, setData] = useState("");
-   const [status, setStatus] = useState("");
+   const searchParams = useSearchParams();
+   const router = useRouter();
 
-   console.log(data);
+
+   const atualizarURL = (data: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+
+      if (data) {
+         params.set("data", data);
+      } else {
+         params.delete("data");
+      }
+      router.push(`${url}?${params.toString()}`);
+   };
+
    const opcoesAgendamento = [
       {
          id: "CANCELADO",
@@ -21,19 +40,31 @@ const FIltrosAgendamento = () => {[]
          id: "PENDENTE",
          label: "Pendente",
       },
+      {
+         id: "",
+         label: "Todos",
+      },
    ];
+   const [status, setStatus] = useState(opcoesAgendamento[3].id);
 
    return (
       <div className="w-full flex justify-between">
          <input
             type="date"
             value={data}
-            onChange={(e) => setData(e.target.value)}
+            onChange={(e) => {
+               setData(e.target.value);
+               atualizarURL(e.target.value);
+            }}
             className="h-10 px-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-havprincipal"
          />
-         <List 
-         buttonHolder="Status"
-         opcoes={opcoesAgendamento} />
+         <ListFiltroPadrao
+            buttonHolder="Status"
+            value={status}
+            url={`/historico-agendamentos/${id}`}
+            nomeAributo="status"
+            opcoes={opcoesAgendamento}
+         />
       </div>
    );
 };

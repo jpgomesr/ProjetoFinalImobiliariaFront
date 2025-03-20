@@ -7,11 +7,16 @@ import React, { Suspense } from "react";
 import FIltrosAgendamento from "./FIltrosAgendamento";
 import { buscarIdsUsuarios } from "@/Functions/usuario/buscaUsuario";
 import { ModelAgendamento } from "@/models/ModelAgendamento";
+import ComponentePaginacao from "@/components/ComponentePaginacao";
+import PaginacaoHistorico from "./PaginacaoHistórico";
 
 interface PageProps {
    params: Promise<{
       id: string;
    }>;
+   searchParams?: {
+      page?: string;
+   };
 }
 
 export async function generateStaticParams() {
@@ -19,26 +24,28 @@ export async function generateStaticParams() {
    return ids.map((id) => ({ id: id.toString() }));
 }
 
-const page = async ({ params }: PageProps) => {
+const page = async ({ params, searchParams }: PageProps) => {
    const { id } = await params;
+   const currentPage = Number(searchParams?.page) || 0;
 
    const fetchAgendamentos = async () => {
       try {
-         const response = await fetch(`http://localhost:8082/agendamentos/${id}`);
+         const response = await fetch(`http://localhost:8082/agendamentos/${id}?page=${currentPage}&size=6`);
          const data = await response.json();
-         return data.content as ModelAgendamento[];
+         return {
+            content: data.content as ModelAgendamento[],
+            totalPages: data.totalPages as number
+         };
       } catch (error) {
          console.error("Erro ao buscar agendamentos:", error);
-         return [];
+         return {
+            content: [],
+            totalPages: 0
+         };
       }
    };
 
-   const agendamentos: ModelAgendamento[] = await fetchAgendamentos(); 
-
-
-   
-
-   console.log(agendamentos);
+   const { content: agendamentos, totalPages } = await fetchAgendamentos();
 
    return (
       <Layout className="my-0">
@@ -48,30 +55,34 @@ const page = async ({ params }: PageProps) => {
                className="w-full px-2"
             >
                <InputPadrao search className="h-8" />
-               <FIltrosAgendamento />
+               <FIltrosAgendamento id={id} url={`/historico-agendamentos/${id}`} />
                <Suspense fallback={<div>Carregando...</div>}>
                   <section
                      className="grid grid-cols-1 w-full my-4 place-items-center gap-8 '
                md:grid-cols-2 
                lg:grid-cols-3
                "
-               >
-                  {agendamentos && agendamentos.map((agendamento: ModelAgendamento, key) => (
-                     <CardReserva
-                        id={agendamento.id}
-                        key={key} 
-                        urlImagem={agendamento.referenciaImagemPrincipal}
-                        horario={agendamento.horario.split("T")[1].substring(0, 5)}
-                        data={new Date(agendamento.horario).toLocaleDateString('pt-BR')}
-                        corretor={agendamento.nomeUsuario}
-                        status={agendamento.status}
-                        localizacao={`${agendamento.endereco.cidade} - ${agendamento.endereco.bairro}`}
-                        endereco={`${agendamento.endereco.rua}, ${agendamento.endereco.numeroCasaPredio}`}
+                  >
+                     {agendamentos && agendamentos.map((agendamento: ModelAgendamento, key) => (
+                        <CardReserva
+                           id={agendamento.id}
+                           key={key}
+                           urlImagem={agendamento.referenciaImagemPrincipal}
+                           horario={agendamento.horario.split("T")[1].substring(0, 5)}
+                           data={new Date(agendamento.horario).toLocaleDateString('pt-BR')}
+                           corretor={agendamento.nomeUsuario}
+                           status={agendamento.status}
+                           localizacao={`${agendamento.endereco.cidade} - ${agendamento.endereco.bairro}`}
+                           endereco={`${agendamento.endereco.rua}, ${agendamento.endereco.numeroCasaPredio}`}
+                        />
+                     ))}
+                  </section>
+                     <PaginacaoHistorico
+                        totalPages={totalPages}
+                        currentPage={currentPage}
                      />
-                  ))}
-               </section>
                </Suspense>
-            </FundoBrancoPadrao>
+            </FundoBrancoPadrao> 
          </SubLayoutPaginasCRUD>
       </Layout>
    );
