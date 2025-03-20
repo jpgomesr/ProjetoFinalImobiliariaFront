@@ -56,6 +56,11 @@ const Page = async ({ searchParams }: PageProps) => {
             <FundoBrancoPadrao className="w-full" titulo="Imóveis Disponíveis">
                <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-[1fr_7fr_1fr] xl:grid-cols-[1fr_6fr_1fr]">
                   <FiltroList
+                     opcoes={[
+                        { id: "venda", label: "Venda" },
+                        { id: "aluguel", label: "Aluguel" },
+                        { id: "todos", label: "Todos" },
+                     ]}
                      finalidade={params.finalidade}
                      precoMinimo={params.precoMinimo}
                      precoMaximo={params.precoMaximo}
@@ -70,15 +75,13 @@ const Page = async ({ searchParams }: PageProps) => {
                      value={params.finalidade}
                   />
 
-              
-                     <InputPadrao
-                        type="text"
-                        placeholder="Pesquise aqui"
-                        search={true}
-                        className="w-full"
+                  <InputPadrao
+                     type="text"
+                     placeholder="Pesquise aqui"
+                     search={true}
+                     className="w-full"
+                  />
 
-                     />
-          
                   <div className="w-36 min-h-full place-self-end md:place-self-auto">
                      <ButtonFiltro
                         precoMinimo={params.precoMinimo}

@@ -16,6 +16,7 @@ interface ListProps extends React.InputHTMLAttributes<HTMLSelectElement> {
    // {* lidera o tamanho total do list *}
    differentSize?: string;
    mensagemErro?: string;
+   width?: string; // Nova prop para customizar a largura
 }
 
 const List = (props: ListProps) => {
@@ -49,7 +50,9 @@ const List = (props: ListProps) => {
                ${
                   props.divClassName
                      ? props.divClassName
-                     : "max-w-24 min-w-24 w-24 md:max-w-32 md:min-w-32 md:w-32 2xl:max-w-44 2xl:w-44"
+                     : props.width 
+                        ? props.width
+                        : "max-w-24 min-w-24 w-24 md:max-w-32 md:min-w-32 md:w-32 2xl:max-w-44 2xl:w-44"
                }
                 `}
          >
@@ -136,7 +139,7 @@ const List = (props: ListProps) => {
                               {opc.label}
                            </div>
                         ))}
-                  </div>
+                  </div>   
                )}
             </div>
          </div>
