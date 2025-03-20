@@ -10,8 +10,10 @@ interface ListProps extends React.InputHTMLAttributes<HTMLSelectElement> {
    buttonHolder?: string;
    bordaPreta?: boolean;
    title?: string;
-   mudandoValor?: (valor : string) => void;
+   mudandoValor?: (valor: string) => void;
    divClassName?: string;
+   // classe do div que contem o titulo e o select
+   // {* lidera o tamanho total do list *}
    differentSize?: string;
    mensagemErro?: string;
 }
@@ -31,12 +33,8 @@ const List = (props: ListProps) => {
       setSelecionado(id);
       setAberto(false);
 
-      if (props.mudandoValor
-   
-      ) {
-        props.mudandoValor
-   (
-             id );
+      if (props.mudandoValor) {
+         props.mudandoValor(id);
       }
    };
 
@@ -45,13 +43,15 @@ const List = (props: ListProps) => {
       props.opcoes[selecionado]?.label;
 
    return (
-      <div className="flex flex-col">
+      <div className={"flex flex-col"}>
          <div
-            className={twMerge(
-               `relative h-full max-w-24 min-w-24 w-24 md:max-w-32 md:min-w-32 md:w-32 lg:gap-1 2xl:gap-2 flex flex-col
-                2xl:max-w-44 2xl:w-44`,
-               rest.divClassName
-            )}
+            className={`relative h-full lg:gap-1 2xl:gap-2 flex flex-col
+               ${
+                  props.divClassName
+                     ? props.divClassName
+                     : "max-w-24 min-w-24 w-24 md:max-w-32 md:min-w-32 md:w-32 2xl:max-w-44 2xl:w-44"
+               }
+                `}
          >
             {props.title && (
                <label className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl">
