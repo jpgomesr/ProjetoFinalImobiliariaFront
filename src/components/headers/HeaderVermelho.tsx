@@ -14,7 +14,8 @@ import XIcon from "@/svg/icons/header/XIcon";
 import FuncoesHeader from "./FuncoesHeader";
 import LoginModal from "../auth/modal/LoginModal";
 import RegisterModal from "../auth/modal/RegisterModal";
-
+import TrocaSenhaModal from "../auth/modal/TrocaSenhaModal";
+import RecContaModal from "../auth/modal/RecContaModal";
 interface HeaderVermelhoProps {
    role?: Roles;
 }
@@ -91,9 +92,16 @@ const HeaderVermelho = ({ role }: HeaderVermelhoProps) => {
                )}
             </div>
          </div>
-
          {(isLoginModalOpen || isRegisterModalOpen) && (
-            <div className="fixed inset-0 bg-black/50 z-30 w-full h-full py-10 px-24">
+            <div
+               className="fixed inset-0 bg-black/50 z-30 w-full h-full"
+               onClick={(e) => {
+                  if (e.target === e.currentTarget) {
+                     setIsLoginModalOpen(false);
+                     setIsRegisterModalOpen(false);
+                  }
+               }}
+            >
                {isLoginModalOpen ? (
                   <LoginModal
                      onClose={() => setIsLoginModalOpen(false)}
