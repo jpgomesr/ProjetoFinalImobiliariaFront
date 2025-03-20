@@ -82,74 +82,30 @@ const MapboxMap2: React.FC<MapboxMap2Props> = ({ imoveis, centroMapa }) => {
     });
   }, [imoveis, handleMarkerClick]);
 
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.textContent = `
-      .custom-popup {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) scale(0.6);
-        background: white;
-        padding: 0;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        z-index: 10;
-      }
-      .popup-close {
-        position: absolute;
-        right: 8px;
-        top: 8px;
-        background: rgba(0,0,0,0.5);
-        color: white;
-        border: none;
-        padding: 4px 8px;
-        border-radius: 4px;
-        cursor: pointer;
-        z-index: 11;
-      }
-      .popup-content * {
-        color: #8B0000 !important;
-      }
-      .popup-content svg {
-        fill: #8B0000 !important;
-      }
-      .popup-content .bg-havprincipal,
-      .popup-content .bg-havprincipal * {
-        color: white !important;
-      }
-      .popup-content a {
-        color: #8B0000 !important;
-      }
-      .popup-content a span {
-        color: #8B0000 !important;
-      }
-    `;
-    document.head.appendChild(style);
-
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
-
   return (
-    <div className="relative w-full">
-      <div ref={mapContainer} className="w-full h-[350px] rounded-lg shadow-lg" />
-      {selectedImovel && (
-        <div ref={popupRef} className="custom-popup">
-          <button 
-            className="popup-close"
-            onClick={handleClosePopup}
-          >
-            ×
-          </button>
-          <div className="popup-content">
-            <CardImovel imovel={selectedImovel} />
-          </div>
-        </div>
-      )}
-    </div>
+     <div className="relative w-full">
+        <div
+           ref={mapContainer}
+           className="w-full h-[350px] rounded-lg shadow-lg"
+        />
+        {selectedImovel && (
+           <div
+              ref={popupRef}
+              className="absolute max-w-[350px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.6] bg-white rounded-lg shadow-lg z-10"
+           >
+              <button
+                 className="absolute right-0 top-0 bg-black/50 text-white border-none px-2 py-1 rounded cursor-pointer z-[11]"
+                 onClick={handleClosePopup}
+              >
+                 ×
+              </button>
+              <div className="[&>*]:text-[#8B0000] [&_svg]:fill-[#8B0000] [&_.bg-havprincipal]:text-white [&_.bg-havprincipal_*]:text-white [&_a]:text-[#8B0000] [&_a_span]:text-[#8B0000]">
+                 <CardImovel imovel={selectedImovel} width="w-full" />
+              </div>
+           </div>
+        )}
+     </div>
   );
 };
 
-export default MapboxMap2; 
+export default MapboxMap2;
