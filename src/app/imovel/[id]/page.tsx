@@ -20,6 +20,8 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { EnderecoMapBox } from "@/models/ModelEnrecoMapBox";
 import CardImovel from "@/components/card/CardImovel";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
+import ExibirCorretores from "@/components/componentes_sobre_nos/ExibirCorretores";
+import Link from "next/link";
 // Importação dinâmica do MapboxMap para evitar problemas de SSR
 const MapboxMap = dynamic(() => import("@/components/Mapboxmap"), {
    ssr: false,
@@ -46,6 +48,13 @@ interface Imovel {
       imagemCapa: boolean;
       referencia: string;
    }[];
+   corretores: {
+      id: number;
+      nome: string;
+      email: string;
+      telefone: string;
+      foto: string;
+   }[];
    endereco: EnderecoMapBox;
 }
 
@@ -66,7 +75,6 @@ interface ImovelSemelhante {
 const Page = () => {
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const [showCopiedMessage, setShowCopiedMessage] = useState(false);
-   const [isShared, setIsShared] = useState(false);
 
    if (!BASE_URL) {
       throw new Error("A variável NEXT_PUBLIC_BASE_URL não está definida.");
@@ -144,7 +152,6 @@ const Page = () => {
                   console.log("Mesmo imóvel, ignorando");
                   return false;
                }
-
                try {
                   const precoAtual = imovel.preco;
                   const precoComparado = imovelComparado.preco;
@@ -220,10 +227,8 @@ const Page = () => {
       try {
          await navigator.clipboard.writeText(window.location.href);
          setShowCopiedMessage(true);
-         setIsShared(true);
          setTimeout(() => {
             setShowCopiedMessage(false);
-            setIsShared(false);
          }, 2000);
       } catch (err) {
          console.error("Erro ao copiar link:", err);
@@ -231,7 +236,7 @@ const Page = () => {
    };
 
    return (
-      <Layout className="bg-begepadrao py-8">
+      <Layout className="bg-begeClaroPadrao py-8">
          <div className="flex flex-col items-center w-full gap-1 md:flex-row md:px-8 md:items-start">
             {/* Imagem principal */}
             <div className="flex w-11/12 flex-col gap-1 items-center md:items-start lg:ml-24 md:ml-20">
@@ -259,7 +264,6 @@ const Page = () => {
                      <ChevronRight className="w-4 h-4 md:w-6 md:h-6" />
                   </button>
                </div>
-
                {/* Grid de 3 imagens */}
                <div className="grid grid-cols-3 w-full md:w-10/12 gap-1 lg:w-[400px] md:w-[300px] mx-auto">
                   {[...imovel.imagens, ...imovel.imagens] // Duplicamos o array para permitir rotação circular
@@ -316,20 +320,17 @@ const Page = () => {
                )}
                <div className="flex gap-5 mt-2">
                   <button className="w-52 bg-havprincipal md:w-40 h-8 rounded-lg">
-                     <p className="text-white text-center p-1 text-[15px]">
-                        Agendar visita
-                     </p>
+                     <Link href={`/agendamentos/${imovel.id}`}>
+                        <p className="text-white text-center p-1 text-[15px]">
+                           Agendar visita
+                        </p>
+                     </Link>
                   </button>
-                  <div className="mt-1 flex gap-3">
-                     <button
-                        onClick={handleShare}
-                        className={`p-2 rounded-full transition-colors duration-200 ${
-                           isShared ? "bg-havprincipal text-white" : ""
-                        }`}
-                     >
-                        <Share2 className="w-5 h-5" />
+                  <div className="mt-1 flex gap-3 relative">
+                     <button onClick={handleShare} className="relative">
+                        <Share2 />
                         {showCopiedMessage && (
-                           <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-havprincipal text-white text-sm py-1 px-2 rounded whitespace-nowrap">
+                           <span className="absolute -top-10 left-1/2  transform -translate-x-1/2 bg-havprincipal text-white text-sm py-1 px-2 rounded whitespace-nowrap">
                               Link copiado!
                            </span>
                         )}
@@ -353,10 +354,34 @@ const Page = () => {
             />
          </div>
 
+         <h2 className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl font-semibold flex justify-center items-center mx-auto mt-8 mb-8">
+            Selecione um de nossos corretores e tenha uma conversa via chat
+         </h2>
+         <ExibirCorretores corretores={imovel.corretores} />
+         <h2 className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl font-semibold flex justify-center items-center mx-auto mt-8 mb-8">
+            Converse conosco via WhatsApp
+         </h2>
+         <div className="flex justify-center items-center mb-8">
+            <Link
+               href="https://wa.me/5551999999999"
+               target="_blank"
+               rel="noopener noreferrer"
+               className="hover:scale-110 transition-transform"
+            >
+               <Image
+                  src="/icons8-whatsapp (1).svg"
+                  alt="WhatsApp"
+                  width={64}
+                  height={64}
+                  className="cursor-pointer"
+               />
+            </Link>
+         </div>
+
          {/* Seção de Imóveis Semelhantes */}
          {imoveisSemelhantes.length > 0 && (
             <div className="mt-10 px-8">
-               <h2 className="text-2xl font-semibold text-havprincipal mb-6">
+               <h2 className="text-2xl font-semibold text-havprincipal mb-6 flex justify-center items-center">
                   Imóveis Semelhantes
                </h2>
                <div className="flex flex-row gap-4 overflow-x-auto pb-4 hide-scrollbar">
