@@ -17,7 +17,7 @@ interface HomeProps {
    imovel: ModelImovelGet | Imovel;
    edicao?: boolean;
    edicaoLink?: string;
-   atualizacaoRender?: () => void;
+   atualizacaoRender?: () => void
    deletarImovel?: (id: number) => void;
    width?: string;
 }
@@ -253,7 +253,7 @@ export default function CardImovel(props: HomeProps) {
                         className={`text-sm px-4 py-2 ${
                            props.imovel.permitirDestaque
                               ? "bg-brancoEscurecido text-havprincipal font-bold"
-                              : "bg-havprincipal text-white"
+                              : "bg-havprincipal text-white "
                         } rounded-md`}
                         onClick={() => {
                            if (props.edicaoLink) {
