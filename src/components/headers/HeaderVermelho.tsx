@@ -1,28 +1,31 @@
-"use client"
+"use client";
 
-import LogoHavClaro from "../../svg/icons/logo/LogoHavClaro";
-import PerfilIcon from "../../svg/icons/header/PerfilIcon";
-import MenuHamburguer from "../../svg/icons/header/MenuHamburguer";
-import XIcon from "../../svg/icons/header/XIcon";
-import { useState } from "react";
-import Hamburguer from "./Hamburguer";
-import FavIcon from "@/svg/icons/header/FavIcon";
-import FaqIcon from "@/svg/icons/header/FaqIcon";
-import ChatIcon from "@/svg/icons/header/ChatIcon";
-import FuncoesHeader from "./FuncoesHeader";
-import { Roles } from "@/models/Enum/Roles";
+import React, { useState } from "react";
 import Link from "next/link";
+import Hamburguer from "./Hamburguer";
+import { Roles } from "@/models/Enum/Roles";
+import LogoHavClaro from "@/svg/icons/logo/LogoHavClaro";
+import ChatIcon from "@/svg/icons/header/ChatIcon";
+import FaqIcon from "@/svg/icons/header/FaqIcon";
+import FavIcon from "@/svg/icons/header/FavIcon";
+import PerfilIcon from "@/svg/icons/header/PerfilIcon";
+import MenuHamburguer from "@/svg/icons/header/MenuHamburguer";
+import XIcon from "@/svg/icons/header/XIcon";
+import FuncoesHeader from "./FuncoesHeader";
+import LoginModal from "../auth/modal/LoginModal";
+import RegisterModal from "../auth/modal/RegisterModal";
 
 interface HeaderVermelhoProps {
    role?: Roles;
 }
 
-export default function HeaderVermelho(props: HeaderVermelhoProps) {
+const HeaderVermelho = ({ role }: HeaderVermelhoProps) => {
+   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
    const [isHamburguerVisible, setIsHamburguerVisible] = useState(false);
 
    const handleHamburguer = (e: any) => {
       e.preventDefault();
-
       setIsHamburguerVisible(!isHamburguerVisible);
    };
 
@@ -66,11 +69,14 @@ export default function HeaderVermelho(props: HeaderVermelhoProps) {
                   <FavIcon className="hidden md:block md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
                </button>
             </Link>
-            <Link href="/perfil">
-               <button>
-                  <PerfilIcon className="w-6 h-6 md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
-               </button>
-            </Link>
+
+            <button
+               onClick={() => setIsLoginModalOpen(true)}
+               className="text-white hover:text-opacity-80"
+            >
+               <PerfilIcon className="w-6 h-6 md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
+            </button>
+
             <div
                onClick={handleHamburguer}
                className="cursor-pointer md:hidden"
@@ -80,11 +86,35 @@ export default function HeaderVermelho(props: HeaderVermelhoProps) {
                ) : (
                   <div>
                      <XIcon width={23} height={23} />
-                     <Hamburguer role={props.role} />
+                     {role && <Hamburguer role={role} />}
                   </div>
                )}
             </div>
          </div>
+
+         {(isLoginModalOpen || isRegisterModalOpen) && (
+            <div className="fixed inset-0 bg-black/50 z-30 w-full h-full py-10 px-24">
+               {isLoginModalOpen ? (
+                  <LoginModal
+                     onClose={() => setIsLoginModalOpen(false)}
+                     onRegister={() => {
+                        setIsLoginModalOpen(false);
+                        setIsRegisterModalOpen(true);
+                     }}
+                  />
+               ) : (
+                  <RegisterModal
+                     onClose={() => setIsRegisterModalOpen(false)}
+                     onLogin={() => {
+                        setIsLoginModalOpen(true);
+                        setIsRegisterModalOpen(false);
+                     }}
+                  />
+               )}
+            </div>
+         )}
       </div>
    );
-}
+};
+
+export default HeaderVermelho;
