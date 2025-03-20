@@ -8,10 +8,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 interface FiltrosAgendamentoProps {
    id: string;
    url: string;
+   status: string;
+   data: string;
 }
 
-const FIltrosAgendamento = ({ id, url }: FiltrosAgendamentoProps) => {
-   const [data, setData] = useState("");
+const FIltrosAgendamento = ({ id, url, status, data }: FiltrosAgendamentoProps) => {
+   const [dataAtual, setDataAtual] = useState("");
    const searchParams = useSearchParams();
    const router = useRouter();
 
@@ -45,7 +47,7 @@ const FIltrosAgendamento = ({ id, url }: FiltrosAgendamentoProps) => {
          label: "Todos",
       },
    ];
-   const [status, setStatus] = useState(opcoesAgendamento[3].id);
+   const [statusAtual, setStatusAtual] = useState(opcoesAgendamento[3].id);
 
    return (
       <div className="w-full flex justify-between">
@@ -53,7 +55,7 @@ const FIltrosAgendamento = ({ id, url }: FiltrosAgendamentoProps) => {
             type="date"
             value={data}
             onChange={(e) => {
-               setData(e.target.value);
+               setDataAtual(e.target.value);
                atualizarURL(e.target.value);
             }}
             className="h-10 px-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-havprincipal"

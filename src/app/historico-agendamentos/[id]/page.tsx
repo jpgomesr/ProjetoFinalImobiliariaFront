@@ -16,8 +16,11 @@ interface PageProps {
    }>;
    searchParams?: {
       page?: string;
+      status?: string;
+      data?: string;
    };
 }
+
 
 export async function generateStaticParams() {
    const ids = await buscarIdsUsuarios();
@@ -27,10 +30,13 @@ export async function generateStaticParams() {
 const page = async ({ params, searchParams }: PageProps) => {
    const { id } = await params;
    const currentPage = Number(searchParams?.page) || 0;
+   const parametrosRenderizados = await searchParams;
 
    const fetchAgendamentos = async () => {
       try {
-         const response = await fetch(`http://localhost:8082/agendamentos/${id}?page=${currentPage}&size=6`);
+         console.log(parametrosRenderizados);
+         const response = await fetch
+         (`http://localhost:8082/agendamentos/${id}?status=${parametrosRenderizados?.status || ''}&data=${parametrosRenderizados?.data || ''}&page=${currentPage}&size=9&sort=dataHora,desc`);
          const data = await response.json();
          return {
             content: data.content as ModelAgendamento[],
@@ -55,7 +61,10 @@ const page = async ({ params, searchParams }: PageProps) => {
                className="w-full px-2"
             >
                <InputPadrao search className="h-8" />
-               <FIltrosAgendamento id={id} url={`/historico-agendamentos/${id}`} />
+               <FIltrosAgendamento id={id} url={`/historico-agendamentos/${id}`}
+               status={parametrosRenderizados?.status || ''}
+               data={parametrosRenderizados?.data || ''}
+               />
                <Suspense fallback={<div>Carregando...</div>}>
                   <section
                      className="grid grid-cols-1 w-full my-4 place-items-center gap-8 '
