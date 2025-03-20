@@ -6,6 +6,7 @@ import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 import FiltroList from "@/components/componetes_filtro/FiltroList";
 import ListagemImovelPadrao from "@/components/listagem_imoveis/ListagemImovelPadrao";
 import InputPadrao from "@/components/InputPadrao";
+import ButtonMapa from "@/components/ButtonMapa";
 
 interface PageProps {
    searchParams: Promise<{
@@ -19,6 +20,7 @@ interface PageProps {
       bairro?: string;
       tipoImovel?: string;
       finalidade?: string;
+      view?: string;
    }>;
 }
 
@@ -34,6 +36,7 @@ const Page = async ({ searchParams }: PageProps) => {
       bairro: (await searchParams).bairro ?? "",
       tipoImovel: (await searchParams).tipoImovel ?? "",
       finalidade: (await searchParams).finalidade ?? "",
+      view: (await searchParams).view ?? "cards",
    };
 
    const { imoveis, pageableInfo, quantidadeElementos } =
@@ -70,15 +73,13 @@ const Page = async ({ searchParams }: PageProps) => {
                      value={params.finalidade}
                   />
 
-              
-                     <InputPadrao
-                        type="text"
-                        placeholder="Pesquise aqui"
-                        search={true}
-                        className="w-full"
+                  <InputPadrao
+                     type="text"
+                     placeholder="Pesquise aqui"
+                     search={true}
+                     className="w-full"
+                  />
 
-                     />
-          
                   <div className="w-36 min-h-full place-self-end md:place-self-auto">
                      <ButtonFiltro
                         precoMinimo={params.precoMinimo}
@@ -94,6 +95,26 @@ const Page = async ({ searchParams }: PageProps) => {
                         url={"/imoveis"}
                      />
                   </div>
+                  <div className="flex justify-center gap-4 mt-4 col-span-full">
+                     <ButtonMapa
+                        texto="Cards"
+                        href={`/imoveis?view=cards`}
+                        className={`w-32 h-10 ${
+                           params.view === "cards"
+                              ? "bg-havprincipal text-white"
+                              : "bg-havprincipal/50 text-white"
+                        }`}
+                     />
+                     <ButtonMapa
+                        texto="Mapa"
+                        href={`/imoveis?view=map`}
+                        className={`w-32 h-10  ${
+                           params.view === "map"
+                              ? "bg-havprincipal text-white"
+                              : "bg-havprincipal/50 text-white"
+                        }`}
+                     />
+                  </div>
                </div>
                <div className="flex flex-col sm:flex-row">
                   <p className="text-sm">
@@ -101,10 +122,12 @@ const Page = async ({ searchParams }: PageProps) => {
                   </p>
                </div>
 
-               <ListagemImovelPadrao
-                  imoveis={imoveis}
-                  pageableInfo={pageableInfo}
-               />
+               {params.view === "cards" && (
+                  <ListagemImovelPadrao
+                     imoveis={imoveis}
+                     pageableInfo={pageableInfo}
+                  />
+               )}
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
       </Layout>
