@@ -15,7 +15,7 @@ const ButtonMapa = ({ texto, href, className, ...props }: ButtonMapaProps) => {
       return (
          <Link
             href={href}
-            className={`botao ${className ?? "bg-white text-havprincipal"}`}
+            className={`botao text-center flex items-center justify-center ${className ?? "bg-white text-havprincipal"}`}
          >
             {texto}
          </Link>
@@ -25,7 +25,7 @@ const ButtonMapa = ({ texto, href, className, ...props }: ButtonMapaProps) => {
    return (
       <button
          {...props}
-         className={`botao ${className ?? "bg-white text-havprincipal"}`}
+         className={`botao text-center ${className ?? "bg-white text-havprincipal"}`}
       >
          {texto}
       </button>
