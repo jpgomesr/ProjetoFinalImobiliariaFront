@@ -99,7 +99,8 @@ const MapboxMap2: React.FC<MapboxMap2Props> = ({ imoveis, centroMapa }) => {
               >
                  ×
               </button>
-              <div className="[&>*]:text-[#8B0000] [&_svg]:fill-[#8B0000] [&_.bg-havprincipal]:text-white [&_.bg-havprincipal_*]:text-white [&_a]:text-[#8B0000] [&_a_span]:text-[#8B0000]">
+           
+              <div className="[&>*]:text-[#8B0000] [&_svg]:fill-[#8B0000] [&_.bg-havprincipal]:text-white [&_.bg-havprincipal_*]:[#8B0000] [&_a]:text-[#8B0000] [&_a_span]:text-[#8B0000]">
                  <CardImovel imovel={selectedImovel} width="w-full" />
               </div>
            </div>
