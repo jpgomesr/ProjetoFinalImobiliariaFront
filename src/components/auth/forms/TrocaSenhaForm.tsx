@@ -1,22 +1,44 @@
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Lock, User } from "lucide-react";
+import { Eye, EyeOff, Lock } from "lucide-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-const trocaSenhaSchema = z.object({
-   newPassword: z.string().min(1, { message: "Nova senha é obrigatória" }),
-   confirmPassword: z
-      .string()
-      .min(1, { message: "Confirmar senha é obrigatória" }),
-});
+const trocaSenhaSchema = z
+   .object({
+      newPassword: z
+         .string()
+         .min(8, { message: "A senha deve ter no mínimo 8 caracteres." })
+         .regex(/[A-Z]/, {
+            message: "A senha deve conter pelo menos uma letra maiúscula.",
+         })
+         .regex(/[a-z]/, {
+            message: "A senha deve conter pelo menos uma letra minúscula.",
+         })
+         .regex(/[0-9]/, {
+            message: "A senha deve conter pelo menos um número.",
+         })
+         .regex(/[^A-Za-z0-9]/, {
+            message: "A senha deve conter pelo menos um caractere especial.",
+         }),
+      confirmPassword: z
+         .string()
+         .min(1, { message: "Confirmar senha é obrigatória" }),
+   })
+   .refine((data) => data.newPassword === data.confirmPassword, {
+      path: ["confirmPassword"],
+      message: "As senhas não coincidem",
+   });
 
 type TrocaSenhaFormData = z.infer<typeof trocaSenhaSchema>;
 
 const TrocaSenhaForm = () => {
    const [showPassword, setShowPassword] = useState(false);
    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+   const router = useRouter();
    const {
       register,
       handleSubmit,
@@ -35,18 +57,11 @@ const TrocaSenhaForm = () => {
    };
 
    return (
-      <div className="flex justify-center items-center w-full max-w-[300px] 2xl:max-w-xl">
-         <div className="flex flex-col gap-2 sm:gap-3 2xl:gap-4 w-full bg-havprincipal text-white rounded-lg p-3 sm:p-4 md:p-5 2xl:p-8">
+      <div className="flex justify-center items-center w-full max-w-[400px] 2xl:max-w-xl">
+         <div className="flex flex-col gap-2 sm:gap-3 2xl:gap-4 w-full bg-havprincipal text-white rounded-lg p-4 sm:p-5 md:p-6 2xl:p-8">
             <h1 className="text-base sm:text-lg md:text-xl 2xl:text-2xl font-bold text-center">
                Troca de senha
             </h1>
-            {(errors.newPassword || errors.confirmPassword) && (
-               <div className="w-full flex justify-center">
-                  <span className="text-havprincipal bg-white px-2 py-1 rounded-lg text-xs sm:text-sm font-montserrat">
-                     Nova senha ou confirmar senha incorretos
-                  </span>
-               </div>
-            )}
             <form
                onSubmit={handleSubmit(onSubmit)}
                className="flex flex-col gap-2"
@@ -58,13 +73,13 @@ const TrocaSenhaForm = () => {
                   >
                      Nova senha
                   </label>
-                  <div className="flex items-center bg-white text-black p-1 sm:p-1.5 rounded-md min-w-0">
-                     <Lock className="text-havprincipal w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                  <div className="flex items-center bg-white text-black p-2 sm:p-2.5 rounded-md min-w-0">
+                     <Lock className="text-havprincipal w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                      <input
                         type={showPassword ? "text" : "password"}
                         placeholder="Nova senha"
                         {...register("newPassword")}
-                        className="min-w-0 w-full bg-transparent outline-none px-1 sm:px-2 text-xs sm:text-sm 2xl:text-base placeholder:truncate"
+                        className="min-w-0 w-full bg-transparent outline-none px-2 sm:px-3 text-xs sm:text-sm 2xl:text-base placeholder:truncate"
                         onChange={() => {
                            clearErrors("newPassword");
                            clearErrors("confirmPassword");
@@ -76,25 +91,30 @@ const TrocaSenhaForm = () => {
                         className="text-havprincipal flex-shrink-0"
                      >
                         {showPassword ? (
-                           <EyeOff className="w-3 h-3 sm:w-4 sm:h-4" />
+                           <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />
                         ) : (
-                           <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+                           <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
                         )}
                      </button>
                   </div>
+                  {errors.newPassword && (
+                     <span className="text-red-100 text-[8px] sm:text-[10px]">
+                        {errors.newPassword.message}
+                     </span>
+                  )}
                   <label
                      htmlFor="confirmPassword"
                      className="text-[10px] sm:text-xs 2xl:text-base"
                   >
                      Confirmar senha
                   </label>
-                  <div className="flex items-center bg-white text-black p-1 sm:p-1.5 rounded-md min-w-0">
-                     <Lock className="text-havprincipal w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                  <div className="flex items-center bg-white text-black p-2 sm:p-2.5 rounded-md min-w-0">
+                     <Lock className="text-havprincipal w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                      <input
                         type={showConfirmPassword ? "text" : "password"}
                         placeholder="Confirmar senha"
                         {...register("confirmPassword")}
-                        className="min-w-0 w-full bg-transparent outline-none px-1 sm:px-2 text-xs sm:text-sm 2xl:text-base"
+                        className="min-w-0 w-full bg-transparent outline-none px-2 sm:px-3 text-xs sm:text-sm 2xl:text-base"
                         onChange={() => {
                            clearErrors("newPassword");
                            clearErrors("confirmPassword");
@@ -108,24 +128,30 @@ const TrocaSenhaForm = () => {
                         className="text-havprincipal flex-shrink-0"
                      >
                         {showConfirmPassword ? (
-                           <EyeOff className="w-3 h-3 sm:w-4 sm:h-4" />
+                           <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />
                         ) : (
-                           <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+                           <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
                         )}
                      </button>
                   </div>
+                  {errors.confirmPassword && (
+                     <span className="text-red-100 text-[8px] sm:text-[10px]">
+                        {errors.confirmPassword.message}
+                     </span>
+                  )}
                </div>
                <div className="flex justify-center items-center gap-2 sm:gap-4">
                   <button
                      type="submit"
-                     className="bg-white text-havprincipal font-bold py-1 px-2 sm:py-1.5 sm:px-3 2xl:py-2 2xl:px-4 rounded-md text-xs sm:text-sm 2xl:text-base mt-1"
+                     className="bg-white text-havprincipal font-bold py-2 px-4 sm:py-2.5 sm:px-5 2xl:py-3 2xl:px-6 rounded-md text-xs sm:text-sm 2xl:text-base mt-1"
                   >
                      Alterar
                   </button>
                   <p className="text-xs sm:text-sm 2xl:text-sm">ou</p>
                   <button
-                     className="flex items-center bg-white text-havprincipal gap-1 px-2 py-1 sm:py-1.5 
+                     className="flex items-center bg-white text-havprincipal gap-1 px-2 py-2 sm:py-2.5 
                               rounded-md font-bold text-xs sm:text-sm mt-1"
+                     onClick={() => router.push("/")}
                   >
                      Cancelar
                   </button>

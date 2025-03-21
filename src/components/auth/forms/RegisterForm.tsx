@@ -1,8 +1,11 @@
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const registerSchema = z
    .object({
@@ -34,13 +37,10 @@ const registerSchema = z
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
-interface RegisterFormProps {
-   onLogin?: () => void;
-}
-
-const RegisterForm = ({ onLogin }: RegisterFormProps) => {
+const RegisterForm = () => {
    const [showPassword, setShowPassword] = useState(false);
    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+   const router = useRouter();
 
    const {
       register,
@@ -61,15 +61,10 @@ const RegisterForm = ({ onLogin }: RegisterFormProps) => {
       console.log(data);
    };
 
-   // Verifica se há muitos erros visíveis
-   const hasManyErrors = Object.keys(errors).length > 2;
-
    return (
       <div className="flex justify-center items-center min-h-screen w-full max-w-[400px]">
          <div
-            className={`flex flex-col gap-2 sm:gap-3 w-full bg-havprincipal text-white rounded-lg p-3 sm:p-4 ${
-               hasManyErrors ? "scale-95" : ""
-            } transition-transform duration-200`}
+            className={`flex flex-col gap-2 sm:gap-3 w-full bg-havprincipal text-white rounded-lg p-3 sm:p-4`}
          >
             <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center">
                Cadastro
@@ -79,12 +74,7 @@ const RegisterForm = ({ onLogin }: RegisterFormProps) => {
                className="flex flex-col gap-2"
             >
                <div className="flex flex-col gap-1">
-                  <label
-                     htmlFor="name"
-                     className={`text-xs ${
-                        hasManyErrors ? "text-[10px]" : "sm:text-sm"
-                     }`}
-                  >
+                  <label htmlFor="name" className="text-xs sm:text-sm">
                      Nome
                   </label>
                   <div className="flex items-center bg-white text-black p-1 sm:p-1.5 rounded-md">
@@ -93,9 +83,7 @@ const RegisterForm = ({ onLogin }: RegisterFormProps) => {
                         type="text"
                         placeholder="Digite seu nome"
                         {...register("name")}
-                        className={`flex-1 bg-transparent outline-none px-1 sm:px-2 ${
-                           hasManyErrors ? "text-xs" : "text-sm sm:text-base"
-                        }`}
+                        className="flex-1 bg-transparent outline-none px-1 sm:px-2 text-sm sm:text-base"
                      />
                   </div>
                   {errors.name && (
@@ -106,12 +94,7 @@ const RegisterForm = ({ onLogin }: RegisterFormProps) => {
                </div>
 
                <div className="flex flex-col gap-1">
-                  <label
-                     htmlFor="email"
-                     className={`text-xs ${
-                        hasManyErrors ? "text-[10px]" : "sm:text-sm"
-                     }`}
-                  >
+                  <label htmlFor="email" className="text-xs sm:text-sm">
                      Email
                   </label>
                   <div className="flex items-center bg-white text-black p-1 sm:p-1.5 rounded-md">
@@ -120,9 +103,7 @@ const RegisterForm = ({ onLogin }: RegisterFormProps) => {
                         type="text"
                         placeholder="Digite seu email"
                         {...register("email")}
-                        className={`flex-1 bg-transparent outline-none px-1 sm:px-2 ${
-                           hasManyErrors ? "text-xs" : "text-sm sm:text-base"
-                        }`}
+                        className="flex-1 bg-transparent outline-none px-1 sm:px-2 text-sm sm:text-base"
                      />
                   </div>
                   {errors.email && (
@@ -133,12 +114,7 @@ const RegisterForm = ({ onLogin }: RegisterFormProps) => {
                </div>
 
                <div className="flex flex-col gap-1">
-                  <label
-                     htmlFor="password"
-                     className={`text-xs ${
-                        hasManyErrors ? "text-[10px]" : "sm:text-sm"
-                     }`}
-                  >
+                  <label htmlFor="password" className="text-xs sm:text-sm">
                      Senha
                   </label>
                   <div className="flex items-center bg-white text-black p-1 sm:p-1.5 rounded-md">
@@ -147,9 +123,7 @@ const RegisterForm = ({ onLogin }: RegisterFormProps) => {
                         type={showPassword ? "text" : "password"}
                         placeholder="Senha"
                         {...register("password")}
-                        className={`flex-1 bg-transparent outline-none px-1 sm:px-2 ${
-                           hasManyErrors ? "text-xs" : "text-sm sm:text-base"
-                        }`}
+                        className="flex-1 bg-transparent outline-none px-1 sm:px-2 text-sm sm:text-base"
                      />
                      <button
                         type="button"
@@ -173,9 +147,7 @@ const RegisterForm = ({ onLogin }: RegisterFormProps) => {
                <div className="flex flex-col gap-1">
                   <label
                      htmlFor="confirmPassword"
-                     className={`text-xs ${
-                        hasManyErrors ? "text-[10px]" : "sm:text-sm"
-                     }`}
+                     className="text-xs sm:text-sm"
                   >
                      Confirmar senha
                   </label>
@@ -185,9 +157,7 @@ const RegisterForm = ({ onLogin }: RegisterFormProps) => {
                         type={showConfirmPassword ? "text" : "password"}
                         placeholder="Confirmar senha"
                         {...register("confirmPassword")}
-                        className={`flex-1 bg-transparent outline-none px-1 sm:px-2 ${
-                           hasManyErrors ? "text-xs" : "text-sm sm:text-base"
-                        }`}
+                        className="flex-1 bg-transparent outline-none px-1 sm:px-2 text-sm sm:text-base"
                      />
                      <button
                         type="button"
@@ -224,7 +194,10 @@ const RegisterForm = ({ onLogin }: RegisterFormProps) => {
                <p className="text-[10px] sm:text-xs">Já possui uma conta?</p>
                <button
                   className="font-semibold text-[10px] sm:text-xs text-white"
-                  onClick={onLogin}
+                  onClick={(e) => {
+                     e.preventDefault();
+                     router.push("/autentificacao/login");
+                  }}
                >
                   clique aqui!
                </button>

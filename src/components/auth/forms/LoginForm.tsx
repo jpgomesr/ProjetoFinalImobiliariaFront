@@ -1,9 +1,12 @@
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock, User } from "lucide-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
    login: z.string().min(1, { message: "Login é obrigatório" }),
@@ -12,12 +15,9 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-interface LoginFormProps {
-   onRegister?: () => void;
-}
-
-const LoginForm = ({ onRegister }: LoginFormProps) => {
+const LoginForm = () => {
    const [showPassword, setShowPassword] = useState(false);
+   const router = useRouter();
    const {
       register,
       handleSubmit,
@@ -126,7 +126,10 @@ const LoginForm = ({ onRegister }: LoginFormProps) => {
                   <p className="text-xs sm:text-sm">Não possui uma conta?</p>
                   <button
                      className="font-semibold text-xs sm:text-sm text-white"
-                     onClick={onRegister}
+                     onClick={(e) => {
+                        e.preventDefault();
+                        router.push("/autentificacao/cadastro");
+                     }}
                   >
                      clique aqui!
                   </button>
