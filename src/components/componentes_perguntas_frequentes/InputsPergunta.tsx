@@ -1,9 +1,13 @@
 import React from 'react'
 import InputPadrao from '../InputPadrao'
+import TextAreaPadrao from '../TextAreaPadrao'
+interface InputsPerguntaProps {
+  placeholder: string;
+}
 
-const InputsPergunta = () => {
+const InputsPergunta = ({ placeholder }: InputsPerguntaProps) => {
   return (
-    <div>
+    <div className="flex flex-col gap-4">
         <InputPadrao
             label="E-mail"
             placeholder="Ex: Carlos@gmail.com"
@@ -18,6 +22,11 @@ const InputsPergunta = () => {
             label="Nome"
             placeholder="Ex: Carlos"
             htmlFor="Nome"
+        />
+        <TextAreaPadrao
+            label="Mensagem"
+            placeholder={placeholder}
+            htmlFor="Mensagem"
         />
     </div>
   )
