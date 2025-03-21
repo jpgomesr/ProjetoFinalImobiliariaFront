@@ -10,7 +10,7 @@ interface ListProps extends React.InputHTMLAttributes<HTMLSelectElement> {
    buttonHolder?: string;
    bordaPreta?: boolean;
    title?: string;
-   mudandoValor?: (valor : string) => void;
+   mudandoValor?: (valor: string) => void;
    divClassName?: string;
    differentSize?: string;
    mensagemErro?: string;
@@ -31,12 +31,8 @@ const List = (props: ListProps) => {
       setSelecionado(id);
       setAberto(false);
 
-      if (props.mudandoValor
-   
-      ) {
-        props.mudandoValor
-   (
-             id );
+      if (props.mudandoValor) {
+         props.mudandoValor(id);
       }
    };
 

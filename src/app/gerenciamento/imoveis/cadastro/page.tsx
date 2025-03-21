@@ -17,14 +17,18 @@ import List from "@/components/List";
 import { TipoBanner } from "@/models/Enum/TipoBanner";
 import { createImovelValidator } from "@/validators/Validators";
 import { restaurarCampos, preencherCampos } from "@/Functions/requisicaoViaCep";
-import SearchProprietarioList from "@/components/SearchProprietarioList";
-import CorretoresBoxSelect from "@/components/CorretoresBoxSelect";
 import { useNotification } from "@/context/NotificationContext";
 import { salvarImovel } from "./actions";
+import { ModelProprietarioList } from "@/models/ModelProprietarioList";
+import SearchSingleSelect from "@/components/SearchSingleSelect";
+import { ModelCorretor } from "@/models/ModelCorretor";
+import SearchMultSelect from "@/components/SearchMultSelect";
 
 const Page = () => {
    const router = useRouter();
    const { showNotification } = useNotification();
+   const proprietarioModel: ModelProprietarioList[] = [];
+   const corretoresModel: ModelCorretor[] = [];
 
    const [step, setStep] = useState(1);
    const [camposDesabilitados, setCamposDesabilitados] = useState({
@@ -33,6 +37,9 @@ const Page = () => {
       ruaDesabilitada: true,
       estadoDesabilitado: true,
    });
+
+   const [coverImage, setCoverImage] = useState<string | null>(null);
+   const [galleryImages, setGalleryImages] = useState<File[]>([]);
 
    const imovelValidator = createImovelValidator();
    type imovelValidatorSchema = z.infer<typeof imovelValidator>;
@@ -161,12 +168,17 @@ const Page = () => {
             },
             corretores: data.corretores,
          },
-         imagens: data.imagens,
+         imagens: {
+            imagemPrincipal: data.imagens.imagemPrincipal,
+            imagensGaleria: data.imagens.imagensGaleria,
+         },
       };
       const response = await salvarImovel(jsonRequest);
       if (response.ok) {
          showNotification("Imóvel cadastrado com sucesso");
          clearErrors();
+         setCoverImage(null);
+         setGalleryImages([]);
          router.push("/gerenciamento/imoveis");
       }
    };
@@ -524,25 +536,32 @@ const Page = () => {
                               imagensGaleria: [],
                            }}
                            render={({ field }) => {
-                              const imagensGaleria =
-                                 field.value.imagensGaleria || [];
-
                               return (
                                  <UploadGaleriaImagens
+                                    coverImage={coverImage}
+                                    galleryImages={galleryImages.map((img) =>
+                                       URL.createObjectURL(img)
+                                    )}
                                     onImageChange={(file, index) => {
                                        const newValue = { ...field.value };
                                        if (index === undefined) {
                                           newValue.imagemPrincipal = file;
+                                          if (file instanceof File) {
+                                             setCoverImage(
+                                                URL.createObjectURL(file)
+                                             );
+                                          }
                                        } else {
-                                          const newGallery = [
-                                             ...imagensGaleria,
-                                          ];
+                                          const newGallery = [...galleryImages];
                                           if (file === null) {
                                              newGallery.splice(index, 1);
                                           } else {
-                                             newGallery[index] = file;
+                                             if (file instanceof File) {
+                                                newGallery[index] = file;
+                                             }
                                           }
                                           newValue.imagensGaleria = newGallery;
+                                          setGalleryImages(newGallery);
                                        }
                                        field.onChange(newValue);
                                     }}
@@ -652,7 +671,7 @@ const Page = () => {
                                           htmlFor="numero_apartamento"
                                           label={`Número do apartamento`}
                                           placeholder="Digite o número do apartamento"
-                                          type="numberApto"
+                                          type="number"
                                           {...register("numeroApto")}
                                           mensagemErro={
                                              errors.numeroApto?.message
@@ -682,14 +701,26 @@ const Page = () => {
                   )}
                   {step === 3 && (
                      <div className="flex flex-col gap-4">
-                        <SearchProprietarioList
-                           registerProps={register("proprietario")}
-                           mensagemErro={errors.proprietario?.message}
-                        />
-                        <CorretoresBoxSelect
-                           registerProps={register("corretores")}
-                           mensagemErro={errors.corretores?.message}
-                        />
+                        <div className="flex flex-row gap-2">
+                           <SearchSingleSelect
+                              register={register("proprietario")}
+                              mensagemErro={errors.proprietario?.message}
+                              title="Proprietário"
+                              url="/proprietarios/lista-select"
+                              method="GET"
+                              model={
+                                 proprietarioModel as unknown as new () => {}
+                              }
+                           />
+                           <SearchMultSelect
+                              register={register("corretores")}
+                              mensagemErro={errors.corretores?.message}
+                              title="Corretores"
+                              url="/usuarios/corretores-lista-select"
+                              method="GET"
+                              model={corretoresModel as unknown as new () => {}}
+                           />
+                        </div>
                         <div className="flex flex-row gap-2 justify-center">
                            <BotaoPadrao
                               type="button"

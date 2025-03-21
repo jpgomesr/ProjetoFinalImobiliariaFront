@@ -3,19 +3,19 @@ import Image from "next/image";
 import { Plus, Trash, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface UploadGaleriaImagensProps {
-   onImageChange?: (image: File | string | null, index?: number) => void;
-   mensagemErro?: string;
-   clearErrors?: () => void;
    coverImage?: string | null;
    galleryImages?: (string | null)[];
    refImagensDeletadas?: (ref: string) => void;
+   onImageChange?: (image: File | string | null, index?: number) => void;
+   mensagemErro?: string;
+   clearErrors?: () => void;
 }
 
 const UploadGaleriaImagens = ({
    onImageChange,
    mensagemErro,
    coverImage,
-   galleryImages = [],
+   galleryImages,
    refImagensDeletadas,
 }: UploadGaleriaImagensProps) => {
    const [coverImagePreview, setCoverImagePreview] = useState<string | null>(
@@ -37,6 +37,14 @@ const UploadGaleriaImagens = ({
       lg: 4,
       xl: 5,
    };
+
+   useEffect(() => {
+      setCoverImagePreview(coverImage || null);
+   }, [coverImage]);
+
+   useEffect(() => {
+      setGalleryImagesPreview(galleryImages || []);
+   }, [galleryImages]);
 
    const getItemsPerPage = () => {
       if (typeof window !== "undefined") {
