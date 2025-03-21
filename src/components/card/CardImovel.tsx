@@ -10,14 +10,16 @@ import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Imovel from "@/models/ModelImovel";
+import Link from "next/link";
 import ModalCofirmacao from "../ComponentesCrud/ModalConfirmacao";
 
 interface HomeProps {
    imovel: ModelImovelGet | Imovel;
    edicao?: boolean;
    edicaoLink?: string;
-   atualizacaoRender?: () => void;
+   atualizacaoRender?: () => void
    deletarImovel?: (id: number) => void;
+   width?: string;
 }
 
 export default function CardImovel(props: HomeProps) {
@@ -67,7 +69,9 @@ export default function CardImovel(props: HomeProps) {
    return (
       <>
          <div
-            className={`w-[70%] h-full min-w-[262.5px] max-w-[305px] rounded-2xl shadow-[4px_4px_4px_rgba(0,0,0,0.2)] relative
+            className={`${
+               props.width ? props.width : "w-[70%]"
+            } h-full min-w-[262.5px] max-w-[305px] rounded-2xl shadow-[4px_4px_4px_rgba(0,0,0,0.2)] relative
                      ${
                         !props.imovel?.permitirDestaque
                            ? "bg-begepadrao"
@@ -114,13 +118,11 @@ export default function CardImovel(props: HomeProps) {
                                     ? "text-brancoEscurecido"
                                     : "text-havprincipal"
                               } cursor-pointer w-5 h-5`}
-                              onClick={() =>{
-                                 if(props.deletarImovel){
-                                    props.deletarImovel(props.imovel.id)
+                              onClick={() => {
+                                 if (props.deletarImovel) {
+                                    props.deletarImovel(props.imovel.id);
                                  }
-                              }
-                               
-                              }
+                              }}
                            />
                         ) : (
                            <FavButton
@@ -238,16 +240,20 @@ export default function CardImovel(props: HomeProps) {
                   </p>
                </div>
                <div className="flex justify-center pb-5 items-center gap-2">
-                  <SaibaMaisBotao
-                     codigo={"codigo" in props.imovel ? props.imovel.codigo : 0}
-                     dark={props.imovel.permitirDestaque}
-                  />
+                  <Link href={`/imovel/${props.imovel.id}`}>
+                     <SaibaMaisBotao
+                        codigo={
+                           "codigo" in props.imovel ? props.imovel.codigo : 0
+                        }
+                        dark={props.imovel.permitirDestaque}
+                     />
+                  </Link>
                   {cardEdicao ? (
                      <button
                         className={`text-sm px-4 py-2 ${
                            props.imovel.permitirDestaque
                               ? "bg-brancoEscurecido text-havprincipal font-bold"
-                              : "bg-havprincipal text-white"
+                              : "bg-havprincipal text-white "
                         } rounded-md`}
                         onClick={() => {
                            if (props.edicaoLink) {
