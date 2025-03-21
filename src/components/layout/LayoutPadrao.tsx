@@ -7,16 +7,19 @@ interface LayoutProps {
    children: React.ReactNode;
    className?: string;
    role?: Roles;
+   footerRemove?: boolean;
 }
 
 const Layout = (props: LayoutProps) => {
    return (
-      <div>
+      <div className="h-screen flex flex-col">
          <HeaderVermelho role={props.role} />
-         <div className={`${props.className ? props.className : "py-8"}`}>
+         <div
+            className={`${props.className ? props.className : "py-8"} flex-1`}
+         >
             {props.children}
          </div>
-         <Footer />
+         {props.footerRemove ? null : <Footer />}
       </div>
    );
 };

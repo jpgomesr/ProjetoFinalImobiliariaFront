@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { Plus, Trash } from "lucide-react";
+import { Plus, Trash, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface UploadGaleriaImagensProps {
    onImageChange?: (image: File | string | null, index?: number) => void;
@@ -14,9 +14,8 @@ interface UploadGaleriaImagensProps {
 const UploadGaleriaImagens = ({
    onImageChange,
    mensagemErro,
-   clearErrors,
    coverImage,
-   galleryImages = [null, null, null],
+   galleryImages = [],
    refImagensDeletadas,
 }: UploadGaleriaImagensProps) => {
    const [coverImagePreview, setCoverImagePreview] = useState<string | null>(
@@ -24,55 +23,85 @@ const UploadGaleriaImagens = ({
    );
    const [galleryImagesPreview, setGalleryImagesPreview] = useState<
       (string | null)[]
-   >(galleryImages || [null, null, null]);
+   >(galleryImages || []);
+   const [showLeftArrow, setShowLeftArrow] = useState(false);
+   const [showRightArrow, setShowRightArrow] = useState(false);
+   const [currentPage, setCurrentPage] = useState(0);
    const coverInputRef = useRef<HTMLInputElement>(null);
    const galleryInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+   const containerRef = useRef<HTMLDivElement>(null);
+
+   const ITEMS_PER_PAGE = {
+      sm: 2,
+      md: 3,
+      lg: 4,
+      xl: 5,
+   };
+
+   const getItemsPerPage = () => {
+      if (typeof window !== "undefined") {
+         if (window.innerWidth < 640) return ITEMS_PER_PAGE.sm;
+         if (window.innerWidth < 900) return ITEMS_PER_PAGE.md;
+         if (window.innerWidth < 1200) return ITEMS_PER_PAGE.lg;
+         return ITEMS_PER_PAGE.xl;
+      }
+      return ITEMS_PER_PAGE.lg;
+   };
+
+   const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage());
+
+   useEffect(() => {
+      const handleResize = () => {
+         setItemsPerPage(getItemsPerPage());
+      };
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+   }, []);
+
+   useEffect(() => {
+      if (galleryImages && galleryImages.length > 0) {
+         setGalleryImagesPreview(galleryImages);
+      }
+   }, [galleryImages]);
 
    useEffect(() => {
       setCoverImagePreview(coverImage || null);
    }, [coverImage]);
 
    useEffect(() => {
-      const newGalleryImages = [...(galleryImages || [null, null, null])];
-      while (newGalleryImages.length < 3) {
-         newGalleryImages.push(null);
-      }
-      setGalleryImagesPreview(newGalleryImages.slice(0, 3));
-   }, []);
-
-   useEffect(() => {
       galleryInputRefs.current = galleryInputRefs.current.slice(
          0,
-         galleryImagesPreview.length
+         galleryImagesPreview.length + 1
       );
-   }, [galleryImagesPreview]);
+   }, [galleryImagesPreview.length]);
+
+   useEffect(() => {
+      const totalPages = Math.ceil(
+         (galleryImagesPreview.length + 1) / itemsPerPage
+      );
+      setShowLeftArrow(currentPage > 0);
+      setShowRightArrow(currentPage < totalPages - 1);
+   }, [currentPage, galleryImagesPreview.length, itemsPerPage]);
 
    const handleImageChange =
       (index?: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
          if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
             const imageUrl = URL.createObjectURL(file);
-
             if (index === undefined) {
                setCoverImagePreview(imageUrl);
-               if (onImageChange) onImageChange(file);
+               if (onImageChange) {
+                  onImageChange(file);
+               }
             } else {
                setGalleryImagesPreview((prev) => {
-                  const updatedImages = [...prev];
-                  const firstEmptyIndex = updatedImages.findIndex(
-                     (img) => img == null
-                  );
-                  if (firstEmptyIndex !== -1) {
-                     updatedImages[firstEmptyIndex] = imageUrl;
-                  } else {
-                     updatedImages.unshift(imageUrl);
-                     if (updatedImages.length > 3) updatedImages.pop();
-                  }
-
-                  return updatedImages;
+                  const newGallery = [...prev];
+                  newGallery[index] = imageUrl;
+                  return newGallery;
                });
-
-               if (onImageChange) onImageChange(file, index);
+               if (onImageChange) {
+                  onImageChange(file, index);
+               }
             }
          }
       };
@@ -98,7 +127,7 @@ const UploadGaleriaImagens = ({
          if (removedImage && refImagensDeletadas) {
             refImagensDeletadas(removedImage);
          }
-         newGalleryImages[index] = null;
+         newGalleryImages.splice(index, 1);
          setGalleryImagesPreview(newGalleryImages);
          if (galleryInputRefs.current[index]) {
             galleryInputRefs.current[index]!.value = "";
@@ -109,21 +138,45 @@ const UploadGaleriaImagens = ({
       }
    };
 
-   useEffect(() => {
-      console.log(mensagemErro);
-   });
+   const scroll = (direction: "left" | "right", e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      setCurrentPage((prev) => {
+         if (direction === "left") {
+            return Math.max(0, prev - 1);
+         } else {
+            const totalPages = Math.ceil(
+               (galleryImagesPreview.length + 1) / itemsPerPage
+            );
+            return Math.min(totalPages - 1, prev + 1);
+         }
+      });
+   };
+
+   const getCurrentPageItems = () => {
+      const start = currentPage * itemsPerPage;
+      const end = start + itemsPerPage;
+      const items = [...galleryImagesPreview];
+
+      const totalPages = Math.ceil((items.length + 1) / itemsPerPage);
+      if (currentPage === totalPages - 1) {
+         items.push(null);
+      }
+
+      return items.slice(start, end);
+   };
 
    return (
       <div className="space-y-6">
          {/* Imagem de Capa */}
          <div className="space-y-2">
-            <label className="block text-sm font-medium">
-               Imagem de capa <span className="text-red-500">*</span>
-            </label>
+            <label className="block text-sm font-medium">Imagem de capa</label>
             <div className="relative">
                <label
                   htmlFor="cover-image-upload"
-                  className="cursor-pointer flex items-center justify-center w-40 h-40 border-2 border-dashed border-gray-300 rounded-md bg-gray-50
+                  className="cursor-pointer flex items-center justify-center w-40 h-40 border-2 border-dashed 
+                           border-gray-300 rounded-md bg-gray-50
                             relative
                             sm:w-80 sm:h-80
                             xl:w-96 xl:h-96"
@@ -134,11 +187,13 @@ const UploadGaleriaImagens = ({
                            src={coverImagePreview}
                            alt="Cover image preview"
                            fill
+                           sizes="(max-width: 640px) 160px, (max-width: 1280px) 320px, 384px"
                            className="object-cover object-center rounded-md"
                         />
                         <button
                            onClick={handleRemoveImage()}
-                           className="absolute top-[-10px] right-[-10px] bg-havprincipal bg-opacity-90 p-1.5 rounded-full text-white hover:bg-opacity-100 transition-colors"
+                           className="absolute top-[-10px] right-[-10px] bg-havprincipal bg-opacity-90 
+                                       p-1.5 rounded-full text-white hover:bg-opacity-100 transition-colors"
                         >
                            <Trash className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
                         </button>
@@ -169,51 +224,89 @@ const UploadGaleriaImagens = ({
          {/* Galeria de Imagens */}
          <div className="space-y-2">
             <label className="block text-sm font-medium">
-               Galeria de imagens <span className="text-red-500">*</span>
+               Galeria de imagens
             </label>
-            <div className="grid grid-cols-3 gap-4 justify-items-center mx-auto">
-               {galleryImagesPreview.map((image, index) => (
-                  <div
-                     key={index}
-                     className="relative aspect-square w-full max-w-xs flex items-center justify-center"
+            <div className="relative">
+               {showLeftArrow && (
+                  <button
+                     onClick={(e) => scroll("left", e)}
+                     className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white 
+                                 rounded-full p-1 shadow-md
+                                 sm:p-2"
                   >
-                     <label
-                        htmlFor={`gallery-image-upload-${index}`}
-                        className="cursor-pointer flex items-center justify-center w-full h-full border-2 border-dashed border-gray-300 rounded-md bg-gray-50 relative"
+                     <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                  </button>
+               )}
+
+               <div
+                  ref={containerRef}
+                  className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 px-10"
+               >
+                  {getCurrentPageItems().map((image, index) => (
+                     <div
+                        key={index + currentPage * itemsPerPage}
+                        className="relative aspect-square w-full
+                                    sm:p-3 md:p-4"
                      >
                         {image ? (
-                           <>
+                           <div
+                              className="cursor-pointer flex items-center justify-center w-full h-full 
+                                    border-2 border-dashed border-gray-300 rounded-md bg-gray-50 relative"
+                           >
                               <Image
                                  src={image}
                                  alt={`Gallery image ${index + 1}`}
                                  fill
+                                 sizes="(max-width: 640px) 50vw, (max-width: 900px) 33vw, (max-width: 1200px) 25vw, 20vw"
                                  className="object-cover object-center rounded-md"
                               />
                               <button
-                                 onClick={handleRemoveImage(index)}
-                                 className="absolute top-[-10px] right-[-10px] bg-havprincipal bg-opacity-90 p-1.5 rounded-full text-white hover:bg-opacity-100 transition-colors"
+                                 onClick={handleRemoveImage(
+                                    index + currentPage * itemsPerPage
+                                 )}
+                                 className="absolute top-[-10px] right-[-10px] bg-havprincipal bg-opacity-90 
+                                          p-1.5 rounded-full text-white hover:bg-opacity-100 transition-colors"
                               >
                                  <Trash className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5" />
                               </button>
-                           </>
-                        ) : (
-                           <div className="absolute flex items-center justify-center w-8 h-8 rounded-full bg-white shadow-sm">
-                              <Plus className="w-4 h-4 text-gray-500" />
                            </div>
+                        ) : (
+                           <label
+                              htmlFor="gallery-image-upload-new"
+                              className="cursor-pointer flex items-center justify-center w-full h-full border-2 
+                                    border-dashed border-gray-300 rounded-md bg-gray-50 relative"
+                           >
+                              <div
+                                 className="absolute flex items-center justify-center w-8 h-8 rounded-full 
+                                       bg-white shadow-sm"
+                              >
+                                 <Plus className="w-4 h-4 text-gray-500" />
+                              </div>
+                              <input
+                                 id="gallery-image-upload-new"
+                                 type="file"
+                                 accept="image/*"
+                                 className="hidden"
+                                 onChange={handleImageChange(
+                                    galleryImagesPreview.length
+                                 )}
+                              />
+                           </label>
                         )}
-                        <input
-                           ref={(el) => {
-                              if (el) galleryInputRefs.current[index] = el;
-                           }}
-                           id={`gallery-image-upload-${index}`}
-                           type="file"
-                           accept="image/*"
-                           className="hidden"
-                           onChange={handleImageChange(index)}
-                        />
-                     </label>
-                  </div>
-               ))}
+                     </div>
+                  ))}
+               </div>
+
+               {showRightArrow && (
+                  <button
+                     onClick={(e) => scroll("right", e)}
+                     className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full 
+                                 p-1 shadow-md
+                                 sm:p-2"
+                  >
+                     <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                  </button>
+               )}
             </div>
          </div>
       </div>

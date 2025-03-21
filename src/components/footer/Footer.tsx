@@ -1,22 +1,15 @@
-
-
 import LogoHav from "@/svg/icons/logo/LogoHavClaro";
 import FacebookIcon from "@/svg/icons/footer/FacebookIcon";
 import InstagramIcon from "@/svg/icons/footer/InstagramIcon";
 import TwitterIcon from "@/svg/icons/footer/TwitterIcon";
 import React from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Footer = () => {
-   const router = useRouter();
-
    const NavButton = ({ label, route }: { label: string; route: string }) => (
-      <button
-         onClick={() => router.push(route)}
-         className="text-white font-extralight"
-      >
-         {label}
-      </button>
+      <Link href={route}>
+         <button className="text-white font-extralight">{label}</button>
+      </Link>
    );
 
    const navItems = [
@@ -105,38 +98,45 @@ const Footer = () => {
                                  md:w-16 md:h-16"
                         visible={false}
                      />
-                     <button
-                        className="sm:text-sm
+                     <Link href={"/"}>
+                        <button
+                           className="sm:text-sm
                                  md:text-base
                                  lg:text-lg
                                  xl:text-xl"
-                        onClick={() => router.push("/")}
-                     >
-                        HAV Imobiliária
-                     </button>
+                        >
+                           HAV Imobiliária
+                        </button>
+                     </Link>
                   </div>
                   <div className="flex flex-row justify-center items-center gap-4">
-                     <button onClick={() => router.push("/")}>
-                        <FacebookIcon
-                           className="w-5 h-5
+                     <Link href={"/"}>
+                        <button>
+                           <FacebookIcon
+                              className="w-5 h-5
                                     sm:w-6 sm:h-6
                                     lg:w-7 lg:h-7"
-                        />
-                     </button>
-                     <button onClick={() => router.push("/")}>
-                        <InstagramIcon
-                           className="w-5 h-5 
+                           />
+                        </button>
+                     </Link>
+                     <Link href={"/"}>
+                        <button>
+                           <InstagramIcon
+                              className="w-5 h-5 
                                     sm:w-6 sm:h-6
                                     lg:w-7 lg:h-7"
-                        />
-                     </button>
-                     <button onClick={() => router.push("/")}>
-                        <TwitterIcon
-                           className="w-5 h-5 
+                           />
+                        </button>
+                     </Link>
+                     <Link href={"/"}>
+                        <button>
+                           <TwitterIcon
+                              className="w-5 h-5 
                                     sm:w-6 sm:h-6
                                     lg:w-7 lg:h-7"
-                        />
-                     </button>
+                           />
+                        </button>
+                     </Link>
                   </div>
                </div>
                <div

@@ -5,6 +5,45 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Estilos personalizados para o popup do Mapbox */
+.mapboxgl-popup-content {
+  padding: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+  background-color: #6B1D1D !important;
+}
+
+.mapboxgl-popup-content h3,
+.mapboxgl-popup-content p,
+.mapboxgl-popup-content div {
+  color: #F5F5DC !important;
+}
+
+.mapboxgl-popup-close-button {
+  color: #F5F5DC !important;
+  font-size: 20px !important;
+  padding: 4px 8px !important;
+  right: 0 !important;
+  top: 0 !important;
+  background-color: transparent !important;
+  border: none !important;
+  z-index: 1 !important;
+}
+
+.mapboxgl-popup-close-button:hover {
+  background-color: rgba(245, 245, 220, 0.1) !important;
+  color: #F5F5DC !important;
+}
+
+.mapboxgl-popup-tip {
+  display: none !important;
+}
+
+/* Força a cor do texto no popup */
+.custom-popup * {
+  color: #F5F5DC !important;
+}
+
 :root {
    --background: #ffffff;
    --foreground: #171717;
@@ -17,7 +56,6 @@
 .botao-2 {
    @apply px-3 py-2 text-xs md:px-4 md:py-3 lg:text-base 2xl:px-6 2xl:py-3 2xl:text-xl cursor-pointer;
 }
-
 
 @media (prefers-color-scheme: dark) {
    :root {

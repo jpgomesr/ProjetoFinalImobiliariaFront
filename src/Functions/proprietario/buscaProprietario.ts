@@ -5,7 +5,10 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 interface retornoListaProprietario {
    proprietariosRenderizados: ModelProprietarioListagem[] | undefined;
-   conteudoCompleto: object;
+   conteudoCompleto : {
+      totalPages : number,
+      last : boolean
+  }
 }
 
 export const buscarProprietarios = async (
@@ -23,7 +26,7 @@ export const buscarProprietarios = async (
    const data = await response.json();
 
    return {
-      proprietariosRenderizados: data.content as ModelProprietarioListagem[],
+      proprietariosRenderizados: data.content as ModelProprietarioListagem[] | [],
       conteudoCompleto: data,
    };
 };
@@ -36,3 +39,10 @@ export const buscarProprietarioPorId = async (
 
    return data as ModelProprietario;
 };
+export const buscarIdsProprietarios = async () : Promise<number[]>=> {
+
+
+    const response = await fetch(`${BASE_URL}/usuarios/lista-id-usuarios`)
+
+    return await response.json()
+}

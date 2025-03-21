@@ -1,15 +1,21 @@
 import React from "react";
+import { SearchIcon } from "lucide-react"; // Importe o ícone de lupa
+import { twMerge } from "tailwind-merge";
 
 interface InputPadraoProps extends React.InputHTMLAttributes<HTMLInputElement> {
    label?: string;
    htmlFor?: string;
    mensagemErro?: string;
+   search?: boolean; // Nova prop para o ícone de lupa
+   handlePesquisa?: () => void; // Função para o clique no botão de lupa
 }
 
 const InputPadrao = ({
    label,
    htmlFor,
    mensagemErro,
+   search = false, // Valor padrão para a prop search
+   handlePesquisa,
    ...props
 }: InputPadraoProps) => {
    return (
@@ -28,16 +34,33 @@ const InputPadrao = ({
             </label>
          )}
 
-         <input
-            {...props}
-            className={`h-6 rounded-md border py-2 px-2 focus:outline-none ${
-               mensagemErro ? "border-red-500" : "border-black text-[10px]"
-            }
-            ${props.disabled ? "opacity-30" : ""} focus:border-black
-            md:h-8 md:text-sm
-            lg:h-10 lg:py-3 lg:px-3
-            xl:h-12 xl:text-base xl:py-3 xl:px-4`}
-         />
+         <div
+            className={`relative flex items-center rounded-md border ${
+               mensagemErro ? "border-red-500" : "border-black"
+            } ${props.disabled ? "opacity-30" : ""}`}
+         >
+            <input
+               {...props}
+               className={twMerge(
+                  `h-6 w-full focus:outline-none text-[10px] bg-transparent border-none  px-2
+                  md:h-8 md:text-sm
+                  lg:h-10 lg:py-3 lg:px-3
+                  xl:h-12 xl:text-base xl:py-3 xl:px-4
+                  ${search ? "pl-2" : ""}`,
+                  props.className
+               )} // Adiciona padding à esquerda se search for true
+            />
+            {search && ( // Renderiza o botão de lupa se search for true
+               <button
+                  type="button" // Define o tipo do botão para evitar submit de formulário
+                  className="absolute inset-y-0 right-2 flex items-center justify-center p-2 hover:cursor-pointer"
+                  onClick={handlePesquisa} // Função de clique no botão
+               >
+                  <SearchIcon className="w-4 h-4 text-black" />{" "}
+                  {/* Ícone de lupa */}
+               </button>
+            )}
+         </div>
          {mensagemErro && (
             <span className="text-red-500 text-xs mt-1 md:text-sm xl:text-base">
                {mensagemErro}
