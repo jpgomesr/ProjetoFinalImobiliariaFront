@@ -12,18 +12,15 @@ import PerfilIcon from "@/svg/icons/header/PerfilIcon";
 import MenuHamburguer from "@/svg/icons/header/MenuHamburguer";
 import XIcon from "@/svg/icons/header/XIcon";
 import FuncoesHeader from "./FuncoesHeader";
-import LoginModal from "../auth/modal/LoginModal";
-import RegisterModal from "../auth/modal/RegisterModal";
-import TrocaSenhaModal from "../auth/modal/TrocaSenhaModal";
-import RecContaModal from "../auth/modal/RecContaModal";
+import { useRouter } from "next/navigation";
+
 interface HeaderVermelhoProps {
    role?: Roles;
 }
 
 const HeaderVermelho = ({ role }: HeaderVermelhoProps) => {
-   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
    const [isHamburguerVisible, setIsHamburguerVisible] = useState(false);
+   const router = useRouter();
 
    const handleHamburguer = (e: any) => {
       e.preventDefault();
@@ -72,7 +69,7 @@ const HeaderVermelho = ({ role }: HeaderVermelhoProps) => {
             </Link>
 
             <button
-               onClick={() => setIsLoginModalOpen(true)}
+               onClick={() => router.push("/autentificacao/login")}
                className="text-white hover:text-opacity-80"
             >
                <PerfilIcon className="w-6 h-6 md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
@@ -92,35 +89,6 @@ const HeaderVermelho = ({ role }: HeaderVermelhoProps) => {
                )}
             </div>
          </div>
-         {(isLoginModalOpen || isRegisterModalOpen) && (
-            <div
-               className="fixed inset-0 bg-black/50 z-30 w-full h-full"
-               onClick={(e) => {
-                  if (e.target === e.currentTarget) {
-                     setIsLoginModalOpen(false);
-                     setIsRegisterModalOpen(false);
-                  }
-               }}
-            >
-               {isLoginModalOpen ? (
-                  <LoginModal
-                     onClose={() => setIsLoginModalOpen(false)}
-                     onRegister={() => {
-                        setIsLoginModalOpen(false);
-                        setIsRegisterModalOpen(true);
-                     }}
-                  />
-               ) : (
-                  <RegisterModal
-                     onClose={() => setIsRegisterModalOpen(false)}
-                     onLogin={() => {
-                        setIsLoginModalOpen(true);
-                        setIsRegisterModalOpen(false);
-                     }}
-                  />
-               )}
-            </div>
-         )}
       </div>
    );
 };
