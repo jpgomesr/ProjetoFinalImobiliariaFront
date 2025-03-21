@@ -18,6 +18,7 @@ import { createUsuarioValidator } from "@/validators/Validators";
 import { useNotification } from "@/context/NotificationContext";
 import { FaPencilAlt } from 'react-icons/fa';
 import { FaUser } from 'react-icons/fa';
+import { Mail, MessageSquare } from 'lucide-react';
 
 interface Usuario {
    foto: string;
@@ -39,6 +40,7 @@ const Page = () => {
    const [isEditingImage, setIsEditingImage] = useState(false);
    const fileInputRef = useRef<HTMLInputElement>(null);
    const [selectedContact, setSelectedContact] = useState("");
+   const [selected2FA, setSelected2FA] = useState<"email" | "sms" | null>(null);
 
    const usuarioValidator = createUsuarioValidator(false);
    type usuarioValidatorSchema = z.infer<typeof usuarioValidator>;
@@ -295,29 +297,107 @@ const Page = () => {
 
                         <div className="col-span-2">
                            <div className="relative">
-                              <label htmlFor="contactOption" className="block text-sm font-medium text-gray-700 mb-1">
+                              <label
+                                 htmlFor="contactOption"
+                                 className="block text-xs font-medium text-gray-700 mb-1"
+                              >
                                  Preferência de Contato
                               </label>
                               <select
                                  id="contactOption"
                                  className="w-full h-[30px] px-6 border border-gray-700 rounded-md focus:outline-none bg-white appearance-none text-xs"
                                  value={selectedContact}
-                                 onChange={(e) => setSelectedContact(e.target.value)}
+                                 onChange={(e) =>
+                                    setSelectedContact(e.target.value)
+                                 }
                               >
-                                 <option value="">Selecione a opção de contato</option>
+                                 <option value="">
+                                    Selecione a opção de contato
+                                 </option>
                                  <option value="email">E-mail</option>
                                  <option value="telefone">Telefone</option>
                               </select>
-                              <div className="absolute right-1 top-[32px] pointer-events-none">
-                                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                              <div className="absolute right-1 top-[28px] pointer-events-none">
+                                 <svg
+                                    className="w-4 h-4 text-gray-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                 >
+                                    <path
+                                       strokeLinecap="round"
+                                       strokeLinejoin="round"
+                                       strokeWidth="2"
+                                       d="M19 9l-7 7-7-7"
+                                    />
                                  </svg>
                               </div>
                            </div>
                         </div>
+                        <div className="col-span-2 flex flex-col gap-2">
+                           <h2 className="text-xs font-medium text-gray-700">
+                              Autenticação de dois fatores (2FA)
+                           </h2>
+                           <div className="w-full min-h-[180px] bg-white border border-gray-300 rounded-md p-3 md:p-4 flex flex-col items-center justify-between">
+                              <div className="flex flex-col items-center gap-2 md:gap-3">
+                                 <div className="w-12 h-12 md:w-14 md:h-14 bg-gray-300 rounded-full flex items-center justify-center">
+                                    <Mail className="w-6 h-6 md:w-7 md:h-7 text-havprincipal" />
+                                 </div>
+                                 <span className="text-sm md:text-base font-medium text-center">
+                                    Autenticação Via E-mail
+                                 </span>
+                                 <p className="w-48 text-xs md:text-sm text-gray-500 text-center px-2 md:px-4">
+                                    Use o código de segurança enviado para o seu
+                                    e-mail como a sua autenticação de dois
+                                    fatores (2FA). O código será enviado ao
+                                    e-mail vinculado à sua conta
+                                 </p>
+                              </div>
+                              <button
+                                 type="button"
+                                 onClick={() => setSelected2FA(selected2FA === "email" ? null : "email")}
+                                 className={`mt-3 md:mt-4 px-6 py-2 text-xs font-medium rounded-md transition-colors ${
+                                    selected2FA === "email"
+                                       ? "bg-havprincipal text-white"
+                                       : "border border-gray-300 hover:bg-gray-50"
+                                 }`}
+                              >
+                                 {selected2FA === "email" ? "SELECIONADO" : "SELECIONAR"}
+                              </button>
+                           </div>
+                        </div>
+                        <div className="col-span-2 flex flex-col gap-2">
+                           <div className="w-full min-h-[180px] bg-white border border-gray-300 rounded-md p-3 md:p-4 flex flex-col items-center justify-between">
+                              <div className="flex flex-col items-center gap-2 md:gap-3">
+                                 <div className="w-12 h-12 md:w-14 md:h-14 bg-gray-300 rounded-full flex items-center justify-center">
+                                    <MessageSquare className="w-6 h-6 md:w-7 md:h-7 text-havprincipal" />
+                                 </div>
+                                 <span className="text-sm md:text-base font-medium text-center">
+                                    Autenticação Via SMS
+                                 </span>
+                                 <p className="w-48 text-xs md:text-sm text-gray-500 text-center px-2 md:px-4">
+                                    Use o seu súmero de telefone como o seu
+                                    código de autenticação de dois fatores
+                                    (2FA). Você precisará fornecer o código de
+                                    segurança que o enviamos via mensagem SMS
+                                 </p>
+                              </div>
+                              <button
+                                 type="button"
+                                 onClick={() => setSelected2FA(selected2FA === "sms" ? null : "sms")}
+                                 className={`mt-3 md:mt-4 px-6 py-2 text-xs font-medium rounded-md transition-colors ${
+                                    selected2FA === "sms"
+                                       ? "bg-havprincipal text-white"
+                                       : "border border-gray-300 hover:bg-gray-50"
+                                 }`}
+                              >
+                                 {selected2FA === "sms" ? "SELECIONADO" : "SELECIONAR"}
+                              </button>
+                           </div>
+                        </div>
                      </div>
 
-                     <div className="flex justify-end gap-4 mt-4">
+                     <div className="flex justify-center gap-4 mt-4">
                         <BotaoPadrao
                            texto="Salvar"
                            className="border border-black"
