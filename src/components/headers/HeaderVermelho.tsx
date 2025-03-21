@@ -33,7 +33,7 @@ export default function HeaderVermelho(props: HeaderVermelhoProps) {
                      2xl:px-20 2xl:py-5 
                      flex justify-between"
       >
-         <div className="flex flex-row md:gap-14 2xl:gap-28">
+         <div className="flex flex-row md:gap-8  2xl:gap-16">
             <FuncoesHeader role={Roles.ADMIN} />
             <Link href={"/"}>
                <LogoHavClaro
@@ -49,6 +49,16 @@ export default function HeaderVermelho(props: HeaderVermelhoProps) {
             <Link href={"/sobre-nos"} className="flex justify-center">
                <button className="hidden md:block text-white md:text-base 2xl:text-xl font-montserrat font-light">
                   Sobre nós
+               </button>
+            </Link>
+            <Link href={"/imoveis"} className="flex justify-center">
+               <button className="hidden md:block text-white md:text-base 2xl:text-xl font-montserrat font-light">
+                  Imóveis
+               </button>
+            </Link>
+            <Link href={"/historico-agendamentos/1"} className="flex justify-center">
+               <button className="hidden md:block text-white md:text-base 2xl:text-xl font-montserrat font-light">
+                  Agendamentos
                </button>
             </Link>
          </div>
