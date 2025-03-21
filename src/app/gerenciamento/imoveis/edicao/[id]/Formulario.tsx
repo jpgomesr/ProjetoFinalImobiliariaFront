@@ -12,14 +12,16 @@ import TextArea from "@/components/ComponentesCrud/TextArea";
 import List from "@/components/List";
 import { TipoBanner } from "@/models/Enum/TipoBanner";
 import { createImovelValidator } from "@/validators/Validators";
-import SearchProprietarioList from "@/components/SearchProprietarioList";
-import CorretoresBoxSelect from "@/components/CorretoresBoxSelect";
 import { useRouter } from "next/navigation";
 import { ModelImovelGet } from "@/models/ModelImovelGet";
 import Link from "next/link";
 import { useNotification } from "@/context/NotificationContext";
 import Erro404 from "@/components/Erro404";
 import { restaurarCampos, preencherCampos } from "@/Functions/requisicaoViaCep";
+import SearchSingleSelect from "@/components/SearchSingleSelect";
+import SearchMultSelect from "@/components/SearchMultSelect";
+import { ModelCorretor } from "@/models/ModelCorretor";
+import { ModelProprietarioList } from "@/models/ModelProprietarioList";
 
 interface FormularioProps {
    imovel: ModelImovelGet;
@@ -27,6 +29,8 @@ interface FormularioProps {
 
 const Formulario = ({ imovel }: FormularioProps) => {
    const router = useRouter();
+   const proprietarioModel: ModelProprietarioList[] = [];
+   const corretoresModel: ModelCorretor[] = [];
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const { showNotification } = useNotification();
@@ -745,7 +749,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
                                  htmlFor="numero_apartamento"
                                  label={`Número do apartamento`}
                                  placeholder="Digite o número do apartamento"
-                                 type="numberApto"
+                                 type="number"
                                  {...register("numeroApto", {
                                     setValueAs: (value) => parseInt(value, 10),
                                  })}
@@ -775,14 +779,26 @@ const Formulario = ({ imovel }: FormularioProps) => {
          )}
          {step === 3 && (
             <div className="flex flex-col gap-4">
-               <SearchProprietarioList
-                  registerProps={register("proprietario")}
-                  selected={watch("proprietario")}
-               />
-               <CorretoresBoxSelect
-                  registerProps={register("corretores")}
-                  arraySelect={watch("corretores")}
-               />
+               <div className="flex flex-row gap-2">
+                  <SearchSingleSelect
+                     register={register("proprietario")}
+                     mensagemErro={errors.proprietario?.message}
+                     title="Proprietário"
+                     url="/proprietarios/lista-select"
+                     method="GET"
+                     model={proprietarioModel as unknown as new () => {}}
+                     startSelected={watch("proprietario") || null} // Set default value
+                  />
+                  <SearchMultSelect
+                     register={register("corretores")}
+                     mensagemErro={errors.corretores?.message}
+                     title="Corretores"
+                     url="/usuarios/corretores-lista-select"
+                     method="GET"
+                     model={corretoresModel as unknown as new () => {}}
+                     startSelected={watch("corretores") || []} // Set default value
+                  />
+               </div>
                <div className="flex flex-row gap-2 justify-center">
                   <BotaoPadrao
                      type="button"

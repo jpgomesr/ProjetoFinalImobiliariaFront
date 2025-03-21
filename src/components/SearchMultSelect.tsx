@@ -1,92 +1,75 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Trash2, Search } from "lucide-react";
 import { UseFormRegisterReturn } from "react-hook-form";
 
-interface SearchListProps<T> {
+interface SearchMultSelectProps<T> {
    title?: string;
    differentSize?: string;
-   registerProps: UseFormRegisterReturn;
-   selected?: number | number[]; // Alterado para suportar múltiplos selecionados
+   selected?: T[];
    mensagemErro?: string;
    url: string;
    method?: string;
    model?: new () => T;
-   selecaoMultipla?: boolean;
+   register: UseFormRegisterReturn;
+   startSelected?: T[];
 }
 
-const SearchList = <T extends {}>(props: SearchListProps<T>) => {
+const SearchMultSelect = <T extends {}>(props: SearchMultSelectProps<T>) => {
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const {
       title,
       differentSize,
-      registerProps: initialRegisterProps,
+      register,
       url,
-      selecaoMultipla = false,
       method = "GET",
+      startSelected,
    } = props;
-   const [selecionados, setSelecionados] = useState<number[]>([]); // Alterado para um array de selecionados
+   const [selecionados, setSelecionados] = useState<T[]>(startSelected || []);
    const [searchTerm, setSearchTerm] = useState("");
-   const [opcoes, setOpcoes] = useState<T[]>([]); // Removido dados mockados
-
-   const handleSelecionadoRender = () => {
-      return Array.isArray(props.selected)
-         ? props.selected.filter((id): id is number => id !== undefined)
-         : [props.selected].filter((id): id is number => id !== undefined);
-   };
-
-   useEffect(() => {
-      setSelecionados(handleSelecionadoRender());
-   }, [props.selected]);
-
-   const renderizarProprietarios = async (): Promise<T[]> => {
-      const response = await fetch(`${BASE_URL}${url}`, {
-         method: method,
-      });
-      if (!response.ok) {
-         throw new Error("Erro ao buscar dados");
-      }
-      return await response.json();
-   };
+   const [opcoes, setOpcoes] = useState<T[]>([]);
 
    useEffect(() => {
       const fetchData = async () => {
-         const proprietarios = await renderizarProprietarios();
+         const response = await fetch(`${BASE_URL}${url}`, {
+            method: method,
+         });
+         if (!response.ok) {
+            throw new Error("Erro ao buscar dados");
+         }
+         const proprietarios = await response.json();
          setOpcoes(proprietarios);
       };
 
       fetchData();
    }, [url, method]);
 
-   const memoizedRegisterProps = useMemo(
-      () => initialRegisterProps,
-      [initialRegisterProps]
-   );
-
    useEffect(() => {
-      if (selecionados.length > 0) {
-         memoizedRegisterProps.onChange({
-            target: {
-               name: memoizedRegisterProps.name,
-               value: selecionados,
-            },
-         });
-      }
+      register.onChange({
+         target: {
+            name: register.name,
+            value: selecionados,
+         },
+      });
    }, [selecionados]);
 
-   const handleSelect = (id: number) => {
-      if (selecaoMultipla) {
-         setSelecionados((prev) =>
-            prev.includes(id)
-               ? prev.filter((item) => item !== id)
-               : [...prev, id]
-         );
-      } else {
-         setSelecionados([id]);
-      }
+   const handleSelect = (item: T) => {
+      setSelecionados((prev) => [...prev, item]);
+      register.onChange({
+         target: {
+            name: register.name,
+            value: [...selecionados, item],
+         },
+      });
    };
 
-   const handleRemove = (id: number) => {
-      setSelecionados((prev) => prev.filter((item) => item !== id));
+   const handleRemove = (item: T) => {
+      setSelecionados((prev) => prev.filter((i) => i !== item));
+      register.onChange({
+         target: {
+            name: register.name,
+            value: selecionados.filter((i) => i !== item),
+         },
+      });
    };
 
    const filteredOpcoes = opcoes.filter((opc) =>
@@ -97,10 +80,7 @@ const SearchList = <T extends {}>(props: SearchListProps<T>) => {
       <div className="flex flex-col gap-1 w-1/2 bg-begeEscuroPadrao rounded-md p-2 h-80">
          {title && (
             <div className="flex flex-row justify-start">
-               <label
-                  className="opacity-90 text-base font-inter lg:rounded-lg 2xl:text-xl 
-                              2xl:rounded-xl text-center text-black px-2 font-bold"
-               >
+               <label className="opacity-90 text-base font-inter lg:rounded-lg 2xl:text-xl 2xl:rounded-xl text-center text-black px-2 font-bold">
                   {title}
                </label>
             </div>
@@ -121,21 +101,21 @@ const SearchList = <T extends {}>(props: SearchListProps<T>) => {
                   <div
                      key={(opc as any).id}
                      className={`flex items-center gap-2 px-2 py-1 rounded-md cursor-pointer ${
-                        selecionados.includes((opc as any).id)
+                        selecionados.includes(opc)
                            ? "bg-havprincipal text-white"
                            : "bg-havprincipal/80 text-white"
                      }`}
-                     onClick={() => handleSelect((opc as any).id)}
+                     onClick={() => handleSelect(opc)}
                   >
                      <div className="truncate">{(opc as any).nome}</div>
-                     {selecionados.includes((opc as any).id) && (
+                     {selecionados.includes(opc) && (
                         <>
                            <div className="border-l border-white h-3/4" />
                            <Trash2
                               className="w-4 h-4 cursor-pointer"
                               onClick={(e) => {
                                  e.stopPropagation();
-                                 handleRemove((opc as any).id);
+                                 handleRemove(opc);
                               }}
                            />
                         </>
@@ -153,4 +133,4 @@ const SearchList = <T extends {}>(props: SearchListProps<T>) => {
    );
 };
 
-export default SearchList;
+export default SearchMultSelect;
