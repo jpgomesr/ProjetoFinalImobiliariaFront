@@ -9,7 +9,8 @@ import { buscarIdsUsuarios } from "@/Functions/usuario/buscaUsuario";
 import { ModelAgendamento } from "@/models/ModelAgendamento";
 import ComponentePaginacao from "@/components/ComponentePaginacao";
 import PaginacaoHistorico from "./PaginacaoHistórico";
-
+import Link from "next/link";
+import BotaoPadrao from "@/components/BotaoPadrao";
 interface PageProps {
    params: Promise<{
       id: string;
@@ -60,7 +61,9 @@ const page = async ({ params, searchParams }: PageProps) => {
                titulo="Histórico de agendamentos"
                className="w-full px-2"
             >
-               <InputPadrao search className="h-8" />
+               <Link href={`/horarios/${id}`}>
+                        <BotaoPadrao texto="Meus horários" />
+               </Link>
                <FIltrosAgendamento id={id} url={`/historico-agendamentos/${id}`}
                status={parametrosRenderizados?.status || ''}
                data={parametrosRenderizados?.data || ''}

@@ -12,10 +12,11 @@ interface FiltrosAgendamentoProps {
    data: string;
 }
 
-const FIltrosAgendamento = ({ id, url, status, data }: FiltrosAgendamentoProps) => {
+const FIltrosAgendamento = ({ id, url, status = "", data }: FiltrosAgendamentoProps) => {
    const [dataAtual, setDataAtual] = useState("");
    const searchParams = useSearchParams();
    const router = useRouter();
+   console.log(status);
 
 
    const atualizarURL = (data: string) => {
@@ -50,7 +51,7 @@ const FIltrosAgendamento = ({ id, url, status, data }: FiltrosAgendamentoProps) 
    const [statusAtual, setStatusAtual] = useState(opcoesAgendamento[3].id);
 
    return (
-      <div className="w-full flex justify-between">
+      <div className="w-full flex gap-4 flex-col md:flex-row justify-between">
          <input
             type="date"
             value={data}

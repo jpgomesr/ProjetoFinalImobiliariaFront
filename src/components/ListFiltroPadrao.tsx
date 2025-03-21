@@ -35,7 +35,7 @@ const ListFiltroPadrao = (props: FiltrosProps) => {
    return (
       <List
          opcoes={props.opcoes}
-         value={props.value || "todos"}
+         value={props.value}
          buttonHolder={props.buttonHolder || "Finalidade"}
          mudandoValor={(value) => {
             setAtributoMomento(value);
