@@ -191,19 +191,19 @@ const Page = () => {
             <FundoBrancoPadrao className="w-full" titulo="Perfil de Usuário">
                <form
                   onSubmit={handleSubmit(onSubmit)}
-                  className={`flex flex-col md:flex-row gap-8 max-w-5xl mx-auto ${
+                  className={`flex flex-col md:flex-row-reverse gap-8 md:gap-24 max-w-5xl mx-auto ${
                      isSubmitting ? "opacity-40" : "opacity-100"
                   }`}
                >
-                  {/* Coluna da Esquerda - Foto */}
-                  <div className="w-full md:w-1/3 flex flex-col items-center">
+                  {/* Coluna da Direita - Foto */}
+                  <div className="w-full md:w-1/4 flex flex-col items-center md:mt-10 md:pl-20">
                      <div className="relative">
                         <Controller
                            name="imagemPerfil"
                            control={control}
                            render={({ field }) => (
                               <>
-                                 <div className="relative w-32 h-32 rounded-full overflow-hidden">
+                                 <div className="relative w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden">
                                     {preview ? (
                                        <img
                                           src={preview}
@@ -250,9 +250,9 @@ const Page = () => {
                      </div>
                   </div>
 
-                  {/* Coluna da Direita - Campos de texto */}
-                  <div className="w-full md:w-2/3 flex flex-col gap-4">
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Coluna da Esquerda - Campos de texto */}
+                  <div className="w-full md:w-[600px] flex flex-col gap-4">
+                     <div className="flex flex-col gap-4">
                         <div className="col-span-2">
                            <InputPadrao
                               htmlFor="nomeCompleto"
@@ -286,7 +286,7 @@ const Page = () => {
                            />
                         </div>
 
-                        <div className="col-span-2">
+                        <div className="col-span-2 md:w-[980px]">
                            <TextAreaPadrao
                               htmlFor="descricao"
                               label="Biografia"
@@ -305,7 +305,7 @@ const Page = () => {
                               </label>
                               <select
                                  id="contactOption"
-                                 className="w-full h-[30px] px-6 border border-gray-700 rounded-md focus:outline-none bg-white appearance-none text-xs"
+                                 className="w-full h-[30px] px-6 border border-gray-700 rounded-md lg xl:w-[980px] focus:outline-none bg-white appearance-none text-xs"
                                  value={selectedContact}
                                  onChange={(e) =>
                                     setSelectedContact(e.target.value)
