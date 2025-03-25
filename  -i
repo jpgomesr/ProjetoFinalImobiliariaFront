@@ -1,0 +1,25 @@
+8d1bcaea75b8631926c02de6468ce01bcf3a5967<|ENT|><|RY|>Responsivando<|COM|><|MIT|>
+0e043f7e07eebc98662d1babc2c95fba77f928f8<|ENT|><|RY|>chore: Responsivando pagina de perfil<|COM|><|MIT|>
+04b9b731edcdcf0a5d1688e64adabdbbf1b3dbae<|ENT|><|RY|>chore:Adicionado campos de autentificação de dois fatores e de selecionar preferencia de contato<|COM|><|MIT|>
+2efed2691fa12e1e96d917c5ba5508e2b087316d<|ENT|><|RY|>chore: Opção de visualização de imoveis em mapa adicionada e pagina de perfil de usuario iniciada e quase pronta<|COM|><|MIT|>
+985fbc534022a5068d04672dad05c8df87ed7f13<|ENT|><|RY|>chore: Mudanças na página de visualização de imovel em mapa<|COM|><|MIT|>
+44404c52fb01a5827bb66dcd4998d2d38dc0badb<|ENT|><|RY|>fix: Borda branca ao redor do card<|COM|><|MIT|>
+536d15cda6c70bb95035dbf747e0c964c226aacb<|ENT|><|RY|>chore: Adicionando o mapa na pagina de visualização de imoveis<|COM|><|MIT|>
+055b572074e99306c5873673536b4a0ed55b66e1<|ENT|><|RY|>Merge pull request #51 from jpgomesr/dev<|COM|><|MIT|>
+3420781d1d1598144c6ee58d637852dd4649093a<|ENT|><|RY|>Merge branch 'feature/VisualizacaoMapa' into dev<|COM|><|MIT|>
+4558b28a705945c44ef268a42d534edc5e24b205<|ENT|><|RY|>feat:Iniciando alteracoes<|COM|><|MIT|>
+803e38f928b3792168a23220a9164ce6e5fd7b39<|ENT|><|RY|>Merge pull request #50 from jpgomesr/feature/IntegracaoAgendamento<|COM|><|MIT|>
+861c7aa5f87373b39fb2e22f8422aa9efb666c47<|ENT|><|RY|>feat: Salvando agendamentos no banco<|COM|><|MIT|>
+f08a31749cb172d80922004837ee78d822d2f091<|ENT|><|RY|>Merge pull request #49 from jpgomesr/feature/PaginaVisuImovel<|COM|><|MIT|>
+5803fae42682d05ee62f4a3d0a4c77700b35039c<|ENT|><|RY|>Corretor adicionado na pagina de imovel, opção de whatsapp e copiar link<|COM|><|MIT|>
+57ad36bcabcf2e749bcfbc7f46cb443f7ac3c3e0<|ENT|><|RY|>fix: responsividade pagina principal<|COM|><|MIT|>
+f58f86f303f70809f01d2aa9e2d3cc756a56e9d8<|ENT|><|RY|>feat:Adicionando link no logo<|COM|><|MIT|>
+f516f900a919b665532f4ce17e2a133f957c3420<|ENT|><|RY|>Merge pull request #48 from jpgomesr/merge/PaginaImovel<|COM|><|MIT|>
+0f44f08d6a7e230e8521a64b0ebf4751f044883b<|ENT|><|RY|>feat: Imoveis Semelhantes<|COM|><|MIT|>
+561d7be482c21362c04002667a1121d44263d664<|ENT|><|RY|>feat: Puxando corretor na hora de agendar visita<|COM|><|MIT|>
+6108a3ba46a5f8a10c734dfdeecc272c707b4d5b<|ENT|><|RY|>Imoveis semelhantes adicionado<|COM|><|MIT|>
+5cf777dde3a5a34b963c67752e65f48bd3c4bdda<|ENT|><|RY|>feat:Buscando horarios de mes e dia específico<|COM|><|MIT|>
+78fc78acf9580493201bf0b451c2cdc1df4f2dc4<|ENT|><|RY|>Merge pull request #47 from jpgomesr/feat/RenderizandoPaginaPrincipal<|COM|><|MIT|>
+40bcdb56297cca8d627c351daa06c6dd09c16d99<|ENT|><|RY|>Merge branch 'dev' into feat/RenderizandoPaginaPrincipal<|COM|><|MIT|>
+c32fd65ee891d603b6a064b826e09525c6c3b7d5<|ENT|><|RY|>Merge pull request #46 from jpgomesr/feature/Sobre-Nos<|COM|><|MIT|>
+8830a3e5282de3bb86bd129e12832979e89adbd2<|ENT|><|RY|>chore: Pagina alterada para Client and Server e finalizada<|COM|><|MIT|>
