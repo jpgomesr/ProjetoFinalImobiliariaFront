@@ -22,10 +22,10 @@ const page = () => {
                <ListFiltroPadrao
                   width="w-full"
                   opcoes={[
-                     { id: "1", label: "Login ou Cadastro" },
-                     { id: "2", label: "Pagamentos" },
-                     { id: "3", label: "Promoções" },
-                     { id: "4", label: "Outros" },
+                     { id: "LOGUIN_OU_CADASTRO", label: "Login ou Cadastro" },
+                     { id: "PAGAMENTOS", label: "Pagamentos" },
+                     { id: "PROMOCOES", label: "Promoções" },
+                     { id: "OUTROS", label: "Outros" },
                   ]}
                   buttonHolder="Assunto"
                   value={opcaoSelecionada || ""}
@@ -33,22 +33,22 @@ const page = () => {
                   nomeAributo="opcao"
                   bordaPreta
                />
-               {opcaoSelecionada === "1" && (
+               {opcaoSelecionada === "LOGUIN_OU_CADASTRO" && (
                   <div>
                      <InputsPergunta placeholder="Ex: Como faço para cadastrar-me no site?" />
                   </div>
                )}
-               {opcaoSelecionada === "2" && (
+               {opcaoSelecionada === "PAGAMENTOS" && (
                   <div>
                      <InputsPergunta placeholder="Ex: Aceita pix?" />
                   </div>
                )}
-               {opcaoSelecionada === "3" && (
+               {opcaoSelecionada === "PROMOCOES" && (
                   <div>
                      <InputsPergunta placeholder="Ex: Até quando a promoção estará disponível?" />
                   </div>
                )}
-               {opcaoSelecionada === "4" && (
+               {opcaoSelecionada === "OUTROS" && (
                   <div>
                      <InputsPergunta placeholder="Ex: Qual o dono da empresa?" />
                   </div>
