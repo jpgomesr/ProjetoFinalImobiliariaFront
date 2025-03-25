@@ -19,6 +19,7 @@ import { useNotification } from "@/context/NotificationContext";
 import { FaPencilAlt } from 'react-icons/fa';
 import { FaUser } from 'react-icons/fa';
 import { Mail, MessageSquare } from 'lucide-react';
+import CardReserva from "@/components/card/CardAgendamento";
 
 interface Usuario {
    foto: string;
@@ -438,6 +439,33 @@ const Page = () => {
                      </div>
                   </div>
                </form>
+
+               {/* Seção de Agendamentos */}
+               <div className="mt-8 xl:mt-12">
+                  <h2 className="text-lg sm:text-xl font-medium text-gray-700 mb-4 px-4">Meus Agendamentos</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-4 sm:gap-6 px-4">
+                     <CardReserva
+                        id={1}
+                        urlImagem="/placeholder.svg?height=300&width=500"
+                        horario="16:00"
+                        data="10/12/2024"
+                        corretor="João Pedro"
+                        status="PENDENTE"
+                        localizacao="Vila Lenzi"
+                        endereco="Rua Hermann Schulz 210"
+                     />
+                     <CardReserva
+                        id={2}
+                        urlImagem="/placeholder.svg?height=300&width=500"
+                        horario="10:00"
+                        data="10/12/2024"
+                        corretor="João Pedro"
+                        status="PENDENTE"
+                        localizacao="Vila Lenzi"
+                        endereco="Rua Hermann Schulz 210"
+                     />
+                  </div>
+               </div>
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
       </Layout>

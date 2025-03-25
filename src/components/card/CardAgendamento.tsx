@@ -83,7 +83,7 @@ export default function CardReserva({
          </div>
 
          <div className="px-6 py-4">
-            <h2 className="text-2xl font-semibold text-havprincipal mb-4">
+            <h2 className=" xl:text-2xl font-semibold text-havprincipal mb-4">
                Reserva
             </h2>
 
