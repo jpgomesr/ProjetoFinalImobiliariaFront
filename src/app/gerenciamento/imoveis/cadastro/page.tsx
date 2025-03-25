@@ -20,9 +20,8 @@ import { restaurarCampos, preencherCampos } from "@/Functions/requisicaoViaCep";
 import { useNotification } from "@/context/NotificationContext";
 import { salvarImovel } from "./actions";
 import { ModelProprietarioList } from "@/models/ModelProprietarioList";
-import SearchSingleSelect from "@/components/SearchSingleSelect";
 import { ModelCorretor } from "@/models/ModelCorretor";
-import SearchMultSelect from "@/components/SearchMultSelect";
+import SearchSelect from "@/components/SearchSelect";
 
 const Page = () => {
    const router = useRouter();
@@ -154,7 +153,7 @@ const Page = () => {
             tipoBanner: data.tipoBanner || "",
             iptu: data.iptu?.toString() || "",
             valorCondominio: data.valorCondominio?.toString() || "",
-            idProprietario: data.proprietario.toString(),
+            idProprietario: data.proprietario.id,
             ativo: data.visibilidade,
             endereco: {
                rua: data.rua,
@@ -702,23 +701,34 @@ const Page = () => {
                   {step === 3 && (
                      <div className="flex flex-col gap-4">
                         <div className="flex flex-row gap-2">
-                           <SearchSingleSelect
+                           <SearchSelect
                               register={register("proprietario")}
                               mensagemErro={errors.proprietario?.message}
                               title="Proprietário"
                               url="/proprietarios/lista-select"
                               method="GET"
                               model={
-                                 proprietarioModel as unknown as new () => {}
+                                 proprietarioModel as unknown as new () => {
+                                    id: number;
+                                    nome: string;
+                                 }
                               }
+                              startSelected={watch("proprietario")}
+                              isSingle
                            />
-                           <SearchMultSelect
+                           <SearchSelect
                               register={register("corretores")}
                               mensagemErro={errors.corretores?.message}
                               title="Corretores"
                               url="/usuarios/corretores-lista-select"
                               method="GET"
-                              model={corretoresModel as unknown as new () => {}}
+                              model={
+                                 corretoresModel as unknown as new () => {
+                                    id: number;
+                                    nome: string;
+                                 }
+                              }
+                              startSelected={watch("corretores")}
                            />
                         </div>
                         <div className="flex flex-row gap-2 justify-center">

@@ -18,8 +18,7 @@ import Link from "next/link";
 import { useNotification } from "@/context/NotificationContext";
 import Erro404 from "@/components/Erro404";
 import { restaurarCampos, preencherCampos } from "@/Functions/requisicaoViaCep";
-import SearchSingleSelect from "@/components/SearchSingleSelect";
-import SearchMultSelect from "@/components/SearchMultSelect";
+import SearchSelect from "@/components/SearchSelect";
 import { ModelCorretor } from "@/models/ModelCorretor";
 import { ModelProprietarioList } from "@/models/ModelProprietarioList";
 
@@ -110,6 +109,9 @@ const Formulario = ({ imovel }: FormularioProps) => {
    }, []);
 
    const preencherFormulario = (imovel: ModelImovelGet) => {
+      console.log(imovel.proprietario);
+      console.log(imovel.corretores);
+
       setValue("id", imovel.id.toString());
       setValue("titulo", imovel.titulo);
       setValue("descricao", imovel.descricao);
@@ -137,8 +139,8 @@ const Formulario = ({ imovel }: FormularioProps) => {
       setValue("rua", imovel.endereco.rua);
       setValue("numero", Number(imovel.endereco.numeroCasaPredio));
       setValue("numeroApto", Number(imovel.endereco.numeroApartamento));
-      setValue("proprietario", imovel.proprietario?.id);
-      setValue("corretores", imovel.corretores || []);
+      setValue("proprietario", imovel.proprietario);
+      setValue("corretores", imovel.corretores);
       setValue("imagens", {
          imagemPrincipal:
             imovel.imagens.find((img) => img.imagemCapa)?.referencia || null,
@@ -147,6 +149,8 @@ const Formulario = ({ imovel }: FormularioProps) => {
                .filter((img) => !img.imagemCapa)
                .map((img) => img.referencia) || [],
       });
+      console.log(watch("proprietario"));
+      console.log(watch("corretores"));
    };
 
    const handleNextStep = async (e: React.MouseEvent) => {
@@ -224,7 +228,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
          tipoBanner: data.tipoBanner,
          iptu: data.iptu,
          valorCondominio: data.valorCondominio,
-         idProprietario: data.proprietario,
+         idProprietario: data.proprietario.id,
          ativo: data.visibilidade,
          endereco: {
             rua: data.rua,
@@ -780,23 +784,34 @@ const Formulario = ({ imovel }: FormularioProps) => {
          {step === 3 && (
             <div className="flex flex-col gap-4">
                <div className="flex flex-row gap-2">
-                  <SearchSingleSelect
+                  <SearchSelect
                      register={register("proprietario")}
                      mensagemErro={errors.proprietario?.message}
                      title="Proprietário"
                      url="/proprietarios/lista-select"
                      method="GET"
-                     model={proprietarioModel as unknown as new () => {}}
-                     startSelected={watch("proprietario") || null} // Set default value
+                     model={
+                        proprietarioModel as unknown as new () => {
+                           id: number;
+                           nome: string;
+                        }
+                     }
+                     startSelected={watch("proprietario")}
+                     isSingle
                   />
-                  <SearchMultSelect
+                  <SearchSelect
                      register={register("corretores")}
                      mensagemErro={errors.corretores?.message}
                      title="Corretores"
                      url="/usuarios/corretores-lista-select"
                      method="GET"
-                     model={corretoresModel as unknown as new () => {}}
-                     startSelected={watch("corretores") || []} // Set default value
+                     model={
+                        corretoresModel as unknown as new () => {
+                           id: number;
+                           nome: string;
+                        }
+                     }
+                     startSelected={watch("corretores")}
                   />
                </div>
                <div className="flex flex-row gap-2 justify-center">

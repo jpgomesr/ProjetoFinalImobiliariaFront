@@ -2,19 +2,27 @@ import { useState, useEffect } from "react";
 import { Trash2, Search } from "lucide-react";
 import { UseFormRegisterReturn } from "react-hook-form";
 
-interface SearchMultSelectProps<T> {
+interface ModelPadraoSelect {
+   id: number;
+   nome: string;
+}
+
+interface SearchSelectProps<T> {
    title?: string;
    differentSize?: string;
-   selected?: T[];
+   selected?: T | T[];
    mensagemErro?: string;
    url: string;
    method?: string;
    model?: new () => T;
    register: UseFormRegisterReturn;
-   startSelected?: T[];
+   startSelected?: T | T[];
+   isSingle?: boolean;
 }
 
-const SearchMultSelect = <T extends {}>(props: SearchMultSelectProps<T>) => {
+const SearchSelect = <T extends ModelPadraoSelect>(
+   props: SearchSelectProps<T>
+) => {
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const {
       title,
@@ -23,8 +31,21 @@ const SearchMultSelect = <T extends {}>(props: SearchMultSelectProps<T>) => {
       url,
       method = "GET",
       startSelected,
+      isSingle = false, // Default to multiple selection
    } = props;
-   const [selecionados, setSelecionados] = useState<T[]>(startSelected || []);
+
+   // Initialize state based on isSingle
+   const [selecionados, setSelecionados] = useState<T[]>(
+      startSelected
+         ? Array.isArray(startSelected)
+            ? startSelected
+            : [startSelected]
+         : []
+   );
+   useEffect(() => {
+      console.log(selecionados);
+   }, []);
+
    const [searchTerm, setSearchTerm] = useState("");
    const [opcoes, setOpcoes] = useState<T[]>([]);
 
@@ -44,32 +65,27 @@ const SearchMultSelect = <T extends {}>(props: SearchMultSelectProps<T>) => {
    }, [url, method]);
 
    useEffect(() => {
+      const valueToSend = isSingle ? selecionados[0] || null : selecionados;
       register.onChange({
          target: {
             name: register.name,
-            value: selecionados,
+            value: valueToSend,
          },
       });
-   }, [selecionados]);
+   }, [selecionados, isSingle]);
 
    const handleSelect = (item: T) => {
-      setSelecionados((prev) => [...prev, item]);
-      register.onChange({
-         target: {
-            name: register.name,
-            value: [...selecionados, item],
-         },
-      });
+      if (isSingle) {
+         setSelecionados([item]);
+      } else {
+         if (!selecionados.some((i) => i.id === item.id)) {
+            setSelecionados((prev) => [...prev, item]);
+         }
+      }
    };
 
    const handleRemove = (item: T) => {
-      setSelecionados((prev) => prev.filter((i) => i !== item));
-      register.onChange({
-         target: {
-            name: register.name,
-            value: selecionados.filter((i) => i !== item),
-         },
-      });
+      setSelecionados((prev) => prev.filter((i) => i.id !== item.id));
    };
 
    const filteredOpcoes = opcoes.filter((opc) =>
@@ -97,18 +113,18 @@ const SearchMultSelect = <T extends {}>(props: SearchMultSelectProps<T>) => {
                <Search className="w-5 h-5 mx-2" />
             </div>
             <div className="flex flex-wrap gap-2 overflow-y-auto max-h-60 hide-scrollbar">
-               {filteredOpcoes.map((opc) => (
+               {filteredOpcoes.map((opc, key) => (
                   <div
-                     key={(opc as any).id}
+                     key={key}
                      className={`flex items-center gap-2 px-2 py-1 rounded-md cursor-pointer ${
-                        selecionados.includes(opc)
+                        selecionados.some((i) => i.id === opc.id)
                            ? "bg-havprincipal text-white"
                            : "bg-havprincipal/80 text-white"
                      }`}
                      onClick={() => handleSelect(opc)}
                   >
-                     <div className="truncate">{(opc as any).nome}</div>
-                     {selecionados.includes(opc) && (
+                     <div className="truncate">{opc.nome}</div>
+                     {selecionados.some((i) => i.id === opc.id) && (
                         <>
                            <div className="border-l border-white h-3/4" />
                            <Trash2
@@ -133,4 +149,4 @@ const SearchMultSelect = <T extends {}>(props: SearchMultSelectProps<T>) => {
    );
 };
 
-export default SearchMultSelect;
+export default SearchSelect;

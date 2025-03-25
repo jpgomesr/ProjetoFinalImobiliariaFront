@@ -25,7 +25,7 @@ interface salvarImovelProps {
       tipoBanner: string;
       iptu: string;
       valorCondominio: string;
-      idProprietario: string;
+      idProprietario: number;
       ativo: boolean;
       endereco: {
          rua: string;
