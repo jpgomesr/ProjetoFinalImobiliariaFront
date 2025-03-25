@@ -268,16 +268,23 @@ const Filtro = (props: FiltroProps) => {
                />
             </div>
          </div>
-         <div className="flex justify-center mt-4 gap-4">
+         <div className="flex justify-center mt-4 gap-2">
             <button
                onClick={handlePesquisa}
-               className="bg-havprincipal text-white px-4 py-2 rounded-md"
+               className="bg-havprincipal text-white text-xs px-2 py-1 rounded-md
+                lg:px-4  lg:py-2 lg:text-sm 
+                lg:rounded-md
+                2xl:text-base "
             >
                Pesquisar
             </button>
             <button
                onClick={limparFiltro}
-               className="bg-gray-500 text-white px-4 py-2 rounded-md"
+               className="bg-gray-500 text-white text-xs px-2 py-1 rounded-md
+                md:text-sm md:px-3 md:py-2
+                lg:px-4  lg:py-2 
+                lg:rounded-md
+                2xl:text-base"
             >
                Limpar Filtros
             </button>

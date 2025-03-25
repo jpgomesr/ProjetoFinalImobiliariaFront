@@ -46,7 +46,7 @@ const InputPadrao = ({
                   md:h-8 md:text-sm
                   lg:h-10 lg:py-3 lg:px-3
                   xl:h-12 xl:text-base xl:py-3 xl:px-4
-                  ${search ? "pl-10" : ""}`,
+                  ${search ? "pl-2" : ""}`,
                   props.className
                )} // Adiciona padding à esquerda se search for true
             />

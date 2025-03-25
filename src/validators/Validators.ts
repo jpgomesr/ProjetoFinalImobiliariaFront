@@ -55,7 +55,7 @@ export const createUsuarioValidator = (isPasswordChangeEnabled = true) => {
                  })
             : z.string().optional(),
          telefone: z.string().nullable(),
-         tipoUsuario: z.string().min(1, { message: "Campo obrigatório" }),
+         tipoUsuario: z.string().min(1, { message: "Campo obrigatório" }).nullable(),
          descricao: z
             .string()
             .max(500, { message: "A descrição deve conter até 500 caracteres" })
