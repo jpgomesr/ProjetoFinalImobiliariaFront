@@ -22,7 +22,6 @@ interface PageProps {
    };
 }
 
-
 export async function generateStaticParams() {
    const ids = await buscarIdsUsuarios();
    return ids.map((id) => ({ id: id.toString() }));
@@ -36,18 +35,23 @@ const page = async ({ params, searchParams }: PageProps) => {
    const fetchAgendamentos = async () => {
       try {
          console.log(parametrosRenderizados);
-         const response = await fetch
-         (`http://localhost:8082/agendamentos/${id}?status=${parametrosRenderizados?.status || ''}&data=${parametrosRenderizados?.data || ''}&page=${currentPage}&size=9&sort=dataHora,desc`);
+         const response = await fetch(
+            `http://localhost:8082/agendamentos/${id}?status=${
+               parametrosRenderizados?.status || ""
+            }&data=${
+               parametrosRenderizados?.data || ""
+            }&page=${currentPage}&size=9&sort=dataHora,desc`
+         );
          const data = await response.json();
          return {
             content: data.content as ModelAgendamento[],
-            totalPages: data.totalPages as number
+            totalPages: data.totalPages as number,
          };
       } catch (error) {
          console.error("Erro ao buscar agendamentos:", error);
          return {
             content: [],
-            totalPages: 0
+            totalPages: 0,
          };
       }
    };
@@ -62,11 +66,13 @@ const page = async ({ params, searchParams }: PageProps) => {
                className="w-full px-2"
             >
                <Link href={`/horarios/${id}`}>
-                        <BotaoPadrao texto="Meus horários" />
+                  <BotaoPadrao texto="Meus horários" />
                </Link>
-               <FIltrosAgendamento id={id} url={`/historico-agendamentos/${id}`}
-               status={parametrosRenderizados?.status || ''}
-               data={parametrosRenderizados?.data || ''}
+               <FIltrosAgendamento
+                  id={id}
+                  url={`/historico-agendamentos/${id}`}
+                  status={parametrosRenderizados?.status || ""}
+                  data={parametrosRenderizados?.data || ""}
                />
                <Suspense fallback={<div>Carregando...</div>}>
                   <section
@@ -75,26 +81,35 @@ const page = async ({ params, searchParams }: PageProps) => {
                lg:grid-cols-3
                "
                   >
-                     {agendamentos && agendamentos.map((agendamento: ModelAgendamento, key) => (
-                        <CardReserva
-                           id={agendamento.id}
-                           key={key}
-                           urlImagem={agendamento.referenciaImagemPrincipal}
-                           horario={agendamento.horario.split("T")[1].substring(0, 5)}
-                           data={new Date(agendamento.horario).toLocaleDateString('pt-BR')}
-                           corretor={agendamento.nomeUsuario}
-                           status={agendamento.status}
-                           localizacao={`${agendamento.endereco.cidade} - ${agendamento.endereco.bairro}`}
-                           endereco={`${agendamento.endereco.rua}, ${agendamento.endereco.numeroCasaPredio}`}
-                        />
-                     ))}
+                     {agendamentos &&
+                        agendamentos.map(
+                           (agendamento: ModelAgendamento, key) => (
+                              <CardReserva
+                                 id={agendamento.id}
+                                 key={key}
+                                 urlImagem={
+                                    agendamento.referenciaImagemPrincipal
+                                 }
+                                 horario={agendamento.horario
+                                    .split("T")[1]
+                                    .substring(0, 5)}
+                                 data={new Date(
+                                    agendamento.horario
+                                 ).toLocaleDateString("pt-BR")}
+                                 corretor={agendamento.nomeUsuario}
+                                 status={agendamento.status}
+                                 localizacao={`${agendamento.endereco.cidade} - ${agendamento.endereco.bairro}`}
+                                 endereco={`${agendamento.endereco.rua}, ${agendamento.endereco.numeroCasaPredio}`}
+                              />
+                           )
+                        )}
                   </section>
-                     <PaginacaoHistorico
-                        totalPages={totalPages}
-                        currentPage={currentPage}
-                     />
+                  <PaginacaoHistorico
+                     totalPages={totalPages}
+                     currentPage={currentPage}
+                  />
                </Suspense>
-            </FundoBrancoPadrao> 
+            </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
       </Layout>
    );

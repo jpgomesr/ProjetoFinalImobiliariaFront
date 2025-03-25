@@ -30,10 +30,11 @@ export default function MeusHorarios() {
    const buscarHorarios = async () => {
       try {
          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/corretores/horarios/${id}`
+            `${process.env.NEXT_PUBLIC_BASE_URL}/corretores/horarios/corretor/${id}`
          );
          if (!response.ok) throw new Error("Erro ao buscar horários");
          const data = await response.json();
+         console.log(data);
          setHorarios(data);
 
          const grupos = data.reduce(
