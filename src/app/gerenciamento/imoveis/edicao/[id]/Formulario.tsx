@@ -79,6 +79,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
       formState: { errors, isSubmitting },
       clearErrors,
       setValue,
+      setError,
    } = useForm<imovelValidatorSchema>({
       resolver: zodResolver(imovelValidator),
    });
@@ -156,34 +157,60 @@ const Formulario = ({ imovel }: FormularioProps) => {
    const handleNextStep = async (e: React.MouseEvent) => {
       e.preventDefault();
       if (step === 1) {
-         const isValid = await trigger([
-            "titulo",
-            "descricao",
-            "metragem",
-            "qtdQuartos",
-            "qtdBanheiros",
-            "qtdVagas",
-            "valor",
-            "valorPromo",
-            "iptu",
-            "valorCondominio",
-            "objImovel",
-            "tipo",
-         ]);
-
-         if (isValid) {
-            setStep((prev) => prev + 1);
+         const valor = watch("valor");
+         const valorPromo = watch("valorPromo");
+         if (
+            valor !== undefined &&
+            valorPromo !== undefined &&
+            valor <= valorPromo
+         ) {
+            setError("valorPromo", {
+               message: "Valor promocional deve ser menor que o valor",
+            });
+         } else {
+            const isValid = await trigger(
+               [
+                  "titulo",
+                  "descricao",
+                  "metragem",
+                  "qtdQuartos",
+                  "qtdBanheiros",
+                  "qtdVagas",
+                  "valor",
+                  "valorPromo",
+                  "iptu",
+                  "valorCondominio",
+                  "objImovel",
+                  "tipo",
+               ],
+               { shouldFocus: true }
+            );
+            if (isValid) {
+               setStep((prev) => prev + 1);
+            }
          }
       }
-
       if (step === 2) {
-         const imagens = watch("imagens");
-         const isValid = await trigger();
-         if (isValid && imagens.imagemPrincipal) {
+         const isValid = await trigger(
+            [
+               "cep",
+               "bairro",
+               "estado",
+               "cidade",
+               "rua",
+               "imagens",
+               "numero",
+               "numeroApto",
+            ],
+            { shouldFocus: true }
+         );
+         if (isValid) {
             setStep((prev) => prev + 1);
+            window.scrollTo({ top: 0, behavior: "smooth" });
          }
       }
    };
+
    useEffect(() => {
       if (watch("cep")) {
          const cepMock = watch("cep").toString();
