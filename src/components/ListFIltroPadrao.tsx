@@ -5,37 +5,29 @@ import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 interface FiltrosProps {
-   finalidade?: string;
-   precoMinimo?: string;
-   precoMaximo?: string;
-   metrosQuadradosMinimo?: string;
-   metrosQuadradosMaximo?: string;
-   quantidadeDeQuartos?: string;
-   quantidadeDeVagas?: string;
-   cidade?: string;
-   bairro?: string;
-   tipoImovel?: string;
    value: string;
    url: string;
+   nomeAributo: string;
    opcoes: { id: string; label: string }[];
    width?: string;
    buttonHolder?: string;
+   bordaPreta?: boolean;
 }
 
-const FiltroList = (props: FiltrosProps) => {
+const ListFiltroPadrao = (props: FiltrosProps) => {
    const router = useRouter();
    const searchParams = useSearchParams();
-   const [finalidadeMomento, setFinalidadeMomento] = useState<string>(
-      props.finalidade || ""
+   const [atributoMomento, setAtributoMomento] = useState<string>(
+      props.value || ""
    );
 
-   const atualizarURL = (finalidade: string) => {
+   const atualizarURL = (atributo: string) => {
       const params = new URLSearchParams(searchParams.toString());
 
-      if (finalidade && finalidade !== "todos") {
-         params.set("finalidade", finalidade);
+      if (atributo && atributo !== "todos") {
+         params.set(props.nomeAributo, atributo);
       } else {
-         params.delete("finalidade");
+         params.delete(props.nomeAributo);
       }
 
       router.push(`${props.url}?${params.toString()}`);
@@ -47,11 +39,12 @@ const FiltroList = (props: FiltrosProps) => {
          value={props.value || "todos"}
          buttonHolder={props.buttonHolder || "Finalidade"}
          mudandoValor={(value) => {
-            setFinalidadeMomento(value);
+            setAtributoMomento(value);
             atualizarURL(value);
          }}
          width={props.width}
+         bordaPreta={props.bordaPreta}
       />
    );
 };
-export default FiltroList;
+export default ListFiltroPadrao;

@@ -136,6 +136,11 @@ const Page = () => {
             <FundoBrancoPadrao className="w-full" titulo="Imóveis Disponíveis">
                <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-[1fr_7fr_1fr] xl:grid-cols-[1fr_6fr_1fr]">
                   <FiltroList
+                     opcoes={[
+                        { id: "venda", label: "Venda" },
+                        { id: "aluguel", label: "Aluguel" },
+                        { id: "todos", label: "Todos" },
+                     ]}
                      finalidade={params.finalidade}
                      precoMinimo={params.precoMinimo}
                      precoMaximo={params.precoMaximo}
