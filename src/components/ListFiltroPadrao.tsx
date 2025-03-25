@@ -11,6 +11,7 @@ interface FiltrosProps {
    opcoes: { id: string; label: string }[];
    width?: string;
    buttonHolder?: string;
+   bordaPreta?: boolean;
 }
 
 const ListFiltroPadrao = (props: FiltrosProps) => {
@@ -35,13 +36,14 @@ const ListFiltroPadrao = (props: FiltrosProps) => {
    return (
       <List
          opcoes={props.opcoes}
-         value={props.value}
+         value={props.value || "todos"}
          buttonHolder={props.buttonHolder || "Finalidade"}
          mudandoValor={(value) => {
             setAtributoMomento(value);
             atualizarURL(value);
          }}
          width={props.width}
+         bordaPreta={props.bordaPreta}
       />
    );
 };

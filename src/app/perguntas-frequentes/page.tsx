@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
 import { useSearchParams } from "next/navigation";
-import ListFiltroPadrao from "@/components/ListFIltroPadrao";
-import TextAreaPadrao from "@/components/TextAreaPadrao";
+import ListFiltroPadrao from "@/components/ListFiltroPadrao";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import InputsPergunta from "@/components/componentes_perguntas_frequentes/InputsPergunta";
 import ListText from "@/components/ListText";
