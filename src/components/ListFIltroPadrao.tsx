@@ -11,6 +11,7 @@ interface FiltrosProps {
    opcoes: { id: string; label: string }[];
    width?: string;
    buttonHolder?: string;
+   bordaPreta?: boolean;
 }
 
 const ListFiltroPadrao = (props: FiltrosProps) => {
@@ -42,6 +43,7 @@ const ListFiltroPadrao = (props: FiltrosProps) => {
             atualizarURL(value);
          }}
          width={props.width}
+         bordaPreta={props.bordaPreta}
       />
    );
 };

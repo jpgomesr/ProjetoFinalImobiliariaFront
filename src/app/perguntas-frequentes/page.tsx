@@ -18,6 +18,48 @@ const page = () => {
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
+            <FundoBrancoPadrao titulo="Faça uma pergunta" className="w-full">
+               <ListFiltroPadrao
+                  width="w-full"
+                  opcoes={[
+                     { id: "1", label: "Login ou Cadastro" },
+                     { id: "2", label: "Pagamentos" },
+                     { id: "3", label: "Promoções" },
+                     { id: "4", label: "Outros" },
+                  ]}
+                  buttonHolder="Assunto"
+                  value={opcaoSelecionada || ""}
+                  url="/perguntas-frequentes"
+                  nomeAributo="opcao"
+                  bordaPreta
+               />
+               {opcaoSelecionada === "1" && (
+                  <div>
+                     <InputsPergunta placeholder="Ex: Como faço para cadastrar-me no site?" />
+                  </div>
+               )}
+               {opcaoSelecionada === "2" && (
+                  <div>
+                     <InputsPergunta placeholder="Ex: Aceita pix?" />
+                  </div>
+               )}
+               {opcaoSelecionada === "3" && (
+                  <div>
+                     <InputsPergunta placeholder="Ex: Até quando a promoção estará disponível?" />
+                  </div>
+               )}
+               {opcaoSelecionada === "4" && (
+                  <div>
+                     <InputsPergunta placeholder="Ex: Qual o dono da empresa?" />
+                  </div>
+               )}
+               <BotaoPadrao
+                  texto="Enviar"
+                  className="bg-havprincipal text-white w-[120px] sm:w-[120px] md:w-[120px] lg:w-[120px] xl:w-[120px] self-center whitespace-nowrap"
+                  onClick={() => {}}
+               />
+            </FundoBrancoPadrao>
+            <div className="flex my-4"></div>
             <FundoBrancoPadrao titulo="Perguntas Frequentes" className="w-full">
                <div className="flex flex-col gap-4">
                   <ListText
@@ -81,47 +123,6 @@ const page = () => {
                      bordaPreta
                   />
                </div>
-            </FundoBrancoPadrao>
-            <div className="flex my-4"></div>
-            <FundoBrancoPadrao titulo="Faça uma pergunta" className="w-full">
-               <ListFiltroPadrao
-                  width="w-full"
-                  opcoes={[
-                     { id: "1", label: "Login ou Cadastro" },
-                     { id: "2", label: "Pagamentos" },
-                     { id: "3", label: "Promoções" },
-                     { id: "4", label: "Outros" },
-                  ]}
-                  buttonHolder="Assunto"
-                  value={opcaoSelecionada || ""}
-                  url="/perguntas-frequentes"
-                  nomeAributo="opcao"
-               />
-               {opcaoSelecionada === "1" && (
-                  <div>
-                     <InputsPergunta placeholder="Ex: Como faço para cadastrar-me no site?" />
-                  </div>
-               )}
-               {opcaoSelecionada === "2" && (
-                  <div>
-                     <InputsPergunta placeholder="Ex: Aceita pix?" />
-                  </div>
-               )}
-               {opcaoSelecionada === "3" && (
-                  <div>
-                     <InputsPergunta placeholder="Ex: Até quando a promoção estará disponível?" />
-                  </div>
-               )}
-               {opcaoSelecionada === "4" && (
-                  <div>
-                     <InputsPergunta placeholder="Ex: Qual o dono da empresa?" />
-                  </div>
-               )}
-               <BotaoPadrao
-                  texto="Enviar"
-                  className="bg-havprincipal text-white w-[120px] sm:w-[120px] md:w-[120px] lg:w-[120px] xl:w-[120px] self-center whitespace-nowrap"
-                  onClick={() => {}}
-               />
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
       </Layout>
