@@ -20,6 +20,13 @@ import { FaPencilAlt } from 'react-icons/fa';
 import { FaUser } from 'react-icons/fa';
 import { Mail, MessageSquare } from 'lucide-react';
 import CardReserva from "@/components/card/CardAgendamento";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 interface Usuario {
    foto: string;
@@ -74,6 +81,16 @@ const Page = () => {
       console.log(errors);
    },[errors]);
 
+   const handleSelect2FA = (method: "email" | "sms") => {
+      if (selected2FA === method) {
+         setSelected2FA(null);
+         showNotification("Método 2FA desativado");
+      } else {
+         setSelected2FA(method);
+         showNotification("Método 2FA ativado com sucesso!");
+      }
+   };
+
    useEffect(() => {
       if (!id) return;
 
@@ -91,6 +108,7 @@ const Page = () => {
             setValue("descricao", data.descricao || "");
             setValue("tipoUsuario", data.role);
             setPreview(data.foto);
+            setSelected2FA(data.metodo2FA || null);
             
             if (data.email) {
                setSelectedContact("email");
@@ -191,19 +209,19 @@ const Page = () => {
             <FundoBrancoPadrao className="w-full" titulo="Perfil de Usuário">
                <form
                   onSubmit={handleSubmit(onSubmit)}
-                  className={`flex flex-col xl:flex-row-reverse gap-4 sm:gap-6 md:gap-8 xl:gap-24 max-w-5xl mx-auto ${
+                  className={`flex flex-col xl:flex-row-reverse gap-2 sm:gap-4 md:gap-6 xl:gap-24 max-w-5xl mx-auto ${
                      isSubmitting ? "opacity-40" : "opacity-100"
                   }`}
                >
                   {/* Coluna da Direita - Foto */}
-                  <div className="w-full xl:w-1/4 flex flex-col items-center order-first xl:order-none xl:mt-10 ">
+                  <div className="w-full xl:w-1/4 flex flex-col items-center order-first xl:order-none xl:mt-10">
                      <div className="relative">
                         <Controller
                            name="imagemPerfil"
                            control={control}
                            render={({ field }) => (
                               <>
-                                 <div className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 xl:w-48 xl:h-48 rounded-full overflow-hidden">
+                                 <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 xl:w-48 xl:h-48 rounded-full overflow-hidden">
                                     {preview ? (
                                        <img
                                           src={preview}
@@ -212,7 +230,7 @@ const Page = () => {
                                        />
                                     ) : (
                                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                                          <FaUser className="text-gray-400 text-3xl sm:text-4xl" />
+                                          <FaUser className="text-gray-400 text-2xl sm:text-3xl" />
                                        </div>
                                     )}
                                  </div>
@@ -221,11 +239,11 @@ const Page = () => {
                                     onClick={() =>
                                        fileInputRef.current?.click()
                                     }
-                                    className="absolute bottom-0 left-0 xl:bottom-2 xl:left-2 bg-havprincipal text-white rounded-full p-2 cursor-pointer hover:bg-havprincipal/90"
+                                    className="absolute bottom-0 left-0 xl:bottom-2 xl:left-2 bg-havprincipal text-white rounded-full p-1.5 sm:p-2 cursor-pointer hover:bg-havprincipal/90"
                                  >
                                     <FaPencilAlt
-                                       size={12}
-                                       className="sm:size-[14px] xl:size-[16px]"
+                                       size={10}
+                                       className="sm:size-[12px] xl:size-[16px]"
                                     />
                                  </button>
                                  <input
@@ -254,15 +272,15 @@ const Page = () => {
                   </div>
 
                   {/* Coluna da Esquerda - Campos de texto */}
-                  <div className="w-full sm:w-[90%] xl:mr-20 md:w-[95%] xl:w-[600px] flex flex-col gap-4 order-last xl:order-none">
-                     <div className="flex flex-col gap-4">
+                  <div className="w-full sm:w-[90%] xl:mr-20 md:w-[95%] xl:w-[600px] flex flex-col gap-2 sm:gap-3 md:gap-4 order-last xl:order-none">
+                     <div className="flex flex-col gap-2 sm:gap-3 md:gap-4">
                         <div className="col-span-2">
                            <InputPadrao
                               htmlFor="nomeCompleto"
                               label="Nome"
                               type="text"
                               placeholder="Seu nome completo"
-                              className="text-sm sm:text-base"
+                              className="text-xs sm:text-sm md:text-base"
                               {...register("nomeCompleto")}
                               mensagemErro={errors.nomeCompleto?.message}
                            />
@@ -274,7 +292,7 @@ const Page = () => {
                               label="E-mail"
                               type="email"
                               placeholder="Seu e-mail"
-                              className="text-sm sm:text-base"
+                              className="text-xs sm:text-sm md:text-base"
                               {...register("email")}
                               mensagemErro={errors.email?.message}
                            />
@@ -286,17 +304,17 @@ const Page = () => {
                               label="Telefone"
                               type="tel"
                               placeholder="Seu telefone"
-                              className="text-sm sm:text-base"
+                              className="text-xs sm:text-sm md:text-base"
                               {...register("telefone")}
                               mensagemErro={errors.telefone?.message}
                            />
                         </div>
 
-                        <div className="col-span-2 sm:w-[300px] md:w-[500px] xl:w-[980px]">
+                        <div className="col-span-2 w-full sm:w-[300px] md:w-[500px] xl:w-[980px]">
                            <TextAreaPadrao
                               htmlFor="descricao"
                               label="Biografia"
-                              className="text-sm sm:text-base h-24 sm:h-28 md:h-32"
+                              className="text-xs sm:text-sm md:text-base h-20 sm:h-24 md:h-28"
                               {...register("descricao")}
                               mensagemErro={errors.descricao?.message}
                            />
@@ -312,7 +330,7 @@ const Page = () => {
                               </label>
                               <select
                                  id="contactOption"
-                                 className="w-full h-[30px] sm:h-[34px] px-4 sm:px-6 border border-gray-700 rounded-md xl:w-[980px] focus:outline-none bg-white appearance-none text-xs sm:text-sm"
+                                 className="w-full h-[28px] sm:h-[30px] md:h-[48px] xl:w-[980px] px-3 sm:px-4 md:px-6 border border-gray-700 rounded-md focus:outline-none bg-white appearance-none text-xs sm:text-sm md:text-base"
                                  value={selectedContact}
                                  onChange={(e) =>
                                     setSelectedContact(e.target.value)
@@ -324,9 +342,9 @@ const Page = () => {
                                  <option value="email">E-mail</option>
                                  <option value="telefone">Telefone</option>
                               </select>
-                              <div className="absolute right-1 top-[28px] sm:top-[30px] md:top-[32px] xl:top-[34px] xl:left-[950px] pointer-events-none">
+                              <div className="absolute right-2 top-[28px] sm:top-[32px] md:top-[40px] xl:top-[42px] xl:left-[950px] pointer-events-none">
                                  <svg
-                                    className="w-4 h-4 text-gray-400"
+                                    className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -341,128 +359,163 @@ const Page = () => {
                               </div>
                            </div>
                         </div>
-
-                        <div className="col-span-2 flex flex-col gap-2">
-                           <h2 className="text-xs sm:text-sm font-medium text-gray-700">
-                              Autenticação de dois fatores (2FA)
-                           </h2>
-                           <div className="w-full min-h-[160px] sm:min-h-[180px] md:min-h-[200px] xl:w-[980px] bg-white border border-gray-300 rounded-md p-3 sm:p-4 md:p-5 flex flex-col xl:flex-row items-center justify-between">
-                              <div className="flex flex-col xl:flex-row items-center gap-2 sm:gap-3 xl:gap-4">
-                                 <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-20 lg:ml-4 lg:h-20 bg-gray-300 rounded-full flex items-center justify-center">
-                                    <Mail className="w-5 h-5 sm:w-6 sm:h-6 xl:w-10 xl:h-10 text-havprincipal" />
-                                 </div>
-                                 <div className="flex flex-col ">
-                                    <span className="text-sm sm:text-base font-medium text-center xl:text-start xl:ml-2">
-                                       Autenticação Via E-mail
-                                    </span>
-                                    <p className="w-40 sm:w-48 xl:w-[600px] text-xs sm:text-sm xl:text-start text-gray-500 text-center px-2">
-                                       Use o código de segurança enviado para o
-                                       seu e-mail como a sua autenticação de
-                                       dois fatores (2FA). O código de segurança
-                                       será enviado ao e-mail vinculado à sua
-                                       conta
-                                    </p>
-                                 </div>
-                              </div>
-                              <button
-                                 type="button"
-                                 onClick={() =>
-                                    setSelected2FA(
-                                       selected2FA === "email" ? null : "email"
-                                    )
-                                 }
-                                 className={`mt-3 sm:mt-4 px-4 sm:px-6 py-1 sm:py-2 text-xs sm:text-sm font-medium rounded-md transition-colors ${
-                                    selected2FA === "email"
-                                       ? "bg-havprincipal text-white"
-                                       : "border border-gray-300 hover:bg-gray-50"
-                                 }`}
-                              >
-                                 {selected2FA === "email"
-                                    ? "SELECIONADO"
-                                    : "SELECIONAR"}
-                              </button>
-                           </div>
-                        </div>
-
-                        <div className="col-span-2 flex flex-col gap-2">
-                           <div className="w-full min-h-[160px] sm:min-h-[180px] md:min-h-[200px] xl:w-[980px] bg-white border border-gray-300 rounded-md p-3 sm:p-4 md:p-5 flex flex-col xl:flex-row items-center justify-between">
-                              <div className="flex flex-col xl:flex-row items-center gap-2 sm:gap-3 xl:gap-4">
-                                 <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-20 lg:ml-4 lg:h-20 bg-gray-300 rounded-full flex items-center justify-center">
-                                    <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6 text-havprincipal xl:w-10 xl:h-10" />
-                                 </div>
-                                 <div className="flex flex-col">
-                                    <span className="text-sm sm:text-base font-medium text-center xl:text-start xl:ml-2">
-                                       Autenticação Via SMS
-                                    </span>
-                                    <p className="w-40 sm:w-48 xl:w-[650px] text-xs sm:text-sm xl:text-start text-gray-500 text-center px-2">
-                                       Use o seu número de telefone como o seu
-                                       código de autenticação de dois fatores
-                                       (2FA).Você precisará fornecer o código de
-                                       segurança que o enviamos via mensagem SMS
-                                    </p>
-                                 </div>
-                              </div>
-                              <button
-                                 type="button"
-                                 onClick={() =>
-                                    setSelected2FA(
-                                       selected2FA === "sms" ? null : "sms"
-                                    )
-                                 }
-                                 className={`mt-3 sm:mt-4 px-4 sm:px-6 py-1 sm:py-2 text-xs sm:text-sm font-medium rounded-md transition-colors ${
-                                    selected2FA === "sms"
-                                       ? "bg-havprincipal text-white"
-                                       : "border border-gray-300 hover:bg-gray-50"
-                                 }`}
-                              >
-                                 {selected2FA === "sms"
-                                    ? "SELECIONADO"
-                                    : "SELECIONAR"}
-                              </button>
-                           </div>
-                        </div>
-                     </div>
-
-                     <div className="flex justify-center gap-4 mt-4 xl:ml-96">
-                        <BotaoPadrao
-                           texto="Salvar"
-                           className="border border-black text-sm sm:text-base px-4 sm:px-6 py-1 sm:py-2"
-                           disabled={isSubmitting}
-                           type="submit"
-                        />
-                        <BotaoPadrao
-                           texto="Cancelar"
-                           className="bg-gray-200 text-gray-700 text-sm sm:text-base px-4 sm:px-6 py-1 sm:py-2"
-                           onClick={() => router.back()}
-                           type="button"
-                        />
                      </div>
                   </div>
                </form>
 
+               {/* Seção 2FA */}
+               <div className="mt-8 max-w-5xl mx-auto">
+                  <div className="flex flex-col gap-4">
+                     <h2 className="text-xs sm:text-sm font-medium text-gray-700">
+                        Autenticação de dois fatores (2FA)
+                     </h2>
+                     <div className="w-full min-h-[140px] sm:min-h-[160px] md:min-h-[180px] xl:w-[980px] bg-white border border-gray-300 rounded-md p-2 sm:p-3 md:p-4 flex flex-col xl:flex-row items-center justify-between">
+                        <div className="flex flex-col xl:flex-row items-center gap-1 sm:gap-2 md:gap-3 xl:gap-4">
+                           <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-16 lg:h-16 bg-gray-300 rounded-full flex items-center justify-center">
+                              <Mail className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 xl:w-8 xl:h-8 text-havprincipal" />
+                           </div>
+                           <div className="flex flex-col">
+                              <span className="text-xs sm:text-sm md:text-base font-medium text-center xl:text-start xl:ml-2">
+                                 Autenticação Via E-mail
+                              </span>
+                              <p className="w-32 sm:w-40 md:w-48 xl:w-[600px] text-xs sm:text-sm xl:text-start text-gray-500 text-center px-1 sm:px-2">
+                                 Use o código de segurança enviado para o seu
+                                 e-mail como a sua autenticação de dois fatores
+                                 (2FA). O código de segurança será enviado ao
+                                 e-mail vinculado à sua conta
+                              </p>
+                           </div>
+                        </div>
+                        <button
+                           type="button"
+                           onClick={() => handleSelect2FA("email")}
+                           className={`mt-2 sm:mt-3 px-3 sm:px-4 md:px-6 py-1 text-xs sm:text-sm font-medium rounded-md transition-colors ${
+                              selected2FA === "email"
+                                 ? "bg-havprincipal text-white"
+                                 : "border border-gray-300 hover:bg-gray-50"
+                           }`}
+                        >
+                           {selected2FA === "email"
+                              ? "SELECIONADO"
+                              : "SELECIONAR"}
+                        </button>
+                     </div>
+
+                     <div className="w-full sm:w-[290px] md:w-[500px] min-h-[140px] sm:min-h-[160px] md:min-h-[180px] xl:w-[980px] bg-white border border-gray-300 rounded-md p-2 sm:p-3 md:p-4 flex flex-col xl:flex-row items-center justify-between">
+                        <div className="flex flex-col xl:flex-row items-center gap-1 sm:gap-2 md:gap-3 xl:gap-4">
+                           <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-16 lg:h-16 bg-gray-300 rounded-full flex items-center justify-center">
+                              <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 xl:w-8 xl:h-8 text-havprincipal" />
+                           </div>
+                           <div className="flex flex-col">
+                              <span className="text-xs sm:text-sm md:text-base font-medium text-center xl:text-start xl:ml-2">
+                                 Autenticação Via SMS
+                              </span>
+                              <p className="w-32 sm:w-40 md:w-48 xl:w-[650px] text-xs sm:text-sm xl:text-start text-gray-500 text-center px-1 sm:px-2">
+                                 Use o seu número de telefone como o seu código
+                                 de autenticação de dois fatores (2FA).Você
+                                 precisará fornecer o código de segurança que o
+                                 enviamos via mensagem SMS
+                              </p>
+                           </div>
+                        </div>
+                        <button
+                           type="button"
+                           onClick={() => handleSelect2FA("sms")}
+                           className={`mt-2 sm:mt-3 px-3 sm:px-4 md:px-6 py-1 text-xs sm:text-sm font-medium rounded-md transition-colors ${
+                              selected2FA === "sms"
+                                 ? "bg-havprincipal text-white"
+                                 : "border border-gray-300 hover:bg-gray-50"
+                           }`}
+                        >
+                           {selected2FA === "sms"
+                              ? "SELECIONADO"
+                              : "SELECIONAR"}
+                        </button>
+                     </div>
+                  </div>
+               </div>
+
                {/* Seção de Agendamentos */}
-               <div className="mt-8 xl:mt-12">
-                  <h2 className="text-lg sm:text-xl font-medium text-gray-700 mb-4 px-4">Meus Agendamentos</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-4 sm:gap-6 px-4">
-                     <CardReserva
-                        id={1}
-                        urlImagem="/placeholder.svg?height=300&width=500"
-                        horario="16:00"
-                        data="10/12/2024"
-                        corretor="João Pedro"
-                        status="PENDENTE"
-                        localizacao="Vila Lenzi"
-                        endereco="Rua Hermann Schulz 210"
+               <div className="mt-4 sm:mt-6 md:mt-8 xl:mt-12">
+                  <h2 className="text-sm sm:text-base md:text-lg font-medium mb-7 flex justify-center text-gray-700  sm:mb-3 md:mb-4 px-2 sm:px-3 md:px-4">
+                     Meus Agendamentos
+                  </h2>
+                  <div className="px-2 sm:px-3 md:px-4">
+                     <Swiper
+                        modules={[Navigation, Pagination]}
+                        spaceBetween={20}
+                        slidesPerView={1}
+                        navigation
+                        pagination={{ clickable: true }}
+                        className="w-full"
+                        breakpoints={{
+                           1280: {
+                              slidesPerView: 2,
+                              spaceBetween: 30,
+                           },
+                        }}
+                     >
+                        <SwiperSlide className="flex justify-center items-center">
+                           <CardReserva
+                              id={1}
+                              urlImagem="/placeholder.svg?height=300&width=500"
+                              horario="16:00"
+                              data="10/12/2024"
+                              corretor="João Pedro"
+                              status="PENDENTE"
+                              localizacao="Vila Lenzi"
+                              endereco="Rua Hermann Schulz 210"
+                           />
+                        </SwiperSlide>
+                        <SwiperSlide className="flex justify-center items-center">
+                           <CardReserva
+                              id={2}
+                              urlImagem="/placeholder.svg?height=300&width=500"
+                              horario="10:00"
+                              data="10/12/2024"
+                              corretor="João Pedro"
+                              status="PENDENTE"
+                              localizacao="Vila Lenzi"
+                              endereco="Rua Hermann Schulz 210"
+                           />
+                        </SwiperSlide>
+                        <SwiperSlide className="flex justify-center items-center">
+                           <CardReserva
+                              id={3}
+                              urlImagem="/placeholder.svg?height=300&width=500"
+                              horario="14:30"
+                              data="11/12/2024"
+                              corretor="João Pedro"
+                              status="PENDENTE"
+                              localizacao="Vila Lenzi"
+                              endereco="Rua Hermann Schulz 210"
+                           />
+                        </SwiperSlide>
+                     </Swiper>
+                  </div>
+               </div>
+
+               {/* Botões de Ação */}
+               <div className="flex flex-col items-center gap-4 sm:gap-6 md:gap-8 mt-4 sm:mt-4 md:mt-4">
+                  <BotaoPadrao
+                     texto="HISTÓRICO DE AGENDAMENTOS"
+                     className="text-xs sm:text-sm md:text-base px-3 sm:px-4 md:px-6 py-1 mb-4 border border-gray-300 hover:bg-gray-50"
+                     onClick={() => router.push("/historico-agendamentos")}
+                     type="button"
+                  />
+                  <div className="flex justify-center gap-2 sm:gap-3 md:gap-4">
+                     <BotaoPadrao
+                        texto="Salvar"
+                        className="border border-black text-xs sm:text-sm md:text-base px-3 sm:px-4 md:px-6 py-1"
+                        disabled={isSubmitting}
+                        onClick={handleSubmit(onSubmit)}
+                        type="button"
                      />
-                     <CardReserva
-                        id={2}
-                        urlImagem="/placeholder.svg?height=300&width=500"
-                        horario="10:00"
-                        data="10/12/2024"
-                        corretor="João Pedro"
-                        status="PENDENTE"
-                        localizacao="Vila Lenzi"
-                        endereco="Rua Hermann Schulz 210"
+                     <BotaoPadrao
+                        texto="Cancelar"
+                        className="bg-gray-200 text-gray-700 text-xs sm:text-sm md:text-base px-3 sm:px-4 md:px-6 py-1"
+                        onClick={() => router.back()}
+                        type="button"
                      />
                   </div>
                </div>
