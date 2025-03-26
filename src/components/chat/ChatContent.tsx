@@ -6,9 +6,10 @@ import ChatMessages from "./ChatMessages";
 
 const ChatContent = () => {
    const searchParams = useSearchParams();
-   const chat = searchParams.get("chat");
+   const chatParam = searchParams.get("chat");
+   const chat = chatParam ? parseInt(chatParam, 10) : null;
 
-   if (chat == null) {
+   if (chat === null || isNaN(chat)) {
       return (
          <div className="h-full bg-begeClaroPadrao rounded-r-lg flex items-center justify-center">
             <div className="text-center">
@@ -25,7 +26,7 @@ const ChatContent = () => {
 
    return (
       <div className="h-full bg-begeClaroPadrao rounded-r-lg">
-         <ChatMessages chat={Number(chat)} />
+         <ChatMessages chat={chat} />
       </div>
    );
 };
