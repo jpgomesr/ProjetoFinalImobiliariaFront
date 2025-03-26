@@ -39,7 +39,7 @@ const FuncoesHeader = (props: FuncoesHeaderProps) => {
             },
             {
                label: "Relatórios",
-               route: "/",
+               route: "/relatorio",
                icone: <RelatoriosIcon className="h-5" />,
             },
          ],

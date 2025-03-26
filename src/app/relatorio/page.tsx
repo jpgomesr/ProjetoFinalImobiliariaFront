@@ -7,18 +7,19 @@ import { useEffect, useState } from "react";
 import { useNotification } from "@/context/NotificationContext";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 import { ModelImovelGet } from "@/models/ModelImovelGet";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Pie } from "react-chartjs-2";
 import { listarUsuarios } from "@/Functions/usuario/buscaUsuario";
 import ModelUsuarioListagem from "@/models/ModelUsuarioListagem";
 import ModelExibirCorretor from "@/models/ModelExibirCorretor";
 import Image from "next/image";
 import { renderizarUsuariosApi } from "@/app/sobre-nos/action";
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
 
 // Extend jsPDF type to include autoTable
-declare module 'jspdf' {
+declare module "jspdf" {
    interface jsPDF {
       autoTable: typeof autoTable;
       lastAutoTable: { finalY: number };
@@ -30,43 +31,98 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const Page = () => {
    const { showNotification } = useNotification();
    const [imoveis, setImoveis] = useState<ModelImovelGet[]>([]);
-   const [usuariosAtivos, setUsuariosAtivos] = useState<ModelUsuarioListagem[]>([]);
-   const [usuariosBloqueados, setUsuariosBloqueados] = useState<ModelUsuarioListagem[]>([]);
+   const [usuariosAtivos, setUsuariosAtivos] = useState<ModelUsuarioListagem[]>(
+      []
+   );
+   const [usuariosBloqueados, setUsuariosBloqueados] = useState<
+      ModelUsuarioListagem[]
+   >([]);
    const [corretores, setCorretores] = useState<ModelExibirCorretor[]>([]);
-   const [agendamentosPorCorretor, setAgendamentosPorCorretor] = useState<{ [key: string]: number }>({});
+   const [agendamentosPorCorretor, setAgendamentosPorCorretor] = useState<{
+      [key: string]: number;
+   }>({});
    const [loading, setLoading] = useState(true);
 
    useEffect(() => {
       const fetchData = async () => {
          try {
             const [
-               resultImoveis, 
-               resultUsuariosAtivos, 
+               resultImoveis,
+               resultUsuariosAtivos,
                resultUsuariosBloqueados,
-               resultCorretores
+               resultCorretores,
             ] = await Promise.all([
                buscarTodosImoveis(),
-               listarUsuarios(0, "CORRETOR", true, "", 1000),  // Usuários ativos
+               listarUsuarios(0, "CORRETOR", true, "", 1000), // Usuários ativos
                listarUsuarios(0, "CORRETOR", false, "", 1000), // Usuários bloqueados
-               renderizarUsuariosApi()
+               renderizarUsuariosApi(),
             ]);
 
             setImoveis(resultImoveis.imoveis);
             setUsuariosAtivos(resultUsuariosAtivos.usuariosRenderizados || []);
-            setUsuariosBloqueados(resultUsuariosBloqueados.usuariosRenderizados || []);
+            setUsuariosBloqueados(
+               resultUsuariosBloqueados.usuariosRenderizados || []
+            );
             setCorretores(resultCorretores || []);
 
             // Buscar agendamentos para cada corretor
             const agendamentos: { [key: string]: number } = {};
-            for (const corretor of resultUsuariosAtivos.usuariosRenderizados || []) {
-               const response = await fetch(
-                  `${process.env.NEXT_PUBLIC_BASE_URL}/agendamentos/corretor/${corretor.id}?status=CONFIRMADO`
-               );
-               if (response.ok) {
-                  const data = await response.json();
-                  agendamentos[corretor.nome] = data.length;
+            for (const corretor of resultUsuariosAtivos.usuariosRenderizados ||
+               []) {
+               try {
+                  console.log(
+                     `Buscando agendamentos para o corretor: ${corretor.nome} (ID: ${corretor.id})`
+                  );
+                  const response = await fetch(
+                     `${process.env.NEXT_PUBLIC_BASE_URL}/agendamento/corretor/${corretor.id}`
+                  );
+
+                  if (response.ok) {
+                     const data = await response.json();
+                     console.log(
+                        `Resposta da API para ${corretor.nome}:`,
+                        data
+                     );
+
+                     // Verifica se data é um objeto com uma propriedade que contém o array
+                     const agendamentosArray = Array.isArray(data)
+                        ? data
+                        : data.agendamentos || data.data || data.content || [];
+
+                     console.log(
+                        `Array de agendamentos para ${corretor.nome}:`,
+                        agendamentosArray
+                     );
+
+                     // Filtra apenas agendamentos confirmados
+                     const agendamentosConfirmados = agendamentosArray.filter(
+                        (agendamento: any) =>
+                           agendamento.status === "CONFIRMADO"
+                     ).length;
+
+                     console.log(
+                        `Agendamentos confirmados para ${corretor.nome}:`,
+                        agendamentosConfirmados
+                     );
+                     agendamentos[corretor.nome] = agendamentosConfirmados;
+                  } else {
+                     console.error(
+                        `Erro ao buscar agendamentos para o corretor ${corretor.nome}:`,
+                        response.status,
+                        response.statusText
+                     );
+                     agendamentos[corretor.nome] = 0;
+                  }
+               } catch (error) {
+                  console.error(
+                     `Erro ao buscar agendamentos para o corretor ${corretor.nome}:`,
+                     error
+                  );
+                  agendamentos[corretor.nome] = 0;
                }
             }
+
+            console.log("Objeto final de agendamentos:", agendamentos);
             setAgendamentosPorCorretor(agendamentos);
          } catch (error) {
             console.error("Erro ao buscar dados:", error);
@@ -81,9 +137,9 @@ const Page = () => {
 
    // Função para formatar valor monetário
    const formatarPreco = (valor: number) => {
-      return valor.toLocaleString('pt-BR', {
-         style: 'currency',
-         currency: 'BRL'
+      return valor.toLocaleString("pt-BR", {
+         style: "currency",
+         currency: "BRL",
       });
    };
 
@@ -104,34 +160,50 @@ const Page = () => {
       const intensidade = preco / precoMaximo;
       // Converte para valores RGB mantendo o tom vermelho do havprincipal (#7a2638)
       const r = Math.round(122 + (255 - 122) * (1 - intensidade)); // 122 é o valor R de #7a2638
-      const g = Math.round(38 + (255 - 38) * (1 - intensidade));   // 38 é o valor G de #7a2638
-      const b = Math.round(56 + (255 - 56) * (1 - intensidade));   // 56 é o valor B de #7a2638
+      const g = Math.round(38 + (255 - 38) * (1 - intensidade)); // 38 é o valor G de #7a2638
+      const b = Math.round(56 + (255 - 56) * (1 - intensidade)); // 56 é o valor B de #7a2638
       return `rgb(${r}, ${g}, ${b})`;
    };
 
    // Separar imóveis por categoria
-   const imoveisComuns = imoveis.filter(imovel => !imovel.destaque && !imovel.banner);
-   const bannerDesconto = imoveis.filter(imovel => imovel.banner && imovel.tipoBanner === "DESCONTO");
-   const bannerMelhorPreco = imoveis.filter(imovel => imovel.banner && imovel.tipoBanner === "MELHOR_PRECO");
-   const bannerPromocao = imoveis.filter(imovel => imovel.banner && imovel.tipoBanner === "PROMOCAO");
-   const bannerAdquirido = imoveis.filter(imovel => imovel.banner && imovel.tipoBanner === "ADQUIRIDO");
-   const bannerAlugado = imoveis.filter(imovel => imovel.banner && imovel.tipoBanner === "ALUGADO");
+   const imoveisComuns = imoveis.filter(
+      (imovel) => !imovel.destaque && !imovel.banner
+   );
+   const bannerDesconto = imoveis.filter(
+      (imovel) => imovel.banner && imovel.tipoBanner === "DESCONTO"
+   );
+   const bannerMelhorPreco = imoveis.filter(
+      (imovel) => imovel.banner && imovel.tipoBanner === "MELHOR_PRECO"
+   );
+   const bannerPromocao = imoveis.filter(
+      (imovel) => imovel.banner && imovel.tipoBanner === "PROMOCAO"
+   );
+   const bannerAdquirido = imoveis.filter(
+      (imovel) => imovel.banner && imovel.tipoBanner === "ADQUIRIDO"
+   );
+   const bannerAlugado = imoveis.filter(
+      (imovel) => imovel.banner && imovel.tipoBanner === "ALUGADO"
+   );
 
    // Separar imóveis por finalidade
-   const imoveisVenda = imoveis.filter(imovel => {
+   const imoveisVenda = imoveis.filter((imovel) => {
       console.log("Verificando imóvel:", {
          titulo: imovel.titulo,
          finalidade: imovel.finalidade,
-         preco: imovel.preco
+         preco: imovel.preco,
       });
       return imovel.finalidade?.toUpperCase() === "VENDA";
    });
-   const imoveisAluguel = imoveis.filter(imovel => imovel.finalidade?.toUpperCase() === "ALUGUEL");
+   const imoveisAluguel = imoveis.filter(
+      (imovel) => imovel.finalidade?.toUpperCase() === "ALUGUEL"
+   );
 
    console.log("Todos os imóveis:", imoveis);
    console.log("Imóveis para venda:", imoveisVenda);
    console.log("Imóveis para aluguel:", imoveisAluguel);
-   console.log("Finalidades únicas:", [...new Set(imoveis.map(imovel => imovel.finalidade))]);
+   console.log("Finalidades únicas:", [
+      ...new Set(imoveis.map((imovel) => imovel.finalidade)),
+   ]);
 
    // Dados para o gráfico de distribuição de imóveis
    const quantidadeMaxima = Math.max(
@@ -144,7 +216,14 @@ const Page = () => {
    );
 
    const dadosDistribuicao = {
-      labels: ['Comuns', 'Desconto', 'Melhor Preço', 'Promoção', 'Adquirido', 'Alugado'],
+      labels: [
+         "Comuns",
+         "Desconto",
+         "Melhor Preço",
+         "Promoção",
+         "Adquirido",
+         "Alugado",
+      ],
       datasets: [
          {
             data: [
@@ -153,7 +232,7 @@ const Page = () => {
                bannerMelhorPreco.length,
                bannerPromocao.length,
                bannerAdquirido.length,
-               bannerAlugado.length
+               bannerAlugado.length,
             ],
             backgroundColor: [
                calcularCorPorPreco(imoveisComuns.length, quantidadeMaxima),
@@ -161,35 +240,42 @@ const Page = () => {
                calcularCorPorPreco(bannerMelhorPreco.length, quantidadeMaxima),
                calcularCorPorPreco(bannerPromocao.length, quantidadeMaxima),
                calcularCorPorPreco(bannerAdquirido.length, quantidadeMaxima),
-               calcularCorPorPreco(bannerAlugado.length, quantidadeMaxima)
+               calcularCorPorPreco(bannerAlugado.length, quantidadeMaxima),
             ],
             borderWidth: 1,
-            borderColor: '#fff',
+            borderColor: "#fff",
          },
       ],
    };
 
    // Dados para o gráfico de preços de venda
-   const precoMaximoVenda = Math.max(...imoveisVenda.map(imovel => imovel.precoPromocional || imovel.preco || 0));
+   const precoMaximoVenda = Math.max(
+      ...imoveisVenda.map(
+         (imovel) => imovel.precoPromocional || imovel.preco || 0
+      )
+   );
    const dadosPrecosVenda = {
-      labels: imoveisVenda.map(imovel => imovel.titulo),
+      labels: imoveisVenda.map((imovel) => imovel.titulo),
       datasets: [
          {
-            data: imoveisVenda.map(imovel => {
+            data: imoveisVenda.map((imovel) => {
                const preco = imovel.precoPromocional || imovel.preco || 0;
                console.log(`Preço do imóvel "${imovel.titulo}":`, {
                   precoOriginal: imovel.preco,
                   precoPromocional: imovel.precoPromocional,
                   precoUsado: preco,
-                  precoFormatado: formatarPreco(preco)
+                  precoFormatado: formatarPreco(preco),
                });
                return preco === 0 ? 1 : preco;
             }),
-            backgroundColor: imoveisVenda.map(imovel => 
-               calcularCorPorPreco(imovel.precoPromocional || imovel.preco || 0, precoMaximoVenda)
+            backgroundColor: imoveisVenda.map((imovel) =>
+               calcularCorPorPreco(
+                  imovel.precoPromocional || imovel.preco || 0,
+                  precoMaximoVenda
+               )
             ),
             borderWidth: 1,
-            borderColor: '#fff',
+            borderColor: "#fff",
          },
       ],
    };
@@ -197,17 +283,26 @@ const Page = () => {
    console.log("Dados do gráfico de venda:", dadosPrecosVenda);
 
    // Dados para o gráfico de preços de aluguel
-   const precoMaximoAluguel = Math.max(...imoveisAluguel.map(imovel => imovel.precoPromocional || imovel.preco || 0));
+   const precoMaximoAluguel = Math.max(
+      ...imoveisAluguel.map(
+         (imovel) => imovel.precoPromocional || imovel.preco || 0
+      )
+   );
    const dadosPrecosAluguel = {
-      labels: imoveisAluguel.map(imovel => imovel.titulo),
+      labels: imoveisAluguel.map((imovel) => imovel.titulo),
       datasets: [
          {
-            data: imoveisAluguel.map(imovel => imovel.precoPromocional || imovel.preco || 0),
-            backgroundColor: imoveisAluguel.map(imovel => 
-               calcularCorPorPreco(imovel.precoPromocional || imovel.preco || 0, precoMaximoAluguel)
+            data: imoveisAluguel.map(
+               (imovel) => imovel.precoPromocional || imovel.preco || 0
+            ),
+            backgroundColor: imoveisAluguel.map((imovel) =>
+               calcularCorPorPreco(
+                  imovel.precoPromocional || imovel.preco || 0,
+                  precoMaximoAluguel
+               )
             ),
             borderWidth: 1,
-            borderColor: '#fff',
+            borderColor: "#fff",
          },
       ],
    };
@@ -218,27 +313,29 @@ const Page = () => {
       plugins: {
          legend: {
             display: true,
-            position: 'bottom' as const,
+            position: "bottom" as const,
             labels: {
                font: {
-                  size: 14
-               }
-            }
+                  size: 12,
+               },
+               boxWidth: 15,
+               padding: 10,
+            },
          },
          tooltip: {
             callbacks: {
-               label: function(context: any) {
+               label: function (context: any) {
                   const valor = context.raw === 1 ? 0 : context.raw;
                   return formatarPreco(valor);
-               }
-            }
-         }
+               },
+            },
+         },
       },
       animation: {
          animateRotate: true,
-         animateScale: true
+         animateScale: true,
       },
-      cutout: '0%',
+      cutout: "0%",
    };
 
    const opcoesDistribuicao = {
@@ -246,103 +343,171 @@ const Page = () => {
       maintainAspectRatio: true,
       plugins: {
          legend: {
-            position: 'bottom' as const,
-         }
+            position: "bottom" as const,
+            labels: {
+               font: {
+                  size: 12,
+               },
+               boxWidth: 15,
+               padding: 10,
+            },
+         },
       },
       animation: {
          animateRotate: true,
-         animateScale: true
-          }
+         animateScale: true,
+      },
    };
 
    const exportarPDF = () => {
-      const doc = new jsPDF('p', 'pt');
+      const doc = new jsPDF("p", "pt");
       let yPos = 15;
       const margin = 15;
       const titleGap = 10;
       const tableGap = 20;
-      
+
       // Configuração inicial
       doc.setFont("helvetica");
       doc.setFontSize(20);
       doc.text("Relatório Imobiliária", 105, yPos, { align: "center" });
       yPos += titleGap * 2;
-      
+
       // Seção de Imóveis
       doc.setFontSize(16);
       doc.text("Distribuição de Imóveis", margin, yPos);
       yPos += titleGap;
-      
+
       // Tabela de distribuição de imóveis
       const dadosDistribuicaoTabela = [
-         ['Categoria', 'Quantidade'],
-         ['Imóveis Comuns', imoveisComuns.length],
-         ['Banner Desconto', bannerDesconto.length],
-         ['Banner Melhor Preço', bannerMelhorPreco.length],
-         ['Banner Promoção', bannerPromocao.length],
-         ['Banner Adquirido', bannerAdquirido.length],
-         ['Banner Alugado', bannerAlugado.length]
+         ["Categoria", "Quantidade"],
+         ["Imóveis Comuns", imoveisComuns.length],
+         ["Banner Desconto", bannerDesconto.length],
+         ["Banner Melhor Preço", bannerMelhorPreco.length],
+         ["Banner Promoção", bannerPromocao.length],
+         ["Banner Adquirido", bannerAdquirido.length],
+         ["Banner Alugado", bannerAlugado.length],
       ];
-      
+
       autoTable(doc, {
          startY: yPos,
-         head: [['Categoria', 'Quantidade']],
+         head: [["Categoria", "Quantidade"]],
          body: dadosDistribuicaoTabela.slice(1),
       });
       yPos = (doc as any).lastAutoTable.finalY + tableGap;
-      
+
       // Preços médios
       doc.text("Preços Médios", margin, yPos);
       yPos += titleGap;
-      
+
       const dadosPrecos = [
-         ['Categoria', 'Valor Médio'],
-         ['Venda', formatarPreco(calcularMediaPrecos(imoveisVenda))],
-         ['Aluguel', formatarPreco(calcularMediaPrecos(imoveisAluguel))]
+         ["Categoria", "Valor Médio"],
+         ["Venda", formatarPreco(calcularMediaPrecos(imoveisVenda))],
+         ["Aluguel", formatarPreco(calcularMediaPrecos(imoveisAluguel))],
       ];
-      
+
       autoTable(doc, {
          startY: yPos,
-         head: [['Categoria', 'Valor Médio']],
+         head: [["Categoria", "Valor Médio"]],
          body: dadosPrecos.slice(1),
       });
       yPos = (doc as any).lastAutoTable.finalY + tableGap;
-      
+
       // Seção de Usuários
       doc.text("Usuários", margin, yPos);
       yPos += titleGap;
-      
+
       const dadosUsuarios = [
-         ['Categoria', 'Quantidade'],
-         ['Usuários Ativos', usuariosAtivos.length],
-         ['Usuários Bloqueados', usuariosBloqueados.length],
-         ['Total de Usuários', usuariosAtivos.length + usuariosBloqueados.length]
+         ["Categoria", "Quantidade"],
+         ["Usuários Ativos", usuariosAtivos.length],
+         ["Usuários Bloqueados", usuariosBloqueados.length],
+         [
+            "Total de Usuários",
+            usuariosAtivos.length + usuariosBloqueados.length,
+         ],
       ];
-      
+
       autoTable(doc, {
          startY: yPos,
-         head: [['Categoria', 'Quantidade']],
+         head: [["Categoria", "Quantidade"]],
          body: dadosUsuarios.slice(1),
       });
       yPos = (doc as any).lastAutoTable.finalY + tableGap;
-      
+
       // Seção de Corretores
       doc.text("Corretores e Agendamentos", margin, yPos);
       yPos += titleGap;
-      
-      const dadosCorretores = usuariosAtivos.map(corretor => [
+
+      const dadosCorretores = usuariosAtivos.map((corretor) => [
          corretor.nome,
-         agendamentosPorCorretor[corretor.nome] || 0
+         agendamentosPorCorretor[corretor.nome] || 0,
       ]);
-      
+
       autoTable(doc, {
          startY: yPos,
-         head: [['Nome do Corretor', 'Quantidade de Agendamentos']],
+         head: [["Nome do Corretor", "Quantidade de Agendamentos"]],
          body: dadosCorretores,
       });
-      
+
       // Salvar o PDF
-      doc.save('relatorio-imobiliaria.pdf');
+      doc.save("relatorio-imobiliaria.pdf");
+   };
+
+   const exportarExcel = () => {
+      // Criar planilhas separadas para cada seção
+      const wb = XLSX.utils.book_new();
+
+      // Planilha de Distribuição de Imóveis
+      const distribuicaoData = [
+         ["Categoria", "Quantidade"],
+         ["Imóveis Comuns", imoveisComuns.length],
+         ["Banner Desconto", bannerDesconto.length],
+         ["Banner Melhor Preço", bannerMelhorPreco.length],
+         ["Banner Promoção", bannerPromocao.length],
+         ["Banner Adquirido", bannerAdquirido.length],
+         ["Banner Alugado", bannerAlugado.length],
+      ];
+      const wsDistribuicao = XLSX.utils.aoa_to_sheet(distribuicaoData);
+      XLSX.utils.book_append_sheet(
+         wb,
+         wsDistribuicao,
+         "Distribuição de Imóveis"
+      );
+
+      // Planilha de Preços Médios
+      const precosData = [
+         ["Categoria", "Valor Médio"],
+         ["Venda", formatarPreco(calcularMediaPrecos(imoveisVenda))],
+         ["Aluguel", formatarPreco(calcularMediaPrecos(imoveisAluguel))],
+      ];
+      const wsPrecos = XLSX.utils.aoa_to_sheet(precosData);
+      XLSX.utils.book_append_sheet(wb, wsPrecos, "Preços Médios");
+
+      // Planilha de Usuários
+      const usuariosData = [
+         ["Categoria", "Quantidade"],
+         ["Usuários Ativos", usuariosAtivos.length],
+         ["Usuários Bloqueados", usuariosBloqueados.length],
+         [
+            "Total de Usuários",
+            usuariosAtivos.length + usuariosBloqueados.length,
+         ],
+      ];
+      const wsUsuarios = XLSX.utils.aoa_to_sheet(usuariosData);
+      XLSX.utils.book_append_sheet(wb, wsUsuarios, "Usuários");
+
+      // Planilha de Corretores e Agendamentos
+      const corretoresData = [
+         ["Nome do Corretor", "Quantidade de Agendamentos"],
+         ...usuariosAtivos.map((corretor) => [
+            corretor.nome,
+            agendamentosPorCorretor[corretor.nome] || 0,
+         ]),
+      ];
+      const wsCorretores = XLSX.utils.aoa_to_sheet(corretoresData);
+      XLSX.utils.book_append_sheet(wb, wsCorretores, "Corretores");
+
+      // Salvar o arquivo
+      XLSX.writeFile(wb, "relatorio-imobiliaria.xlsx");
    };
 
    if (loading) {
@@ -364,51 +529,47 @@ const Page = () => {
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao className="w-full" titulo="Relatório">
                <div className="flex flex-col w-full max-w-[90rem] mx-auto">
-                  {/* Botão de Exportar */}
-                  <div className="flex justify-end mb-4">
-                     <button
-                        onClick={exportarPDF}
-                        className="bg-havprincipal text-white px-4 py-2 rounded-md hover:bg-havprincipal/90 transition-colors"
-                     >
-                        Exportar Relatório
-                     </button>
-                  </div>
-
                   <h2 className="text-havprincipal text-2xl font-bold mb-4 text-center">
                      Imóveis
                   </h2>
                   {/* Container dos gráficos */}
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
                      {/* Gráfico de Distribuição de Imóveis */}
-                     <div className="bg-white p-6 rounded-lg shadow w-full">
+                     <div className="bg-white p-6 rounded-lg shadow w-full flex flex-col">
                         <h2 className="text-lg font-semibold text-havprincipal mb-4 text-center">
                            Distribuição de Imóveis
                         </h2>
-                        <div className="aspect-square w-[260px] h-full max-w-[300px] mx-auto">
-                           <Pie
-                              data={dadosDistribuicao}
-                              options={opcoesDistribuicao}
-                           />
+                        <div className="flex-1 flex flex-col justify-center min-h-[300px]">
+                           <div className="w-full aspect-square max-w-[260px] mx-auto">
+                              <Pie
+                                 data={dadosDistribuicao}
+                                 options={opcoesDistribuicao}
+                              />
+                           </div>
                         </div>
                      </div>
 
                      {/* Gráfico de Preços de Venda */}
-                     <div className="bg-white p-6 rounded-lg shadow w-full">
+                     <div className="bg-white p-6 rounded-lg shadow w-full flex flex-col">
                         <h2 className="text-lg font-semibold text-havprincipal mb-4 text-center">
                            Preços de Venda
                         </h2>
-                        <div className="aspect-square w-[260px] h-full max-w-[300px] mx-auto">
-                           <Pie data={dadosPrecosVenda} options={opcoes} />
+                        <div className="flex-1 flex flex-col justify-center min-h-[300px]">
+                           <div className="w-full aspect-square max-w-[260px] mx-auto">
+                              <Pie data={dadosPrecosVenda} options={opcoes} />
+                           </div>
                         </div>
                      </div>
 
                      {/* Gráfico de Preços de Aluguel */}
-                     <div className="bg-white p-6 rounded-lg shadow w-full">
+                     <div className="bg-white p-6 rounded-lg shadow w-full flex flex-col">
                         <h2 className="text-lg font-semibold text-havprincipal mb-4 text-center">
                            Preços de Aluguel
                         </h2>
-                        <div className="aspect-square w-[260px] h-full max-w-[300px] mx-auto">
-                           <Pie data={dadosPrecosAluguel} options={opcoes} />
+                        <div className="flex-1 flex flex-col justify-center min-h-[300px]">
+                           <div className="w-full aspect-square max-w-[220px] mx-auto" >
+                              <Pie data={dadosPrecosAluguel} options={opcoes} />
+                           </div>
                         </div>
                      </div>
                   </div>
@@ -502,7 +663,10 @@ const Page = () => {
                   </h2>
                   <div className="bg-white rounded-lg shadow overflow-hidden max-w-3xl mx-auto">
                      {usuariosAtivos.map((corretor, index) => (
-                        <div key={index} className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
+                        <div
+                           key={index}
+                           className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50"
+                        >
                            <div className="px-4 py-3 md:px-6 md:py-4 flex items-center gap-3 md:gap-6">
                               <div className="flex items-center gap-3 md:gap-4">
                                  {corretor.foto ? (
@@ -531,15 +695,64 @@ const Page = () => {
                                        </svg>
                                     </div>
                                  )}
-                                 <span className="text-gray-700 text-base md:text-lg">{corretor.nome}</span>
+                                 <span className="text-gray-700 text-base md:text-lg">
+                                    {corretor.nome}
+                                 </span>
                               </div>
                               <div className="flex-1 text-right">
-                                 <span className="text-gray-700 text-base md:text-lg">Agendamentos: {agendamentosPorCorretor[corretor.nome] || 0}</span>
+                                 <span className="text-gray-700 text-base md:text-lg">
+                                    Agendamentos:{" "}
+                                    {agendamentosPorCorretor[corretor.nome] ||
+                                       0}
+                                 </span>
                               </div>
                            </div>
                         </div>
                      ))}
                   </div>
+               </div>
+               {/* Botões de Exportar */}
+               <div className="flex justify-center gap-4 mt-8">
+                  <button
+                     onClick={exportarPDF}
+                     className="bg-havprincipal text-white px-6 py-2 rounded-md hover:bg-havprincipal/90 transition-colors flex items-center gap-2"
+                  >
+                     <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                     >
+                        <path
+                           strokeLinecap="round"
+                           strokeLinejoin="round"
+                           strokeWidth={2}
+                           d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+                        />
+                     </svg>
+                     Exportar PDF
+                  </button>
+                  <button
+                     onClick={exportarExcel}
+                     className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center gap-2"
+                  >
+                     <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                     >
+                        <path
+                           strokeLinecap="round"
+                           strokeLinejoin="round"
+                           strokeWidth={2}
+                           d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+                        />
+                     </svg>
+                     Exportar Excel
+                  </button>
                </div>
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>

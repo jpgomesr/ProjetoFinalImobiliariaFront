@@ -36,6 +36,7 @@ export default function MeusHorarios() {
          const data = await response.json();
          setHorarios(data);
 
+
          const grupos = data.reduce(
             (acc: { [key: string]: Horario[] }, horario: Horario) => {
                const data = horario.dataHora.split("T")[0];
@@ -45,7 +46,10 @@ export default function MeusHorarios() {
             },
             {}
          );
+
          setHorariosAgrupados(grupos);
+      console.log("id", id);
+
       } catch (error) {
          console.error("Erro:", error);
       }

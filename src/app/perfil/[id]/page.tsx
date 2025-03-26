@@ -16,17 +16,17 @@ import BotaoPadrao from "@/components/BotaoPadrao";
 import UploadImagem from "@/components/ComponentesCrud/UploadImagem";
 import { createUsuarioValidator } from "@/validators/Validators";
 import { useNotification } from "@/context/NotificationContext";
-import { FaPencilAlt } from 'react-icons/fa';
-import { FaUser } from 'react-icons/fa';
-import { Mail, MessageSquare } from 'lucide-react';
+import { FaPencilAlt } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
+import { Mail, MessageSquare } from "lucide-react";
 import CardReserva from "@/components/card/CardAgendamento";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper/modules';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
 
 // Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 interface Usuario {
    foto: string;
@@ -79,7 +79,7 @@ const Page = () => {
    }
    useEffect(() => {
       console.log(errors);
-   },[errors]);
+   }, [errors]);
 
    const handleSelect2FA = (method: "email" | "sms") => {
       if (selected2FA === method) {
@@ -101,7 +101,7 @@ const Page = () => {
                throw new Error("Erro ao buscar os dados do usuário");
             }
             const data = await response.json();
-            
+
             setValue("nomeCompleto", data.nome);
             setValue("email", data.email);
             setValue("telefone", data.telefone || "");
@@ -109,7 +109,7 @@ const Page = () => {
             setValue("tipoUsuario", data.role);
             setPreview(data.foto);
             setSelected2FA(data.metodo2FA || null);
-            
+
             if (data.email) {
                setSelectedContact("email");
             } else if (data.telefone) {
@@ -129,7 +129,7 @@ const Page = () => {
       fetchUsuario();
    }, [id, BASE_URL, setValue]);
    const onSubmit = async (data: usuarioValidatorSchema) => {
-      console.log(data.tipoUsuario)
+      console.log(data.tipoUsuario);
       try {
          const response = await UseFetchPostFormData(
             `${BASE_URL}/usuarios/${id}`,
@@ -163,7 +163,9 @@ const Page = () => {
                   setFocus(primeiroCampoComErro);
                }
             }
-            throw new Error(responseData.mensagem || "Erro ao atualizar usuário.");
+            throw new Error(
+               responseData.mensagem || "Erro ao atualizar usuário."
+            );
          }
 
          showNotification("Perfil atualizado com sucesso!");
@@ -437,7 +439,7 @@ const Page = () => {
 
                {/* Seção de Agendamentos */}
                <div className="mt-4 sm:mt-6 md:mt-8 xl:mt-12">
-                  <h2 className="text-sm sm:text-base md:text-lg font-medium mb-7 flex justify-center text-gray-700  sm:mb-3 md:mb-4 px-2 sm:px-3 md:px-4">
+                  <h2 className="text-sm sm:text-base md:text-lg font-medium mb-7 flex justify-center text-gray-700 sm:mb-3 md:mb-4 px-2 sm:px-3 md:px-4">
                      Meus Agendamentos
                   </h2>
                   <div className="px-2 sm:px-3 md:px-4">
@@ -455,7 +457,7 @@ const Page = () => {
                            },
                         }}
                      >
-                        <SwiperSlide className="flex justify-center items-center">
+                        <SwiperSlide>
                            <CardReserva
                               id={1}
                               urlImagem="/placeholder.svg?height=300&width=500"
@@ -467,7 +469,7 @@ const Page = () => {
                               endereco="Rua Hermann Schulz 210"
                            />
                         </SwiperSlide>
-                        <SwiperSlide className="flex justify-center items-center">
+                        <SwiperSlide>
                            <CardReserva
                               id={2}
                               urlImagem="/placeholder.svg?height=300&width=500"
@@ -479,7 +481,7 @@ const Page = () => {
                               endereco="Rua Hermann Schulz 210"
                            />
                         </SwiperSlide>
-                        <SwiperSlide className="flex justify-center items-center">
+                        <SwiperSlide>
                            <CardReserva
                               id={3}
                               urlImagem="/placeholder.svg?height=300&width=500"
