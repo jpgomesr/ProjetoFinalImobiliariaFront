@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 const loginSchema = z.object({
    login: z.string().min(1, { message: "Login é obrigatório" }),
@@ -32,7 +33,11 @@ const LoginForm = () => {
    });
 
    const onSubmit = (data: LoginFormData) => {
-      console.log(data);
+      signIn("credentials", {
+         email: data.login,
+         password: data.password,
+         callbackUrl: "/",
+      });
    };
 
    return (
@@ -49,7 +54,10 @@ const LoginForm = () => {
                </div>
             )}
             <form
-               onSubmit={handleSubmit(onSubmit)}
+               onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSubmit(onSubmit)();
+               }}
                className="flex flex-col gap-3"
             >
                <div className="flex flex-col gap-2">

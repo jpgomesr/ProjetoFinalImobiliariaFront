@@ -57,6 +57,7 @@ export default async function Home() {
                   <CardImovel key={index} imovel={imovel} />
                ))}
             </div>
+    
          </section>
          <section className="mt-4 flex flex-col gap-6">
             <TituloBgDegrade text="Imóveis em" boldText="condições especias" />
