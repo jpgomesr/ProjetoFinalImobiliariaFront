@@ -22,21 +22,12 @@ interface DisplayMessage {
    isSender: boolean;
 }
 
-// Mock de usuários para teste
-const MOCK_USERS = {
-   user1: { id: "1", name: "João" },
-   user2: { id: "2", name: "Pedro" },
-};
-
 const ChatMessages = ({ chat }: ChatMessagesProps) => {
    const [messages, setMessages] = useState<DisplayMessage[]>([]);
    const [stompClient, setStompClient] = useState<Client | null>(null);
    const [isConnected, setIsConnected] = useState(false);
    const messagesEndRef = useRef<HTMLDivElement>(null);
    const inputRef = useRef<HTMLInputElement>(null);
-
-   // Usando um usuário mock fixo para teste
-   const currentUser = MOCK_USERS.user1;
 
    const scrollToBottom = () => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -48,16 +39,17 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
 
    // Função para obter o nome do usuário pelo ID
    const getUserName = (userId: string) => {
-      const user = Object.values(MOCK_USERS).find((u) => u.id === userId);
-      return user ? user.name : `Usuário ${userId}`;
+      return `${userId}`;
    };
+
+   const id = localStorage.getItem("idUsuario");
 
    useEffect(() => {
       // Buscar mensagens anteriores
       const fetchMessages = async () => {
          try {
             const response = await fetch(
-               `${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chat}/mensagens?idUsuario=2`
+               `${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chat}/mensagens?idUsuario=${id}`
             );
             if (response.ok) {
                const data: ChatMessage[] = await response.json();
@@ -66,7 +58,7 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
                   remetente: getUserName(msg.remetente),
                   idChat: chat,
                   timestamp: msg.timeStamp || new Date().toISOString(),
-                  isSender: msg.remetente === currentUser.id,
+                  isSender: msg.remetente === id,
                }));
                setMessages(formattedMessages);
             }
@@ -78,7 +70,7 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
       const createOrJoinChat = async () => {
          try {
             const response = await fetch(
-               `${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chat}?idUsuario=2`,
+               `${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chat}?idUsuario=${id}`,
                { method: "GET" }
             );
             if (!response.ok && response.status !== 409) {
@@ -101,7 +93,7 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
          heartbeatIncoming: 4000,
          heartbeatOutgoing: 4000,
          connectHeaders: {
-            userId: currentUser.id,
+            userId: id,
          },
       });
 
@@ -116,7 +108,7 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
                remetente: getUserName(chatMessage.remetente),
                idChat: chat,
                timestamp: chatMessage.timeStamp || new Date().toISOString(),
-               isSender: chatMessage.remetente === currentUser.id,
+               isSender: chatMessage.remetente === id,
             };
 
             setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -148,7 +140,7 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
       if (stompClient && isConnected && message.trim()) {
          const chatMessage = {
             conteudo: message,
-            remetente: currentUser.id,
+            remetente: id,
             idChat: chat,
          };
 
@@ -175,8 +167,7 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
       <div className="flex flex-col gap-2 h-full">
          <div className="bg-havprincipal rounded-tr-lg">
             <p className="text-xl font-semibold text-white px-8 py-3 truncate">
-               Chat ID: {chat} {!isConnected && "(Desconectado)"} -{" "}
-               {currentUser.name}
+               Chat ID: {chat} {!isConnected && "(Desconectado)"} - {id}
             </p>
          </div>
          <div className="flex flex-col gap-2 h-full py-2 px-5 overflow-y-auto hide-scrollbar">
@@ -195,9 +186,6 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
                      } rounded-lg p-2 max-w-[50%] whitespace-normal break-words`}
                   >
                      <p>{message.conteudo}</p>
-                  </div>
-                  <div className="text-xs text-gray-500">
-                     {message.isSender ? "Você" : message.remetente}
                   </div>
                </div>
             ))}

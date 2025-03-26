@@ -16,6 +16,7 @@ export default function ChatList() {
    const [search, setSearch] = useState("");
    const [chats, setChats] = useState<Chat[]>([]);
    const [loading, setLoading] = useState(true);
+   const id = localStorage.getItem("idUsuario");
 
    const handleContactClick = (id: number) => {
       if (isMobile) {
@@ -24,6 +25,24 @@ export default function ChatList() {
          router.push(`/chat/?chat=${id}`);
       }
    };
+
+   useEffect(() => {
+      const getChats = fetch(
+         `${process.env.NEXT_PUBLIC_BASE_URL}/chat/list/${id}`,
+         {
+            headers: {
+               "Content-type": "application/json",
+            },
+            method: "GET",
+         }
+      );
+      getChats.then((response) => {
+         response.json().then((data) => {
+            setChats(data);
+            setLoading(false);
+         });
+      });
+   }, []);
 
    if (loading) {
       return (
