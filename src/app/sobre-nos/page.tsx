@@ -1,38 +1,10 @@
-"use client";
-
 import Layout from "@/components/layout/LayoutPadrao";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import CardInfoSobreNos from "@/components/componentes_sobre_nos/CardInfoSobreNos";
-import ModelExibirCorretor from "@/models/ModelExibirCorretor";
-import ExibirCorretores from "@/components/componentes_sobre_nos/ExibirCorretores";
-import { renderizarUsuariosApi } from "./action";
+import CorretoresSection from "@/components/componentes_sobre_nos/CorretoresSection";
 
 const Page = () => {
-   const [corretores, setCorretores] = useState<ModelExibirCorretor[]>([]);
-   const [loading, setLoading] = useState(true);
-   const [error, setError] = useState<string | null>(null);
-
-   useEffect(() => {
-      const fetchCorretores = async () => {
-         try {
-            setLoading(true);
-            setError(null);
-            const data = await renderizarUsuariosApi();
-            setCorretores(data);
-         } catch (error) {
-            setError(
-               "Erro ao carregar corretores. Por favor, tente novamente mais tarde."
-            );
-            console.error("Erro ao buscar corretores:", error);
-         } finally {
-            setLoading(false);
-         }
-      };
-
-      fetchCorretores();
-   }, []);
-
    return (
       <Layout className="my-0">
          <div className="px-[1%] flex items-center text-center flex-col bg-cinzaPadrao py-[1.6%]">
@@ -136,17 +108,7 @@ const Page = () => {
             <h2 className="text-4xl font-bold mb-[1rem] text-havprincipal">
                Nossa equipe
             </h2>
-            <div className="flex-row">
-               {loading ? (
-                  <div className="text-havprincipal text-xl">
-                     Carregando corretores...
-                  </div>
-               ) : error ? (
-                  <div className="text-red-500 text-xl">{error}</div>
-               ) : (
-                  <ExibirCorretores corretores={corretores} />
-               )}
-            </div>
+            <CorretoresSection />
          </div>
       </Layout>
    );

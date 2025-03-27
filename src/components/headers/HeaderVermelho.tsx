@@ -8,12 +8,17 @@ import FavIcon from "@/svg/icons/header/FavIcon";
 import PerfilIcon from "@/svg/icons/header/PerfilIcon";
 import FuncoesHeader from "./FuncoesHeader";
 import HamburguerButton from "./HamburguerButton";
+import Image from "next/image";
+import PerfilDropdown from "./PerfilDropdown";
 
 interface HeaderVermelhoProps {
    role?: Roles;
+   id?: string;
+   foto?: string | null;
+   nome?: string;
 }
 
-const HeaderVermelho = ({ role }: HeaderVermelhoProps) => {
+const HeaderVermelho = ({ role, id, foto, nome }: HeaderVermelhoProps) => {
    return (
       <div
          className="bg-havprincipal px-6 py-1
@@ -22,7 +27,7 @@ const HeaderVermelho = ({ role }: HeaderVermelhoProps) => {
                      flex justify-between"
       >
          <div className="flex flex-row md:gap-8  2xl:gap-16">
-            <FuncoesHeader role={Roles.ADMIN} />
+            <FuncoesHeader role={role} />
             <Link href={"/"}>
                <LogoHavClaro
                   className="w-14 h-14 2xl:w-20 2xl:h-20"
@@ -69,11 +74,15 @@ const HeaderVermelho = ({ role }: HeaderVermelhoProps) => {
                   <FavIcon className="hidden md:block md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
                </button>
             </Link>
-            <Link href="/api/auth/signin">
-               <button className="text-white hover:text-opacity-80">
-                  <PerfilIcon className="w-6 h-6 md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
-               </button>
-            </Link>
+            {id ? (
+               <PerfilDropdown foto={foto || undefined} id={id} nome={nome} />
+            ) : (
+               <Link href="/api/auth/signin">
+                  <button className="text-white hover:text-opacity-80">
+                     <PerfilIcon className="w-6 h-6 md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
+                  </button>
+               </Link>
+            )}
 
             <HamburguerButton role={role} />
          </div>

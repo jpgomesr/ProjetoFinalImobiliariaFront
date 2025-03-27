@@ -22,6 +22,7 @@ import CardImovel from "@/components/card/CardImovel";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 import ExibirCorretores from "@/components/componentes_sobre_nos/ExibirCorretores";
 import Link from "next/link";
+import LayoutPadraoClient from "@/components/layout/LayoutPadraoClient";
 // Importação dinâmica do MapboxMap para evitar problemas de SSR
 const MapboxMap = dynamic(() => import("@/components/Mapboxmap"), {
    ssr: false,
@@ -236,7 +237,7 @@ const Page = () => {
    };
 
    return (
-      <Layout className="bg-begeClaroPadrao py-8">
+      <LayoutPadraoClient className="bg-begeClaroPadrao py-8">
          <div className="flex flex-col items-center w-full gap-1 md:flex-row md:px-8 md:items-start">
             {/* Imagem principal */}
             <div className="flex w-11/12 flex-col gap-1 items-center md:items-start lg:ml-24 md:ml-20">
@@ -394,7 +395,7 @@ const Page = () => {
                </div>
             </div>
          )}
-      </Layout>
+      </LayoutPadraoClient>
    );
 };
 
