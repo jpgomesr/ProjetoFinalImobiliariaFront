@@ -50,7 +50,7 @@ const HeaderVermelho = ({ role, id, foto, nome }: HeaderVermelhoProps) => {
                </button>
             </Link>
             <Link
-               href={"/historico-agendamentos/1"}
+               href={id ? `/historico-agendamentos/${id}` : "/api/auth/signin"}
                className="flex justify-center"
             >
                <button className="hidden md:block text-white md:text-base 2xl:text-xl font-montserrat font-light">
@@ -59,7 +59,7 @@ const HeaderVermelho = ({ role, id, foto, nome }: HeaderVermelhoProps) => {
             </Link>
          </div>
          <div className="flex justify-center items-center gap-5 md:gap-10 2xl:gap-20">
-            <Link href="/chat">
+            <Link href={id ? "/chat" : "/api/auth/signin"}>
                <button>
                   <ChatIcon className="hidden md:block md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
                </button>
@@ -69,7 +69,7 @@ const HeaderVermelho = ({ role, id, foto, nome }: HeaderVermelhoProps) => {
                   <FaqIcon className="hidden md:block md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
                </button>
             </Link>
-            <Link href="/favoritos">
+            <Link href={id ? `/favoritos/${id}` : "/api/auth/signin"}>
                <button>
                   <FavIcon className="hidden md:block md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
                </button>
