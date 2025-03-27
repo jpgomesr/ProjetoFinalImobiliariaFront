@@ -23,7 +23,7 @@ export default async function Home() {
    });
 
    return (
-      <Layout role={Roles.ADMIN} className="pt-0 py-8 bg-begeClaroPadrao">
+      <Layout className="pt-0 py-8 bg-begeClaroPadrao">
          <div className="lg:h-[80vh]">
             <div
                className="h-[30vh] overflow-hidden relative z-10
