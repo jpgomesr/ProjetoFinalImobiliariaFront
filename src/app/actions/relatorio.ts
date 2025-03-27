@@ -1,0 +1,105 @@
+import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
+import { listarUsuarios } from "@/Functions/usuario/buscaUsuario";
+import { renderizarUsuariosApi } from "@/app/sobre-nos/action";
+import { ModelImovelGet } from "@/models/ModelImovelGet";
+import ModelUsuarioListagem from "@/models/ModelUsuarioListagem";
+import ModelExibirCorretor from "@/models/ModelExibirCorretor";
+
+export async function fetchRelatorioData() {
+  try {
+    const [
+      resultImoveis,
+      resultUsuariosAtivos,
+      resultUsuariosBloqueados,
+      resultCorretores,
+    ] = await Promise.all([
+      buscarTodosImoveis(),
+      listarUsuarios(0, "CORRETOR", true, "", 1000), // Usuários ativos
+      listarUsuarios(0, "CORRETOR", false, "", 1000), // Usuários bloqueados
+      renderizarUsuariosApi(),
+    ]);
+
+    // Buscar agendamentos para cada corretor
+    const agendamentos: { [key: string]: number } = {};
+    for (const corretor of resultUsuariosAtivos.usuariosRenderizados || []) {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/agendamento/corretor/${corretor.id}`
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          const agendamentosArray = Array.isArray(data)
+            ? data
+            : data.agendamentos || data.data || data.content || [];
+
+          const agendamentosConfirmados = agendamentosArray.filter(
+            (agendamento: any) => agendamento.status === "CONFIRMADO"
+          ).length;
+
+          agendamentos[corretor.nome] = agendamentosConfirmados;
+        } else {
+          agendamentos[corretor.nome] = 0;
+        }
+      } catch (error) {
+        agendamentos[corretor.nome] = 0;
+      }
+    }
+
+    return {
+      imoveis: resultImoveis.imoveis,
+      usuariosAtivos: resultUsuariosAtivos.usuariosRenderizados || [],
+      usuariosBloqueados: resultUsuariosBloqueados.usuariosRenderizados || [],
+      corretores: resultCorretores || [],
+      agendamentosPorCorretor: agendamentos
+    };
+  } catch (error) {
+    console.error("Erro ao buscar dados:", error);
+    throw new Error("Erro ao carregar os dados");
+  }
+}
+
+export function prepararDadosParaGraficos(imoveis: ModelImovelGet[]) {
+  // Separar imóveis por categoria
+  const imoveisComuns = imoveis.filter(
+    (imovel) => !imovel.destaque && !imovel.banner
+  );
+  const bannerDesconto = imoveis.filter(
+    (imovel) => imovel.banner && imovel.tipoBanner === "DESCONTO"
+  );
+  const bannerMelhorPreco = imoveis.filter(
+    (imovel) => imovel.banner && imovel.tipoBanner === "MELHOR_PRECO"
+  );
+  const bannerPromocao = imoveis.filter(
+    (imovel) => imovel.banner && imovel.tipoBanner === "PROMOCAO"
+  );
+  const bannerAdquirido = imoveis.filter(
+    (imovel) => imovel.banner && imovel.tipoBanner === "ADQUIRIDO"
+  );
+  const bannerAlugado = imoveis.filter(
+    (imovel) => imovel.banner && imovel.tipoBanner === "ALUGADO"
+  );
+
+  // Separar imóveis por finalidade
+  const imoveisVenda = imoveis.filter(
+    (imovel) => imovel.finalidade?.toUpperCase() === "VENDA"
+  );
+  const imoveisAluguel = imoveis.filter(
+    (imovel) => imovel.finalidade?.toUpperCase() === "ALUGUEL"
+  );
+
+  return {
+    categorias: {
+      imoveisComuns,
+      bannerDesconto,
+      bannerMelhorPreco,
+      bannerPromocao,
+      bannerAdquirido,
+      bannerAlugado
+    },
+    finalidades: {
+      imoveisVenda,
+      imoveisAluguel
+    }
+  };
+} 
