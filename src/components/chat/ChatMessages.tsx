@@ -9,7 +9,7 @@ interface ChatMessagesProps {
 
 interface ChatMessage {
    conteudo: string;
-   remetente: string; // Agora será o ID do usuário
+   remetente: string;
    timeStamp: string;
    nomeRemetente?: string;
 }
@@ -31,11 +31,11 @@ interface ChatUser {
 
 const ChatMessages = ({ chat }: ChatMessagesProps) => {
    const [messages, setMessages] = useState<DisplayMessage[]>([]);
-   const [stompClient, setStompClient] = useState<Client | null>(null);
    const [isConnected, setIsConnected] = useState(false);
    const [chatPartner, setChatPartner] = useState<ChatUser | null>(null);
    const messagesEndRef = useRef<HTMLDivElement>(null);
    const inputRef = useRef<HTMLInputElement>(null);
+   const stompClientRef = useRef<Client | null>(null);
 
    const scrollToBottom = () => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -81,9 +81,9 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
                      nome: parceiro.nome || `Usuário ${parceiro.id}`,
                   });
                }
-               if (data.messages && data.messages.length > 0) {
-                  const formattedMessages: DisplayMessage[] = data.messages.map(
-                     (msg: any) => ({
+               if (data.mensagens && data.mensagens.length > 0) {
+                  const formattedMessages: DisplayMessage[] =
+                     data.mensagens.map((msg: any) => ({
                         id: msg.id,
                         conteudo: msg.conteudo,
                         remetente: msg.remetente,
@@ -94,8 +94,7 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
                            msg.remetente === id
                               ? nomeUsuario
                               : parceiro?.nome || `Usuário ${msg.remetente}`,
-                     })
-                  );
+                     }));
                   setMessages(formattedMessages);
                }
             }
@@ -106,29 +105,54 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
 
       createOrJoinChat();
 
-      let client: Client;
+      // Desconectar cliente anterior se existir
+      if (stompClientRef.current) {
+         stompClientRef.current
+            .deactivate()
+            .then(() => {
+               initializeWebSocket();
+            })
+            .catch((error) => {
+               console.error(
+                  "Erro ao desativar cliente STOMP anterior:",
+                  error
+               );
+               initializeWebSocket();
+            });
+      } else {
+         initializeWebSocket();
+      }
 
-      try {
-         const socket = new SockJS(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/ws/chat`
-         );
-         client = new Client({
-            webSocketFactory: () => socket,
-            reconnectDelay: 5000,
-            heartbeatIncoming: 4000,
-            heartbeatOutgoing: 4000,
-            connectHeaders: {
-               userId: id,
-               userName: nomeUsuario,
-            },
-         });
+      return () => {
+         if (stompClientRef.current) {
+            stompClientRef.current.deactivate().catch((error) => {
+               console.error("Erro ao desativar cliente STOMP:", error);
+            });
+         }
+      };
+   }, [chat, id, nomeUsuario]);
 
-         client.onConnect = (frame) => {
-            console.log("Connected: " + frame);
-            setIsConnected(true);
+   const initializeWebSocket = () => {
+      const socket = new SockJS(`${process.env.NEXT_PUBLIC_BASE_URL}/ws/chat`);
+      const client = new Client({
+         webSocketFactory: () => socket,
+         reconnectDelay: 5000,
+         heartbeatIncoming: 4000,
+         heartbeatOutgoing: 4000,
+         connectHeaders: {
+            userId: id,
+            userName: nomeUsuario,
+         },
+      });
 
-            client.subscribe(`/topic/chat/${chat}`, (message) => {
+      client.onConnect = (frame) => {
+         console.log("Connected: " + frame);
+         setIsConnected(true);
+
+         client.subscribe(`/topic/chat/${chat}`, (message) => {
+            try {
                const chatMessage: ChatMessage = JSON.parse(message.body);
+
                const newMessage: DisplayMessage = {
                   conteudo: chatMessage.conteudo,
                   remetente: chatMessage.remetente,
@@ -137,41 +161,35 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
                   isSender: chatMessage.remetente === id,
                   nomeRemetente:
                      chatMessage.nomeRemetente ||
-                     `Usuário ${chatMessage.remetente}`,
+                     (chatMessage.remetente === id
+                        ? nomeUsuario
+                        : chatPartner?.nome ||
+                          `Usuário ${chatMessage.remetente}`),
                };
 
-               setMessages((prevMessages) => [...prevMessages, newMessage]);
-            });
-         };
-
-         client.onDisconnect = () => {
-            console.log("Desconectado do WebSocket");
-            setIsConnected(false);
-         };
-
-         client.onStompError = (frame) => {
-            console.error("Broker reported error: " + frame.headers["message"]);
-            console.error("Additional details: " + frame.body);
-            setIsConnected(false);
-         };
-
-         client.activate();
-         setStompClient(client);
-      } catch (error) {
-         console.error("Erro ao inicializar conexão STOMP:", error);
-         setIsConnected(false);
-      }
-
-      return () => {
-         if (client && client.connected) {
-            try {
-               client.deactivate();
+               if (!newMessage.isSender) {
+                  setMessages((prevMessages) => [...prevMessages, newMessage]);
+               }
             } catch (error) {
-               console.error("Erro ao desativar cliente STOMP:", error);
+               console.error("Erro ao processar mensagem recebida:", error);
             }
-         }
+         });
       };
-   }, [chat, id, nomeUsuario]);
+
+      client.onDisconnect = () => {
+         console.log("Desconectado do WebSocket");
+         setIsConnected(false);
+      };
+
+      client.onStompError = (frame) => {
+         console.error("Broker reported error: " + frame.headers["message"]);
+         console.error("Additional details: " + frame.body);
+         setIsConnected(false);
+      };
+
+      client.activate();
+      stompClientRef.current = client;
+   };
 
    const sendMessage = (message: string) => {
       if (!message.trim()) {
@@ -179,23 +197,13 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
          return;
       }
 
-      if (!isConnected) {
-         console.error("Não há conexão com o WebSocket");
-         return;
-      }
-
-      if (!stompClient) {
-         console.error("Cliente STOMP não inicializado");
+      if (!stompClientRef.current || !stompClientRef.current.connected) {
+         console.error("Cliente STOMP não está conectado");
+         setIsConnected(false);
          return;
       }
 
       try {
-         if (!stompClient.connected) {
-            console.error("Cliente STOMP não está conectado");
-            setIsConnected(false);
-            return;
-         }
-
          const chatMessage = {
             conteudo: message,
             remetente: id,
@@ -204,11 +212,23 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
          };
 
          console.log("Enviando mensagem:", chatMessage);
-         stompClient.publish({
+         stompClientRef.current.publish({
             destination: `/app/sendMessage/${chat}`,
             body: JSON.stringify(chatMessage),
             headers: { "content-type": "application/json" },
          });
+
+         // Adicionar mensagem enviada localmente para exibição imediata
+         const newMessage: DisplayMessage = {
+            conteudo: message,
+            remetente: id,
+            idChat: chat,
+            timestamp: new Date().toISOString(),
+            isSender: true,
+            nomeRemetente: nomeUsuario,
+         };
+
+         setMessages((prevMessages) => [...prevMessages, newMessage]);
       } catch (error) {
          console.error("Erro ao enviar mensagem:", error);
          setIsConnected(false);
