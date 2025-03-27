@@ -135,7 +135,7 @@ export default function ChatList() {
                      <div className="flex-1 flex items-center gap-2">
                         <div className="flex items-center gap-2">
                            <Image
-                              src={getChatPartnerFoto(chat) || "/icons8-whatsapp (1).svg"}
+                              src={getChatPartnerFoto(chat) || "/perfil-padrao.png"}
                               alt={getChatPartnerName(chat)}
                               className="w-10 h-10 rounded-full border border-gray-400"
                               width={1920}
