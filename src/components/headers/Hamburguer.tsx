@@ -59,7 +59,7 @@ const Hamburguer = (props: HamburguerProps) => {
 
    const opcoesRoles = [
       {
-         role: Roles.ADMIN,
+         role: Roles.ADMINISTRADOR,
          title: "Admin",
          items: [
             {

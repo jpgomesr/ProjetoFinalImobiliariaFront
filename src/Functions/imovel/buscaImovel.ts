@@ -82,7 +82,7 @@ export const buscarTodosImoveis = async (
             quantidadeElementos,
          };
       } else {
-         console.error("Erro ao buscar os dados do imóvel");
+         console.error("Erro ao buscar os dados do imóvel" + response.status);
       }
    } catch (error) {
       console.error("Erro ao buscar os dados do imóvel:", error);

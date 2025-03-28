@@ -24,7 +24,6 @@ interface PageProps {
 }
 
 const Page = async ({ searchParams }: PageProps) => {
-
    const parametrosResolvidos = await searchParams;
 
    const params = {
@@ -63,6 +62,11 @@ const Page = async ({ searchParams }: PageProps) => {
             >
                <div className="flex flex-col w-full gap-2 items-left md:flex-row h-full">
                   <FiltroList
+                     opcoes={[
+                        { id: "venda", label: "Venda" },
+                        { id: "aluguel", label: "Aluguel" },
+                        { id: "todos", label: "Todos" },
+                     ]}
                      finalidade={params.finalidade}
                      precoMinimo={params.precoMinimo}
                      precoMaximo={params.precoMaximo}

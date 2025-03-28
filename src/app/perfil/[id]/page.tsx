@@ -1,26 +1,69 @@
-import { fetchPerfilData } from "@/app/actions/perfil";
+import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
 import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
-import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
-import PerfilClient from "./cliente";
+import FormularioPerfil from "./FormularioPerfil";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 
 interface PageProps {
-  params: Promise<{
-    id: string;
-  }>;
+   params: {
+      id: string;
+   };
 }
 
-export default async function Page({ params }: PageProps) {
-  const { id } = await params;
-  const initialData = await fetchPerfilData(id);
+const Page = async ({ params }: PageProps) => {
+   const session = await getServerSession(authOptions);
+   if (!session) {
+      redirect("/api/auth/signin");
+   }
+   if (session.user.id !== params.id) {
+      redirect("/");
+   }
 
-  return (
-    <Layout>
-      <SubLayoutPaginasCRUD>
-        <FundoBrancoPadrao titulo="Perfil de Usuário">
-          <PerfilClient initialData={initialData} />
-        </FundoBrancoPadrao>
-      </SubLayoutPaginasCRUD>
-    </Layout>
-  );
-}
+   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
+   if (!BASE_URL) {
+      throw new Error("A variável NEXT_PUBLIC_BASE_URL não está definida.");
+   }
+
+   try {
+      const response = await fetch(`${BASE_URL}/usuarios/${params.id}`);
+      if (!response.ok) {
+         throw new Error("Erro ao buscar os dados do usuário");
+      }
+      const dadosIniciais = await response.json();
+
+      return (
+         <Layout className="py-0">
+            <SubLayoutPaginasCRUD>
+               <FundoBrancoPadrao className="w-full" titulo="Perfil de Usuário">
+                  <FormularioPerfil
+                     id={params.id}
+                     BASE_URL={BASE_URL}
+                     dadosIniciais={dadosIniciais}
+                  />
+               </FundoBrancoPadrao>
+            </SubLayoutPaginasCRUD>
+         </Layout>
+      );
+   } catch (error) {
+      return (
+         <Layout className="py-0">
+            <SubLayoutPaginasCRUD>
+               <FundoBrancoPadrao className="w-full" titulo="Perfil de Usuário">
+                  <div className="flex justify-center items-center h-64">
+                     <p className="text-red-500">
+                        {error instanceof Error
+                           ? error.message
+                           : "Ocorreu um erro desconhecido"}
+                     </p>
+                  </div>
+               </FundoBrancoPadrao>
+            </SubLayoutPaginasCRUD>
+         </Layout>
+      );
+   }
+};
+
+export default Page;

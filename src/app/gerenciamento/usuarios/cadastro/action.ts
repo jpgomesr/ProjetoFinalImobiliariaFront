@@ -37,10 +37,10 @@ import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
 
    const usuarioFormatado = {
       ...usuario,
-      senha: usuario.senha === "" ? undefined : usuario.senha, // Reverte string vazia para undefined
-      telefone: usuario.telefone === "" ? null : usuario.telefone, // Reverte string vazia para null
-      role: usuario.role === "" ? undefined : usuario.role, // Reverte string vazia para undefined
-      descricao: usuario.descricao === "" ? undefined : usuario.descricao, // Reverte string vazia para undefined
+      senha: usuario.senha === "" ? undefined : usuario.senha,
+      telefone: usuario.telefone === "" ? null : usuario.telefone,
+      role: usuario.role === "" ? "USUARIO" : usuario.role,
+      descricao: usuario.descricao === "" ? undefined : usuario.descricao,
    };
       try {
          // Valida os dados de entrada

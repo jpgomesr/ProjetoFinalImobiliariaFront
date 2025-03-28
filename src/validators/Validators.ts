@@ -55,7 +55,10 @@ export const createUsuarioValidator = (isPasswordChangeEnabled = true) => {
                  })
             : z.string().optional(),
          telefone: z.string().nullable(),
-         tipoUsuario: z.string().min(1, { message: "Campo obrigatório" }).nullable(),
+         tipoUsuario: z
+            .string()
+            .min(1, { message: "Campo obrigatório" })
+            .nullable(),
          descricao: z
             .string()
             .max(500, { message: "A descrição deve conter até 500 caracteres" })
@@ -208,8 +211,15 @@ export const createImovelValidator = () => {
       numeroApto: z.number().optional(),
       estado: z.string().min(1, { message: "Campo obrigatório" }),
       proprietario: z
-         .number({ message: "Precisa ser selecionado um proprietário" })
-         .min(1, { message: "Campo obrigatório" }),
+         .object({
+            id: z.number().nonnegative({ message: "Id não pode ser negativo" }),
+            nome: z
+               .string({ message: "Nome precisa ser uma string" })
+               .min(1, { message: "Campo obrigatório" }),
+         })
+         .refine((val) => val !== null, {
+            message: "Precisa ser selecionado um proprietário",
+         }),
       corretores: z
          .array(ModelCorretorSchema, {
             message: "Precisa ter pelo menos um corretor",

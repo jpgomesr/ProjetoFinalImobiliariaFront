@@ -6,10 +6,20 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { UseErros } from "@/hooks/UseErros";
 
+import { salvarUsuario } from "@/app/gerenciamento/usuarios/cadastro/action";
+import { useNotification } from "@/context/NotificationContext";
 const registerSchema = z
    .object({
-      name: z.string().min(1, { message: "Nome é obrigatório" }),
+      name: z
+         .string()
+         .min(1, { message: "Campo obrigatório" })
+         .max(100, { message: "O nome deve conter até 100 caracteres" })
+         .regex(/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/, {
+            message: "O nome deve conter apenas letras e espaços",
+         }),
       email: z.string().email({ message: "Email inválido" }),
       password: z
          .string()
@@ -41,12 +51,15 @@ const RegisterForm = () => {
    const [showPassword, setShowPassword] = useState(false);
    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
    const router = useRouter();
+   const { showNotification } = useNotification();
 
    const {
       register,
       handleSubmit,
       formState: { errors },
       clearErrors,
+      setError,
+      setFocus,
    } = useForm<RegisterFormData>({
       resolver: zodResolver(registerSchema),
       defaultValues: {
@@ -57,8 +70,43 @@ const RegisterForm = () => {
       },
    });
 
-   const onSubmit = (data: RegisterFormData) => {
-      console.log(data);
+   const onSubmit = async (data: RegisterFormData) => {
+      try {
+         const response = await salvarUsuario({
+            usuario: {
+               nome: data.name,
+               email: data.email,
+               senha: data.password,
+               telefone: "",
+            role: "",
+            descricao: "",
+            ativo: true,
+         },
+         imagemPerfil: null,
+      });
+      if (response.erros) {
+         const errosFormatados = UseErros(response);
+         Object.keys(errosFormatados).forEach((campo) => {
+            setError(campo as keyof RegisterFormData, {
+               type: "manual",
+               message: errosFormatados[campo],
+            });
+         });
+         const primeiroCampoComErro = Object.keys(
+            errosFormatados
+         )[0] as keyof RegisterFormData;
+         if (primeiroCampoComErro) {
+            setFocus(primeiroCampoComErro);
+         }
+         throw new Error("Erro ao realizar o cadastro.");
+      }
+      if (response.ok) {
+         showNotification("Usuário cadastrado com sucesso");
+         router.push("/api/auth/signin");
+      }
+      } catch (error) {
+         showNotification("Erro ao realizar o cadastro. Tente novamente.");
+      }
    };
 
    return (
@@ -70,7 +118,10 @@ const RegisterForm = () => {
                Cadastro
             </h1>
             <form
-               onSubmit={handleSubmit(onSubmit)}
+               onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSubmit(onSubmit)();
+               }}
                className="flex flex-col gap-2"
             >
                <div className="flex flex-col gap-1">
@@ -192,15 +243,11 @@ const RegisterForm = () => {
 
             <div className="text-center">
                <p className="text-[10px] sm:text-xs">Já possui uma conta?</p>
-               <button
-                  className="font-semibold text-[10px] sm:text-xs text-white"
-                  onClick={(e) => {
-                     e.preventDefault();
-                     router.push("/autentificacao/login");
-                  }}
-               >
-                  clique aqui!
-               </button>
+               <Link href="/api/auth/signin">
+                  <button className="font-semibold text-[10px] sm:text-xs text-white">
+                     clique aqui!
+                  </button>
+               </Link>
             </div>
          </div>
       </div>
