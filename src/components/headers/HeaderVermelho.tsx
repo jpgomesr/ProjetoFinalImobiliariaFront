@@ -2,14 +2,16 @@ import React from "react";
 import Link from "next/link";
 import { Roles } from "@/models/Enum/Roles";
 import LogoHavClaro from "@/svg/icons/logo/LogoHavClaro";
-import ChatIcon from "@/svg/icons/header/ChatIcon";
-import FaqIcon from "@/svg/icons/header/FaqIcon";
-import FavIcon from "@/svg/icons/header/FavIcon";
-import PerfilIcon from "@/svg/icons/header/PerfilIcon";
 import FuncoesHeader from "./FuncoesHeader";
 import HamburguerButton from "./HamburguerButton";
-import Image from "next/image";
 import PerfilDropdown from "./PerfilDropdown";
+import Notificacao from "@/components/notificacao/Notificacao";
+import {
+   User,
+   MessageCircleQuestion,
+   Heart,
+   MessageCircleMore,
+} from "lucide-react";
 
 interface HeaderVermelhoProps {
    role?: Roles;
@@ -59,19 +61,20 @@ const HeaderVermelho = ({ role, id, foto, nome }: HeaderVermelhoProps) => {
             </Link>
          </div>
          <div className="flex justify-center items-center gap-5 md:gap-10 2xl:gap-20">
+            <Notificacao />
             <Link href={id ? "/chat" : "/api/auth/signin"}>
-               <button>
-                  <ChatIcon className="hidden md:block md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
+               <button className="text-white">
+                  <MessageCircleMore className="hidden md:block md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
                </button>
             </Link>
             <Link href="/perguntas-frequentes">
-               <button>
-                  <FaqIcon className="hidden md:block md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
+               <button className="text-white">
+                  <MessageCircleQuestion className="hidden md:block md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
                </button>
             </Link>
             <Link href={id ? `/favoritos/${id}` : "/api/auth/signin"}>
-               <button>
-                  <FavIcon className="hidden md:block md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
+               <button className="text-white">
+                  <Heart className="hidden md:block md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
                </button>
             </Link>
             {id ? (
@@ -79,7 +82,7 @@ const HeaderVermelho = ({ role, id, foto, nome }: HeaderVermelhoProps) => {
             ) : (
                <Link href="/api/auth/signin">
                   <button className="text-white hover:text-opacity-80">
-                     <PerfilIcon className="w-6 h-6 md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
+                     <User className="w-6 h-6 md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
                   </button>
                </Link>
             )}
