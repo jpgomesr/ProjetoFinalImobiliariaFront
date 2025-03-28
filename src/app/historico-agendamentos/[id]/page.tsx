@@ -83,9 +83,11 @@ const page = async ({ params, searchParams }: PageProps) => {
                titulo="Histórico de agendamentos"
                className="w-full px-2"
             >
-               <Link href={`/horarios/${id}`}>
-                  <BotaoPadrao texto="Meus horários" />
-               </Link>
+               {session.user.role === Roles.CORRETOR && (
+                  <Link href={`/horarios/${id}`}>
+                     <BotaoPadrao texto="Meus horários" />
+                  </Link>
+               )}
                <FIltrosAgendamento
                   id={id}
                   url={`/historico-agendamentos/${id}`}
@@ -103,6 +105,7 @@ const page = async ({ params, searchParams }: PageProps) => {
                         agendamentos.map(
                            (agendamento: ModelAgendamento, key) => (
                               <CardReserva
+                                 role={session.user.role as Roles}
                                  id={agendamento.id}
                                  key={key}
                                  urlImagem={
@@ -115,6 +118,7 @@ const page = async ({ params, searchParams }: PageProps) => {
                                     agendamento.horario
                                  ).toLocaleDateString("pt-BR")}
                                  corretor={agendamento.nomeUsuario}
+                                 usuario={agendamento.nomeCorretor}
                                  status={agendamento.status}
                                  localizacao={`${agendamento.endereco.cidade} - ${agendamento.endereco.bairro}`}
                                  endereco={`${agendamento.endereco.rua}, ${agendamento.endereco.numeroCasaPredio}`}

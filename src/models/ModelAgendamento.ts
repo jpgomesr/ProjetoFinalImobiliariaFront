@@ -7,6 +7,7 @@ export interface ModelAgendamento {
         rua: string;
         numeroCasaPredio: string;
     }
+    nomeCorretor: string;
     nomeUsuario: string;
     idImovel: number;
     referenciaImagemPrincipal: string;
