@@ -5,13 +5,14 @@ import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
 import PerfilClient from "./cliente";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function Page({ params }: PageProps) {
-  const initialData = await fetchPerfilData(params.id);
+  const { id } = await params;
+  const initialData = await fetchPerfilData(id);
 
   return (
     <Layout>
