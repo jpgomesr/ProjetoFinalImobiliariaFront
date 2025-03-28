@@ -1,17 +1,20 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, {
+   useEffect,
+   useState,
+   useRef,
+   useCallback,
+   useMemo,
+} from "react";
 import { Send } from "lucide-react";
-import SockJS from "sockjs-client";
-import { Client } from "@stomp/stompjs";
+import { useChat } from "@/context/ChatContext";
 
 interface ChatMessagesProps {
    chat: number;
 }
 
-interface ChatMessage {
-   conteudo: string;
-   remetente: string;
-   timeStamp: string;
-   nomeRemetente?: string;
+interface ChatUser {
+   id: string;
+   nome?: string;
 }
 
 interface DisplayMessage {
@@ -24,43 +27,56 @@ interface DisplayMessage {
    nomeRemetente?: string;
 }
 
-interface ChatUser {
-   id: string;
-   nome?: string;
-}
-
 const ChatMessages = ({ chat }: ChatMessagesProps) => {
    const [messages, setMessages] = useState<DisplayMessage[]>([]);
-   const [isConnected, setIsConnected] = useState(false);
    const [chatPartner, setChatPartner] = useState<ChatUser | null>(null);
    const messagesEndRef = useRef<HTMLDivElement>(null);
    const inputRef = useRef<HTMLInputElement>(null);
-   const stompClientRef = useRef<Client | null>(null);
+   const messagesFetchedRef = useRef(false);
+   const chatSubscriptionRef = useRef<any>(null);
 
-   const scrollToBottom = () => {
+   // Usar o contexto global
+   const {
+      stompClient,
+      isConnected,
+      userId,
+      userName,
+      updateChat,
+      addNewMessage,
+   } = useChat();
+
+   const scrollToBottom = useCallback(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-   };
+   }, []);
 
    useEffect(() => {
       scrollToBottom();
-   }, [messages]);
+   }, [messages, scrollToBottom]);
 
-   const id = localStorage.getItem("idUsuario") || "1";
-   const nomeUsuario = localStorage.getItem("nomeUsuario") || `Usuário ${id}`;
-   if (!localStorage.getItem("idUsuario")) {
-      localStorage.setItem("idUsuario", "1");
-   }
+   // Função para marcar mensagens como lidas
+   const markMessagesAsRead = useCallback(async () => {
+      try {
+         await fetch(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chat}/marcarLidas?idUsuario=${userId}`,
+            { method: "POST" }
+         );
+         // Atualizar o estado do chat para não lido = false
+         updateChat(chat, { naoLido: false });
+      } catch (error) {
+         console.error("Erro ao marcar mensagens como lidas:", error);
+      }
+   }, [chat, userId, updateChat]);
 
+   // Carregar mensagens e configurar chat
    useEffect(() => {
-      if (!id) {
-         console.error("ID do usuário não encontrado");
+      if (!userId || messagesFetchedRef.current) {
          return;
       }
 
       const createOrJoinChat = async () => {
          try {
             const response = await fetch(
-               `${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chat}?idUsuario=${id}`,
+               `${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chat}?idUsuario=${userId}`,
                { method: "GET" }
             );
             if (!response.ok && response.status !== 409) {
@@ -72,7 +88,7 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
 
             if (data) {
                const parceiro =
-                  data.usuario1?.id.toString() === id
+                  data.usuario1?.id.toString() === userId
                      ? data.usuario2
                      : data.usuario1;
                if (parceiro) {
@@ -89,13 +105,22 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
                         remetente: msg.remetente,
                         idChat: chat,
                         timestamp: msg.timeStamp || new Date().toISOString(),
-                        isSender: msg.remetente === id,
+                        isSender: msg.remetente === userId,
                         nomeRemetente:
-                           msg.remetente === id
-                              ? nomeUsuario
+                           msg.remetente === userId
+                              ? userName
                               : parceiro?.nome || `Usuário ${msg.remetente}`,
                      }));
                   setMessages(formattedMessages);
+                  messagesFetchedRef.current = true;
+
+                  // Marcar mensagens como lidas
+                  const mensagensNaoLidas = formattedMessages.filter(
+                     (msg) => !msg.isSender
+                  );
+                  if (mensagensNaoLidas.length > 0) {
+                     await markMessagesAsRead();
+                  }
                }
             }
          } catch (error) {
@@ -104,136 +129,155 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
       };
 
       createOrJoinChat();
+   }, [chat, userId, userName, markMessagesAsRead]);
 
-      // Desconectar cliente anterior se existir
-      if (stompClientRef.current) {
-         stompClientRef.current
-            .deactivate()
-            .then(() => {
-               initializeWebSocket();
-            })
-            .catch((error) => {
-               console.error(
-                  "Erro ao desativar cliente STOMP anterior:",
-                  error
-               );
-               initializeWebSocket();
-            });
-      } else {
-         initializeWebSocket();
+   // Lidar com mensagens recebidas para este chat específico
+   const handleMessage = useCallback(
+      (message: any) => {
+         try {
+            const chatMessage = JSON.parse(message.body);
+            console.log("Mensagem recebida:", chatMessage);
+
+            // Não filtrar por chatId aqui, pois já estamos inscritos no tópico específico deste chat
+
+            const newMessage: DisplayMessage = {
+               conteudo: chatMessage.conteudo,
+               remetente: chatMessage.remetente,
+               idChat: chat,
+               timestamp: chatMessage.timeStamp || new Date().toISOString(),
+               isSender: chatMessage.remetente === userId,
+               nomeRemetente:
+                  chatMessage.nomeRemetente ||
+                  (chatMessage.remetente === userId
+                     ? userName
+                     : chatPartner?.nome || `Usuário ${chatMessage.remetente}`),
+            };
+
+            // Adicionar a mensagem à lista apenas se não for do usuário atual
+            if (!newMessage.isSender) {
+               setMessages((prevMessages) => [...prevMessages, newMessage]);
+               markMessagesAsRead();
+            }
+         } catch (error) {
+            console.error("Erro ao processar mensagem recebida:", error);
+         }
+      },
+      [chat, userId, userName, chatPartner, markMessagesAsRead]
+   );
+
+   // Resetar o estado quando o chat mudar
+   useEffect(() => {
+      // Limpar mensagens e referências ao trocar de chat
+      setMessages([]);
+      messagesFetchedRef.current = false;
+
+      // Limpar inscrição anterior se existir
+      if (chatSubscriptionRef.current) {
+         chatSubscriptionRef.current.unsubscribe();
+         chatSubscriptionRef.current = null;
       }
+   }, [chat]);
+
+   // Configurar inscrição no WebSocket
+   useEffect(() => {
+      if (!stompClient || !isConnected) return;
+
+      console.log(`Inscrevendo-se no chat ${chat}`);
+
+      // Limpar inscrição anterior se existir
+      if (chatSubscriptionRef.current) {
+         chatSubscriptionRef.current.unsubscribe();
+         chatSubscriptionRef.current = null;
+      }
+
+      // Criar nova inscrição
+      chatSubscriptionRef.current = stompClient.subscribe(
+         `/topic/chat/${chat}`,
+         handleMessage
+      );
+
+      console.log(`Inscrição criada para chat ${chat}`);
+
+      // Marcar mensagens como lidas quando entrar no chat
+      markMessagesAsRead();
 
       return () => {
-         if (stompClientRef.current) {
-            stompClientRef.current.deactivate().catch((error) => {
-               console.error("Erro ao desativar cliente STOMP:", error);
-            });
+         if (chatSubscriptionRef.current) {
+            console.log(`Cancelando inscrição do chat ${chat}`);
+            chatSubscriptionRef.current.unsubscribe();
+            chatSubscriptionRef.current = null;
          }
       };
-   }, [chat, id, nomeUsuario]);
+   }, [stompClient, isConnected, chat, handleMessage, markMessagesAsRead]);
 
-   const initializeWebSocket = () => {
-      const socket = new SockJS(`${process.env.NEXT_PUBLIC_BASE_URL}/ws/chat`);
-      const client = new Client({
-         webSocketFactory: () => socket,
-         reconnectDelay: 5000,
-         heartbeatIncoming: 4000,
-         heartbeatOutgoing: 4000,
-         connectHeaders: {
-            userId: id,
-            userName: nomeUsuario,
-         },
-      });
+   const sendMessage = useCallback(
+      (message: string) => {
+         if (!message.trim()) {
+            console.error("Mensagem vazia");
+            return;
+         }
 
-      client.onConnect = (frame) => {
-         console.log("Connected: " + frame);
-         setIsConnected(true);
+         if (!stompClient || !isConnected) {
+            console.error("Cliente STOMP não está conectado");
+            return;
+         }
 
-         client.subscribe(`/topic/chat/${chat}`, (message) => {
-            try {
-               const chatMessage: ChatMessage = JSON.parse(message.body);
+         try {
+            const chatMessage = {
+               conteudo: message,
+               remetente: userId,
+               idChat: chat,
+               nomeRemetente: userName,
+               timeStamp: new Date().toISOString(),
+            };
 
-               const newMessage: DisplayMessage = {
-                  conteudo: chatMessage.conteudo,
-                  remetente: chatMessage.remetente,
-                  idChat: chat,
-                  timestamp: chatMessage.timeStamp || new Date().toISOString(),
-                  isSender: chatMessage.remetente === id,
-                  nomeRemetente:
-                     chatMessage.nomeRemetente ||
-                     (chatMessage.remetente === id
-                        ? nomeUsuario
-                        : chatPartner?.nome ||
-                          `Usuário ${chatMessage.remetente}`),
-               };
+            console.log("Enviando mensagem:", chatMessage);
 
-               if (!newMessage.isSender) {
-                  setMessages((prevMessages) => [...prevMessages, newMessage]);
-               }
-            } catch (error) {
-               console.error("Erro ao processar mensagem recebida:", error);
-            }
-         });
-      };
+            // Adicionar mensagem enviada localmente para exibição imediata
+            const newMessage: DisplayMessage = {
+               conteudo: message,
+               remetente: userId,
+               idChat: chat,
+               timestamp: new Date().toISOString(),
+               isSender: true,
+               nomeRemetente: userName,
+            };
 
-      client.onDisconnect = () => {
-         console.log("Desconectado do WebSocket");
-         setIsConnected(false);
-      };
+            setMessages((prevMessages) => [...prevMessages, newMessage]);
 
-      client.onStompError = (frame) => {
-         console.error("Broker reported error: " + frame.headers["message"]);
-         console.error("Additional details: " + frame.body);
-         setIsConnected(false);
-      };
+            // Atualizar o estado do chat no contexto
+            addNewMessage(chat, chatMessage);
 
-      client.activate();
-      stompClientRef.current = client;
-   };
+            // Enviar a mensagem por último para garantir que a interface seja atualizada primeiro
+            stompClient.publish({
+               destination: `/app/sendMessage/${chat}`,
+               body: JSON.stringify(chatMessage),
+               headers: { "content-type": "application/json" },
+            });
+         } catch (error) {
+            console.error("Erro ao enviar mensagem:", error);
+         }
+      },
+      [chat, stompClient, isConnected, userId, userName, addNewMessage]
+   );
 
-   const sendMessage = (message: string) => {
-      if (!message.trim()) {
-         console.error("Mensagem vazia");
-         return;
+   const handleInputKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+         if (e.key === "Enter" && isConnected) {
+            sendMessage(e.currentTarget.value);
+            e.currentTarget.value = "";
+         }
+      },
+      [isConnected, sendMessage]
+   );
+
+   const handleSendClick = useCallback(() => {
+      if (isConnected && inputRef.current) {
+         sendMessage(inputRef.current.value);
+         inputRef.current.value = "";
+         inputRef.current.focus();
       }
-
-      if (!stompClientRef.current || !stompClientRef.current.connected) {
-         console.error("Cliente STOMP não está conectado");
-         setIsConnected(false);
-         return;
-      }
-
-      try {
-         const chatMessage = {
-            conteudo: message,
-            remetente: id,
-            idChat: chat,
-            nomeRemetente: nomeUsuario,
-         };
-
-         console.log("Enviando mensagem:", chatMessage);
-         stompClientRef.current.publish({
-            destination: `/app/sendMessage/${chat}`,
-            body: JSON.stringify(chatMessage),
-            headers: { "content-type": "application/json" },
-         });
-
-         // Adicionar mensagem enviada localmente para exibição imediata
-         const newMessage: DisplayMessage = {
-            conteudo: message,
-            remetente: id,
-            idChat: chat,
-            timestamp: new Date().toISOString(),
-            isSender: true,
-            nomeRemetente: nomeUsuario,
-         };
-
-         setMessages((prevMessages) => [...prevMessages, newMessage]);
-      } catch (error) {
-         console.error("Erro ao enviar mensagem:", error);
-         setIsConnected(false);
-      }
-   };
+   }, [isConnected, sendMessage]);
 
    return (
       <div className="flex flex-col gap-2 h-full">
@@ -253,11 +297,25 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
                   <div
                      className={`${
                         message.isSender
-                           ? "bg-havprincipal text-white"
-                           : "bg-white"
-                     } rounded-lg p-2 max-w-[50%] whitespace-normal break-words`}
+                           ? "bg-havprincipal text-white rounded-tr-none"
+                           : "bg-white rounded-tl-none"
+                     } rounded-lg p-2 max-w-[50%] min-w-[90px] whitespace-normal break-words`}
                   >
-                     <p>{message.conteudo}</p>
+                     <div className="flex flex-wrap justify-between items-end gap-2">
+                        <div className={`flex-grow break-words ${message.conteudo.length > 30 ? "w-full" : ""}`}>
+                           {message.conteudo}
+                        </div>
+                        <span
+                           className={`text-xs ${
+                              message.isSender ? "text-gray-200" : "text-gray-500"
+                           } font-light italic flex-shrink-0 self-end ${message.conteudo.length > 30 ? "ml-auto" : ""}`}
+                        >
+                           {new Date(message.timestamp).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                           })}
+                        </span>
+                     </div>
                   </div>
                </div>
             ))}
@@ -265,36 +323,49 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
          </div>
          <div className="p-4 flex flex-row items-center gap-4 w-full justify-between">
             <div className="w-full">
-               <input
-                  ref={inputRef}
-                  type="text"
-                  className="bg-white rounded-lg flex-1 w-full px-4 py-2 focus:outline-none"
-                  placeholder={
-                     isConnected
-                        ? "Digite sua mensagem aqui..."
-                        : "Conectando ao chat..."
-                  }
-                  disabled={!isConnected}
-                  onKeyDown={(e) => {
-                     if (e.key === "Enter" && isConnected) {
-                        sendMessage(e.currentTarget.value);
-                        e.currentTarget.value = "";
+               <div className="flex items-center gap-2 w-full">
+                  <input
+                     ref={inputRef}
+                     type="text"
+                     className="bg-white rounded-lg flex-1 w-full px-4 py-2 focus:outline-none"
+                     placeholder={
+                        isConnected
+                           ? "Digite sua mensagem aqui..."
+                           : "Conectando ao chat..."
                      }
-                  }}
-                  maxLength={200}
-               />
+                     disabled={!isConnected}
+                     onKeyDown={handleInputKeyDown}
+                     maxLength={200}
+                  />
+                  <label htmlFor="fileUpload" className="cursor-pointer">
+                     <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="hover:text-havprincipal"
+                     >
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                     </svg>
+                  </label>
+                  <input
+                     id="fileUpload"
+                     type="file"
+                     className="hidden"
+                     disabled={!isConnected}
+                  />
+               </div>
             </div>
             <Send
                className={`cursor-pointer ${
                   isConnected ? "hover:text-havprincipal" : "text-gray-400"
                }`}
-               onClick={() => {
-                  if (isConnected && inputRef.current) {
-                     sendMessage(inputRef.current.value);
-                     inputRef.current.value = "";
-                     inputRef.current.focus();
-                  }
-               }}
+               onClick={handleSendClick}
             />
          </div>
       </div>
