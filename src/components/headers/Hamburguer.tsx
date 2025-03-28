@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React from "react";
 import CasaIcon from "@/svg/icons/header/CasaIcon";
@@ -144,8 +144,10 @@ const Hamburguer = (props: HamburguerProps) => {
 
    return (
       <div className="absolute top-[64px] right-0 w-3/4 bg-havprincipal z-50 py-4 px-5 space-y-3">
-         {renderizeOpcoesHamburguer()}
-         {existeRole && renderizeOpcoesRoles()}
+         <div className="flex flex-col gap-4">
+            {renderizeOpcoesHamburguer()}
+            {existeRole && renderizeOpcoesRoles()}
+         </div>
       </div>
    );
 };

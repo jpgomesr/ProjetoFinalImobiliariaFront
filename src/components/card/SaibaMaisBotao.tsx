@@ -11,7 +11,7 @@ export default function SaibaMaisBotao(props: HomeProps) {
          }`}
       >
          <p
-            className={`py-2 px-4 text-sm font-inter ${
+            className={`py-2 px-4 text-sm font-inter font-bold ${
                !props.dark ? "text-white" : "text-havprincipal font-semibold"
             }`}
          >

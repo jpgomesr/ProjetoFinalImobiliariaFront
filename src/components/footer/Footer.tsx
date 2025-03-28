@@ -49,7 +49,7 @@ const Footer = () => {
 
    return (
       <div
-         className="px-4 pb-12 pt-6 bg-havprincipal h-full w-full
+         className="px-4 pb-12 pt-6 bg-havprincipal w-full
                      sm:pt-8
                      md:pt-10
                      lg:pt-12

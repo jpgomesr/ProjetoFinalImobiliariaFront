@@ -17,14 +17,17 @@ import List from "@/components/List";
 import { TipoBanner } from "@/models/Enum/TipoBanner";
 import { createImovelValidator } from "@/validators/Validators";
 import { restaurarCampos, preencherCampos } from "@/Functions/requisicaoViaCep";
-import SearchProprietarioList from "@/components/SearchProprietarioList";
-import CorretoresBoxSelect from "@/components/CorretoresBoxSelect";
 import { useNotification } from "@/context/NotificationContext";
 import { salvarImovel } from "./actions";
+import { ModelProprietarioList } from "@/models/ModelProprietarioList";
+import { ModelCorretor } from "@/models/ModelCorretor";
+import SearchSelect from "@/components/SearchSelect";
 
 const Page = () => {
    const router = useRouter();
    const { showNotification } = useNotification();
+   const proprietarioModel: ModelProprietarioList[] = [];
+   const corretoresModel: ModelCorretor[] = [];
 
    const [step, setStep] = useState(1);
    const [camposDesabilitados, setCamposDesabilitados] = useState({
@@ -33,6 +36,9 @@ const Page = () => {
       ruaDesabilitada: true,
       estadoDesabilitado: true,
    });
+
+   const [coverImage, setCoverImage] = useState<string | null>(null);
+   const [galleryImages, setGalleryImages] = useState<File[]>([]);
 
    const imovelValidator = createImovelValidator();
    type imovelValidatorSchema = z.infer<typeof imovelValidator>;
@@ -62,6 +68,7 @@ const Page = () => {
       formState: { errors, isSubmitting },
       clearErrors,
       setValue,
+      setError,
    } = useForm<imovelValidatorSchema>({
       resolver: zodResolver(imovelValidator),
    });
@@ -85,41 +92,68 @@ const Page = () => {
    const handleNextStep = async (e: React.MouseEvent) => {
       e.preventDefault();
       if (step === 1) {
-         const isValid = await trigger([
-            "titulo",
-            "descricao",
-            "metragem",
-            "qtdQuartos",
-            "qtdBanheiros",
-            "qtdVagas",
-            "valor",
-            "valorPromo",
-            "iptu",
-            "valorCondominio",
-            "objImovel",
-            "tipo",
-         ]);
-         if (isValid) {
-            setStep((prev) => prev + 1);
+         const valor = watch("valor");
+         const valorPromo = watch("valorPromo");
+         if (
+            valor !== undefined &&
+            valorPromo !== undefined &&
+            valor <= valorPromo
+         ) {
+            setError("valorPromo", {
+               message: "Valor promocional deve ser menor que o valor",
+            });
+         } else {
+            const isValid = await trigger(
+               [
+                  "titulo",
+                  "descricao",
+                  "metragem",
+                  "qtdQuartos",
+                  "qtdBanheiros",
+                  "qtdVagas",
+                  "valor",
+                  "valorPromo",
+                  "iptu",
+                  "valorCondominio",
+                  "objImovel",
+                  "tipo",
+               ],
+               { shouldFocus: true }
+            );
+            if (isValid) {
+               setStep((prev) => prev + 1);
+            }
          }
       }
-
       if (step === 2) {
-         const isValid = await trigger([
-            "cep",
-            "bairro",
-            "estado",
-            "cidade",
-            "rua",
-            "imagens",
-            "numero",
-            "numeroApto",
-         ]);
+         const isValid = await trigger(
+            [
+               "cep",
+               "bairro",
+               "estado",
+               "cidade",
+               "rua",
+               "imagens",
+               "numero",
+               "numeroApto",
+            ],
+            { shouldFocus: true }
+         );
          if (isValid) {
             setStep((prev) => prev + 1);
+            window.scrollTo({ top: 0, behavior: "smooth" });
          }
       }
    };
+
+   useEffect(() => {
+      const subscription = watch((value, { name }) => {
+         if (name === "valorPromo" || name === "valor") {
+            trigger("valorPromo");
+         }
+      });
+      return () => subscription.unsubscribe();
+   }, [watch, trigger]);
 
    const handlePrevStep = (e: React.MouseEvent) => {
       e.preventDefault();
@@ -147,7 +181,7 @@ const Page = () => {
             tipoBanner: data.tipoBanner || "",
             iptu: data.iptu?.toString() || "",
             valorCondominio: data.valorCondominio?.toString() || "",
-            idProprietario: data.proprietario.toString(),
+            idProprietario: data.proprietario.id,
             ativo: data.visibilidade,
             endereco: {
                rua: data.rua,
@@ -161,12 +195,17 @@ const Page = () => {
             },
             corretores: data.corretores,
          },
-         imagens: data.imagens,
+         imagens: {
+            imagemPrincipal: data.imagens.imagemPrincipal,
+            imagensGaleria: data.imagens.imagensGaleria,
+         },
       };
       const response = await salvarImovel(jsonRequest);
       if (response.ok) {
          showNotification("Imóvel cadastrado com sucesso");
          clearErrors();
+         setCoverImage(null);
+         setGalleryImages([]);
          router.push("/gerenciamento/imoveis");
       }
    };
@@ -524,25 +563,32 @@ const Page = () => {
                               imagensGaleria: [],
                            }}
                            render={({ field }) => {
-                              const imagensGaleria =
-                                 field.value.imagensGaleria || [];
-
                               return (
                                  <UploadGaleriaImagens
+                                    coverImage={coverImage}
+                                    galleryImages={galleryImages.map((img) =>
+                                       URL.createObjectURL(img)
+                                    )}
                                     onImageChange={(file, index) => {
                                        const newValue = { ...field.value };
                                        if (index === undefined) {
                                           newValue.imagemPrincipal = file;
+                                          if (file instanceof File) {
+                                             setCoverImage(
+                                                URL.createObjectURL(file)
+                                             );
+                                          }
                                        } else {
-                                          const newGallery = [
-                                             ...imagensGaleria,
-                                          ];
+                                          const newGallery = [...galleryImages];
                                           if (file === null) {
                                              newGallery.splice(index, 1);
                                           } else {
-                                             newGallery[index] = file;
+                                             if (file instanceof File) {
+                                                newGallery[index] = file;
+                                             }
                                           }
                                           newValue.imagensGaleria = newGallery;
+                                          setGalleryImages(newGallery);
                                        }
                                        field.onChange(newValue);
                                     }}
@@ -652,7 +698,7 @@ const Page = () => {
                                           htmlFor="numero_apartamento"
                                           label={`Número do apartamento`}
                                           placeholder="Digite o número do apartamento"
-                                          type="numberApto"
+                                          type="number"
                                           {...register("numeroApto")}
                                           mensagemErro={
                                              errors.numeroApto?.message
@@ -682,14 +728,37 @@ const Page = () => {
                   )}
                   {step === 3 && (
                      <div className="flex flex-col gap-4">
-                        <SearchProprietarioList
-                           registerProps={register("proprietario")}
-                           mensagemErro={errors.proprietario?.message}
-                        />
-                        <CorretoresBoxSelect
-                           registerProps={register("corretores")}
-                           mensagemErro={errors.corretores?.message}
-                        />
+                        <div className="flex flex-row gap-2">
+                           <SearchSelect
+                              register={register("proprietario")}
+                              mensagemErro={errors.proprietario?.message}
+                              title="Proprietário"
+                              url="/proprietarios/lista-select"
+                              method="GET"
+                              model={
+                                 proprietarioModel as unknown as new () => {
+                                    id: number;
+                                    nome: string;
+                                 }
+                              }
+                              startSelected={watch("proprietario")}
+                              isSingle
+                           />
+                           <SearchSelect
+                              register={register("corretores")}
+                              mensagemErro={errors.corretores?.message}
+                              title="Corretores"
+                              url="/usuarios/corretores-lista-select"
+                              method="GET"
+                              model={
+                                 corretoresModel as unknown as new () => {
+                                    id: number;
+                                    nome: string;
+                                 }
+                              }
+                              startSelected={watch("corretores")}
+                           />
+                        </div>
                         <div className="flex flex-row gap-2 justify-center">
                            <BotaoPadrao
                               type="button"

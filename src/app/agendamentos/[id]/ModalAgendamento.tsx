@@ -75,6 +75,7 @@ const ModalAgendamento = ({
                onClick={() => {
                   onClose();
                   confirmarAgendamento()
+                  window.location.reload();
                   scrollToTop();
                }}
             >

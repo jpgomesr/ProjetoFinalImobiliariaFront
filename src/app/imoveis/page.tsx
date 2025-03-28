@@ -1,3 +1,5 @@
+"use client";
+
 import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
 import Layout from "@/components/layout/LayoutPadrao";
 import ButtonFiltro from "@/components/componetes_filtro/filtro_pesquisa/ButtonFiltro";
@@ -7,51 +9,126 @@ import FiltroList from "@/components/componetes_filtro/FiltroList";
 import ListagemImovelPadrao from "@/components/listagem_imoveis/ListagemImovelPadrao";
 import InputPadrao from "@/components/InputPadrao";
 import ButtonMapa from "@/components/ButtonMapa";
+import { Suspense } from "react";
+import { getCoordinatesFromAddress, Coordinates } from "@/app/actions/geoCoding";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { ModelImovelGet } from "@/models/ModelImovelGet";
+import dynamic from "next/dynamic";
 
-interface PageProps {
-   searchParams: Promise<{
-      precoMinimo?: string;
-      precoMaximo?: string;
-      metrosQuadradosMinimo?: string;
-      metrosQuadradosMaximo?: string;
-      quantidadeDeQuartos?: string;
-      quantidadeDeVagas?: string;
-      cidade?: string;
-      bairro?: string;
-      tipoImovel?: string;
-      finalidade?: string;
-      view?: string;
-   }>;
+// Importação dinâmica do MapboxMap2
+const MapboxMap2 = dynamic(() => import("@/components/MapboxMap2"), {
+   loading: () => (
+      <div className="w-full h-[350px] flex items-center justify-center bg-gray-100 rounded-lg">
+         <p className="text-havprincipal">Carregando mapa...</p>
+      </div>
+   ),
+});
+
+interface ImovelComCoordenadas extends ModelImovelGet {
+   coordenadas?: Coordinates;
 }
 
-const Page = async ({ searchParams }: PageProps) => {
+const Page = () => {
+   const searchParams = useSearchParams();
+   const [imoveis, setImoveis] = useState<ImovelComCoordenadas[]>([]);
+   const [pageableInfo, setPageableInfo] = useState({ totalPaginas: 0, ultima: false });
+   const [quantidadeElementos, setQuantidadeElementos] = useState(0);
+   const [mapaCarregado, setMapaCarregado] = useState(false);
+
    const params = {
-      precoMinimo: (await searchParams).precoMinimo ?? "0",
-      precoMaximo: (await searchParams).precoMaximo ?? "0",
-      metrosQuadradosMinimo: (await searchParams).metrosQuadradosMinimo ?? "0",
-      metrosQuadradosMaximo: (await searchParams).metrosQuadradosMaximo ?? "0",
-      quantidadeDeQuartos: (await searchParams).quantidadeDeQuartos ?? "0",
-      quantidadeDeVagas: (await searchParams).quantidadeDeVagas ?? "0",
-      cidade: (await searchParams).cidade ?? "",
-      bairro: (await searchParams).bairro ?? "",
-      tipoImovel: (await searchParams).tipoImovel ?? "",
-      finalidade: (await searchParams).finalidade ?? "",
-      view: (await searchParams).view ?? "cards",
+      precoMinimo: searchParams.get("precoMinimo") ?? "0",
+      precoMaximo: searchParams.get("precoMaximo") ?? "0",
+      metrosQuadradosMinimo: searchParams.get("metrosQuadradosMinimo") ?? "0",
+      metrosQuadradosMaximo: searchParams.get("metrosQuadradosMaximo") ?? "0",
+      quantidadeDeQuartos: searchParams.get("quantidadeDeQuartos") ?? "0",
+      quantidadeDeVagas: searchParams.get("quantidadeDeVagas") ?? "0",
+      cidade: searchParams.get("cidade") ?? "",
+      bairro: searchParams.get("bairro") ?? "",
+      tipoImovel: searchParams.get("tipoImovel") ?? "",
+      finalidade: searchParams.get("finalidade") ?? "",
+      view: searchParams.get("view") ?? "cards",
    };
 
-   const { imoveis, pageableInfo, quantidadeElementos } =
-      await buscarTodosImoveis({
-         precoMinimo: params.precoMinimo,
-         precoMaximo: params.precoMaximo,
-         tamanhoMin: params.metrosQuadradosMinimo,
-         tamanhoMax: params.metrosQuadradosMaximo,
-         qtdQuartos: params.quantidadeDeQuartos,
-         qtdGaragens: params.quantidadeDeVagas,
-         cidade: params.cidade,
-         bairro: params.bairro,
-         tipoResidencia: params.tipoImovel,
-         finalidade: params.finalidade,
-      });
+   useEffect(() => {
+      let mounted = true;
+
+      const fetchData = async () => {
+         try {
+            const result = await buscarTodosImoveis({
+               precoMinimo: params.precoMinimo,
+               precoMaximo: params.precoMaximo,
+               tamanhoMin: params.metrosQuadradosMinimo,
+               tamanhoMax: params.metrosQuadradosMaximo,
+               qtdQuartos: params.quantidadeDeQuartos,
+               qtdGaragens: params.quantidadeDeVagas,
+               cidade: params.cidade,
+               bairro: params.bairro,
+               tipoResidencia: params.tipoImovel,
+               finalidade: params.finalidade,
+            });
+
+            if (!mounted) return;
+
+            if (result.imoveis.length > 0 && params.view === "map") {
+               const imoveisComCoordenadas = await Promise.all(
+                  result.imoveis.map(async (imovel) => {
+                     try {
+                        const coords = await getCoordinatesFromAddress({
+                           rua: imovel.endereco?.rua || "",
+                           numeroCasaPredio: String(imovel.endereco?.numeroCasaPredio || ""),
+                           bairro: imovel.endereco?.bairro || "",
+                           cidade: imovel.endereco?.cidade || "",
+                           estado: imovel.endereco?.estado || "",
+                           cep: String(imovel.endereco?.cep || ""),
+                           latitude: 0,
+                           longitude: 0
+                        });
+                        return { ...imovel, coordenadas: coords };
+                     } catch (error) {
+                        console.error('Erro ao obter coordenadas para imóvel:', error);
+                        return imovel;
+                     }
+                  })
+               );
+               if (mounted) {
+                  setImoveis(imoveisComCoordenadas);
+               }
+            } else {
+               if (mounted) {
+                  setImoveis(result.imoveis);
+               }
+            }
+            
+            if (mounted) {
+               setPageableInfo(result.pageableInfo);
+               setQuantidadeElementos(result.quantidadeElementos);
+               setMapaCarregado(true);
+            }
+         } catch (error) {
+            console.error('Erro ao buscar imóveis:', error);
+         }
+      };
+
+      fetchData();
+
+      return () => {
+         mounted = false;
+      };
+   }, [searchParams, params.view]);
+
+   const calcularCentroMapa = () => {
+      const imoveisComCoordenadas = imoveis.filter(imovel => imovel.coordenadas);
+      if (imoveisComCoordenadas.length === 0) return null;
+
+      const somaLat = imoveisComCoordenadas.reduce((sum, imovel) => sum + (imovel.coordenadas?.latitude || 0), 0);
+      const somaLng = imoveisComCoordenadas.reduce((sum, imovel) => sum + (imovel.coordenadas?.longitude || 0), 0);
+
+      return {
+         latitude: somaLat / imoveisComCoordenadas.length,
+         longitude: somaLng / imoveisComCoordenadas.length
+      };
+   };
 
    return (
       <Layout className="py-0">
@@ -59,6 +136,11 @@ const Page = async ({ searchParams }: PageProps) => {
             <FundoBrancoPadrao className="w-full" titulo="Imóveis Disponíveis">
                <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-[1fr_7fr_1fr] xl:grid-cols-[1fr_6fr_1fr]">
                   <FiltroList
+                     opcoes={[
+                        { id: "venda", label: "Venda" },
+                        { id: "aluguel", label: "Aluguel" },
+                        { id: "todos", label: "Todos" },
+                     ]}
                      finalidade={params.finalidade}
                      precoMinimo={params.precoMinimo}
                      precoMaximo={params.precoMaximo}
@@ -123,10 +205,26 @@ const Page = async ({ searchParams }: PageProps) => {
                </div>
 
                {params.view === "cards" && (
-                  <ListagemImovelPadrao
-                     imoveis={imoveis}
-                     pageableInfo={pageableInfo}
-                  />
+                  <Suspense fallback={<div>Carregando...</div>}>
+                     <ListagemImovelPadrao
+                        imoveis={imoveis}
+                        pageableInfo={pageableInfo}
+                     />
+                  </Suspense>
+               )}
+               {params.view === "map" && mapaCarregado && imoveis.length > 0 && (
+                  <div className="mt-4">
+                     <Suspense fallback={
+                        <div className="w-full h-[350px] flex items-center justify-center bg-gray-100 rounded-lg">
+                           <p className="text-havprincipal">Carregando mapa...</p>
+                        </div>
+                     }>
+                        <MapboxMap2
+                           imoveis={imoveis}
+                           centroMapa={calcularCentroMapa()}
+                        />
+                     </Suspense>
+                  </div>
                )}
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>

@@ -18,6 +18,14 @@ const nextConfig: NextConfig = {
       NEXT_PUBLIC_BASE_URL: "http://localhost:8082",
    },
    
+   async rewrites() {
+      return [
+         {
+            source: "/info",
+            destination: "/404",
+         },
+      ];
+   },
 };
 
 export default nextConfig;
