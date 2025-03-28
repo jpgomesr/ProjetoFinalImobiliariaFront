@@ -11,6 +11,11 @@ import ComponentePaginacao from "@/components/ComponentePaginacao";
 import PaginacaoHistorico from "./PaginacaoHistórico";
 import Link from "next/link";
 import BotaoPadrao from "@/components/BotaoPadrao";
+import { useSession } from "next-auth/react";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+
 interface PageProps {
    params: Promise<{
       id: string;
@@ -31,6 +36,14 @@ const page = async ({ params, searchParams }: PageProps) => {
    const { id } = await params;
    const currentPage = Number(searchParams?.page) || 0;
    const parametrosRenderizados = await searchParams;
+   const session = await getServerSession(authOptions)
+
+   if(!session){
+      redirect("/api/auth/signin")
+   }
+   if(session.user.id !== id){
+      redirect("/")
+   }
 
    const fetchAgendamentos = async () => {
       try {

@@ -15,9 +15,10 @@ import { number } from "zod";
 
 interface AgendamentoFormProps {
    id: string;
+   idUsuario: number | undefined;
 }
 
-const AgendamentoForm = ({ id }: AgendamentoFormProps) => {
+const AgendamentoForm = ({ id, idUsuario }: AgendamentoFormProps) => {
    const [horarioSelecionado, setHorarioSelecionado] = useState<string>("");
    const [mostrarModal, setMostrarModal] = useState(false);
    const [dataSelecionada, setDataSelecionada] = useState<Date>(new Date());
@@ -131,6 +132,7 @@ const AgendamentoForm = ({ id }: AgendamentoFormProps) => {
             <ModalAgendamento
                idCorretor={idCorretor ? idCorretor : 0}
                idImovel={+id}
+               idUsuario={idUsuario ? idUsuario.toString() : "0"}
                dataFormatadaCapitalizada={dataFormatadaCapitalizada}
                horarioSelecionado={horarioSelecionado}
                onClose={() => setMostrarModal(false)}

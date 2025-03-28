@@ -36,7 +36,6 @@ export const authOptions: NextAuthOptions = {
                if (response.ok) {
                   // Obter o token JWT da resposta
                   const data = await response.json();
-                  console.log("Resposta do login:", data);
 
                   // Verifica a estrutura da resposta da API
                   const token =
@@ -45,7 +44,6 @@ export const authOptions: NextAuthOptions = {
                      data.access_token ||
                      data.jwt ||
                      data;
-                  console.log("Token extraído:", token);
 
                   // Decodificar o token JWT (sem verificar a assinatura)
                   const decodedToken = jwt.decode(token) as JwtPayload & {
@@ -55,7 +53,6 @@ export const authOptions: NextAuthOptions = {
                      foto?: string | null;
                      role?: string;
                   };
-                  console.log("Token decodificado:", decodedToken);
 
                   // Retornar as informações do usuário e o token
                   return {
@@ -107,7 +104,6 @@ export const authOptions: NextAuthOptions = {
          session.accessToken = token.accessToken as string;
          session.user.id = token.id as string;
          session.user.role = token.role as string;
-         console.log("Session callback - session atualizada:", session);
          return session;
       },
    },

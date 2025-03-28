@@ -13,6 +13,7 @@ interface ModalAgendamentoProps {
    idCorretor : number,
    idImovel : number
    onClose: () => void;
+   idUsuario: string;
 }
 
 const ModalAgendamento = ({
@@ -20,6 +21,7 @@ const ModalAgendamento = ({
    horarioSelecionado,
    idImovel,
    onClose,
+   idUsuario,
    idCorretor
 }: ModalAgendamentoProps) => {
    const { showNotification } = useNotification();
@@ -29,7 +31,7 @@ const ModalAgendamento = ({
          dataHora : horarioSelecionado,
          idCorretor: idCorretor,
          idImovel,
-         idUsuario: 2
+         idUsuario: +idUsuario
       })
       showNotification(response);
       
