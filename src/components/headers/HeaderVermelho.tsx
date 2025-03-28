@@ -27,7 +27,7 @@ const HeaderVermelho = ({ role, id, foto, nome }: HeaderVermelhoProps) => {
                      flex justify-between"
       >
          <div className="flex flex-row md:gap-8  2xl:gap-16">
-            <FuncoesHeader role={role} />
+            <FuncoesHeader role={role as Roles} />
             <Link href={"/"}>
                <LogoHavClaro
                   className="w-14 h-14 2xl:w-20 2xl:h-20"
