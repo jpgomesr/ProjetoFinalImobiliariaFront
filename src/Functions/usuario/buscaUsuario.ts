@@ -11,7 +11,6 @@ interface retornoListaUsuarios {
     }
 }
 
-
 export const listarUsuarios =  async (numeroPagina:number, tipoUsuario?:string, status? : boolean, nomePesquisa?:string,tamanhoPagina? : number)  : Promise<retornoListaUsuarios> => {
 
     const response = await fetch(
@@ -41,4 +40,11 @@ export const buscarIdsUsuarios = async () : Promise<number[]>=> {
     const response = await fetch(`${BASE_URL}/usuarios/lista-id-usuarios`)
 
     return await response.json()
+}
+
+// Nova função para buscar todos os usuários sem paginação
+export const buscarTodosUsuarios = async () : Promise<ModelUsuarioListagem[]> => {
+    const response = await fetch(`${BASE_URL}/usuarios/total`);
+    const data = await response.json();
+    return data as ModelUsuarioListagem[];
 }

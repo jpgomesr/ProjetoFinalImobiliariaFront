@@ -29,7 +29,7 @@ const ModalAgendamento = ({
          dataHora : horarioSelecionado,
          idCorretor: idCorretor,
          idImovel,
-         idUsuario: 2
+         idUsuario: 5
       })
       showNotification(response);
       

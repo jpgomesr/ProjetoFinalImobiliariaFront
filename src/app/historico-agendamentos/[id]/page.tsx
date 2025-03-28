@@ -15,11 +15,11 @@ interface PageProps {
    params: Promise<{
       id: string;
    }>;
-   searchParams?: {
+   searchParams: Promise<{
       page?: string;
       status?: string;
       data?: string;
-   };
+   }>;
 }
 
 export async function generateStaticParams() {
@@ -29,8 +29,8 @@ export async function generateStaticParams() {
 
 const page = async ({ params, searchParams }: PageProps) => {
    const { id } = await params;
-   const currentPage = Number(searchParams?.page) || 0;
-   const parametrosRenderizados = await searchParams;
+   const parametros = await searchParams;
+   const currentPage = Number(parametros?.page) || 0;
 
    const fetchAgendamentos = async () => {
       try {
@@ -42,32 +42,9 @@ const page = async ({ params, searchParams }: PageProps) => {
                parametrosRenderizados?.data || ""
             }&page=${currentPage}&size=9&sort=dataHora,desc`
          );
-         const data = await response.json();
-         return {
-            content: data.content as ModelAgendamento[],
-            totalPages: data.totalPages as number,
-         };
-      } catch (error) {
-         console.error("Erro ao buscar agendamentos:", error);
-         return {
-            content: [],
-            totalPages: 0,
-         };
-      }
-   };
-
-   const { content: agendamentos, totalPages } = await fetchAgendamentos();
-
-   return (
-      <Layout className="my-0">
-         <SubLayoutPaginasCRUD>
-            <FundoBrancoPadrao
-               titulo="Histórico de agendamentos"
-               className="w-full px-2"
-            >
-               <Link href={`/horarios/${id}`}>
-                  <BotaoPadrao texto="Meus horários" />
-               </Link>
+         console.log(parametros);
+         const response = await fetch
+         (`http://localhost:8082/agendamentos/${id}?status=${parametros?.status || ''}&data=${parametros?.data || ''}&page=${currentPage}&size=9&sort=dataHora,desc`);
                <FIltrosAgendamento
                   id={id}
                   url={`/historico-agendamentos/${id}`}

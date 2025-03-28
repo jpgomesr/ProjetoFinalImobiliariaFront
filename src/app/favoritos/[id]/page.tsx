@@ -1,4 +1,3 @@
-"use client";
 
 import Layout from "@/components/layout/LayoutPadrao";
 import React from "react";

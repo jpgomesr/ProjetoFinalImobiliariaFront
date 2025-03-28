@@ -1,10 +1,10 @@
+"use client";
+
 import React from "react";
 import { Roles } from "@/models/Enum/Roles";
 import HeaderVermelho from "../headers/HeaderVermelho";
 import Footer from "../footer/Footer";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { redirect } from "next/navigation";
+import { useSession, SessionProvider } from "next-auth/react";
 
 interface LayoutProps {
    children: React.ReactNode;
@@ -12,8 +12,8 @@ interface LayoutProps {
    footerRemove?: boolean;
 }
 
-const Layout = async (props: LayoutProps) => {
-   const session = await getServerSession(authOptions);
+const LayoutContent = (props: LayoutProps) => {
+   const { data: session } = useSession();
 
    return (
       <div className="h-screen flex flex-col">
@@ -36,4 +36,12 @@ const Layout = async (props: LayoutProps) => {
    );
 };
 
-export default Layout;
+const LayoutPadraoClient = (props: LayoutProps) => {
+   return (
+      <SessionProvider>
+         <LayoutContent {...props} />
+      </SessionProvider>
+   );
+};
+
+export default LayoutPadraoClient;
