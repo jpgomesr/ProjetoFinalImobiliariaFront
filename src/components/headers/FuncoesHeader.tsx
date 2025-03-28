@@ -19,7 +19,7 @@ const FuncoesHeader = (props: FuncoesHeaderProps) => {
 
    const opcoesRole = [
       {
-         role: Roles.ADMIN,
+         role: Roles.ADMINISTRADOR,
          title: "Admin",
          items: [
             {
@@ -71,7 +71,7 @@ const FuncoesHeader = (props: FuncoesHeaderProps) => {
 
    const renderizeOpcoes = () => {
       return opcoesRole
-         .filter((group) => group.role == props.role)
+         .filter((group) => group.role === props.role)
          .map((group, index) => (
             <div key={index} className="flex flex-col items-start gap-4">
                <p
