@@ -51,6 +51,7 @@ interface ChatContextType {
    fetchChats: () => Promise<void>;
    addNewMessage: (chatId: number, message: ChatMessage) => void;
    forceUpdateChats: () => void;
+   resetConnection: () => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -344,23 +345,42 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       });
    }, [chats, stompClient, addNewMessage, selectedChat, userId, updateChat]);
 
-   // Buscar chats iniciais e configurar intervalo de atualização
+   // Buscar chats iniciais apenas uma vez
    useEffect(() => {
       if (isInitialFetch.current) {
          fetchChats();
          isInitialFetch.current = false;
       }
+   }, [fetchChats]);
 
-      // Configurar intervalo para atualizar a lista de chats a cada 30 segundos
-      // Isso serve como fallback caso alguma atualização não seja detectada pelo WebSocket
-      const intervalId = setInterval(() => {
-         console.log("Atualizando lista de chats periodicamente...");
-         fetchChats();
-      }, 30000); // 30 segundos
+   // Atualizar chats periodicamente para garantir sincronização
+   useEffect(() => {      
+      /* 
+       * TODO: Implementar no backend:
+       * 1. Criar um endpoint que emite mensagens para '/topic/chat/global'
+       * 2. Publicar nesse tópico sempre que qualquer mensagem for enviada
+       * 3. Substituir este intervalo pela inscrição no tópico global:
+       */
+      if (stompClient && stompClient.connected) {
+         const globalSubscription = stompClient.subscribe(
+            "/topic/chat/global",
+            () => {
+               console.log(
+                  "Mensagem recebida em algum chat, atualizando lista de chats..."
+               );
+               fetchChats();
+            }
+         );
 
-      return () => {
-         clearInterval(intervalId);
-      };
+         return () => {
+            if (
+               globalSubscription &&
+               typeof globalSubscription.unsubscribe === "function"
+            ) {
+               globalSubscription.unsubscribe();
+            }
+         };
+      }
    }, [fetchChats]);
 
    // Efeito para forçar atualização quando necessário
@@ -373,6 +393,32 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
          fetchChats();
       }
    }, [forceUpdate, fetchChats]);
+
+   const resetConnection = useCallback(() => {
+      console.log("Resetando conexão WebSocket");
+
+      // Limpar todas as inscrições existentes
+      Object.values(subscriptions.current).forEach((sub: any) => {
+         if (sub && typeof sub.unsubscribe === "function") {
+            sub.unsubscribe();
+         }
+      });
+      subscriptions.current = {};
+
+      // Desativar cliente se estiver conectado
+      if (stompClient?.connected) {
+         console.log("Desativando cliente WebSocket");
+         stompClient.deactivate();
+      }
+
+      // Reativar a conexão após um delay maior
+      setTimeout(() => {
+         if (stompClient && !stompClient.connected) {
+            console.log("Reativando cliente WebSocket");
+            stompClient.activate();
+         }
+      }, 500); // Aumentado o delay para 500ms
+   }, [stompClient]);
 
    const contextValue = {
       chats,
@@ -387,6 +433,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       fetchChats,
       addNewMessage,
       forceUpdateChats,
+      resetConnection,
    };
 
    return (

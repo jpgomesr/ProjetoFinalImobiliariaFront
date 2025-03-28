@@ -30,8 +30,14 @@ export default function ChatList() {
    const [search, setSearch] = useState("");
    const [loading, setLoading] = useState(true);
    const [localChats, setLocalChats] = useState<Chat[]>([]);
-   const { chats, selectedChat, setSelectedChat, fetchChats, userId } =
-      useChat();
+   const {
+      chats,
+      selectedChat,
+      setSelectedChat,
+      fetchChats,
+      userId,
+      resetConnection,
+   } = useChat();
 
    // Atualizar o estado local quando os chats do contexto mudarem
    useEffect(() => {
@@ -40,27 +46,43 @@ export default function ChatList() {
    }, [chats]);
 
    const handleContactClick = useCallback(
-      (chatId: number) => {
-         setSelectedChat(chatId);
+      async (chatId: number) => {
+         if (selectedChat === chatId) return;
 
-         // Marcar mensagens como lidas apenas quando o usuário clica no chat
-         fetch(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chatId}/marcarLidas?idUsuario=${userId}`,
-            {
-               method: "POST",
-            }
-         ).then(() => {
-            // Atualizar localmente o status de leitura
+         try {
+            resetConnection();
+            setSelectedChat(chatId);
+
+            await fetch(
+               `${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chatId}/marcarLidas?idUsuario=${userId}`,
+               {
+                  method: "POST",
+               }
+            );
+
             setLocalChats((prevChats) =>
                prevChats.map((chat) =>
                   chat.idChat === chatId ? { ...chat, naoLido: false } : chat
                )
             );
-         });
 
-         router.push(`/chat/?chat=${chatId}`);
+            await fetchChats();
+
+            // Navegação instantânea
+            router.replace(`/chat/?chat=${chatId}`);
+         } catch (error) {
+            console.error("Erro ao carregar chat:", error);
+            router.replace(`/chat/?chat=${chatId}`);
+         }
       },
-      [router, setSelectedChat, userId]
+      [
+         router,
+         setSelectedChat,
+         userId,
+         selectedChat,
+         resetConnection,
+         fetchChats,
+      ]
    );
 
    const getChatPartnerName = useCallback(

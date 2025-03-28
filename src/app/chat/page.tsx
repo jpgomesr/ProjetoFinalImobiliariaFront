@@ -2,7 +2,7 @@
 
 import ChatLayout from "@/components/chat/ChatLayout";
 import Layout from "@/components/layout/LayoutPadrao";
-import React, { useEffect } from "react";
+import React from "react";
 import { ChatProvider } from "@/context/ChatContext";
 
 export default function ChatPage() {

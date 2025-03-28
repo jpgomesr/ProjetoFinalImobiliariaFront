@@ -160,7 +160,11 @@ const Page = () => {
       setStep((prev) => prev - 1);
    };
 
-   const handleCriarImovel = async (data: imovelValidatorSchema) => {
+   const handleCriarImovel = async (
+      data: imovelValidatorSchema,
+      event?: React.BaseSyntheticEvent
+   ) => {
+      event?.preventDefault();
       const jsonRequest = {
          imovel: {
             titulo: data.titulo,
@@ -559,7 +563,7 @@ const Page = () => {
                            name="imagens"
                            control={control}
                            defaultValue={{
-                              imagemPrincipal: null,
+                              imagemPrincipal: undefined as unknown as File,
                               imagensGaleria: [],
                            }}
                            render={({ field }) => {
@@ -572,8 +576,8 @@ const Page = () => {
                                     onImageChange={(file, index) => {
                                        const newValue = { ...field.value };
                                        if (index === undefined) {
-                                          newValue.imagemPrincipal = file;
                                           if (file instanceof File) {
+                                             newValue.imagemPrincipal = file;
                                              setCoverImage(
                                                 URL.createObjectURL(file)
                                              );
@@ -592,8 +596,11 @@ const Page = () => {
                                        }
                                        field.onChange(newValue);
                                     }}
-                                    mensagemErro={
+                                    mensagemErroPrincipal={
                                        errors.imagens?.imagemPrincipal?.message
+                                    }
+                                    mensagemErroGaleria={
+                                       errors.imagens?.imagensGaleria?.message
                                     }
                                     clearErrors={clearErrors}
                                  />

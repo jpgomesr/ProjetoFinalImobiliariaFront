@@ -49,6 +49,11 @@ const InputPadrao = ({
                   ${search ? "pl-2" : ""}`,
                   props.className
                )} // Adiciona padding à esquerda se search for true
+               onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                     e.preventDefault();
+                  }
+               }}
             />
             {search && ( // Renderiza o botão de lupa se search for true
                <button

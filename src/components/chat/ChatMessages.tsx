@@ -67,11 +67,13 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
       }
    }, [chat, userId, updateChat]);
 
-   // Carregar mensagens e configurar chat
    useEffect(() => {
-      if (!userId || messagesFetchedRef.current) {
-         return;
-      }
+      if (!userId) return;
+
+      // Resetar estado ao trocar de chat
+      setMessages([]);
+      setChatPartner(null);
+      messagesFetchedRef.current = false;
 
       const createOrJoinChat = async () => {
          try {
@@ -79,8 +81,9 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
                `${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chat}?idUsuario=${userId}`,
                { method: "GET" }
             );
+
             if (!response.ok && response.status !== 409) {
-               console.error("Erro ao criar chat");
+               console.error("Erro ao carregar chat");
                return;
             }
 
@@ -91,13 +94,15 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
                   data.usuario1?.id.toString() === userId
                      ? data.usuario2
                      : data.usuario1;
+
                if (parceiro) {
                   setChatPartner({
                      id: parceiro.id.toString(),
                      nome: parceiro.nome || `Usuário ${parceiro.id}`,
                   });
                }
-               if (data.mensagens && data.mensagens.length > 0) {
+
+               if (data.mensagens?.length > 0) {
                   const formattedMessages: DisplayMessage[] =
                      data.mensagens.map((msg: any) => ({
                         id: msg.id,
@@ -111,20 +116,17 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
                               ? userName
                               : parceiro?.nome || `Usuário ${msg.remetente}`,
                      }));
-                  setMessages(formattedMessages);
-                  messagesFetchedRef.current = true;
 
-                  // Marcar mensagens como lidas
-                  const mensagensNaoLidas = formattedMessages.filter(
-                     (msg) => !msg.isSender
-                  );
-                  if (mensagensNaoLidas.length > 0) {
+                  setMessages(formattedMessages);
+
+                  // Marcar mensagens como lidas se houver mensagens não lidas
+                  if (formattedMessages.some((msg) => !msg.isSender)) {
                      await markMessagesAsRead();
                   }
                }
             }
          } catch (error) {
-            console.error("Erro ao criar/entrar no chat:", error);
+            console.error("Erro ao carregar mensagens:", error);
          }
       };
 
@@ -287,38 +289,90 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
             </p>
          </div>
          <div className="flex flex-col gap-2 h-full py-2 px-5 overflow-y-auto hide-scrollbar">
-            {messages.map((message, index) => (
-               <div
-                  key={index}
-                  className={`flex flex-col gap-1 ${
-                     message.isSender ? "items-end" : "items-start"
-                  }`}
-               >
-                  <div
-                     className={`${
-                        message.isSender
-                           ? "bg-havprincipal text-white rounded-tr-none"
-                           : "bg-white rounded-tl-none"
-                     } rounded-lg p-2 max-w-[50%] min-w-[90px] whitespace-normal break-words`}
-                  >
-                     <div className="flex flex-wrap justify-between items-end gap-2">
-                        <div className={`flex-grow break-words ${message.conteudo.length > 30 ? "w-full" : ""}`}>
-                           {message.conteudo}
-                        </div>
-                        <span
-                           className={`text-xs ${
-                              message.isSender ? "text-gray-200" : "text-gray-500"
-                           } font-light italic flex-shrink-0 self-end ${message.conteudo.length > 30 ? "ml-auto" : ""}`}
+            {messages.reduce<React.ReactNode[]>(
+               (messageGroups, message, index, array) => {
+                  const messageDate = new Date(
+                     message.timestamp
+                  ).toLocaleDateString("pt-BR");
+
+                  // Verificar se precisamos adicionar um novo cabeçalho de data
+                  if (
+                     index === 0 ||
+                     messageDate !==
+                        new Date(array[index - 1].timestamp).toLocaleDateString(
+                           "pt-BR"
+                        )
+                  ) {
+                     messageGroups.push(
+                        <div
+                           key={`date-${messageDate}`}
+                           className="flex justify-center my-2"
                         >
-                           {new Date(message.timestamp).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                           })}
-                        </span>
+                           <div className="bg-havprincipal rounded-full px-3 py-1 text-xs text-white">
+                              {messageDate ===
+                              new Date().toLocaleDateString("pt-BR")
+                                 ? "Hoje"
+                                 : messageDate ===
+                                   new Date(
+                                      Date.now() - 86400000
+                                   ).toLocaleDateString("pt-BR")
+                                 ? "Ontem"
+                                 : messageDate}
+                           </div>
+                        </div>
+                     );
+                  }
+
+                  // Adicionar a mensagem
+                  messageGroups.push(
+                     <div
+                        key={`msg-${index}`}
+                        className={`flex flex-col gap-1 ${
+                           message.isSender ? "items-end" : "items-start"
+                        }`}
+                     >
+                        <div
+                           className={`${
+                              message.isSender
+                                 ? "bg-havprincipal text-white rounded-tr-none"
+                                 : "bg-white rounded-tl-none"
+                           } rounded-lg p-2 max-w-[50%] min-w-[90px] whitespace-normal break-words`}
+                        >
+                           <div className="flex flex-wrap justify-between items-end gap-2">
+                              <div
+                                 className={`flex-grow break-words ${
+                                    message.conteudo.length > 30 ? "w-full" : ""
+                                 }`}
+                              >
+                                 {message.conteudo}
+                              </div>
+                              <span
+                                 className={`text-xs ${
+                                    message.isSender
+                                       ? "text-gray-200"
+                                       : "text-gray-500"
+                                 } font-light italic flex-shrink-0 self-end ${
+                                    message.conteudo.length > 30
+                                       ? "ml-auto"
+                                       : ""
+                                 }`}
+                              >
+                                 {new Date(
+                                    message.timestamp
+                                 ).toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                 })}
+                              </span>
+                           </div>
+                        </div>
                      </div>
-                  </div>
-               </div>
-            ))}
+                  );
+
+                  return messageGroups;
+               },
+               []
+            )}
             <div ref={messagesEndRef} />
          </div>
          <div className="p-4 flex flex-row items-center gap-4 w-full justify-between">
