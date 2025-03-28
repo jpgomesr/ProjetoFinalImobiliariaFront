@@ -28,7 +28,7 @@ export default function FormularioHorarios({
    const [horariosAgrupados, setHorariosAgrupados] = useState<{
       [key: string]: Horario[];
    }>({});
-   console.log(id)
+   console.log(id);
    const [modalConfirmacao, setModalConfirmacao] = useState(false);
    const [idHorarioParaExcluir, setIdHorarioParaExcluir] = useState<
       number | null

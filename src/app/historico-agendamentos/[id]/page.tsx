@@ -15,16 +15,17 @@ import { useSession } from "next-auth/react";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import { Roles } from "@/models/Enum/Roles";
 
 interface PageProps {
    params: Promise<{
       id: string;
    }>;
-   searchParams?: {
+   searchParams?: Promise<{
       page?: string;
       status?: string;
       data?: string;
-   };
+   }>;
 }
 
 export async function generateStaticParams() {
@@ -34,8 +35,9 @@ export async function generateStaticParams() {
 
 const page = async ({ params, searchParams }: PageProps) => {
    const { id } = await params;
-   const currentPage = Number(searchParams?.page) || 0;
-   const parametrosRenderizados = await searchParams;
+   const searchParamsRenderizados = await searchParams;
+   const currentPage = Number(searchParamsRenderizados?.page) || 0;
+   const parametrosRenderizados = await searchParamsRenderizados;
    const session = await getServerSession(authOptions)
 
    if(!session){
@@ -45,17 +47,20 @@ const page = async ({ params, searchParams }: PageProps) => {
       redirect("/")
    }
 
-   const fetchAgendamentos = async () => {
+   const fetchAgendamentos = async (role: Roles) => {
       try {
          console.log(parametrosRenderizados);
          const response = await fetch(
-            `http://localhost:8082/agendamentos/${id}?status=${
+            `http://localhost:8082/agendamentos/${role === Roles.CORRETOR ? "corretor" : "usuario"}/${id}?status=${
                parametrosRenderizados?.status || ""
             }&data=${
                parametrosRenderizados?.data || ""
             }&page=${currentPage}&size=9&sort=dataHora,desc`
          );
          const data = await response.json();
+
+         
+         console.log(data)
          return {
             content: data.content as ModelAgendamento[],
             totalPages: data.totalPages as number,
@@ -69,7 +74,7 @@ const page = async ({ params, searchParams }: PageProps) => {
       }
    };
 
-   const { content: agendamentos, totalPages } = await fetchAgendamentos();
+   const { content: agendamentos, totalPages } = await fetchAgendamentos(session.user.role as Roles);
 
    return (
       <Layout className="my-0">

@@ -11,7 +11,6 @@ import {
    buscarHorariosDisponiveis,
    HorarioDisponivel,
 } from "@/Functions/agendamento/buscaHorarios";
-import { number } from "zod";
 
 interface AgendamentoFormProps {
    id: string;
@@ -19,18 +18,17 @@ interface AgendamentoFormProps {
 }
 
 const AgendamentoForm = ({ id, idUsuario }: AgendamentoFormProps) => {
-   const [horarioSelecionado, setHorarioSelecionado] = useState<string>("");
+   const [horarioSelecionado, setHorarioSelecionado] =
+      useState<HorarioDisponivel | null>(null);
    const [mostrarModal, setMostrarModal] = useState(false);
    const [dataSelecionada, setDataSelecionada] = useState<Date>(new Date());
    const [horariosDisponiveis, setHorariosDisponiveis] = useState<
       HorarioDisponivel[]
    >([]);
    const [carregando, setCarregando] = useState(false);
-   const [idCorretor, setIdCorretor] = useState<number>()
 
-   const handleSelecionarHorario = (horario: string, idCorretor : number) => {
+   const handleSelecionarHorario = (horario: HorarioDisponivel) => {
       setHorarioSelecionado(horario);
-      setIdCorretor(idCorretor)
    };
 
    const handleSelecionarData = async (data: Date) => {
@@ -41,7 +39,6 @@ const AgendamentoForm = ({ id, idUsuario }: AgendamentoFormProps) => {
          const dataFormatada = format(data, "yyyy-MM-dd");
          const horarios = await buscarHorariosDisponiveis(dataFormatada, id);
          setHorariosDisponiveis(horarios);
-         console.log(horarios)
       } catch (error) {
          console.error("Erro ao buscar horários:", error);
       } finally {
@@ -62,7 +59,6 @@ const AgendamentoForm = ({ id, idUsuario }: AgendamentoFormProps) => {
       }
    };
 
-   // Buscar horários iniciais
    useEffect(() => {
       handleSelecionarData(dataSelecionada);
    }, []);
@@ -93,10 +89,8 @@ const AgendamentoForm = ({ id, idUsuario }: AgendamentoFormProps) => {
                         <Horario
                            key={horario.id}
                            horario={horario.dataHora}
-                           selecionado={horario.dataHora === horarioSelecionado}
-                           onSelecionar={() =>
-                              handleSelecionarHorario(horario.dataHora, horario.idCorretor)
-                           }
+                           selecionado={horarioSelecionado?.id === horario.id}
+                           onSelecionar={() => handleSelecionarHorario(horario)}
                            disponivel={horario.disponivel}
                         />
                      ))}
@@ -104,12 +98,10 @@ const AgendamentoForm = ({ id, idUsuario }: AgendamentoFormProps) => {
                   <div className="grid grid-cols-4 gap-2 lg:gap-16">
                      {horariosDisponiveis.slice(4).map((horario) => (
                         <Horario
-                           key={horario.dataHora}
+                           key={horario.id}
                            horario={horario.dataHora}
-                           selecionado={horario.dataHora === horarioSelecionado}
-                           onSelecionar={() =>
-                              handleSelecionarHorario(horario.dataHora,horario.idCorretor)
-                           }
+                           selecionado={horarioSelecionado?.id === horario.id}
+                           onSelecionar={() => handleSelecionarHorario(horario)}
                            disponivel={horario.disponivel}
                         />
                      ))}
@@ -128,15 +120,14 @@ const AgendamentoForm = ({ id, idUsuario }: AgendamentoFormProps) => {
             )}
          </div>
 
-         {mostrarModal && (
+         {mostrarModal && horarioSelecionado && (
             <ModalAgendamento
-               idCorretor={idCorretor ? idCorretor : 0}
+               idCorretor={horarioSelecionado.idCorretor}
                idImovel={+id}
                idUsuario={idUsuario ? idUsuario.toString() : "0"}
                dataFormatadaCapitalizada={dataFormatadaCapitalizada}
-               horarioSelecionado={horarioSelecionado}
+               horarioSelecionado={horarioSelecionado.dataHora}
                onClose={() => setMostrarModal(false)}
-
             />
          )}
       </>

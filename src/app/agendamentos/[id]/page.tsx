@@ -4,16 +4,17 @@ import AgendamentoForm from "./AgendamentoForm";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-
+import { Roles } from "@/models/Enum/Roles";
 interface PageProps {
-   params: {
+   params: Promise<{
       id: string;
-   };
+   }>;
 }
 
 const Page = async ({ params }: PageProps) => {
 
    const session = await getServerSession(authOptions)
+   const { id } = await params;
    let idUsuario : number | undefined = undefined
    if(!session){
       redirect("/api/auth/signin")
@@ -21,6 +22,9 @@ const Page = async ({ params }: PageProps) => {
    if(session.user.id){
       idUsuario = +session.user.id
    }else{
+      redirect("/")
+   }
+   if(session.user.role !== Roles.USUARIO){
       redirect("/")
    }
 
@@ -31,7 +35,7 @@ const Page = async ({ params }: PageProps) => {
                <h1>Agendamento de Visitas com</h1>
                <h1 className="font-bold">HAV</h1>
             </div>
-            <AgendamentoForm id={params.id} idUsuario={idUsuario} />
+            <AgendamentoForm id={id} idUsuario={idUsuario} />
          </SubLayoutPaginasCRUD>
       </Layout>
    );
