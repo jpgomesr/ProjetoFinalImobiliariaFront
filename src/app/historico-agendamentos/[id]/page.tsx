@@ -34,22 +34,32 @@ const page = async ({ params, searchParams }: PageProps) => {
 
    const fetchAgendamentos = async () => {
       try {
-         console.log(parametrosRenderizados);
+         console.log(parametros);
          const response = await fetch(
             `http://localhost:8082/agendamentos/${id}?status=${
-               parametrosRenderizados?.status || ""
+               parametros?.status || ""
             }&data=${
-               parametrosRenderizados?.data || ""
+               parametros?.data || ""
             }&page=${currentPage}&size=9&sort=dataHora,desc`
          );
-         console.log(parametros);
-         const response = await fetch
-         (`http://localhost:8082/agendamentos/${id}?status=${parametros?.status || ''}&data=${parametros?.data || ''}&page=${currentPage}&size=9&sort=dataHora,desc`);
+         const data = await response.json();
+         return data;
+      } catch (error) {
+         console.error("Erro ao buscar agendamentos:", error);
+         return [];
+      }
+   };
+
+   const agendamentos = await fetchAgendamentos();
+
+   return (
+      <Layout>
+         <SubLayoutPaginasCRUD>
                <FIltrosAgendamento
-                  id={id}
-                  url={`/historico-agendamentos/${id}`}
-                  status={parametrosRenderizados?.status || ""}
-                  data={parametrosRenderizados?.data || ""}
+               id={id}
+               url={`/historico-agendamentos/${id}`}
+               status={parametros?.status || ""}
+               data={parametros?.data || ""}
                />
                <Suspense fallback={<div>Carregando...</div>}>
                   <section
@@ -60,7 +70,7 @@ const page = async ({ params, searchParams }: PageProps) => {
                   >
                      {agendamentos &&
                         agendamentos.map(
-                           (agendamento: ModelAgendamento, key) => (
+                           (agendamento: ModelAgendamento, key: number) => (
                               <CardReserva
                                  id={agendamento.id}
                                  key={key}
@@ -82,11 +92,10 @@ const page = async ({ params, searchParams }: PageProps) => {
                         )}
                   </section>
                   <PaginacaoHistorico
-                     totalPages={totalPages}
+                     totalPages={agendamentos.totalPages}
                      currentPage={currentPage}
                   />
-               </Suspense>
-            </FundoBrancoPadrao>
+            </Suspense>
          </SubLayoutPaginasCRUD>
       </Layout>
    );
