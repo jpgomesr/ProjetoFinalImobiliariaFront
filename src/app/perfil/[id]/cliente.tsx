@@ -140,154 +140,152 @@ export default function PerfilClient({ initialData }: PerfilClientProps) {
   }
 
   return (
-    <>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className={`flex flex-col xl:flex-row-reverse gap-2 sm:gap-4 md:gap-6 xl:gap-24 max-w-5xl mx-auto ${
-          isSubmitting ? "opacity-40" : "opacity-100"
-        }`}
-      >
-        {/* Coluna da Direita - Foto */}
-        <div className="w-full xl:w-1/4 flex flex-col items-center order-first xl:order-none xl:mt-10">
-          <div className="relative">
-            <Controller
-              name="imagemPerfil"
-              control={control}
-              render={({ field }) => (
-                <>
-                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 xl:w-48 xl:h-48 rounded-full overflow-hidden">
-                    {preview ? (
-                      <img
-                        src={preview}
-                        alt="Foto do perfil"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                        <FaUser className="text-gray-400 text-2xl sm:text-3xl" />
-                      </div>
-                    )}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="absolute bottom-0 left-0 xl:bottom-2 xl:left-2 bg-havprincipal text-white rounded-full p-1.5 sm:p-2 cursor-pointer hover:bg-havprincipal/90"
-                  >
-                    <FaPencilAlt
-                      size={10}
-                      className="sm:size-[12px] xl:size-[16px]"
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className={`flex flex-col xl:flex-row-reverse gap-2 sm:gap-4 md:gap-6 xl:gap-24 max-w-5xl mx-auto ${
+        isSubmitting ? "opacity-40" : "opacity-100"
+      }`}
+    >
+      {/* Coluna da Direita - Foto */}
+      <div className="w-full xl:w-1/4 flex flex-col items-center order-first xl:order-none xl:mt-10">
+        <div className="relative">
+          <Controller
+            name="imagemPerfil"
+            control={control}
+            render={({ field }) => (
+              <>
+                <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 xl:w-48 xl:h-48 rounded-full overflow-hidden">
+                  {preview ? (
+                    <img
+                      src={preview}
+                      alt="Foto do perfil"
+                      className="w-full h-full object-cover"
                     />
-                  </button>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={(e) => {
-                      const file = e.target.files?.[0] || null;
-                      field.onChange(file);
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          setPreview(reader.result as string);
-                        };
-                        reader.readAsDataURL(file);
-                      }
-                    }}
-                    className="hidden"
-                    accept="image/*"
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <FaUser className="text-gray-400 text-2xl sm:text-3xl" />
+                    </div>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute bottom-0 left-0 xl:bottom-2 xl:left-2 bg-havprincipal text-white rounded-full p-1.5 sm:p-2 cursor-pointer hover:bg-havprincipal/90"
+                >
+                  <FaPencilAlt
+                    size={10}
+                    className="sm:size-[12px] xl:size-[16px]"
                   />
-                </>
-              )}
+                </button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+                    field.onChange(file);
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setPreview(reader.result as string);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  className="hidden"
+                  accept="image/*"
+                />
+              </>
+            )}
+          />
+        </div>
+      </div>
+
+      {/* Coluna da Esquerda - Campos de texto */}
+      <div className="w-full sm:w-[90%] xl:mr-20 md:w-[95%] xl:w-[600px] flex flex-col gap-2 sm:gap-3 md:gap-4 order-last xl:order-none">
+        <div className="flex flex-col gap-2 sm:gap-3 md:gap-4">
+          <div className="col-span-2">
+            <InputPadrao
+              htmlFor="nomeCompleto"
+              label="Nome"
+              type="text"
+              placeholder="Seu nome completo"
+              className="text-xs sm:text-sm md:text-base"
+              {...register("nomeCompleto")}
+              mensagemErro={errors.nomeCompleto?.message}
             />
           </div>
-        </div>
 
-        {/* Coluna da Esquerda - Campos de texto */}
-        <div className="w-full sm:w-[90%] xl:mr-20 md:w-[95%] xl:w-[600px] flex flex-col gap-2 sm:gap-3 md:gap-4 order-last xl:order-none">
-          <div className="flex flex-col gap-2 sm:gap-3 md:gap-4">
-            <div className="col-span-2">
-              <InputPadrao
-                htmlFor="nomeCompleto"
-                label="Nome"
-                type="text"
-                placeholder="Seu nome completo"
-                className="text-xs sm:text-sm md:text-base"
-                {...register("nomeCompleto")}
-                mensagemErro={errors.nomeCompleto?.message}
-              />
-            </div>
+          <div className="col-span-2">
+            <InputPadrao
+              htmlFor="email"
+              label="E-mail"
+              type="email"
+              placeholder="Seu e-mail"
+              className="text-xs sm:text-sm md:text-base"
+              {...register("email")}
+              mensagemErro={errors.email?.message}
+            />
+          </div>
 
-            <div className="col-span-2">
-              <InputPadrao
-                htmlFor="email"
-                label="E-mail"
-                type="email"
-                placeholder="Seu e-mail"
-                className="text-xs sm:text-sm md:text-base"
-                {...register("email")}
-                mensagemErro={errors.email?.message}
-              />
-            </div>
+          <div className="col-span-2">
+            <InputPadrao
+              htmlFor="telefone"
+              label="Telefone"
+              type="tel"
+              placeholder="Seu telefone"
+              className="text-xs sm:text-sm md:text-base"
+              {...register("telefone")}
+              mensagemErro={errors.telefone?.message}
+            />
+          </div>
 
-            <div className="col-span-2">
-              <InputPadrao
-                htmlFor="telefone"
-                label="Telefone"
-                type="tel"
-                placeholder="Seu telefone"
-                className="text-xs sm:text-sm md:text-base"
-                {...register("telefone")}
-                mensagemErro={errors.telefone?.message}
-              />
-            </div>
+          <div className="col-span-2 w-full sm:w-[300px] md:w-[500px] xl:w-[980px]">
+            <TextAreaPadrao
+              htmlFor="descricao"
+              label="Biografia"
+              className="text-xs sm:text-sm md:text-base h-20 sm:h-24 md:h-28"
+              {...register("descricao")}
+              mensagemErro={errors.descricao?.message}
+            />
+          </div>
 
-            <div className="col-span-2 w-full sm:w-[300px] md:w-[500px] xl:w-[980px]">
-              <TextAreaPadrao
-                htmlFor="descricao"
-                label="Biografia"
-                className="text-xs sm:text-sm md:text-base h-20 sm:h-24 md:h-28"
-                {...register("descricao")}
-                mensagemErro={errors.descricao?.message}
-              />
-            </div>
-
-            <div className="col-span-2">
-              <div className="relative">
-                <label
-                  htmlFor="contactOption"
-                  className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
+          <div className="col-span-2">
+            <div className="relative">
+              <label
+                htmlFor="contactOption"
+                className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
+              >
+                Preferência de Contato
+              </label>
+              <select
+                id="contactOption"
+                className="w-full h-[28px] sm:h-[30px] md:h-[48px] xl:w-[980px] px-3 sm:px-4 md:px-6 border border-gray-700 rounded-md focus:outline-none bg-white appearance-none text-xs sm:text-sm md:text-base"
+                value={selectedContact}
+                onChange={(e) => setSelectedContact(e.target.value)}
+              >
+                <option value="">Selecione a opção de contato</option>
+                <option value="email">E-mail</option>
+                <option value="telefone">Telefone</option>
+              </select>
+              <div className="absolute right-2 top-[28px] sm:top-[32px] md:top-[40px] xl:top-[42px] xl:left-[950px] pointer-events-none">
+                <svg
+                  className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  Preferência de Contato
-                </label>
-                <select
-                  id="contactOption"
-                  className="w-full h-[28px] sm:h-[30px] md:h-[48px] xl:w-[980px] px-3 sm:px-4 md:px-6 border border-gray-700 rounded-md focus:outline-none bg-white appearance-none text-xs sm:text-sm md:text-base"
-                  value={selectedContact}
-                  onChange={(e) => setSelectedContact(e.target.value)}
-                >
-                  <option value="">Selecione a opção de contato</option>
-                  <option value="email">E-mail</option>
-                  <option value="telefone">Telefone</option>
-                </select>
-                <div className="absolute right-2 top-[28px] sm:top-[32px] md:top-[40px] xl:top-[42px] xl:left-[950px] pointer-events-none">
-                  <svg
-                    className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </div>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
               </div>
             </div>
           </div>
         </div>
-      </form>
+      </div>
 
       {/* Seção 2FA */}
       <div className="mt-8 max-w-5xl mx-auto">
@@ -352,11 +350,11 @@ export default function PerfilClient({ initialData }: PerfilClientProps) {
       </div>
 
       {/* Seção de Agendamentos */}
-      <div className="mt-4 sm:mt-6 md:mt-8 xl:mt-12">
-        <h2 className="text-sm sm:text-base md:text-lg font-medium mb-7 flex justify-center text-gray-700 sm:mb-3 md:mb-4 px-2 sm:px-3 md:px-4">
+      <div className="mt-4 sm:mt-6 md:mt-8 xl:mt-12 w-full max-w-5xl mx-auto">
+        <h2 className="text-sm sm:text-base md:text-lg font-medium mb-4 text-gray-700 text-center">
           Meus Agendamentos
         </h2>
-        <div className="px-2 sm:px-3 md:px-4">
+        <div className="w-full px-4 sm:px-6 md:px-8">
           <Swiper
             modules={[Navigation, Pagination]}
             spaceBetween={20}
@@ -365,13 +363,25 @@ export default function PerfilClient({ initialData }: PerfilClientProps) {
             pagination={{ clickable: true }}
             className="w-full"
             breakpoints={{
-              1280: {
+              640: { // sm
+                slidesPerView: 1,
+                spaceBetween: 20,
+              },
+              768: { // md
+                slidesPerView: 1,
+                spaceBetween: 25,
+              },
+              1024: { // lg
+                slidesPerView: 2,
+                spaceBetween: 30,
+              },
+              1280: { // xl
                 slidesPerView: 2,
                 spaceBetween: 30,
               },
             }}
           >
-            <SwiperSlide>
+            <SwiperSlide className="pb-10">
               <CardReserva
                 id={1}
                 urlImagem="/placeholder.svg?height=300&width=500"
@@ -383,7 +393,7 @@ export default function PerfilClient({ initialData }: PerfilClientProps) {
                 endereco="Rua Hermann Schulz 210"
               />
             </SwiperSlide>
-            <SwiperSlide>
+            <SwiperSlide className="pb-10">
               <CardReserva
                 id={2}
                 urlImagem="/placeholder.svg?height=300&width=500"
@@ -395,7 +405,7 @@ export default function PerfilClient({ initialData }: PerfilClientProps) {
                 endereco="Rua Hermann Schulz 210"
               />
             </SwiperSlide>
-            <SwiperSlide>
+            <SwiperSlide className="pb-10">
               <CardReserva
                 id={3}
                 urlImagem="/placeholder.svg?height=300&width=500"
@@ -435,6 +445,6 @@ export default function PerfilClient({ initialData }: PerfilClientProps) {
           />
         </div>
       </div>
-    </>
+    </form>
   );
 } 

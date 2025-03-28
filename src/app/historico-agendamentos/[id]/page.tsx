@@ -15,11 +15,11 @@ interface PageProps {
    params: Promise<{
       id: string;
    }>;
-   searchParams?: {
+   searchParams: Promise<{
       page?: string;
       status?: string;
       data?: string;
-   };
+   }>;
 }
 
 
@@ -30,14 +30,14 @@ export async function generateStaticParams() {
 
 const page = async ({ params, searchParams }: PageProps) => {
    const { id } = await params;
-   const currentPage = Number(searchParams?.page) || 0;
-   const parametrosRenderizados = await searchParams;
+   const parametros = await searchParams;
+   const currentPage = Number(parametros?.page) || 0;
 
    const fetchAgendamentos = async () => {
       try {
-         console.log(parametrosRenderizados);
+         console.log(parametros);
          const response = await fetch
-         (`http://localhost:8082/agendamentos/${id}?status=${parametrosRenderizados?.status || ''}&data=${parametrosRenderizados?.data || ''}&page=${currentPage}&size=9&sort=dataHora,desc`);
+         (`http://localhost:8082/agendamentos/${id}?status=${parametros?.status || ''}&data=${parametros?.data || ''}&page=${currentPage}&size=9&sort=dataHora,desc`);
          const data = await response.json();
          return {
             content: data.content as ModelAgendamento[],
@@ -65,8 +65,8 @@ const page = async ({ params, searchParams }: PageProps) => {
                         <BotaoPadrao texto="Meus horários" />
                </Link>
                <FIltrosAgendamento id={id} url={`/historico-agendamentos/${id}`}
-               status={parametrosRenderizados?.status || ''}
-               data={parametrosRenderizados?.data || ''}
+               status={parametros?.status || ''}
+                  data={parametros?.data || ''}
                />
                <Suspense fallback={<div>Carregando...</div>}>
                   <section

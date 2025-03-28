@@ -127,20 +127,28 @@ const MapboxMap: React.FC<MapboxMapProps> = ({ endereco, onLocaisProximosLoad, d
             <div className="w-px self-stretch bg-begepadrao/30 mx-4" />
 
             <div className="flex-1">
-              <div className="grid grid-cols-3 gap-2 p-4">
-                {!isLoading && !error && locaisProximos.map((local, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <span>{getIconForType(local.tipo)}</span>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-sm text-begepadrao truncate">{local.tipo}</span>
-                      <div className="flex items-center gap-1">
-                        <span className="text-sm text-begepadrao font-medium truncate">{local.nome}</span>
-                        <span className="text-xs text-begepadrao whitespace-nowrap">- {local.distancia}m</span>
+              {isLoading ? (
+                <p className="text-begepadrao text-center py-4">Carregando locais próximos...</p>
+              ) : error ? (
+                <p className="text-red-500 text-center py-4">{error}</p>
+              ) : locaisProximos.length === 0 ? (
+                <p className="text-begepadrao text-center py-4">Nenhum local próximo encontrado</p>
+              ) : (
+                <div className="grid grid-cols-2 gap-2 p-4">
+                  {locaisProximos.map((local, index) => (
+                    <div key={index} className="flex items-center gap-2 hover:bg-white/10 rounded p-2">
+                      <span>{getIconForType(local.tipo)}</span>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-sm text-begepadrao truncate">{local.tipo}</span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm text-begepadrao font-medium truncate">{local.nome}</span>
+                          <span className="text-xs text-begepadrao whitespace-nowrap">- {local.distancia}m</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

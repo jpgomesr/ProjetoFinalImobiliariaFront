@@ -3,12 +3,13 @@ import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import AgendamentoForm from "./AgendamentoForm";
 
 interface PageProps {
-   params: {
+   params: Promise<{
       id: string;
-   };
+   }>;
 }
 
-const Page = ({ params }: PageProps) => {
+const Page = async ({ params }: PageProps) => {
+   const parametros = await params;
    return (
       <Layout className={"py-0"}>
          <SubLayoutPaginasCRUD>
@@ -16,7 +17,7 @@ const Page = ({ params }: PageProps) => {
                <h1>Agendamento de Visitas com</h1>
                <h1 className="font-bold">HAV</h1>
             </div>
-            <AgendamentoForm id={params.id} />
+            <AgendamentoForm id={parametros.id} />
          </SubLayoutPaginasCRUD>
       </Layout>
    );

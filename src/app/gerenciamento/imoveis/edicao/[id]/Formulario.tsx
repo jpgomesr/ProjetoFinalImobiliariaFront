@@ -787,7 +787,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
                      url="/proprietarios/lista-select"
                      method="GET"
                      model={proprietarioModel as unknown as new () => {}}
-                     startSelected={watch("proprietario") || null} // Set default value
+                     startSelected={watch("proprietario") || undefined} // Set default value
                   />
                   <SearchMultSelect
                      register={register("corretores")}
