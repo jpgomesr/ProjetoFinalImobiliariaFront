@@ -6,6 +6,7 @@ import ModelUsuario from "@/models/ModelUsuario";
 import { buscarUsuarioPorId } from "@/Functions/usuario/buscaUsuario";
 import { useEffect, useState } from "react";
 import { salvarAgendamento } from "@/Functions/agendamento/buscaHorarios";
+import { redirect } from "next/navigation";
 
 interface ModalAgendamentoProps {
    dataFormatadaCapitalizada: string;
@@ -33,7 +34,11 @@ const ModalAgendamento = ({
          idImovel,
          idUsuario: +idUsuario,
       });
-      showNotification(response);
+      showNotification(response.mensagem || "Ocorreu um erro durante o agendamento");
+      if(response.status === 201){
+         redirect("/imovel/" + idImovel);
+      }
+      
    };
    const [usuario, setUsuario] = useState<ModelUsuario>();
 
@@ -78,7 +83,6 @@ const ModalAgendamento = ({
                onClick={() => {
                   onClose();
                   confirmarAgendamento();
-                  window.location.reload();
                   scrollToTop();
                }}
             >

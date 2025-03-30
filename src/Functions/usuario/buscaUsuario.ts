@@ -40,5 +40,9 @@ export const buscarIdsUsuarios = async () : Promise<number[]>=> {
 
     const response = await fetch(`${BASE_URL}/usuarios/lista-id-usuarios`)
 
-    return await response.json()
+    const data = await response.json();
+
+    console.log("data" + data)
+
+    return data as number[]
 }

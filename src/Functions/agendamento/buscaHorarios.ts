@@ -1,5 +1,5 @@
 import { ModelAgendamentoPost } from "@/models/ModelAgendamentoPost";
-
+import { ErroResposta } from "@/models/ErroResposta";
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export interface HorarioDisponivel {
@@ -8,6 +8,7 @@ export interface HorarioDisponivel {
    disponivel: boolean;
    idCorretor: number;
 }
+
 
 export const buscarHorariosDisponiveis = async (
    data: string,
@@ -35,7 +36,6 @@ export const buscarHorariosDisponiveis = async (
 
 export const salvarAgendamento = async (agendamento: ModelAgendamentoPost) => {
    try {
-      
       const response = await fetch(`${BASE_URL}/agendamentos`, {
          method: "POST",
          headers: {
@@ -45,10 +45,13 @@ export const salvarAgendamento = async (agendamento: ModelAgendamentoPost) => {
       });
 
       if(response.ok){
-         return "Agendamento concluído"
+         console.log(response.status);
+         return { mensagem: "Agendamento concluído com sucesso", status: response.status };
+      } else {
+         const data: ErroResposta = await response.json();
+         return { mensagem: data.mensagem, status: response.status };
       }
-      return "Ocorreu um erro durante o agendamento"
    } catch (error) {
-      return "Ocorreu um erro durante o agendamento"
+      return { mensagem: "Ocorreu um erro durante o agendamento", status: 500 };
    }
 };

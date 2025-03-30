@@ -30,6 +30,7 @@ interface PageProps {
 
 export async function generateStaticParams() {
    const ids = await buscarIdsUsuarios();
+   console.log("id" + ids)
    return ids.map((id) => ({ id: id.toString() }));
 }
 
