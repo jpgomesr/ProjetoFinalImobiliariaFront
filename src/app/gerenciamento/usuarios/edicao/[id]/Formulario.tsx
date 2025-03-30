@@ -253,7 +253,7 @@ const Formulario = ({usuario} : FormProps) => {
                      mudandoValor={field.onChange}
                      bordaPreta
                      placeholder="Tipo usuario"
-                     value={field.value}
+                     value={field.value || undefined}
                   />
                )}
             />

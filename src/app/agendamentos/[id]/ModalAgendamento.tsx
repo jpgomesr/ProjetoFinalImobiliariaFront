@@ -38,6 +38,7 @@ const ModalAgendamento = ({
       if(response.status === 201){
          redirect("/imovel/" + idImovel);
       }
+
       
    };
    const [usuario, setUsuario] = useState<ModelUsuario>();

@@ -535,7 +535,7 @@ const FormularioCadastroImovel = () => {
                      name="imagens"
                      control={control}
                      defaultValue={{
-                        imagemPrincipal: null,
+                        imagemPrincipal: undefined as unknown as File,
                         imagensGaleria: [],
                      }}
                      render={({ field }) => {
@@ -548,8 +548,8 @@ const FormularioCadastroImovel = () => {
                               onImageChange={(file, index) => {
                                  const newValue = { ...field.value };
                                  if (index === undefined) {
-                                    newValue.imagemPrincipal = file;
                                     if (file instanceof File) {
+                                       newValue.imagemPrincipal = file;
                                        setCoverImage(URL.createObjectURL(file));
                                     }
                                  } else {
@@ -566,8 +566,11 @@ const FormularioCadastroImovel = () => {
                                  }
                                  field.onChange(newValue);
                               }}
-                              mensagemErro={
+                              mensagemErroPrincipal={
                                  errors.imagens?.imagemPrincipal?.message
+                              }
+                              mensagemErroGaleria={
+                                 errors.imagens?.imagensGaleria?.message
                               }
                               clearErrors={clearErrors}
                            />
