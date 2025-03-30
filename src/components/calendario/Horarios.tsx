@@ -14,7 +14,6 @@ const Horario = ({
    disponivel = true,
 }: HorariosProps) => {
 
-   console.log(horario)
    return (
       <button
          className={`flex justify-center items-center h-7 w-24 rounded-md font-inter lg:w-32 lg:h-10
