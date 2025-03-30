@@ -30,7 +30,6 @@ interface PageProps {
 
 export async function generateStaticParams() {
    const ids = await buscarIdsUsuarios();
-   console.log("id" + ids)
    return ids.map((id) => ({ id: id.toString() }));
 }
 
@@ -45,6 +44,9 @@ const page = async ({ params, searchParams }: PageProps) => {
       redirect("/api/auth/signin")
    }
    if(session.user.id !== id){
+      redirect("/")
+   }
+   if(session.user.role !== Roles.USUARIO && session.user.role !== Roles.CORRETOR){
       redirect("/")
    }
 
