@@ -8,6 +8,10 @@ import ListarImoveis from "./ListarImoveis";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 import FiltroList from "@/components/componetes_filtro/FiltroList";
 import { opcoesSort } from "@/data/opcoesSort"; 
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
+import { Roles } from "@/models/Enum/Roles";
 interface PageProps {
    searchParams: Promise<{
       precoMinimo?: string;
@@ -26,6 +30,15 @@ interface PageProps {
 }
 
 const Page = async ({ searchParams }: PageProps) => {
+   const session = await getServerSession(authOptions);
+
+   if (!session) {
+      redirect("/login");
+   }
+   if (session.user?.role !== Roles.ADMINISTRADOR && session.user?.role !== Roles.EDITOR) {
+      redirect("/");
+   }
+
    const parametrosResolvidos = await searchParams;
 
    const params = {

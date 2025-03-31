@@ -4,6 +4,10 @@ import ProprietariosListagem from "./ProprietariosListagem";
 import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import Layout from "@/components/layout/LayoutPadrao";
+import { redirect } from "next/navigation";
+import { Roles } from "@/models/Enum/Roles";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 interface PageProps {
    searchParams: Promise<{
@@ -14,6 +18,17 @@ interface PageProps {
 }
 
 export default async function Page({ searchParams }: PageProps) {
+
+   const session = await getServerSession(authOptions);
+
+   if (!session) {
+      redirect("/login");
+   }
+   if (session.user?.role !== Roles.ADMINISTRADOR && session.user?.role !== Roles.EDITOR) {
+      redirect("/");
+   }  
+
+   
    const parametros = await searchParams;
 
    const paginaAtual = parseInt(parametros.pagina || "0");
