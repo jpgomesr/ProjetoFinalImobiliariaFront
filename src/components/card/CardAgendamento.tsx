@@ -4,12 +4,15 @@ import Image from "next/image";
 import CardBanner from "./CardBanner";
 import { useState } from "react";
 import ModalCofirmacao from "../ComponentesCrud/ModalConfirmacao";
+import { Roles } from "@/models/Enum/Roles";
 interface CardReservaProps {
    id: number;
    urlImagem: string;
    horario: string;
    data: string;
    corretor: string;
+   usuario?: string;
+   role: Roles;
    status: "PENDENTE" | "CONFIRMADO" | "CANCELADO";
    localizacao: string;
    endereco: string;
@@ -26,6 +29,8 @@ export default function CardReserva({
    localizacao = "Vila Lenzi",
    endereco = "Rua Hermann Schulz 210",
    id = 0,
+   role,
+   usuario,
 }: CardReservaProps) {
    const [modalConfirmacao, setModalConfirmacao] = useState(false);
 
@@ -52,11 +57,11 @@ export default function CardReserva({
 
    return (
       <div
-         className={`max-w-[200px] sm:max-w-96 rounded-xl overflow-hidden bg-begepadrao shadow-[4px_4px_4px_rgba(0,0,0,0.2)] ${
+         className={`max-w-96 rounded-xl overflow-hidden bg-begepadrao shadow-[4px_4px_4px_rgba(0,0,0,0.2)] ${
             status === "CANCELADO" ? "opacity-50" : ""
          }`}
       >
-         <div className="relative h-24 sm:h-40 md:h-48 w-full">
+         <div className="relative h-48 w-full">
             <Image
                src={urlImagem}
                alt="Imagem da propriedade"
@@ -82,12 +87,12 @@ export default function CardReserva({
             />
          </div>
 
-         <div className="px-2 sm:px-4 md:px-6 py-1.5 sm:py-3 md:py-4">
-            <h2 className="text-sm sm:text-lg md:text-xl xl:text-2xl font-semibold text-havprincipal mb-1.5 sm:mb-3 md:mb-4">
+         <div className="px-6 py-4">
+            <h2 className="text-2xl font-semibold text-havprincipal mb-4">
                Reserva
             </h2>
 
-            <div className="space-y-0.5 sm:space-y-1.5 md:space-y-2 text-gray-800 text-[10px] sm:text-sm md:text-base">
+            <div className="space-y-2 text-gray-800">
                <p>
                   <span className="font-semibold">Horario:</span> {horario}
                </p>
@@ -95,27 +100,36 @@ export default function CardReserva({
                   <span className="font-semibold">Data:</span> {data}
                </p>
                <p>
-                  <span className="font-semibold">Corretor:</span> {corretor}
+                     <span className="font-semibold">{role === Roles.CORRETOR ? "Cliente" : "Corretor"}:</span> {role === Roles.CORRETOR ? usuario : corretor}
                </p>
-               <p>
+               <p>   
                   <span className="font-semibold">Localização:</span>{" "}
                   {localizacao}, {endereco}
                </p>
             </div>
          </div>
 
-         <div className="px-2 sm:px-4 md:px-6 pb-2 sm:pb-4 md:pb-6 pt-0.5 sm:pt-1.5 md:pt-2 flex gap-1.5 sm:gap-3 md:gap-4">
-            <button
-               disabled={status === "CANCELADO" || status === "CONFIRMADO"}
-               onClick={() => atualizarStatus(id, "CONFIRMADO")}
-               className="flex-1 py-1 sm:py-2 px-1.5 sm:px-3 md:px-4 bg-white text-gray-800 hover:bg-gray-100 border border-gray-300 rounded-md transition-colors duration-200 font-medium text-[10px] sm:text-sm md:text-base"
+         <div className="px-6 pb-6 pt-2 flex gap-4">
+            {role === Roles.CORRETOR ? (
+               <button
+                  disabled={status === "CANCELADO" || status === "CONFIRMADO"}
+                  onClick={() => atualizarStatus(id, "CONFIRMADO")}
+               className="flex-1 py-2 px-4 bg-white text-havprincipal hover:bg-gray-100 border border-gray-300 rounded-md transition-colors duration-200 font-medium"
             >
                Confirmar
             </button>
+            ) : (
+               <button
+                  onClick={() => setModalConfirmacao(true)}
+                  className="flex-1 py-2 px-4 bg-white text-havprincipal hover:bg-gray-100 border border-gray-300 rounded-md transition-colors duration-200 font-medium"
+               >
+                  Reagendar
+               </button>
+            )}
             <button
                disabled={status === "CANCELADO"}
                onClick={() => setModalConfirmacao(true)}
-               className="flex-1 py-1 sm:py-2 px-1.5 sm:px-3 md:px-4 bg-[#7a2638] hover:bg-[#662030] text-white rounded-md transition-colors duration-200 font-medium text-[10px] sm:text-sm md:text-base"
+               className="flex-1 py-2 px-4 bg-[#7a2638] hover:bg-[#662030] text-white rounded-md transition-colors duration-200 font-medium"
             >
                Cancelar
             </button>

@@ -6,13 +6,15 @@ import ModelUsuario from "@/models/ModelUsuario";
 import { buscarUsuarioPorId } from "@/Functions/usuario/buscaUsuario";
 import { useEffect, useState } from "react";
 import { salvarAgendamento } from "@/Functions/agendamento/buscaHorarios";
+import { redirect } from "next/navigation";
 
 interface ModalAgendamentoProps {
    dataFormatadaCapitalizada: string;
    horarioSelecionado: string;
-   idCorretor : number,
-   idImovel : number
+   idCorretor: number;
+   idImovel: number;
    onClose: () => void;
+   idUsuario: string;
 }
 
 const ModalAgendamento = ({
@@ -20,30 +22,37 @@ const ModalAgendamento = ({
    horarioSelecionado,
    idImovel,
    onClose,
-   idCorretor
+   idUsuario,
+   idCorretor,
 }: ModalAgendamentoProps) => {
    const { showNotification } = useNotification();
    const confirmarAgendamento = async () => {
-      
+      console.log(idUsuario, idCorretor, idImovel, horarioSelecionado);
       const response = await salvarAgendamento({
-         dataHora : horarioSelecionado,
+         dataHora: horarioSelecionado,
          idCorretor: idCorretor,
          idImovel,
-         idUsuario: 5
-      })
-      showNotification(response);
+         idUsuario: +idUsuario,
+      });
+      showNotification(response.mensagem || "Ocorreu um erro durante o agendamento");
+      if(response.status === 201){
+         redirect("/imovel/" + idImovel);
+      }
+
       
-   }
+   };
    const [usuario, setUsuario] = useState<ModelUsuario>();
 
    useEffect(() => {
       const buscarUsuario = async () => {
-         const usuarioRequisicao : ModelUsuario = await buscarUsuarioPorId(idCorretor.toString());
+         const usuarioRequisicao: ModelUsuario = await buscarUsuarioPorId(
+            idCorretor.toString()
+         );
          setUsuario(usuarioRequisicao);
       };
 
       buscarUsuario();
-   }, [idCorretor])
+   }, [idCorretor]);
 
    const scrollToTop = () => {
       window.scrollTo({
@@ -74,8 +83,7 @@ const ModalAgendamento = ({
                className="mt-4 md:mt-6 lg:mt-8 bg-havprincipal text-white px-4 md:px-6 lg:px-8 py-2 md:py-3 lg:py-4 rounded-md md:text-lg lg:text-xl"
                onClick={() => {
                   onClose();
-                  confirmarAgendamento()
-                  window.location.reload();
+                  confirmarAgendamento();
                   scrollToTop();
                }}
             >

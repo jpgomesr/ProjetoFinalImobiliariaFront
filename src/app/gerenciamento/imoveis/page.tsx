@@ -83,7 +83,7 @@ const Page = async ({ searchParams }: PageProps) => {
 
                   <div
                      className="flex flex-row items-center px-2 py-1 gap-2 rounded-md border-2 border-gray-300 
-                              bg-white w-full min-h-full min-w-1"
+                              bg-white w-full min-w-1"
                   >
                      <input
                         type="text"
@@ -91,8 +91,8 @@ const Page = async ({ searchParams }: PageProps) => {
                         placeholder="Pesquise aqui"
                      />
                   </div>
-                  <div className="flex flex-row-reverse md:flex-row justify-between gap-2 min-h-full">
-                     <div className="w-36 min-h-full">
+                  <div className="flex flex-row-reverse md:flex-row justify-between gap-2">
+                     <div className="w-36">
                         <ButtonFiltro
                            precoMinimo={params.precoMinimo}
                            precoMaximo={params.precoMaximo}

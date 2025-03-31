@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 import {
    getCoordinatesFromAddress,
    Coordinates,
@@ -24,53 +22,34 @@ interface ImovelComCoordenadas extends ModelImovelGet {
    coordenadas?: Coordinates;
 }
 
-const ImoveisView = () => {
-   const searchParams = useSearchParams();
-   const [imoveis, setImoveis] = useState<ImovelComCoordenadas[]>([]);
-   const [pageableInfo, setPageableInfo] = useState({
-      totalPaginas: 0,
-      ultima: false,
-   });
-   const [quantidadeElementos, setQuantidadeElementos] = useState(0);
-   const [mapaCarregado, setMapaCarregado] = useState(false);
-
-   const params = {
-      precoMinimo: searchParams.get("precoMinimo") ?? "0",
-      precoMaximo: searchParams.get("precoMaximo") ?? "0",
-      metrosQuadradosMinimo: searchParams.get("metrosQuadradosMinimo") ?? "0",
-      metrosQuadradosMaximo: searchParams.get("metrosQuadradosMaximo") ?? "0",
-      quantidadeDeQuartos: searchParams.get("quantidadeDeQuartos") ?? "0",
-      quantidadeDeVagas: searchParams.get("quantidadeDeVagas") ?? "0",
-      cidade: searchParams.get("cidade") ?? "",
-      bairro: searchParams.get("bairro") ?? "",
-      tipoImovel: searchParams.get("tipoImovel") ?? "",
-      finalidade: searchParams.get("finalidade") ?? "",
-      view: searchParams.get("view") ?? "cards",
+interface ImoveisViewProps {
+   imoveis: ModelImovelGet[];
+   pageableInfo: {
+      totalPaginas: number;
+      ultima: boolean;
    };
+   quantidadeElementos: number;
+   view?: string;
+}
+
+const ImoveisView = ({
+   imoveis: imoveisIniciais,
+   pageableInfo,
+   quantidadeElementos,
+   view = "cards",
+}: ImoveisViewProps) => {
+   const [imoveis, setImoveis] =
+      useState<ImovelComCoordenadas[]>(imoveisIniciais);
+   const [mapaCarregado, setMapaCarregado] = useState(false);
 
    useEffect(() => {
       let mounted = true;
 
-      const fetchData = async () => {
+      const processarImoveis = async () => {
          try {
-            const result = await buscarTodosImoveis({
-               precoMinimo: params.precoMinimo,
-               precoMaximo: params.precoMaximo,
-               tamanhoMin: params.metrosQuadradosMinimo,
-               tamanhoMax: params.metrosQuadradosMaximo,
-               qtdQuartos: params.quantidadeDeQuartos,
-               qtdGaragens: params.quantidadeDeVagas,
-               cidade: params.cidade,
-               bairro: params.bairro,
-               tipoResidencia: params.tipoImovel,
-               finalidade: params.finalidade,
-            });
-
-            if (!mounted) return;
-
-            if (result.imoveis.length > 0 && params.view === "map") {
+            if (imoveisIniciais.length > 0 && view === "map") {
                const imoveisComCoordenadas = await Promise.all(
-                  result.imoveis.map(async (imovel) => {
+                  imoveisIniciais.map(async (imovel) => {
                      try {
                         const coords = await getCoordinatesFromAddress({
                            rua: imovel.endereco?.rua || "",
@@ -99,26 +78,24 @@ const ImoveisView = () => {
                }
             } else {
                if (mounted) {
-                  setImoveis(result.imoveis);
+                  setImoveis(imoveisIniciais);
                }
             }
 
             if (mounted) {
-               setPageableInfo(result.pageableInfo);
-               setQuantidadeElementos(result.quantidadeElementos);
                setMapaCarregado(true);
             }
          } catch (error) {
-            console.error("Erro ao buscar imóveis:", error);
+            console.error("Erro ao processar imóveis:", error);
          }
       };
 
-      fetchData();
+      processarImoveis();
 
       return () => {
          mounted = false;
       };
-   }, [searchParams, params.view]);
+   }, [imoveisIniciais, view]);
 
    const calcularCentroMapa = () => {
       const imoveisComCoordenadas = imoveis.filter(
@@ -147,7 +124,7 @@ const ImoveisView = () => {
             <p className="text-sm">{quantidadeElementos} imóveis encontrados</p>
          </div>
 
-         {params.view === "cards" && (
+         {view === "cards" && (
             <Suspense fallback={<div>Carregando...</div>}>
                <ListagemImovelPadrao
                   imoveis={imoveis}
@@ -155,7 +132,7 @@ const ImoveisView = () => {
                />
             </Suspense>
          )}
-         {params.view === "map" && mapaCarregado && imoveis.length > 0 && (
+         {view === "map" && mapaCarregado && imoveis.length > 0 && (
             <div className="mt-4">
                <Suspense
                   fallback={

@@ -1,7 +1,10 @@
 import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import AgendamentoForm from "./AgendamentoForm";
-
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { Roles } from "@/models/Enum/Roles";
 interface PageProps {
    params: Promise<{
       id: string;
@@ -9,7 +12,22 @@ interface PageProps {
 }
 
 const Page = async ({ params }: PageProps) => {
-   const parametros = await params;
+
+   const session = await getServerSession(authOptions)
+   const { id } = await params;
+   let idUsuario : number | undefined = undefined
+   if(!session){
+      redirect("/api/auth/signin")
+   }
+   if(session.user.id){
+      idUsuario = +session.user.id
+   }else{
+      redirect("/")
+   }
+   if(session.user.role !== Roles.USUARIO){
+      redirect("/")
+   }
+
    return (
       <Layout className={"py-0"}>
          <SubLayoutPaginasCRUD>
@@ -17,7 +35,7 @@ const Page = async ({ params }: PageProps) => {
                <h1>Agendamento de Visitas com</h1>
                <h1 className="font-bold">HAV</h1>
             </div>
-            <AgendamentoForm id={parametros.id} />
+            <AgendamentoForm id={id} idUsuario={idUsuario} />
          </SubLayoutPaginasCRUD>
       </Layout>
    );
