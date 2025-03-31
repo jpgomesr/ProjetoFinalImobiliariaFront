@@ -4,7 +4,7 @@ import FavButton from "../FavBotao";
 import CardInfo from "./CardInfo";
 import SaibaMaisBotao from "./SaibaMaisBotao";
 import { ModelImovelGet } from "../../models/ModelImovelGet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CardBanner from "./CardBanner";
 import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -12,6 +12,8 @@ import Image from "next/image";
 import Imovel from "@/models/ModelImovel";
 import Link from "next/link";
 import ModalCofirmacao from "../ComponentesCrud/ModalConfirmacao";
+import { SessionProvider } from "next-auth/react";
+import { useNotification } from "@/context/NotificationContext";
 
 interface HomeProps {
    imovel: ModelImovelGet | Imovel;
@@ -25,6 +27,13 @@ interface HomeProps {
 export default function CardImovel(props: HomeProps) {
    const router = useRouter();
    const [isBannerVisible] = useState(props.imovel.banner);
+   const [isFavorited, setIsFavorited] = useState(props.imovel.favoritado);
+   
+   // Força a renderização quando o estado de favorito mudar
+   useEffect(() => {
+      // Este efeito será executado sempre que isFavorited mudar
+      // Não precisa fazer nada aqui, apenas a dependência no array já força a renderização
+   }, [isFavorited]);
 
    const valor = props.imovel.preco;
    const valorFormatado = valor.toLocaleString("pt-BR", {
@@ -65,6 +74,11 @@ export default function CardImovel(props: HomeProps) {
    const cardEdicao = props.edicao ? props.edicao : false;
 
    const imagemCapa = getImagemCapa(props.imovel);
+
+   // Função para atualizar o estado de favorito
+   const atualizarFavorito = (novoEstado: boolean) => {
+      setIsFavorited(novoEstado);
+   };
 
    return (
       <>
@@ -125,14 +139,14 @@ export default function CardImovel(props: HomeProps) {
                               }}
                            />
                         ) : (
-                           <FavButton
-                              favorited={
-                                 "favoritado" in props.imovel
-                                    ? props.imovel.favoritado
-                                    : false
-                              }
-                              dark={props.imovel.permitirDestaque}
-                           />
+                           <SessionProvider>
+                              <FavButton
+                                 idImovel={props.imovel.id}
+                                 favorited={isFavorited ?? false}
+                                 dark={props.imovel.permitirDestaque}
+                                 setIsFavorited={setIsFavorited}
+                              />
+                           </SessionProvider>
                         )}
                      </div>
                      <div className="flex flex-row justify-between w-full">

@@ -1,26 +1,40 @@
-"use client";
 
-import { useSearchParams } from "next/navigation";
 import ButtonFiltro from "@/components/componetes_filtro/filtro_pesquisa/ButtonFiltro";
 import FiltroList from "@/components/componetes_filtro/FiltroList";
 import InputPadrao from "@/components/InputPadrao";
 import ButtonMapa from "@/components/ButtonMapa";
 
-const FiltrosImoveis = () => {
-   const searchParams = useSearchParams();
 
-   const params = {
-      precoMinimo: searchParams.get("precoMinimo") ?? "0",
-      precoMaximo: searchParams.get("precoMaximo") ?? "0",
-      metrosQuadradosMinimo: searchParams.get("metrosQuadradosMinimo") ?? "0",
-      metrosQuadradosMaximo: searchParams.get("metrosQuadradosMaximo") ?? "0",
-      quantidadeDeQuartos: searchParams.get("quantidadeDeQuartos") ?? "0",
-      quantidadeDeVagas: searchParams.get("quantidadeDeVagas") ?? "0",
-      cidade: searchParams.get("cidade") ?? "",
-      bairro: searchParams.get("bairro") ?? "",
-      tipoImovel: searchParams.get("tipoImovel") ?? "",
-      finalidade: searchParams.get("finalidade") ?? "",
-      view: searchParams.get("view") ?? "cards",
+interface FiltrosImoveisProps {
+   precoMinimo?: string;
+   precoMaximo?: string;
+   metrosQuadradosMinimo?: string;
+   metrosQuadradosMaximo?: string;
+   quantidadeDeQuartos?: string;
+   quantidadeDeVagas?: string;
+   cidade?: string;
+   bairro?: string;
+   tipoImovel?: string;
+   finalidade?: string;
+   view?: string;
+}
+
+
+const FiltrosImoveis = (props: FiltrosImoveisProps) => {
+
+
+   const params = {  
+      precoMinimo: props.precoMinimo ?? "0",
+      precoMaximo: props.precoMaximo ?? "0",
+      metrosQuadradosMinimo: props.metrosQuadradosMinimo ?? "0",
+      metrosQuadradosMaximo: props.metrosQuadradosMaximo ?? "0",
+      quantidadeDeQuartos: props.quantidadeDeQuartos ?? "0",
+      quantidadeDeVagas: props.quantidadeDeVagas ?? "0",
+      cidade: props.cidade ?? "",
+      bairro: props.bairro ?? "",
+      tipoImovel: props.tipoImovel ?? "",
+      finalidade: props.finalidade ?? "",
+      view: props.view ?? "cards",
    };
 
    return (
