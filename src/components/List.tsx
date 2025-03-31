@@ -17,6 +17,7 @@ interface ListProps extends React.InputHTMLAttributes<HTMLSelectElement> {
    differentSize?: string;
    mensagemErro?: string;
    width?: string; // Nova prop para customizar a largura
+   defaultPlaceholder?: string;
 }
 
 const List = (props: ListProps) => {
@@ -41,7 +42,8 @@ const List = (props: ListProps) => {
 
    const opcaoSelecionada =
       props.opcoes.find((opc) => opc.id === selecionado)?.label ||
-      props.opcoes[selecionado]?.label;
+      props.defaultPlaceholder ||
+      props.opcoes[0]?.label;
 
    return (
       <div className={"flex flex-col"}>

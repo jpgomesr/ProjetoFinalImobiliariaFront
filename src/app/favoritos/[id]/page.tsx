@@ -7,6 +7,8 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
+import { opcoesSort } from "@/data/opcoesSort";
+import FiltroList from "@/components/componetes_filtro/FiltroList";
 
 interface PageProps {
    params: Promise<{ id: string }>;
@@ -22,6 +24,7 @@ interface PageProps {
       tipoImovel?: string;
       finalidade?: string;
       view?: string;
+      sort?: string;
    }>;
 }
 
@@ -40,6 +43,7 @@ const Page = async ({ params, searchParams }: PageProps) => {
       bairro: parametrosResolvidos.bairro ?? "",
       tipoImovel: parametrosResolvidos.tipoImovel ?? "",
       finalidade: parametrosResolvidos.finalidade ?? "",
+      sort: parametrosResolvidos.sort ?? "",
    };
    const view = parametrosResolvidos.view ?? "cards";
 
@@ -56,6 +60,7 @@ const Page = async ({ params, searchParams }: PageProps) => {
          tipoResidencia: parametrosBusca.tipoImovel,
          finalidade: parametrosBusca.finalidade,
          idUsuario: session?.user?.id,
+         sort: parametrosBusca.sort,
       });
 
    if (!session) {
@@ -69,7 +74,22 @@ const Page = async ({ params, searchParams }: PageProps) => {
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao className="w-full" titulo="Imóveis Favoritos">
-               <FiltrosImoveis />
+               <FiltrosImoveis url={`/favoritos/${id}`} />
+               <div className="flex flex-col sm:flex-row justify-between items-center lg:my-4">
+                  <p className="text-sm">
+                     {quantidadeElementos} imóveis encontrados
+                  </p>
+                  {view === "cards" && (
+                     <FiltroList
+                        opcoes={opcoesSort}
+                        value={parametrosBusca.sort}
+                        url={`/favoritos/${id}`}
+                        nome="sort"
+                        buttonHolder="Ordenar por"
+                        defaultValue="Nenhum"
+                  />
+                  )}
+               </div>
                <ImoveisView
                   imoveis={imoveis}
                   pageableInfo={pageableInfo}

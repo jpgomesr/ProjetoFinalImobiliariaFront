@@ -7,7 +7,7 @@ import { PlusIcon } from "lucide-react";
 import ListarImoveis from "./ListarImoveis";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 import FiltroList from "@/components/componetes_filtro/FiltroList";
-
+import { opcoesSort } from "@/data/opcoesSort"; 
 interface PageProps {
    searchParams: Promise<{
       precoMinimo?: string;
@@ -20,6 +20,8 @@ interface PageProps {
       bairro?: string;
       tipoImovel?: string;
       finalidade?: string;
+      sort?: string;
+      ativo?: string;
    }>;
 }
 
@@ -37,6 +39,8 @@ const Page = async ({ searchParams }: PageProps) => {
       bairro: parametrosResolvidos.bairro ?? "",
       tipoImovel: parametrosResolvidos.tipoImovel ?? "",
       finalidade: parametrosResolvidos.finalidade ?? "",
+      sort: parametrosResolvidos.sort ?? "",
+      ativo: parametrosResolvidos.ativo ?? "",
    };
 
    const { imoveis, pageableInfo, quantidadeElementos } =
@@ -51,7 +55,11 @@ const Page = async ({ searchParams }: PageProps) => {
          bairro: params.bairro,
          tipoResidencia: params.tipoImovel,
          finalidade: params.finalidade,
+         sort: params.sort,
+         ativo: params.ativo,
       });
+
+   
 
    return (
       <Layout className="py-0">
@@ -65,21 +73,14 @@ const Page = async ({ searchParams }: PageProps) => {
                      opcoes={[
                         { id: "venda", label: "Venda" },
                         { id: "aluguel", label: "Aluguel" },
-                        { id: "todos", label: "Todos" },
+                        { id: "", label: "Todos" },
                      ]}
-                     finalidade={params.finalidade}
-                     precoMinimo={params.precoMinimo}
-                     precoMaximo={params.precoMaximo}
-                     metrosQuadradosMinimo={params.metrosQuadradosMinimo}
-                     metrosQuadradosMaximo={params.metrosQuadradosMaximo}
-                     quantidadeDeQuartos={params.quantidadeDeQuartos}
-                     quantidadeDeVagas={params.quantidadeDeVagas}
-                     cidade={params.cidade}
-                     bairro={params.bairro}
-                     tipoImovel={params.tipoImovel}
+                     nome="finalidade"
                      url="/gerenciamento/imoveis"
+                     defaultPlaceholder="Todas"
                      value={params.finalidade}
                   />
+                   
 
                   <div
                      className="flex flex-row items-center px-2 py-1 gap-2 rounded-md border-2 border-gray-300 
@@ -119,10 +120,29 @@ const Page = async ({ searchParams }: PageProps) => {
                      </Link>
                   </div>
                </div>
-               <div className="flex flex-col sm:flex-row">
-                  <p className="text-sm">
+               <div className="flex flex-col sm:flex-row sm:justify-between lg:my-4">
+                  <FiltroList
+                     opcoes={opcoesSort}
+                     value={params.sort}
+                     url={"/gerenciamento/imoveis"}
+                     nome="sort"
+                     buttonHolder="Ordenar por"
+                     defaultValue="Nenhum"
+                  />
+                  <p className="text-sm my-2">
                      {quantidadeElementos} imóveis encontrados
                   </p>
+                  <FiltroList
+                     opcoes={[
+                        { id: "true", label: "Ativo" },
+                        { id: "false", label: "Inativo" },
+                     ]}
+                     nome="ativo"
+                     url="/gerenciamento/imoveis"
+                     defaultPlaceholder="Todos"
+                     value={params.ativo}
+                     buttonHolder="Status"
+                  />
                </div>
 
                <ListarImoveis imoveis={imoveis} pageableInfo={pageableInfo} />

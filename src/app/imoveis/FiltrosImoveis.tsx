@@ -17,6 +17,7 @@ interface FiltrosImoveisProps {
    tipoImovel?: string;
    finalidade?: string;
    view?: string;
+   url?: string;
 }
 
 
@@ -43,20 +44,13 @@ const FiltrosImoveis = (props: FiltrosImoveisProps) => {
             opcoes={[
                { id: "venda", label: "Venda" },
                { id: "aluguel", label: "Aluguel" },
-               { id: "todos", label: "Todos" },
+               { id: "", label: "Todos" },
             ]}
-            finalidade={params.finalidade}
-            precoMinimo={params.precoMinimo}
-            precoMaximo={params.precoMaximo}
-            metrosQuadradosMinimo={params.metrosQuadradosMinimo}
-            metrosQuadradosMaximo={params.metrosQuadradosMaximo}
-            quantidadeDeQuartos={params.quantidadeDeQuartos}
-            quantidadeDeVagas={params.quantidadeDeVagas}
-            cidade={params.cidade}
-            bairro={params.bairro}
-            tipoImovel={params.tipoImovel}
-            url="/imoveis"
+            bordaPreta={true}
+            nome="finalidade"
             value={params.finalidade}
+            defaultPlaceholder="Todos"
+            url={props.url ?? "/imoveis"}
          />
 
          <InputPadrao
@@ -68,6 +62,7 @@ const FiltrosImoveis = (props: FiltrosImoveisProps) => {
 
          <div className="w-36 min-h-full place-self-end md:place-self-auto">
             <ButtonFiltro
+               bordaPreta={true}
                precoMinimo={params.precoMinimo}
                precoMaximo={params.precoMaximo}
                metrosQuadradosMinimo={params.metrosQuadradosMinimo}
@@ -78,13 +73,13 @@ const FiltrosImoveis = (props: FiltrosImoveisProps) => {
                bairro={params.bairro}
                tipoImovel={params.tipoImovel}
                finalidade={params.finalidade}
-               url={"/imoveis"}
+               url={props.url ?? "/imoveis"}
             />
          </div>
          <div className="flex justify-center gap-4 mt-4 col-span-full">
             <ButtonMapa
                texto="Cards"
-               href={`/imoveis?view=cards`}
+               href={`${props.url ?? "/imoveis"}?view=cards`}
                className={`w-32 h-10 ${
                   params.view === "cards"
                      ? "bg-havprincipal text-white"
@@ -93,7 +88,7 @@ const FiltrosImoveis = (props: FiltrosImoveisProps) => {
             />
             <ButtonMapa
                texto="Mapa"
-               href={`/imoveis?view=map`}
+               href={`${props.url ?? "/imoveis"}?view=map`}
                className={`w-32 h-10  ${
                   params.view === "map"
                      ? "bg-havprincipal text-white"
