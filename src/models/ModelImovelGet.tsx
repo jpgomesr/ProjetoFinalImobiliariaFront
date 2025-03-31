@@ -45,4 +45,5 @@ export interface ModelImovelGet {
    academia: boolean;
    proprietario: Pessoa;
    corretores: Pessoa[];
+   favoritado?: boolean;
 }

@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { UserIcon } from "lucide-react";
+import { User, UserIcon } from "lucide-react";
 import { signOut } from "next-auth/react";
 import PerfilIcon from "@/svg/icons/header/PerfilIcon";
 
@@ -36,7 +36,7 @@ const PerfilDropdown = ({ foto, id, nome }: PerfilDropdownProps) => {
       <div className="relative " ref={dropdownRef}>
          <button
             onClick={() => setIsOpen(!isOpen)}
-            className="flex items-center gap-2 text-havprincipal hover:text-opacity-80"
+            className=""
          >
             {foto ? (
                <Image
@@ -47,7 +47,7 @@ const PerfilDropdown = ({ foto, id, nome }: PerfilDropdownProps) => {
                   className="rounded-full w-6 h-6 md:w-7 md:h-7 2xl:w-8 2xl:h-8 object-cover"
                />
             ) : (
-               <PerfilIcon className="w-6 h-6 md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
+               <User  className="w-6 h-6 md:w-7 md:h-7 2xl:w-8 2xl:h-8 text-white" />
             )}
             <span className="hidden md:block text-sm">{nome}</span>
          </button>

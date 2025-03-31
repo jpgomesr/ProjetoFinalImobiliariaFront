@@ -11,11 +11,17 @@ import ComponentePaginacao from "@/components/ComponentePaginacao";
 import PaginacaoHistorico from "./PaginacaoHistórico";
 import Link from "next/link";
 import BotaoPadrao from "@/components/BotaoPadrao";
+import { useSession } from "next-auth/react";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { Roles } from "@/models/Enum/Roles";
+
 interface PageProps {
    params: Promise<{
       id: string;
    }>;
-   searchParams: Promise<{
+   searchParams?: Promise<{
       page?: string;
       status?: string;
       data?: string;
@@ -29,37 +35,67 @@ export async function generateStaticParams() {
 
 const page = async ({ params, searchParams }: PageProps) => {
    const { id } = await params;
-   const parametros = await searchParams;
-   const currentPage = Number(parametros?.page) || 0;
+   const searchParamsRenderizados = await searchParams;
+   const currentPage = Number(searchParamsRenderizados?.page) || 0;
+   const parametrosRenderizados = await searchParamsRenderizados;
+   const session = await getServerSession(authOptions)
 
-   const fetchAgendamentos = async () => {
+   if(!session){
+      redirect("/api/auth/signin")
+   }
+   if(session.user.id !== id){
+      redirect("/")
+   }
+   if(session.user.role !== Roles.USUARIO && session.user.role !== Roles.CORRETOR){
+      redirect("/")
+   }
+
+   const fetchAgendamentos = async (role: Roles) => {
       try {
-         console.log(parametros);
+         console.log(parametrosRenderizados);
          const response = await fetch(
-            `http://localhost:8082/agendamentos/${id}?status=${
-               parametros?.status || ""
+            `http://localhost:8082/agendamentos/${role === Roles.CORRETOR ? "corretor" : "usuario"}/${id}?status=${
+               parametrosRenderizados?.status || ""
             }&data=${
-               parametros?.data || ""
+               parametrosRenderizados?.data || ""
             }&page=${currentPage}&size=9&sort=dataHora,desc`
          );
          const data = await response.json();
-         return data;
+
+         
+         console.log(data)
+         return {
+            content: data.content as ModelAgendamento[],
+            totalPages: data.totalPages as number,
+         };
       } catch (error) {
          console.error("Erro ao buscar agendamentos:", error);
-         return [];
+         return {
+            content: [],
+            totalPages: 0,
+         };
       }
    };
 
-   const agendamentos = await fetchAgendamentos();
+   const { content: agendamentos, totalPages } = await fetchAgendamentos(session.user.role as Roles);
 
    return (
-      <Layout>
+      <Layout className="my-0">
          <SubLayoutPaginasCRUD>
+            <FundoBrancoPadrao
+               titulo="Histórico de agendamentos"
+               className="w-full px-2"
+            >
+               {session.user.role === Roles.CORRETOR && (
+                  <Link href={`/horarios/${id}`}>
+                     <BotaoPadrao texto="Meus horários" />
+                  </Link>
+               )}
                <FIltrosAgendamento
-               id={id}
-               url={`/historico-agendamentos/${id}`}
-               status={parametros?.status || ""}
-               data={parametros?.data || ""}
+                  id={id}
+                  url={`/historico-agendamentos/${id}`}
+                  status={parametrosRenderizados?.status || ""}
+                  data={parametrosRenderizados?.data || ""}
                />
                <Suspense fallback={<div>Carregando...</div>}>
                   <section
@@ -70,8 +106,9 @@ const page = async ({ params, searchParams }: PageProps) => {
                   >
                      {agendamentos &&
                         agendamentos.map(
-                           (agendamento: ModelAgendamento, key: number) => (
+                           (agendamento: ModelAgendamento, key) => (
                               <CardReserva
+                                 role={session.user.role as Roles}
                                  id={agendamento.id}
                                  key={key}
                                  urlImagem={
@@ -84,6 +121,7 @@ const page = async ({ params, searchParams }: PageProps) => {
                                     agendamento.horario
                                  ).toLocaleDateString("pt-BR")}
                                  corretor={agendamento.nomeUsuario}
+                                 usuario={agendamento.nomeCorretor}
                                  status={agendamento.status}
                                  localizacao={`${agendamento.endereco.cidade} - ${agendamento.endereco.bairro}`}
                                  endereco={`${agendamento.endereco.rua}, ${agendamento.endereco.numeroCasaPredio}`}
@@ -92,10 +130,11 @@ const page = async ({ params, searchParams }: PageProps) => {
                         )}
                   </section>
                   <PaginacaoHistorico
-                     totalPages={agendamentos.totalPages}
+                     totalPages={totalPages}
                      currentPage={currentPage}
                   />
-            </Suspense>
+               </Suspense>
+            </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
       </Layout>
    );

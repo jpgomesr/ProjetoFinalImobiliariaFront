@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import InputPadrao from "../InputPadrao";
 import Image from "next/image";
+import { useChat } from "@/context/ChatContext";
 
 interface Usuario {
    id: number;
@@ -16,67 +17,159 @@ interface Chat {
    idChat: number;
    usuario1: Usuario;
    usuario2: Usuario;
+   ultimaMensagem?: {
+      conteudo: string;
+      timeStamp: string;
+      remetente: string;
+   };
+   naoLido?: boolean;
 }
 
 export default function ChatList() {
    const router = useRouter();
    const [search, setSearch] = useState("");
-   const [chats, setChats] = useState<Chat[]>([]);
    const [loading, setLoading] = useState(true);
+   const [localChats, setLocalChats] = useState<Chat[]>([]);
+   const {
+      chats,
+      selectedChat,
+      setSelectedChat,
+      fetchChats,
+      userId,
+      resetConnection,
+   } = useChat();
 
-   const id = localStorage.getItem("idUsuario") || "1";
-   if (!localStorage.getItem("idUsuario")) {
-      localStorage.setItem("idUsuario", "1");
-   }
-
-   const handleContactClick = (id: number) => {
-      router.push(`/chat/?chat=${id}`);
-   };
-
-   const getChatPartnerName = (chat: Chat) => {
-      const userId = Number(id);
-      if (chat.usuario1.id === userId) {
-         return chat.usuario2.nome;
-      } else {
-         return chat.usuario1.nome;
-      }
-   };
-
-   const getChatPartnerFoto = (chat: Chat) => {
-      const userId = Number(id);
-      if (chat.usuario1.id === userId) {
-         return chat.usuario2.foto;
-      } else {
-         return chat.usuario1.foto;
-      }
-   };
-
+   // Atualizar o estado local quando os chats do contexto mudarem
    useEffect(() => {
-      const fetchChats = async () => {
+      console.log("Atualizando lista local de chats:", chats.length);
+      setLocalChats(chats);
+   }, [chats]);
+
+   const handleContactClick = useCallback(
+      async (chatId: number) => {
+         if (selectedChat === chatId) return;
+
          try {
-            const response = await fetch(
-               `${process.env.NEXT_PUBLIC_BASE_URL}/chat/list/${id}`,
+            resetConnection();
+            setSelectedChat(chatId);
+
+            await fetch(
+               `${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chatId}/marcarLidas?idUsuario=${userId}`,
                {
-                  headers: {
-                     "Content-type": "application/json",
-                  },
-                  method: "GET",
+                  method: "POST",
                }
             );
-            const data = await response.json();
-            console.log(data);
-            // Garantir que data é um array
-            setChats(Array.isArray(data) ? data : []);
-            setLoading(false);
+
+            setLocalChats((prevChats) =>
+               prevChats.map((chat) =>
+                  chat.idChat === chatId ? { ...chat, naoLido: false } : chat
+               )
+            );
+
+            await fetchChats();
+
+            // Navegação instantânea
+            router.replace(`/chat/?chat=${chatId}`);
          } catch (error) {
-            console.error("Erro ao carregar chats:", error);
-            setChats([]);
+            console.error("Erro ao carregar chat:", error);
+            router.replace(`/chat/?chat=${chatId}`);
+         }
+      },
+      [
+         router,
+         setSelectedChat,
+         userId,
+         selectedChat,
+         resetConnection,
+         fetchChats,
+      ]
+   );
+
+   const getChatPartnerName = useCallback(
+      (chat: Chat) => {
+         if (!chat.usuario1 || !chat.usuario2) return "Usuário desconhecido";
+
+         const userIdNum = Number(userId);
+         if (chat.usuario1.id === userIdNum) {
+            return chat.usuario2.nome || `Usuário ${chat.usuario2.id}`;
+         } else {
+            return chat.usuario1.nome || `Usuário ${chat.usuario1.id}`;
+         }
+      },
+      [userId]
+   );
+
+   const getChatPartnerFoto = useCallback(
+      (chat: Chat) => {
+         if (!chat.usuario1 || !chat.usuario2) return null;
+
+         const userIdNum = Number(userId);
+         if (chat.usuario1.id === userIdNum) {
+            return chat.usuario2.foto;
+         } else {
+            return chat.usuario1.foto;
+         }
+      },
+      [userId]
+   );
+
+   // Carregar chats e configurar atualização periódica
+   useEffect(() => {
+      const loadChats = async () => {
+         try {
+            await fetchChats();
+         } finally {
             setLoading(false);
          }
       };
 
-      fetchChats();
-   }, [id]);
+      loadChats();
+
+      // Configurar intervalo para forçar a re-renderização da lista periodicamente
+      const intervalId = setInterval(() => {
+         console.log("Forçando atualização visual da lista de chats");
+         setLocalChats((prevChats) => [...prevChats]); // Força re-renderização
+      }, 5000);
+
+      return () => clearInterval(intervalId);
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, []);
+
+   // Filtrar e ordenar chats de forma otimizada
+   const filteredChats = useMemo(() => {
+      console.log("Filtrando lista de chats com", localChats.length, "itens");
+      console.log(
+         "Chats não lidos:",
+         localChats.filter((c) => c.naoLido).length
+      );
+
+      return Array.isArray(localChats)
+         ? localChats
+              .filter((chat) => {
+                 if (!chat) return false;
+                 const partnerName = getChatPartnerName(chat).toLowerCase();
+                 return (
+                    partnerName.includes(search.toLowerCase()) ||
+                    chat.idChat.toString().includes(search)
+                 );
+              })
+              .sort((a, b) => {
+                 // Ordenar por mensagens não lidas primeiro
+                 if (a.naoLido && !b.naoLido) return -1;
+                 if (!a.naoLido && b.naoLido) return 1;
+
+                 // Depois ordenar por data da última mensagem
+                 if (a.ultimaMensagem && b.ultimaMensagem) {
+                    return (
+                       new Date(b.ultimaMensagem.timeStamp).getTime() -
+                       new Date(a.ultimaMensagem.timeStamp).getTime()
+                    );
+                 }
+                 return 0;
+              })
+         : [];
+   }, [localChats, search, getChatPartnerName]);
 
    if (loading) {
       return (
@@ -90,16 +183,6 @@ export default function ChatList() {
          </div>
       );
    }
-
-   const filteredChats = Array.isArray(chats)
-      ? chats.filter((chat) => {
-           const partnerName = getChatPartnerName(chat).toLowerCase();
-           return (
-              partnerName.includes(search.toLowerCase()) ||
-              chat.idChat.toString().includes(search)
-           );
-        })
-      : [];
 
    return (
       <div className="flex flex-col h-full bg-[#E8E1D9] rounded-l-lg">
@@ -123,31 +206,51 @@ export default function ChatList() {
                      key={chat.id}
                      className={`flex items-center gap-3 p-3 hover:bg-gray-100 hover:rounded-lg
                                cursor-pointer ${
-                                  index === filteredChats.length - 1
-                                     ? ""
-                                     : "border-b border-gray-400"
-                               }`}
-                     onClick={() => {
-                        handleContactClick(chat.idChat);
-                        router.refresh();
-                     }}
+                                  selectedChat === chat.idChat
+                                     ? "bg-gray-100"
+                                     : ""
+                               } ${
+                        index === filteredChats.length - 1
+                           ? ""
+                           : "border-b border-gray-400"
+                     }`}
+                     onClick={() => handleContactClick(chat.idChat)}
                   >
-                     <div className="flex-1 flex items-center gap-2">
-                        <div className="flex items-center gap-2">
+                     <div className="flex-1 flex items-center gap-2 max-w-full">
+                        <div className="relative">
                            <Image
-                              src={getChatPartnerFoto(chat) || ""}
+                              src={
+                                 getChatPartnerFoto(chat) ||
+                                 "/perfil-padrao.png"
+                              }
                               alt={getChatPartnerName(chat)}
                               className="w-10 h-10 rounded-full border border-gray-400"
                               width={1920}
                               height={1080}
                            />
+                           {chat.naoLido && (
+                              <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white" />
+                           )}
                         </div>
-                        <div className="flex flex-col">
-                           <div className="font-medium">
-                              {getChatPartnerName(chat)}
+                        <div className="flex flex-col flex-1 min-w-0">
+                           <div className="flex justify-between items-center">
+                              <div className="font-medium truncate">
+                                 {getChatPartnerName(chat)}
+                              </div>
+                              {chat.ultimaMensagem && (
+                                 <div className="text-xs text-gray-500 flex-shrink-0 ml-1">
+                                    {new Date(
+                                       chat.ultimaMensagem.timeStamp
+                                    ).toLocaleTimeString([], {
+                                       hour: "2-digit",
+                                       minute: "2-digit",
+                                    })}
+                                 </div>
+                              )}
                            </div>
-                           <div className="text-sm text-gray-500">
-                              Clique para abrir o chat
+                           <div className="text-sm text-gray-500 truncate w-auto min-w-0">
+                              {chat.ultimaMensagem?.conteudo ||
+                                 "Clique para iniciar uma conversa"}
                            </div>
                         </div>
                      </div>
