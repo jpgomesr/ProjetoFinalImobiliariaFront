@@ -58,10 +58,10 @@ const Page = async ({ searchParams }: PageProps) => {
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao className="w-full" titulo="Imóveis Disponíveis">
-               <FiltrosImoveis />
+               <FiltrosImoveis view={view} />
                <ImoveisView
                   imoveis={imoveis}
-                  pageableInfo={pageableInfo}
+                  pageableInfo={pageableInfo}      
                   quantidadeElementos={quantidadeElementos}
                   view={view}
                />
