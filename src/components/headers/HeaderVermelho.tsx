@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Roles } from "@/models/Enum/Roles";
 import LogoHavClaro from "@/svg/icons/logo/LogoHavClaro";
 import FuncoesHeader from "./FuncoesHeader";
-import Notificacao from "../notificacao/Notificacao";
 import HamburguerButton from "./HamburguerButton";
 import PerfilDropdown from "./PerfilDropdown";
 import Notificacao from "@/components/notificacao/Notificacao";
