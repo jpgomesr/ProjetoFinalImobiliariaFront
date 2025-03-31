@@ -1,15 +1,14 @@
-"use client";
-
+import { getServerSession } from "next-auth";
 import ChatLayout from "@/components/chat/ChatLayout";
 import Layout from "@/components/layout/LayoutPadrao";
-import React from "react";
 import { ChatProvider } from "@/context/ChatContext";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
-export default function ChatPage() {
-   // Este componente é um wrapper para o ChatLayout
-   // que garante que o ChatProvider seja inicializado apenas uma vez
+export default async function ChatPage() {
+   const session = await getServerSession(authOptions);
+
    return (
-      <ChatProvider>
+      <ChatProvider session={session}>
          <Layout footerRemove className="p-0 h-full">
             <ChatLayout />
          </Layout>

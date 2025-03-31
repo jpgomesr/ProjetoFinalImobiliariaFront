@@ -11,7 +11,7 @@ const ChatContent = () => {
 
    if (chat === null || isNaN(chat)) {
       return (
-         <div className="h-full bg-begeClaroPadrao rounded-r-lg flex items-center justify-center">
+         <div className="h-full bg-[#E8E1D9] rounded-r-lg flex items-center justify-center">
             <div className="text-center">
                <h2 className="text-2xl font-bold text-havprincipal mb-2">
                   Nenhum chat selecionado
@@ -25,7 +25,7 @@ const ChatContent = () => {
    }
 
    return (
-      <div className="h-full bg-begeClaroPadrao rounded-r-lg">
+      <div className="h-full bg-[#E8E1D9] rounded-r-lg">
          <ChatMessages chat={chat} />
       </div>
    );

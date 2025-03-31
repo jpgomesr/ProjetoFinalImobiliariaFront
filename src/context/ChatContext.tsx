@@ -10,6 +10,7 @@ import React, {
 } from "react";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
+import { SessionProvider, useSession } from "next-auth/react";
 
 interface Usuario {
    id: number;
@@ -56,14 +57,20 @@ interface ChatContextType {
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
-export function ChatProvider({ children }: { children: React.ReactNode }) {
+export function ChatProvider({
+   children,
+   session,
+}: {
+   children: React.ReactNode;
+   session: any;
+}) {
    const [chats, setChats] = useState<Chat[]>([]);
    const [selectedChat, setSelectedChat] = useState<number | null>(null);
    const [stompClient, setStompClient] = useState<Client | null>(null);
    const [isConnected, setIsConnected] = useState(false);
    const [forceUpdate, setForceUpdate] = useState(0);
-   const userId = localStorage.getItem("idUsuario") || "1";
-   const userName = localStorage.getItem("nomeUsuario") || `Usuário ${userId}`;
+   const userId = session?.user?.id ?? "";
+   const userName = session?.user?.name ?? "";
 
    // Referências para controlar as inscrições e requisições
    const subscriptions = useRef<Record<string, any>>({});
@@ -354,8 +361,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
    }, [fetchChats]);
 
    // Atualizar chats periodicamente para garantir sincronização
-   useEffect(() => {      
-      /* 
+   useEffect(() => {
+      /*
        * TODO: Implementar no backend:
        * 1. Criar um endpoint que emite mensagens para '/topic/chat/global'
        * 2. Publicar nesse tópico sempre que qualquer mensagem for enviada

@@ -155,17 +155,16 @@ export default function ChatList() {
                  );
               })
               .sort((a, b) => {
-                 // Ordenar por mensagens não lidas primeiro
                  if (a.naoLido && !b.naoLido) return -1;
                  if (!a.naoLido && b.naoLido) return 1;
 
-                 // Depois ordenar por data da última mensagem
                  if (a.ultimaMensagem && b.ultimaMensagem) {
                     return (
                        new Date(b.ultimaMensagem.timeStamp).getTime() -
                        new Date(a.ultimaMensagem.timeStamp).getTime()
                     );
                  }
+
                  return 0;
               })
          : [];
