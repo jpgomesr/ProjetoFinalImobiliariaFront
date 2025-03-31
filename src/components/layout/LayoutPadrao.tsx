@@ -3,7 +3,7 @@ import { Roles } from "@/models/Enum/Roles";
 import HeaderVermelho from "../headers/HeaderVermelho";
 import Footer from "../footer/Footer";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 
 interface LayoutProps {

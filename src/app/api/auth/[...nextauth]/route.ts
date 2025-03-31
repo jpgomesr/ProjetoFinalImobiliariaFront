@@ -1,7 +1,4 @@
 import NextAuth from "next-auth";
-
-import { authOptions } from "./options";
-
 import CredentialsProvider from "next-auth/providers/credentials";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { NextAuthOptions } from "next-auth";
@@ -113,7 +110,6 @@ export const authOptions: NextAuthOptions = {
    debug: process.env.NODE_ENV === "development", // Ativa os logs de depuração em ambiente de desenvolvimento
    secret: process.env.NEXTAUTH_SECRET || "meu-segredo-muito-seguro",
 };
-
 
 const handler = NextAuth(authOptions);
 
