@@ -289,8 +289,8 @@ const UploadGaleriaImagens = ({
                         ) : (
                            <label
                               htmlFor="gallery-image-upload-new"
-                              className={`cursor-pointer flex items-center justify-center w-full h-full border-2 
-                                    border-dashed border-gray-300 rounded-md bg-gray-50 relative ${
+                              className={`cursor-pointer flex items-center justify-center w-full h-full 
+                                    border-2 border-dashed border-gray-300 rounded-md bg-gray-50 relative ${
                                        mensagemErroGaleria
                                           ? "border-red-500"
                                           : ""
