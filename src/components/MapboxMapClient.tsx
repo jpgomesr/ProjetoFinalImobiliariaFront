@@ -43,6 +43,7 @@ export default function MapboxMapClient({ endereco, onLocaisProximosLoad, detalh
   const mapContainer = useRef<HTMLDivElement>(null);
   const [locaisProximos, setLocaisProximos] = useState<LocalProximo[]>([]);
   const mapboxService = useRef<MapboxService | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const initializeMap = async () => {
@@ -52,10 +53,16 @@ export default function MapboxMapClient({ endereco, onLocaisProximosLoad, detalh
         mapboxService.current = new MapboxService();
       }
 
-      const locais = await mapboxService.current.initializeMap(mapContainer.current, endereco);
-      setLocaisProximos(locais);
-      if (onLocaisProximosLoad) {
-        onLocaisProximosLoad(locais);
+      try {
+        const locais = await mapboxService.current.initializeMap(mapContainer.current, endereco);
+        setLocaisProximos(locais);
+        if (onLocaisProximosLoad) {
+          onLocaisProximosLoad(locais);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar locais próximos:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -110,20 +117,27 @@ export default function MapboxMapClient({ endereco, onLocaisProximosLoad, detalh
             <div className="w-px self-stretch bg-begepadrao/30 mx-4" />
 
             <div className="flex-1">
-              <div className="grid grid-cols-2 gap-2 p-4">
-                {locaisProximos.map((local, index) => (
-                  <div key={index} className="flex items-center gap-2 hover:bg-white/10 rounded p-2">
-                    <span>{getIconForType(local.tipo)}</span>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-sm text-begepadrao truncate">{local.tipo}</span>
-                      <div className="flex items-center gap-1">
-                        <span className="text-sm text-begepadrao font-medium truncate">{local.nome}</span>
-                        <span className="text-xs text-begepadrao whitespace-nowrap">- {local.distancia}m</span>
+              {isLoading ? (
+                <div className="flex items-center justify-center h-full">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-begepadrao mr-2"></div>
+                  <p className="text-begepadrao">Carregando locais próximos...</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2 p-4">
+                  {locaisProximos.map((local, index) => (
+                    <div key={index} className="flex items-center gap-2 hover:bg-white/10 rounded p-2">
+                      <span>{getIconForType(local.tipo)}</span>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-sm text-begepadrao truncate">{local.tipo}</span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm text-begepadrao font-medium truncate">{local.nome}</span>
+                          <span className="text-xs text-begepadrao whitespace-nowrap">- {local.distancia}m</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -165,20 +179,27 @@ export default function MapboxMapClient({ endereco, onLocaisProximosLoad, detalh
         {/* Container dos locais próximos - visível apenas em mobile */}
         <div className="w-screen md:hidden bg-havprincipal h-[350px] overflow-y-auto">
           <h2 className="text-xl ml-6 mt-5 text-begepadrao">Locais Próximos</h2>
-          <div className="grid grid-cols-1 gap-2 px-4">
-            {locaisProximos.map((local, index) => (
-              <div key={index} className="flex items-center gap-2 p-2 hover:bg-white/10 rounded">
-                <span>{getIconForType(local.tipo)}</span>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-sm text-begepadrao truncate">{local.tipo}</span>
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm text-begepadrao font-medium truncate">{local.nome}</span>
-                    <span className="text-xs text-begepadrao whitespace-nowrap">- {local.distancia}m</span>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-4">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-begepadrao mr-2"></div>
+              <p className="text-begepadrao">Carregando locais próximos...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-2 px-4">
+              {locaisProximos.map((local, index) => (
+                <div key={index} className="flex items-center gap-2 p-2 hover:bg-white/10 rounded">
+                  <span>{getIconForType(local.tipo)}</span>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-sm text-begepadrao truncate">{local.tipo}</span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-sm text-begepadrao font-medium truncate">{local.nome}</span>
+                      <span className="text-xs text-begepadrao whitespace-nowrap">- {local.distancia}m</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

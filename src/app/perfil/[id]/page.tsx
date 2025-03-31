@@ -7,17 +7,18 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 
 interface PageProps {
-   params: {
+   params: Promise<{
       id: string;
-   };
+   }>;
 }
 
 const Page = async ({ params }: PageProps) => {
+   const { id } = await params;
    const session = await getServerSession(authOptions);
    if (!session) {
       redirect("/api/auth/signin");
    }
-   if (session.user.id !== params.id) {
+   if (session.user.id !== id) {
       redirect("/");
    }
 
@@ -28,7 +29,7 @@ const Page = async ({ params }: PageProps) => {
    }
 
    try {
-      const response = await fetch(`${BASE_URL}/usuarios/${params.id}`);
+      const response = await fetch(`${BASE_URL}/usuarios/${id}`);
       if (!response.ok) {
          throw new Error("Erro ao buscar os dados do usuário");
       }
@@ -39,7 +40,7 @@ const Page = async ({ params }: PageProps) => {
             <SubLayoutPaginasCRUD>
                <FundoBrancoPadrao className="w-full" titulo="Perfil de Usuário">
                   <FormularioPerfil
-                     id={params.id}
+                     id={id}
                      BASE_URL={BASE_URL}
                      dadosIniciais={dadosIniciais}
                   />

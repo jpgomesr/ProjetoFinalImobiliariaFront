@@ -76,6 +76,7 @@ interface ImovelSemelhante {
 const Page = () => {
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const [showCopiedMessage, setShowCopiedMessage] = useState(false);
+   const [isLoading, setIsLoading] = useState(true);
 
    if (!BASE_URL) {
       throw new Error("A variável NEXT_PUBLIC_BASE_URL não está definida.");

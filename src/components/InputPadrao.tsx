@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { SearchIcon } from "lucide-react"; // Importe o ícone de lupa
 import { twMerge } from "tailwind-merge";
