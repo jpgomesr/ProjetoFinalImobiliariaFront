@@ -120,9 +120,7 @@ const ImoveisView = ({
 
    return (
       <>
-         <div className="flex flex-col sm:flex-row">
-            <p className="text-sm">{quantidadeElementos} imóveis encontrados</p>
-         </div>
+         
 
          {view === "cards" && (
             <Suspense fallback={<div>Carregando...</div>}>

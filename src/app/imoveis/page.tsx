@@ -6,7 +6,8 @@ import ImoveisView from "./ImoveisView";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
-
+import FiltroList from "@/components/componetes_filtro/FiltroList";
+import { opcoesSort } from "@/data/opcoesSort";
 interface PageProps {
    searchParams: Promise<{
       precoMinimo?: string;
@@ -20,6 +21,7 @@ interface PageProps {
       tipoImovel?: string;
       finalidade?: string;
       view?: string;
+      sort?: string;
    }>;
 }
 
@@ -37,6 +39,7 @@ const Page = async ({ searchParams }: PageProps) => {
       bairro: parametrosResolvidos.bairro ?? "",
       tipoImovel: parametrosResolvidos.tipoImovel ?? "",
       finalidade: parametrosResolvidos.finalidade ?? "",
+      sort: parametrosResolvidos.sort ?? "",
    };
    const view = parametrosResolvidos.view ?? "cards";
 
@@ -52,6 +55,7 @@ const Page = async ({ searchParams }: PageProps) => {
          bairro: parametrosBusca.bairro,
          tipoResidencia: parametrosBusca.tipoImovel,
          finalidade: parametrosBusca.finalidade,
+         sort: parametrosBusca.sort,
          revalidate: 30,
       });
    return (
@@ -59,9 +63,24 @@ const Page = async ({ searchParams }: PageProps) => {
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao className="w-full" titulo="Imóveis Disponíveis">
                <FiltrosImoveis view={view} />
+               <div className="flex flex-col sm:flex-row justify-between items-center lg:my-4">
+                  <p className="text-sm">
+                     {quantidadeElementos} imóveis encontrados
+                  </p>
+                  {view === "cards" && (
+                     <FiltroList
+                        opcoes={opcoesSort}
+                        value={parametrosBusca.sort}
+                        url={"/imoveis"}
+                        nome="sort"
+                        buttonHolder="Ordenar por"
+                     defaultValue="Nenhum"
+                  />
+                  )}
+               </div>
                <ImoveisView
                   imoveis={imoveis}
-                  pageableInfo={pageableInfo}      
+                  pageableInfo={pageableInfo}
                   quantidadeElementos={quantidadeElementos}
                   view={view}
                />

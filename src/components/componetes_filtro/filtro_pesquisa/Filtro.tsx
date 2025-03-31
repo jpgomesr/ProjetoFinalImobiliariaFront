@@ -18,6 +18,7 @@ interface FiltroProps {
    tipoImovel: string;
    finalidade: string;
    url : string;
+   bordaPreta?: boolean;
 }
 
 const Filtro = (props: FiltroProps) => {
