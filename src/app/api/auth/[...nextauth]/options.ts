@@ -1,10 +1,6 @@
-import NextAuth from "next-auth";
-
-import { authOptions } from "./options";
-
+import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { NextAuthOptions } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
    pages: {
@@ -37,18 +33,17 @@ export const authOptions: NextAuthOptions = {
                );
 
                if (response.ok) {
-                  // Obter o token JWT da resposta
                   const data = await response.json();
+                  console.log("Resposta do login:", data);
 
-                  // Verifica a estrutura da resposta da API
                   const token =
                      data.accessToken ||
                      data.token ||
                      data.access_token ||
                      data.jwt ||
                      data;
+                  console.log("Token extraído:", token);
 
-                  // Decodificar o token JWT (sem verificar a assinatura)
                   const decodedToken = jwt.decode(token) as JwtPayload & {
                      id?: number;
                      nome?: string;
@@ -56,26 +51,22 @@ export const authOptions: NextAuthOptions = {
                      foto?: string | null;
                      role?: string;
                   };
+                  console.log("Token decodificado:", decodedToken);
 
-                  // Retornar as informações do usuário e o token
                   return {
-                     // Usar o ID numérico do token, convertendo para string
                      id:
                         decodedToken?.id?.toString() ||
                         (typeof decodedToken?.sub === "string"
                            ? decodedToken.sub
                            : "1"),
-                     // Usar o nome do token ou fallback
                      name:
                         decodedToken?.nome ||
                         (decodedToken?.name as string) ||
                         "Usuário",
-                     // Usar o email do token ou fallback
                      email: decodedToken?.email || credentials.email,
-                     // Incluir outros campos úteis
                      image: decodedToken?.foto || null,
-                     role: decodedToken?.role || undefined, // Alterado de null para undefined para corresponder ao tipo esperado
-                     accessToken: token, // Salvar o token para uso posterior
+                     role: decodedToken?.role || undefined,
+                     accessToken: token,
                   };
                } else {
                   console.error(
@@ -93,7 +84,6 @@ export const authOptions: NextAuthOptions = {
    ],
    callbacks: {
       async jwt({ token, user }) {
-         // Persistir o token de acesso e outros dados no token JWT
          if (user) {
             token.accessToken = user.accessToken;
             token.id = user.id;
@@ -103,18 +93,18 @@ export const authOptions: NextAuthOptions = {
          return token;
       },
       async session({ session, token }) {
-         // Adicionar o token e outros dados à sessão disponível no cliente
-         session.accessToken = token.accessToken as string;
-         session.user.id = token.id as string;
-         session.user.role = token.role as string;
+         if (session.user) {
+            session.user.id = token.id as string;
+            session.user.role = token.role as string;
+            session.accessToken = token.accessToken as string;
+         }
+         console.log("Session callback - session atualizada:", session);
          return session;
       },
    },
-   debug: process.env.NODE_ENV === "development", // Ativa os logs de depuração em ambiente de desenvolvimento
+   session: {
+      strategy: "jwt",
+   },
+   debug: process.env.NODE_ENV === "development",
    secret: process.env.NEXTAUTH_SECRET || "meu-segredo-muito-seguro",
-};
-
-
-const handler = NextAuth(authOptions);
-
-export { handler as GET, handler as POST };
+}; 
