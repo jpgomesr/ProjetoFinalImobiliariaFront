@@ -28,7 +28,7 @@ const ChatLayout = () => {
                   <ChatList onOpenChat={handleChatOpen} />
                </div>
                <div className="w-3/4">
-                  <ChatContent onCloseChat={handleChatClose} />
+                  <ChatContent/>
                </div>
             </div>
          </div>

@@ -3,7 +3,7 @@ import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
 import FormularioHorarios from "./FormularioHorarios";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { redirect } from "next/navigation";
 import { Roles } from "@/models/Enum/Roles";
 interface PageProps {

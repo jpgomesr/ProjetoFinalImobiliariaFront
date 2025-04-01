@@ -17,7 +17,7 @@ export default function RootLayout({
       <html lang="pt-br">
          <body className={`antialiased`}>
             <NotificationProvider>
-               <ChatProvider>{children}</ChatProvider>
+               {children}
             </NotificationProvider>
          </body>
       </html>

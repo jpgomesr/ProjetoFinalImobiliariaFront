@@ -3,7 +3,7 @@ import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import AgendamentoForm from "./AgendamentoForm";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { Roles } from "@/models/Enum/Roles";
 interface PageProps {
    params: Promise<{

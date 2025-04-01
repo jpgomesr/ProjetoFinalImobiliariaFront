@@ -1,4 +1,4 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { TipoImovelEnum } from "@/models/Enum/TipoImovelEnum";
 import { ModelImovelGet } from "@/models/ModelImovelGet";
 import { getServerSession } from "next-auth";

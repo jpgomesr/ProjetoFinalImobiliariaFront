@@ -655,7 +655,8 @@ const Formulario = ({ imovel }: FormularioProps) => {
                            onImageChange={(file, index) => {
                               const newValue = { ...field.value };
                               if (index === undefined) {
-                                 newValue.imagemPrincipal = file || "";
+                                 newValue.imagemPrincipal =
+                                    file || newValue.imagemPrincipal;
                               } else {
                                  const newGallery = [...imagensGaleria];
                                  if (file === null) {

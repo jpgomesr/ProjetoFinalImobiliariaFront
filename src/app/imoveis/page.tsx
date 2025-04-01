@@ -3,7 +3,7 @@ import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import FiltrosImoveis from "./FiltrosImoveis";
 import ImoveisView from "./ImoveisView";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "../api/auth/[...nextauth]/auth";
 import { getServerSession } from "next-auth";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 import FiltroList from "@/components/componetes_filtro/FiltroList";

@@ -4,10 +4,10 @@ import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
 import RelatorioClient from "./cliente";
 import { fetchRelatorioData, prepararDadosParaGraficos } from "../actions/relatorio";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { redirect } from "next/navigation";
 import { Roles } from "@/models/Enum/Roles";
-export default async function Page() {
+export default async function Page() { 
 
    const session = await getServerSession(authOptions);
 

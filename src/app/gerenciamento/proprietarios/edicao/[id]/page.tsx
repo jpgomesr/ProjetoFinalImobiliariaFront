@@ -8,7 +8,7 @@ import { buscarIdsProprietarios, buscarProprietarioPorId } from "@/Functions/pro
 import ModelProprietario from "@/models/ModelProprietario";
 import { Roles } from "@/models/Enum/Roles";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { redirect } from "next/navigation";
 interface PageProps {
    params: Promise<{
