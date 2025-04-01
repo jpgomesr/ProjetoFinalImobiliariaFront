@@ -34,7 +34,7 @@ export interface parametrosBuscaImovel {
     sort?: string,
     condicoesEspeciais?: string,
     revalidate?: number,
-    idUsuario?: string
+    idUsuario?: string,
 }
 
 
@@ -61,6 +61,8 @@ export const buscarTodosImoveis = async (
         idUsuario: parametros?.idUsuario || '',
         sort: parametros?.sort || ''
     });
+
+    const session = await getServerSession(authOptions);
       
     try {
         const responseImovelRequest = await fetch(
@@ -69,7 +71,8 @@ export const buscarTodosImoveis = async (
                 method: 'GET',
                 cache: 'no-store',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': session?.accessToken || ''
                 }
             }
         );
@@ -78,6 +81,12 @@ export const buscarTodosImoveis = async (
             const dataImovel = await responseImovelRequest.json();
 
             const imoveis: ModelImovelGet[] = dataImovel.content;
+
+            const idsImoveisFavoritados = await buscarIdsImoveisFavoritados(session?.user?.id || '');
+
+            imoveis.forEach(imovel => {
+                imovel.favoritado = idsImoveisFavoritados.includes(imovel.id);
+            });
             
             const pageableInfo = {
                 totalPaginas: dataImovel.totalPages,
