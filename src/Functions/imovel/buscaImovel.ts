@@ -60,56 +60,50 @@ export const buscarTodosImoveis = async (
         destaque: parametros?.destaque === 'true' ? 'true' : 'false',
         idUsuario: parametros?.idUsuario || '',
         sort: parametros?.sort || ''
-      });
-      const session = await getServerSession(authOptions)
-
+    });
       
-   try {
-
-   
-      const responseImovelRequest = await fetch(
-         `${BASE_URL}/imoveis?${params.toString()}`,
-         {
-            next: parametros?.revalidate ? { revalidate: parametros.revalidate } : undefined
-         }
-      );
-    
-         
-      
-      if (responseImovelRequest.ok) {
-         const dataImovel = await responseImovelRequest.json();
-
-         const imoveis: ModelImovelGet[] = dataImovel.content;
-         
-         const pageableInfo = {
-            totalPaginas: dataImovel.totalPages,
-            ultima: dataImovel.last,
-         };
-         const quantidadeElementos = dataImovel.totalElements;
-
-         if(session){
-            const id = session?.user?.id
-            if(id){
-               const idsImovelFavoritado = await buscarIdsImoveisFavoritados(id)
-               imoveis.forEach(imovel => {
-                  imovel.favoritado = idsImovelFavoritado.includes(imovel.id) 
-               })
+    try {
+        const responseImovelRequest = await fetch(
+            `${BASE_URL}/imoveis?${params.toString()}`,
+            {
+                method: 'GET',
+                cache: 'no-store',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             }
-         }
-        
+        );
+     
+        if (responseImovelRequest.ok) {
+            const dataImovel = await responseImovelRequest.json();
 
-         return {
-            imoveis,
-            pageableInfo,
-            quantidadeElementos,
-         };
-      } else {
-         console.error("Erro ao buscar os dados do imóvel" + responseImovelRequest.status);
-      }
-   } catch (error) {
-      console.error("Erro ao buscar os dados do imóvel:", error);
-   }
-   throw new Error("Erro ao buscar usuarios");
+            const imoveis: ModelImovelGet[] = dataImovel.content;
+            
+            const pageableInfo = {
+                totalPaginas: dataImovel.totalPages,
+                ultima: dataImovel.last,
+            };
+            const quantidadeElementos = dataImovel.totalElements;
+
+            return {
+                imoveis,
+                pageableInfo,
+                quantidadeElementos,
+            };
+        } else {
+            throw new Error("Erro ao buscar os dados do imóvel");
+        }
+    } catch (error) {
+        console.error("Erro ao buscar os dados do imóvel:", error);
+        return {
+            imoveis: [],
+            pageableInfo: {
+                totalPaginas: 0,
+                ultima: true
+            },
+            quantidadeElementos: 0
+        };
+    }
 };
 
 export const buscarImoveisFavoritos = async (

@@ -24,24 +24,18 @@ export async function fetchRelatorioData() {
     for (const corretor of resultUsuariosAtivos.usuariosRenderizados || []) {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/agendamento/corretor/${corretor.id}`
+          `${process.env.NEXT_PUBLIC_BASE_URL}/agendamentos/corretor/${corretor.id}?status=&data=&page=0&size=1000&sort=dataHora,desc`
         );
 
         if (response.ok) {
           const data = await response.json();
-          const agendamentosArray = Array.isArray(data)
-            ? data
-            : data.agendamentos || data.data || data.content || [];
-
-          const agendamentosConfirmados = agendamentosArray.filter(
-            (agendamento: any) => agendamento.status === "CONFIRMADO"
-          ).length;
-
-          agendamentos[corretor.nome] = agendamentosConfirmados;
+          // Usar o totalElements da resposta paginada
+          agendamentos[corretor.nome] = data.totalElements || 0;
         } else {
           agendamentos[corretor.nome] = 0;
         }
       } catch (error) {
+        console.error(`Erro ao buscar agendamentos para ${corretor.nome}:`, error);
         agendamentos[corretor.nome] = 0;
       }
     }
