@@ -87,7 +87,7 @@ const page = async ({ params, searchParams }: PageProps) => {
                className="w-full px-2"
             >
                {session.user.role === Roles.CORRETOR && (
-                  <Link href={`/horarios/${id}`}>
+                  <Link href={`/horarios/${id}`} className="w-fit">
                      <BotaoPadrao texto="Meus horários" />
                   </Link>
                )}
