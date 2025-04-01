@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import ListFiltroPadrao from "@/components/ListFIltroPadrao";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import InputsPergunta from "@/components/componentes_perguntas_frequentes/InputsPergunta";
-import ModelPergunta from "@/models/ModelPergunta";
+import ModelPergunta, { TipoPerguntaEnum } from "@/models/ModelPergunta";
 import { enviarPergunta } from "@/app/perguntas-frequentes/action";
 import { useNotification } from "@/context/NotificationContext";
 
@@ -20,11 +20,13 @@ interface ErroValidacao {
 
 const FormPerguntas = ({ onSuccess }: FormPerguntasProps) => {
    const searchParams = useSearchParams();
-   const opcaoSelecionada = searchParams.get("opcao");
+   const opcaoSelecionada = searchParams.get(
+      "opcao"
+   ) as TipoPerguntaEnum | null;
    const { showNotification } = useNotification();
 
    const [pergunta, setPergunta] = useState<ModelPergunta>({
-      tipoPergunta: "",
+      tipoPergunta: "OUTROS",
       email: "",
       telefone: "",
       nome: "",
@@ -35,6 +37,7 @@ const FormPerguntas = ({ onSuccess }: FormPerguntasProps) => {
 
    useEffect(() => {
       if (opcaoSelecionada) {
+         console.log("Opção selecionada:", opcaoSelecionada); // Log para debug
          setPergunta((prev) => ({ ...prev, tipoPergunta: opcaoSelecionada }));
       }
    }, [opcaoSelecionada]);
@@ -43,11 +46,13 @@ const FormPerguntas = ({ onSuccess }: FormPerguntasProps) => {
       e.preventDefault();
       setErros([]);
 
+      console.log("Pergunta antes de enviar:", pergunta); // Log para debug
+
       const resultado = await enviarPergunta(pergunta);
 
       if (resultado.success) {
          setPergunta({
-            tipoPergunta: "",
+            tipoPergunta: "OUTROS",
             email: "",
             telefone: "",
             nome: "",

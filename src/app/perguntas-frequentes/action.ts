@@ -1,5 +1,6 @@
 "use server";
 
+import { TipoPergunta } from "@/models/Enum/TipoPerguntaEnum";
 import ModelPergunta from "@/models/ModelPergunta";
 import { z } from "zod";
 
@@ -34,7 +35,14 @@ export async function enviarPergunta(pergunta: ModelPergunta) {
          headers: {
             "Content-Type": "application/json",
          },
-         body: JSON.stringify(pergunta),
+         body: JSON.stringify({
+            tipoPergunta:
+               TipoPergunta[pergunta.tipoPergunta as keyof typeof TipoPergunta],
+            email: pergunta.email,
+            telefone: pergunta.telefone,
+            nome: pergunta.nome,
+            mensagem: pergunta.mensagem,
+         }),
       });
 
       if (!res.ok) throw new Error("Erro ao enviar pergunta");
