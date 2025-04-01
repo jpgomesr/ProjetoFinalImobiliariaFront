@@ -25,7 +25,11 @@ interface Chat {
    naoLido?: boolean;
 }
 
-export default function ChatList() {
+interface ChatListProps {
+   onOpenChat: () => void;
+}
+
+export default function ChatList(props: ChatListProps) {
    const router = useRouter();
    const [search, setSearch] = useState("");
    const [loading, setLoading] = useState(true);
@@ -69,6 +73,7 @@ export default function ChatList() {
             await fetchChats();
 
             // Navegação instantânea
+            props.onOpenChat();
             router.replace(`/chat/?chat=${chatId}`);
          } catch (error) {
             console.error("Erro ao carregar chat:", error);
