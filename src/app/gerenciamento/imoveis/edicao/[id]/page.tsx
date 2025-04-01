@@ -8,7 +8,7 @@ import {
    buscarImovelPorId,
 } from "@/Functions/imovel/buscaImovel";
 import Formulario from "./Formulario";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { Roles } from "@/models/Enum/Roles";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";

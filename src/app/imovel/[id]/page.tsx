@@ -121,83 +121,76 @@ const Page = () => {
       fetchImovel();
    }, [id]);
 
-   const buscarImoveisSemelhantes = async () => {
-      try {
-         const response = await buscarTodosImoveis();
-         console.log("Todos os imóveis:", response); // Debug todos os imóveis
-         console.log("Imóvel atual:", imovel); // Debug imóvel atual
-
-         // Garantir que response.imoveis é um array antes de usar filter
-         const imoveis = Array.isArray(response.imoveis)
-            ? response.imoveis
-            : [];
-         console.log("Imóveis para filtrar:", imoveis); // Debug array de imóveis
-
-         if (!imovel) return; // Garantir que temos o imóvel atual
-
-         const semelhantes = imoveis.filter(
-            (imovelComparado: ImovelSemelhante) => {
-               console.log("Comparando com:", imovelComparado); // Debug cada comparação
-
-               // Validar se o imóvel comparado tem todos os campos necessários
-               if (
-                  !imovelComparado ||
-                  typeof imovelComparado.preco !== "number" ||
-                  !imovelComparado.qtdBanheiros ||
-                  !imovelComparado.qtdQuartos
-               ) {
-                  console.log("Imóvel inválido:", imovelComparado);
-                  return false;
-               }
-
-               if (imovelComparado.id === Number(id)) {
-                  console.log("Mesmo imóvel, ignorando");
-                  return false;
-               }
-               try {
-                  const precoAtual = imovel.preco;
-                  const precoComparado = imovelComparado.preco;
-                  const diferencaPreco = Math.abs(precoAtual - precoComparado);
-
-                  console.log("Preços:", {
-                     atual: precoAtual,
-                     comparado: precoComparado,
-                     diferenca: diferencaPreco,
-                  });
-
-                  console.log("Comparações:", {
-                     banheiros:
-                        imovelComparado.qtdBanheiros === imovel.qtdBanheiros,
-                     quartos: imovelComparado.qtdQuartos === imovel.qtdQuartos,
-                     preco: diferencaPreco <= 5000,
-                  });
-
-                  const isSemelhante =
-                     imovelComparado.qtdBanheiros === imovel.qtdBanheiros ||
-                     imovelComparado.qtdQuartos === imovel.qtdQuartos ||
-                     diferencaPreco <= 5000;
-
-                  console.log("É semelhante?", isSemelhante);
-                  return isSemelhante;
-               } catch (err) {
-                  console.error("Erro ao comparar imóvel:", err);
-                  return false;
-               }
-            }
-         );
-
-         console.log("Imóveis semelhantes encontrados:", semelhantes); // Debug resultado final
-         setImoveisSemelhantes(semelhantes);
-      } catch (err) {
-         console.error("Erro ao buscar imóveis semelhantes:", err);
-      }
-   };
-
    useEffect(() => {
       if (imovel) {
+         const buscarImoveisSemelhantes = async () => {
+            try {
+               const response = await buscarTodosImoveis();
+               const imoveis = response.imoveis;
+               console.log("Todos os imóveis:", imoveis);
+               console.log("Imóvel atual:", imovel);
+
+               const semelhantes = imoveis.filter(
+                  (imovelComparado: ImovelSemelhante) => {
+                     console.log("Comparando com:", imovelComparado);
+
+                     if (
+                        !imovelComparado ||
+                        typeof imovelComparado.preco !== "number" ||
+                        !imovelComparado.qtdBanheiros ||
+                        !imovelComparado.qtdQuartos
+                     ) {
+                        console.log("Imóvel inválido:", imovelComparado);
+                        return false;
+                     }
+
+                     if (imovelComparado.id === Number(id)) {
+                        console.log("Mesmo imóvel, ignorando");
+                        return false;
+                     }
+
+                     try {
+                        const precoAtual = imovel.preco;
+                        const precoComparado = imovelComparado.preco;
+                        const diferencaPreco = Math.abs(precoAtual - precoComparado);
+
+                        console.log("Preços:", {
+                           atual: precoAtual,
+                           comparado: precoComparado,
+                           diferenca: diferencaPreco,
+                        });
+
+                        console.log("Comparações:", {
+                           banheiros:
+                              imovelComparado.qtdBanheiros === imovel.qtdBanheiros,
+                           quartos: imovelComparado.qtdQuartos === imovel.qtdQuartos,
+                           preco: diferencaPreco <= 5000,
+                        });
+
+                        const isSemelhante =
+                           imovelComparado.qtdBanheiros === imovel.qtdBanheiros ||
+                           imovelComparado.qtdQuartos === imovel.qtdQuartos ||
+                           diferencaPreco <= 5000;
+
+                        console.log("É semelhante?", isSemelhante);
+                        return isSemelhante;
+                     } catch (err) {
+                        console.error("Erro ao comparar imóvel:", err);
+                        return false;
+                     }
+                  }
+               );
+
+               console.log("Imóveis semelhantes encontrados:", semelhantes);
+               setImoveisSemelhantes(semelhantes);
+            } catch (err) {
+               console.error("Erro ao buscar imóveis semelhantes:", err);
+            }
+         };
+
          buscarImoveisSemelhantes();
       }
-   }, [imovel]);
+   }, [imovel, id]);
 
    console.log(imovel);
 
@@ -359,7 +352,10 @@ const Page = () => {
          <h2 className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl font-semibold flex justify-center items-center mx-auto mt-8 mb-8">
             Selecione um de nossos corretores e tenha uma conversa via chat
          </h2>
-         <ExibirCorretores corretores={imovel.corretores} />
+         <ExibirCorretores corretores={imovel.corretores.map(corretor => ({
+            ...corretor,
+            agendamentos: 0 // Changed from empty array to number to match ExibirCorretor type
+         }))} />
          <h2 className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl font-semibold flex justify-center items-center mx-auto mt-8 mb-8">
             Converse conosco via WhatsApp
          </h2>

@@ -3,7 +3,7 @@ import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import FormularioPerfil from "./FormularioPerfil";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { redirect } from "next/navigation";
 
 interface PageProps {
@@ -21,6 +21,7 @@ const Page = async ({ params }: PageProps) => {
    if (session.user.id !== id) {
       redirect("/");
    }
+
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 

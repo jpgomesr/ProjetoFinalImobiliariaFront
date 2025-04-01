@@ -3,7 +3,7 @@ import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import FiltrosImoveis from "@/app/imoveis/FiltrosImoveis";
 import ImoveisView from "@/app/imoveis/ImoveisView";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
@@ -63,7 +63,7 @@ const Page = async ({ params, searchParams }: PageProps) => {
          sort: parametrosBusca.sort,
       });
 
-   if (!session) {
+   if (!session) {      
       redirect("/login");
    }
    if (session?.user.id != id) {

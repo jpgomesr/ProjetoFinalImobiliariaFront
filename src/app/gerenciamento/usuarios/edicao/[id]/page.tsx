@@ -8,9 +8,9 @@ import {
 } from "@/Functions/usuario/buscaUsuario";
 import Formulario from "./Formulario";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { redirect } from "next/navigation";
-import { Roles } from "@/models/Enum/Roles";
+import { Roles } from "@/models/Enum/Roles"; 
 // Interface para os parâmetros da página
 interface PageProps {
    params: Promise<{

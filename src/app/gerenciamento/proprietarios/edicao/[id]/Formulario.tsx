@@ -21,7 +21,7 @@ import { preencherCampos, restaurarCampos } from "@/Functions/requisicaoViaCep";
 import List from "@/components/List";
 import { useNotification } from "@/context/NotificationContext";
 import Erro404 from "@/components/Erro404";
-import Link from "next/link"; 
+import Link from "next/link";
 interface FormProps {
    proprietario: ModelProprietario;
 }
@@ -89,7 +89,7 @@ const Formulario = ({ proprietario }: FormProps) => {
    const buscarProprietario = async () => {
       if (!proprietario.id) {
          setErro404(true);
-         setLoading(false)
+         setLoading(false);
          return;
       }
 
@@ -112,15 +112,12 @@ const Formulario = ({ proprietario }: FormProps) => {
          console.error("Erro ao buscar proprietário:", error);
          setErro404(true);
       } finally {
-         setLoading(false); 
+         setLoading(false);
       }
    };
    useEffect(() => {
-      buscarProprietario()
-   }, [])
- 
- 
-
+      buscarProprietario();
+   }, []);
 
    useEffect(() => {
       if (watch("cep")?.length === 8) {
@@ -136,7 +133,6 @@ const Formulario = ({ proprietario }: FormProps) => {
       }
    }, [watch("cep")]);
 
-  
    const onSubmit = async (data: validatorSchema) => {
       try {
          const response = await UseFetchPostFormData(
@@ -209,8 +205,6 @@ const Formulario = ({ proprietario }: FormProps) => {
       return <div>Carregando...</div>; // Exibe um indicador de carregamento
    }
 
-
-  
    return (
       <form
          onSubmit={handleSubmit(onSubmit)}
@@ -402,7 +396,7 @@ const Formulario = ({ proprietario }: FormProps) => {
                />
             </Link>
             <BotaoPadrao
-               texto={isSubmitting ? "Enviando..." : "Enviar"}
+               texto={isSubmitting ? "Concluindo..." : "Concluir"}
                disabled={isSubmitting}
                type="submit"
             />

@@ -340,7 +340,7 @@ const FormularioCadastroProprietario = () => {
                   />
                </Link>
                <BotaoPadrao
-                  texto={isSubmitting ? "Enviando..." : "Enviar"}
+                  texto={isSubmitting ? "Concluindo..." : "Concluir"}
                   disabled={isSubmitting}
                   type="submit"
                />

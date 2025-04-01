@@ -4,7 +4,7 @@ import RegisterForm from "@/components/auth/forms/RegisterForm";
 import Link from "next/link";
 import { Home } from "lucide-react";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { redirect } from "next/navigation";
 
 

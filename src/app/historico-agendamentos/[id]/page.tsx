@@ -12,7 +12,7 @@ import PaginacaoHistorico from "./PaginacaoHistórico";
 import Link from "next/link";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import { useSession } from "next-auth/react";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { Roles } from "@/models/Enum/Roles";
@@ -87,7 +87,7 @@ const page = async ({ params, searchParams }: PageProps) => {
                className="w-full px-2"
             >
                {session.user.role === Roles.CORRETOR && (
-                  <Link href={`/horarios/${id}`}>
+                  <Link href={`/horarios/${id}`} className="w-fit">
                      <BotaoPadrao texto="Meus horários" />
                   </Link>
                )}

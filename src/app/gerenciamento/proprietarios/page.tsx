@@ -7,7 +7,7 @@ import Layout from "@/components/layout/LayoutPadrao";
 import { redirect } from "next/navigation";
 import { Roles } from "@/models/Enum/Roles";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 
 interface PageProps {
    searchParams: Promise<{
