@@ -19,12 +19,15 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 const LoginForm = () => {
    const [showPassword, setShowPassword] = useState(false);
+   const [loginError, setLoginError] = useState(false);
+   const [isLoading, setIsLoading] = useState(false);
    const router = useRouter();
    const {
       register,
       handleSubmit,
       formState: { errors },
       clearErrors,
+      setError,
    } = useForm<LoginFormData>({
       resolver: zodResolver(loginSchema),
       defaultValues: {
@@ -33,12 +36,31 @@ const LoginForm = () => {
       },
    });
 
-   const onSubmit = (data: LoginFormData) => {
-      signIn("credentials", {
-         email: data.login,
-         password: data.password,
-         callbackUrl: "/",
-      });
+   const onSubmit = async (data: LoginFormData) => {
+      try {
+         setIsLoading(true);
+         const response = await signIn("credentials", {
+            email: data.login,
+            password: data.password,
+            callbackUrl: "/",
+            redirect: false
+         });
+         
+         if (response?.error) {
+            setLoginError(true);
+            setError("login", { message: "Login ou senha incorretos", type: "manual" });
+            setError("password", { message: "Login ou senha incorretos", type: "manual" });
+            console.log(errors);
+         } else {
+            setLoginError(false);
+            router.push("/");
+         }
+      } catch (error) {
+         setLoginError(true);
+         console.error("Erro ao fazer login:", error);
+      } finally {
+         setIsLoading(false);
+      }
    };
 
    return (
@@ -47,7 +69,7 @@ const LoginForm = () => {
             <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center">
                Login
             </h1>
-            {(errors.login || errors.password) && (
+            {loginError && (
                <div className="w-full flex justify-center">
                   <span className="text-havprincipal bg-white px-2 py-1 rounded-lg text-sm sm:text-base font-montserrat">
                      Login ou senha incorretos
@@ -75,7 +97,9 @@ const LoginForm = () => {
                         onChange={() => {
                            clearErrors("login");
                            clearErrors("password");
+                           setLoginError(false);
                         }}
+                        disabled={isLoading}
                      />
                   </div>
                   <label htmlFor="password" className="text-xs sm:text-sm">
@@ -91,12 +115,15 @@ const LoginForm = () => {
                         onChange={() => {
                            clearErrors("login");
                            clearErrors("password");
+                           setLoginError(false);
                         }}
+                        disabled={isLoading}
                      />
                      <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className="text-havprincipal flex-shrink-0"
+                        disabled={isLoading}
                      >
                         {showPassword ? (
                            <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -112,14 +139,20 @@ const LoginForm = () => {
                <div className="flex justify-center items-center gap-3 sm:gap-4">
                   <button
                      type="submit"
-                     className="bg-white text-havprincipal font-bold py-2 px-4 sm:py-2.5 sm:px-5 rounded-md text-sm sm:text-base mt-2"
+                     className={`bg-white text-havprincipal font-bold py-2 px-4 sm:py-2.5 sm:px-5 rounded-md text-sm sm:text-base mt-2 ${
+                        isLoading ? "opacity-70 cursor-not-allowed" : ""
+                     }`}
+                     disabled={isLoading}
                   >
-                     Entrar
+                     {isLoading ? "Carregando..." : "Entrar"}
                   </button>
                   <p className="text-sm sm:text-base">ou</p>
                   <button
-                     className="flex items-center bg-white text-havprincipal gap-2 px-3 py-2 sm:py-2.5 
-                              rounded-md font-bold text-sm sm:text-base mt-2"
+                     className={`flex items-center bg-white text-havprincipal gap-2 px-3 py-2 sm:py-2.5 
+                              rounded-md font-bold text-sm sm:text-base mt-2 ${
+                                 isLoading ? "opacity-70 cursor-not-allowed" : ""
+                              }`}
+                     disabled={isLoading}
                   >
                      <Image
                         src="/google.svg"
@@ -136,7 +169,7 @@ const LoginForm = () => {
                   <Link href="/autenticacao/cadastro">
                   <button
                      className="font-semibold text-xs sm:text-sm text-white"
-                     
+                     disabled={isLoading}
                   >
                      clique aqui!
                   </button>
