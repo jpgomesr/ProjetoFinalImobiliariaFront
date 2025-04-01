@@ -5,11 +5,13 @@ import React, {
    useCallback,
    useMemo,
 } from "react";
-import { Send } from "lucide-react";
+import { Send, ArrowLeft } from "lucide-react";
 import { useChat } from "@/context/ChatContext";
 
 interface ChatMessagesProps {
    chat: number;
+   closeChat: () => void;
+   isMobile: boolean;
 }
 
 interface ChatUser {
@@ -27,7 +29,7 @@ interface DisplayMessage {
    nomeRemetente?: string;
 }
 
-const ChatMessages = ({ chat }: ChatMessagesProps) => {
+const ChatMessages = ({ chat, closeChat, isMobile }: ChatMessagesProps) => {
    const [messages, setMessages] = useState<DisplayMessage[]>([]);
    const [chatPartner, setChatPartner] = useState<ChatUser | null>(null);
    const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -283,7 +285,16 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
 
    return (
       <div className="flex flex-col gap-2 h-full">
-         <div className="bg-havprincipal rounded-tr-lg">
+         <div className="bg-havprincipal rounded-t-lg md:rounded-tl-none md:rounded-tr-lg flex flex-row gap-2 sm:gap-4 items-center">
+            {isMobile && (
+               <ArrowLeft
+                  className="text-white cursor-pointer ml-2 sm:ml-4"
+                  onClick={(e: React.MouseEvent<SVGSVGElement>) => {
+                     e.stopPropagation();
+                     closeChat();
+                  }}
+               />
+            )}
             <p className="text-xl font-semibold text-white px-8 py-3 truncate">
                {chatPartner && `${chatPartner.nome}`}
             </p>

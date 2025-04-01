@@ -4,7 +4,12 @@ import { useSearchParams } from "next/navigation";
 import React from "react";
 import ChatMessages from "./ChatMessages";
 
-const ChatContent = () => {
+interface ChatContentProps {
+   closeChat: () => void;
+   isMobile: boolean;
+}
+
+const ChatContent = ({ closeChat, isMobile }: ChatContentProps) => {
    const searchParams = useSearchParams();
    const chatParam = searchParams.get("chat");
    const chat = chatParam ? parseInt(chatParam, 10) : null;
@@ -25,8 +30,8 @@ const ChatContent = () => {
    }
 
    return (
-      <div className="h-full bg-[#E8E1D9] rounded-r-lg">
-         <ChatMessages chat={chat} />
+      <div className="h-full bg-[#E8E1D9] rounded-lg md:rounded-l-none md:rounded-r-lg">
+         <ChatMessages chat={chat} closeChat={closeChat} isMobile={isMobile} />
       </div>
    );
 };

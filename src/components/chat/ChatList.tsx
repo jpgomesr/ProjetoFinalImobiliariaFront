@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import InputPadrao from "../InputPadrao";
 import Image from "next/image";
 import { useChat } from "@/context/ChatContext";
+import { User } from "lucide-react";
 
 interface Usuario {
    id: number;
@@ -177,8 +178,8 @@ export default function ChatList(props: ChatListProps) {
 
    if (loading) {
       return (
-         <div className="flex flex-col h-full bg-[#E8E1D9] rounded-l-lg">
-            <div className="py-3 bg-[#6D2639] text-white text-center rounded-tl-lg">
+         <div className="flex flex-col h-full bg-[#E8E1D9] rounded-lg md:rounded-r-none md:rounded-l-lg">
+            <div className="py-3 bg-[#6D2639] text-white text-center rounded-t-lg md:rounded-tr-none md:rounded-tl-lg">
                <h2 className="font-bold text-xl">Chat</h2>
             </div>
             <div className="flex items-center justify-center h-full">
@@ -189,8 +190,8 @@ export default function ChatList(props: ChatListProps) {
    }
 
    return (
-      <div className="flex flex-col h-full bg-[#E8E1D9] rounded-l-lg">
-         <div className="py-3 bg-[#6D2639] text-white text-center rounded-tl-lg">
+      <div className="flex flex-col h-full bg-[#E8E1D9] rounded-lg md:rounded-l-lg">
+         <div className="py-3 bg-[#6D2639] text-white text-center rounded-t-lg md:rounded-tr-none md:rounded-tl-lg">
             <h2 className="font-bold text-xl">Chat</h2>
          </div>
          <div className="p-2">
@@ -222,16 +223,25 @@ export default function ChatList(props: ChatListProps) {
                   >
                      <div className="flex-1 flex items-center gap-2 max-w-full">
                         <div className="relative">
-                           <Image
-                              src={
-                                 getChatPartnerFoto(chat) ||
-                                 "/perfil-padrao.png"
-                              }
-                              alt={getChatPartnerName(chat)}
-                              className="w-10 h-10 rounded-full border border-gray-400"
-                              width={1920}
-                              height={1080}
-                           />
+                           {getChatPartnerFoto(chat) ? (
+                              <Image
+                                 src={
+                                    getChatPartnerFoto(chat) ||
+                                    "/perfil-padrao.png"
+                                 }
+                                 alt={getChatPartnerName(chat)}
+                                 className="w-10 h-10 rounded-full border border-gray-400"
+                                 width={1920}
+                                 height={1080}
+                              />
+                           ) : (
+                              <div
+                                 className="w-10 h-10 rounded-full bg-transparent flex items-center justify-center border
+                                          border-gray-500"
+                              >
+                                 <User className="w-6 h-6 text-gray-800" />
+                              </div>
+                           )}
                            {chat.naoLido && (
                               <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white" />
                            )}
