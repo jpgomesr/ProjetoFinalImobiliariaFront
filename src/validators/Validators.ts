@@ -173,21 +173,46 @@ export const createImovelValidator = () => {
       tipo: z.string().min(1, { message: "Campo obrigatório" }),
       favoritado: z.boolean().optional(),
       objImovel: z.string().min(1, { message: "Campo obrigatório" }),
-      valor: z.number({ message: "Campo obrigatório" }),
-      valorPromo: z.number().optional(),
-      iptu: z.number().optional(),
-      valorCondominio: z.number().optional(),
+      valor: z
+         .number({ message: "Campo obrigatório" })
+         .positive({ message: "O valor não pode ser negativo" }),
+      valorPromo: z
+         .number()
+         .positive({ message: "O valor não pode ser negativo" })
+         .optional(),
+      iptu: z
+         .number()
+         .positive({ message: "O valor não pode ser negativo" })
+         .optional(),
+      valorCondominio: z
+         .number()
+         .positive({ message: "O valor não pode ser negativo" })
+         .optional(),
       codigo: z.number().optional(),
       rua: z.string().min(1, { message: "Campo obrigatório" }),
       bairro: z.string().min(1, { message: "Campo obrigatório" }),
       cidade: z.string().min(1, { message: "Campo obrigatório" }),
       descricao: z.string().min(1, { message: "Campo obrigatório" }),
-      qtdBanheiros: z.number({ message: "Campo obrigatório" }),
-      qtdQuartos: z.number({ message: "Campo obrigatório" }),
-      qtdVagas: z.number({ message: "Campo obrigatório" }),
-      qtdChurrasqueiras: z.number().optional(),
-      qtdPiscinas: z.number().optional(),
-      metragem: z.number({ message: "Campo obrigatório" }),
+      qtdBanheiros: z
+         .number({ message: "Campo obrigatório" })
+         .positive({ message: "O valor não pode ser negativo" }),
+      qtdQuartos: z
+         .number({ message: "Campo obrigatório" })
+         .positive({ message: "O valor não pode ser negativo" }),
+      qtdVagas: z
+         .number({ message: "Campo obrigatório" })
+         .positive({ message: "O valor não pode ser negativo" }),
+      qtdChurrasqueiras: z
+         .number()
+         .positive({ message: "O valor não pode ser negativo" })
+         .optional(),
+      qtdPiscinas: z
+         .number()
+         .positive({ message: "O valor não pode ser negativo" })
+         .optional(),
+      metragem: z
+         .number({ message: "Campo obrigatório" })
+         .positive({ message: "O valor não pode ser negativo" }),
       banner: z.boolean(),
       tipoBanner: z.string().optional(),
       academia: z.boolean(),
@@ -226,12 +251,19 @@ export const createImovelValidator = () => {
          .refine((val) => val.toString().length === 8, {
             message: "O CEP deve ter exatamente 8 dígitos.",
          }),
-      numero: z.number({ message: "Campo obrigatório" }),
-      numeroApto: z.number().optional(),
+      numero: z
+         .number({ message: "Campo obrigatório" })
+         .positive({ message: "O valor não pode ser negativo" }),
+      numeroApto: z
+         .number()
+         .positive({ message: "O valor não pode ser negativo" })
+         .optional(),
       estado: z.string().min(1, { message: "Campo obrigatório" }),
       proprietario: z
          .object({
-            id: z.number().nonnegative({ message: "Id não pode ser negativo" }),
+            id: z
+               .number()
+               .positive({ message: "O valor não pode ser negativo" }),
             nome: z
                .string({ message: "Nome precisa ser uma string" })
                .min(1, { message: "Campo obrigatório" }),
