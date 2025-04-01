@@ -144,7 +144,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
       setValue("corretores", imovel.corretores);
       setValue("imagens", {
          imagemPrincipal:
-            imovel.imagens.find((img) => img.imagemCapa)?.referencia || null,
+            imovel.imagens.find((img) => img.imagemCapa)?.referencia || "",
          imagensGaleria:
             imovel.imagens
                .filter((img) => !img.imagemCapa)
@@ -199,11 +199,14 @@ const Formulario = ({ imovel }: FormularioProps) => {
                "cidade",
                "rua",
                "imagens",
+               "imagens.imagemPrincipal",
+               "imagens.imagensGaleria",
                "numero",
                "numeroApto",
             ],
             { shouldFocus: true }
          );
+
          if (isValid) {
             setStep((prev) => prev + 1);
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -320,7 +323,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
    };
 
    if (loading) {
-      return <div>Carregando...</div>; // Exibe um indicado         r de carregamento
+      return <div>Carregando...</div>; // Exibe um indicador de carregamento
    }
 
    if (erro404) {
@@ -627,7 +630,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
                   />
                </div>
                <div className="flex justify-center mt-4 gap-2">
-                  <Link href={"/imoveis"}>
+                  <Link href={"/gerenciamento/imoveis"}>
                      <BotaoPadrao type="button" texto="Cancelar" />
                   </Link>
                   <BotaoPadrao
@@ -644,10 +647,6 @@ const Formulario = ({ imovel }: FormularioProps) => {
                <Controller
                   name="imagens"
                   control={control}
-                  defaultValue={{
-                     imagemPrincipal: null,
-                     imagensGaleria: [],
-                  }}
                   render={({ field }) => {
                      const imagensGaleria = field.value.imagensGaleria || [];
 
@@ -656,7 +655,8 @@ const Formulario = ({ imovel }: FormularioProps) => {
                            onImageChange={(file, index) => {
                               const newValue = { ...field.value };
                               if (index === undefined) {
-                                 newValue.imagemPrincipal = file;
+                                 newValue.imagemPrincipal =
+                                    file || newValue.imagemPrincipal;
                               } else {
                                  const newGallery = [...imagensGaleria];
                                  if (file === null) {
@@ -668,8 +668,11 @@ const Formulario = ({ imovel }: FormularioProps) => {
                               }
                               field.onChange(newValue);
                            }}
-                           mensagemErro={
+                           mensagemErroPrincipal={
                               errors.imagens?.imagemPrincipal?.message
+                           }
+                           mensagemErroGaleria={
+                              errors.imagens?.imagensGaleria?.message
                            }
                            clearErrors={clearErrors}
                            coverImage={
@@ -803,7 +806,9 @@ const Formulario = ({ imovel }: FormularioProps) => {
                   <BotaoPadrao
                      type="button"
                      texto="Próximo"
-                     onClick={() => setStep(step + 1)}
+                     onClick={(e: React.MouseEvent) => {
+                        handleNextStep(e);
+                     }}
                   />
                </div>
             </>

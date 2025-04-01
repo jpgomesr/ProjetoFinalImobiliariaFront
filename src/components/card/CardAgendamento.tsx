@@ -4,12 +4,15 @@ import Image from "next/image";
 import CardBanner from "./CardBanner";
 import { useState } from "react";
 import ModalCofirmacao from "../ComponentesCrud/ModalConfirmacao";
+import { Roles } from "@/models/Enum/Roles";
 interface CardReservaProps {
    id: number;
    urlImagem: string;
    horario: string;
    data: string;
    corretor: string;
+   usuario?: string;
+   role: Roles;
    status: "PENDENTE" | "CONFIRMADO" | "CANCELADO";
    localizacao: string;
    endereco: string;
@@ -26,6 +29,8 @@ export default function CardReserva({
    localizacao = "Vila Lenzi",
    endereco = "Rua Hermann Schulz 210",
    id = 0,
+   role,
+   usuario,
 }: CardReservaProps) {
    const [modalConfirmacao, setModalConfirmacao] = useState(false);
 
@@ -95,9 +100,9 @@ export default function CardReserva({
                   <span className="font-semibold">Data:</span> {data}
                </p>
                <p>
-                  <span className="font-semibold">Corretor:</span> {corretor}
+                     <span className="font-semibold">{role === Roles.CORRETOR ? "Cliente" : "Corretor"}:</span> {role === Roles.CORRETOR ? usuario : corretor}
                </p>
-               <p>
+               <p>   
                   <span className="font-semibold">Localização:</span>{" "}
                   {localizacao}, {endereco}
                </p>
@@ -105,13 +110,22 @@ export default function CardReserva({
          </div>
 
          <div className="px-6 pb-6 pt-2 flex gap-4">
-            <button
-               disabled={status === "CANCELADO" || status === "CONFIRMADO"}
-               onClick={() => atualizarStatus(id, "CONFIRMADO")}
-               className="flex-1 py-2 px-4 bg-white text-gray-800 hover:bg-gray-100 border border-gray-300 rounded-md transition-colors duration-200 font-medium"
+            {role === Roles.CORRETOR ? (
+               <button
+                  disabled={status === "CANCELADO" || status === "CONFIRMADO"}
+                  onClick={() => atualizarStatus(id, "CONFIRMADO")}
+               className="flex-1 py-2 px-4 bg-white text-havprincipal hover:bg-gray-100 border border-gray-300 rounded-md transition-colors duration-200 font-medium"
             >
                Confirmar
             </button>
+            ) : (
+               <button
+                  onClick={() => setModalConfirmacao(true)}
+                  className="flex-1 py-2 px-4 bg-white text-havprincipal hover:bg-gray-100 border border-gray-300 rounded-md transition-colors duration-200 font-medium"
+               >
+                  Reagendar
+               </button>
+            )}
             <button
                disabled={status === "CANCELADO"}
                onClick={() => setModalConfirmacao(true)}

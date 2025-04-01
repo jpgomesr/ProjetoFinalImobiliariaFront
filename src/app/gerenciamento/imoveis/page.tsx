@@ -7,7 +7,11 @@ import { PlusIcon } from "lucide-react";
 import ListarImoveis from "./ListarImoveis";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 import FiltroList from "@/components/componetes_filtro/FiltroList";
-
+import { opcoesSort } from "@/data/opcoesSort"; 
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
+import { redirect } from "next/navigation";
+import { Roles } from "@/models/Enum/Roles";
 interface PageProps {
    searchParams: Promise<{
       precoMinimo?: string;
@@ -20,10 +24,21 @@ interface PageProps {
       bairro?: string;
       tipoImovel?: string;
       finalidade?: string;
+      sort?: string;
+      ativo?: string;
    }>;
 }
 
 const Page = async ({ searchParams }: PageProps) => {
+   const session = await getServerSession(authOptions);
+
+   if (!session) {
+      redirect("/login");
+   }
+   if (session.user?.role !== Roles.ADMINISTRADOR && session.user?.role !== Roles.EDITOR) {
+      redirect("/");
+   }
+
    const parametrosResolvidos = await searchParams;
 
    const params = {
@@ -37,6 +52,8 @@ const Page = async ({ searchParams }: PageProps) => {
       bairro: parametrosResolvidos.bairro ?? "",
       tipoImovel: parametrosResolvidos.tipoImovel ?? "",
       finalidade: parametrosResolvidos.finalidade ?? "",
+      sort: parametrosResolvidos.sort ?? "",
+      ativo: parametrosResolvidos.ativo ?? "",
    };
 
    const { imoveis, pageableInfo, quantidadeElementos } =
@@ -51,7 +68,11 @@ const Page = async ({ searchParams }: PageProps) => {
          bairro: params.bairro,
          tipoResidencia: params.tipoImovel,
          finalidade: params.finalidade,
+         sort: params.sort,
+         ativo: params.ativo,
       });
+
+   
 
    return (
       <Layout className="py-0">
@@ -65,25 +86,18 @@ const Page = async ({ searchParams }: PageProps) => {
                      opcoes={[
                         { id: "venda", label: "Venda" },
                         { id: "aluguel", label: "Aluguel" },
-                        { id: "todos", label: "Todos" },
+                        { id: "", label: "Todos" },
                      ]}
-                     finalidade={params.finalidade}
-                     precoMinimo={params.precoMinimo}
-                     precoMaximo={params.precoMaximo}
-                     metrosQuadradosMinimo={params.metrosQuadradosMinimo}
-                     metrosQuadradosMaximo={params.metrosQuadradosMaximo}
-                     quantidadeDeQuartos={params.quantidadeDeQuartos}
-                     quantidadeDeVagas={params.quantidadeDeVagas}
-                     cidade={params.cidade}
-                     bairro={params.bairro}
-                     tipoImovel={params.tipoImovel}
+                     nome="finalidade"
                      url="/gerenciamento/imoveis"
+                     defaultPlaceholder="Todas"
                      value={params.finalidade}
                   />
+                   
 
                   <div
                      className="flex flex-row items-center px-2 py-1 gap-2 rounded-md border-2 border-gray-300 
-                              bg-white w-full min-h-full min-w-1"
+                              bg-white w-full min-w-1"
                   >
                      <input
                         type="text"
@@ -91,8 +105,8 @@ const Page = async ({ searchParams }: PageProps) => {
                         placeholder="Pesquise aqui"
                      />
                   </div>
-                  <div className="flex flex-row-reverse md:flex-row justify-between gap-2 min-h-full">
-                     <div className="w-36 min-h-full">
+                  <div className="flex flex-row-reverse md:flex-row justify-between gap-2">
+                     <div className="w-36">
                         <ButtonFiltro
                            precoMinimo={params.precoMinimo}
                            precoMaximo={params.precoMaximo}
@@ -119,10 +133,29 @@ const Page = async ({ searchParams }: PageProps) => {
                      </Link>
                   </div>
                </div>
-               <div className="flex flex-col sm:flex-row">
-                  <p className="text-sm">
+               <div className="flex flex-col sm:flex-row sm:justify-between lg:my-4">
+                  <FiltroList
+                     opcoes={opcoesSort}
+                     value={params.sort}
+                     url={"/gerenciamento/imoveis"}
+                     nome="sort"
+                     buttonHolder="Ordenar por"
+                     defaultValue="Nenhum"
+                  />
+                  <p className="text-sm my-2">
                      {quantidadeElementos} imóveis encontrados
                   </p>
+                  <FiltroList
+                     opcoes={[
+                        { id: "true", label: "Ativo" },
+                        { id: "false", label: "Inativo" },
+                     ]}
+                     nome="ativo"
+                     url="/gerenciamento/imoveis"
+                     defaultPlaceholder="Todos"
+                     value={params.ativo}
+                     buttonHolder="Status"
+                  />
                </div>
 
                <ListarImoveis imoveis={imoveis} pageableInfo={pageableInfo} />

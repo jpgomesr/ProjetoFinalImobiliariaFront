@@ -7,16 +7,19 @@ interface UploadGaleriaImagensProps {
    galleryImages?: (string | null)[];
    refImagensDeletadas?: (ref: string) => void;
    onImageChange?: (image: File | string | null, index?: number) => void;
-   mensagemErro?: string;
+   mensagemErroPrincipal?: string;
+   mensagemErroGaleria?: string;
    clearErrors?: () => void;
 }
 
 const UploadGaleriaImagens = ({
    onImageChange,
-   mensagemErro,
+   mensagemErroPrincipal,
+   mensagemErroGaleria,
    coverImage,
    galleryImages,
    refImagensDeletadas,
+   clearErrors,
 }: UploadGaleriaImagensProps) => {
    const [coverImagePreview, setCoverImagePreview] = useState<string | null>(
       coverImage || null
@@ -100,6 +103,7 @@ const UploadGaleriaImagens = ({
                setCoverImagePreview(imageUrl);
                if (onImageChange) {
                   onImageChange(file);
+                  clearErrors?.();
                }
             } else {
                setGalleryImagesPreview((prev) => {
@@ -109,6 +113,7 @@ const UploadGaleriaImagens = ({
                });
                if (onImageChange) {
                   onImageChange(file, index);
+                  clearErrors?.();
                }
             }
          }
@@ -183,11 +188,13 @@ const UploadGaleriaImagens = ({
             <div className="relative">
                <label
                   htmlFor="cover-image-upload"
-                  className="cursor-pointer flex items-center justify-center w-40 h-40 border-2 border-dashed 
+                  className={`cursor-pointer flex items-center justify-center w-40 h-40 border-2 border-dashed 
                            border-gray-300 rounded-md bg-gray-50
                             relative
                             sm:w-80 sm:h-80
-                            xl:w-96 xl:h-96"
+                            xl:w-96 xl:h-96 ${
+                               mensagemErroPrincipal ? "border-red-500" : ""
+                            }`}
                >
                   {coverImagePreview ? (
                      <>
@@ -222,9 +229,9 @@ const UploadGaleriaImagens = ({
                   />
                </label>
             </div>
-            {mensagemErro && (
+            {mensagemErroPrincipal && (
                <span className="text-red-500 text-xs mt-1 md:text-sm xl:text-base">
-                  {mensagemErro}
+                  {mensagemErroPrincipal}
                </span>
             )}
          </div>
@@ -258,8 +265,12 @@ const UploadGaleriaImagens = ({
                      >
                         {image ? (
                            <div
-                              className="cursor-pointer flex items-center justify-center w-full h-full 
-                                    border-2 border-dashed border-gray-300 rounded-md bg-gray-50 relative"
+                              className={`cursor-pointer flex items-center justify-center w-full h-full 
+                                    border-2 border-dashed border-gray-300 rounded-md bg-gray-50 relative ${
+                                       mensagemErroGaleria
+                                          ? "border-red-500"
+                                          : ""
+                                    }`}
                            >
                               <Image
                                  src={image}
@@ -281,8 +292,12 @@ const UploadGaleriaImagens = ({
                         ) : (
                            <label
                               htmlFor="gallery-image-upload-new"
-                              className="cursor-pointer flex items-center justify-center w-full h-full border-2 
-                                    border-dashed border-gray-300 rounded-md bg-gray-50 relative"
+                              className={`cursor-pointer flex items-center justify-center w-full h-full 
+                                    border-2 border-dashed border-gray-300 rounded-md bg-gray-50 relative ${
+                                       mensagemErroGaleria
+                                          ? "border-red-500"
+                                          : ""
+                                    }`}
                            >
                               <div
                                  className="absolute flex items-center justify-center w-8 h-8 rounded-full 
@@ -316,6 +331,11 @@ const UploadGaleriaImagens = ({
                   </button>
                )}
             </div>
+            {mensagemErroGaleria && (
+               <span className="text-red-500 text-xs mt-1 md:text-sm xl:text-base">
+                  {mensagemErroGaleria}
+               </span>
+            )}
          </div>
       </div>
    );

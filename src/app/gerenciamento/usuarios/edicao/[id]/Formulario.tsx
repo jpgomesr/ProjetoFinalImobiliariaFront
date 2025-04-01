@@ -24,6 +24,7 @@ import List from "@/components/List";
 import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
 import { useNotification } from "@/context/NotificationContext";
 import Erro404 from "@/components/Erro404";
+import Link from "next/link";
 
 // Interface para os valores do formulário
 
@@ -253,7 +254,7 @@ const Formulario = ({usuario} : FormProps) => {
                      mudandoValor={field.onChange}
                      bordaPreta
                      placeholder="Tipo usuario"
-                     value={field.value}
+                     value={field.value || undefined}
                   />
                )}
             />
@@ -283,10 +284,16 @@ const Formulario = ({usuario} : FormProps) => {
                />
             )}
          />
-         <div className="flex justify-center">
+         <div className="flex justify-center gap-2">
+            <Link href="/gerenciamento/usuarios">
+            <BotaoPadrao
+               texto="Voltar"
+               disabled={isSubmitting}
+               type="button"
+            />
+            </Link>
             <BotaoPadrao
                texto="Concluir"
-               className="border border-black"
                disabled={isSubmitting}
                type="submit"
             />

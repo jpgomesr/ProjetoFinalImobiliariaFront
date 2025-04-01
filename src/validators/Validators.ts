@@ -194,13 +194,32 @@ export const createImovelValidator = () => {
       destaque: z.boolean(),
       visibilidade: z.boolean(),
       imagens: z.object({
-         imagemPrincipal: z.union([z.instanceof(File), z.string()]).nullable(),
+         imagemPrincipal: z.union([
+            z.instanceof(File, {
+               message: "A imagem principal deve ser um arquivo",
+            }),
+            z
+               .string({
+                  message: "A imagem principal deve ser uma string",
+               })
+               .min(1, { message: "A imagem principal é obrigatória" }),
+         ]),
          imagensGaleria: z
-            .array(z.union([z.instanceof(File), z.string()]))
-            .refine((files) => files.every((file) => file !== null), {
-               message: "As imagens da galeria não podem ser nulas",
-            })
-            .nullable(),
+            .array(
+               z.union([
+                  z.instanceof(File, {
+                     message: "Cada imagem da galeria deve ser um arquivo",
+                  }),
+                  z
+                     .string({
+                        message: "Cada imagem da galeria deve ser uma string",
+                     })
+                     .refine((val) => val.length > 0, {
+                        message: "A imagem da galeria é obrigatória",
+                     }),
+               ])
+            )
+            .min(1, "Pelo menos uma imagem na galeria é obrigatória"),
       }),
       cep: z
          .number({ message: "Campo obrigatório" })

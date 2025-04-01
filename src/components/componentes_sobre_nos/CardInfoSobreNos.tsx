@@ -10,7 +10,7 @@ import React from "react";
 const CardInfoSobrenos = (props: CardInfoSobrenosProps) => {
    return (
       <div className="bg-havprincipal p-1 w-40 h-40 lg:w-2/12 lg:h-48">
-         <div className="border-white border-2 w-full h-full text-begepadrao flex flex-col  items-center gap-2 pt-5">
+         <div className="border-white border-2 w-full h-full text-begepadrao flex flex-col  items-center gap-2 py-5 px-2">
             <Image
                src={props.imagemSrc}
                alt={props.altImagem}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { NotificationProvider } from "@/context/NotificationContext";
+import { ChatProvider } from "@/context/ChatContext";
 
 export const metadata: Metadata = {
    title: "Hav Imobiliária",
@@ -15,7 +16,9 @@ export default function RootLayout({
    return (
       <html lang="pt-br">
          <body className={`antialiased`}>
-            <NotificationProvider>{children}</NotificationProvider>
+            <NotificationProvider>
+               {children}
+            </NotificationProvider>
          </body>
       </html>
    );

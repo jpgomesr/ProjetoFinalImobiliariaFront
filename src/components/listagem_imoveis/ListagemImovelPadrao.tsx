@@ -1,5 +1,5 @@
 "use client";
-
+("");
 import { ModelImovelGet } from "@/models/ModelImovelGet";
 import CardImovel from "@/components/card/CardImovel";
 import ComponentePaginacao from "@/components/ComponentePaginacao";
