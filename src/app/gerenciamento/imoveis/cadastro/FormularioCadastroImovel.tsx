@@ -38,7 +38,7 @@ const FormularioCadastroImovel = () => {
 
    const [coverImage, setCoverImage] = useState<string | null>(null);
    const [galleryImages, setGalleryImages] = useState<File[]>([]);
- 
+
    const imovelValidator = createImovelValidator();
    type imovelValidatorSchema = z.infer<typeof imovelValidator>;
 
@@ -521,9 +521,9 @@ const FormularioCadastroImovel = () => {
                      />
                   </div>
                   <div className="flex justify-center mt-4 gap-2">
-                  <Link href={"/gerenciamento/imoveis"}>
-                     <BotaoPadrao type="button" texto="Cancelar" />
-                  </Link>
+                     <Link href={"/gerenciamento/imoveis"}>
+                        <BotaoPadrao type="button" texto="Cancelar" />
+                     </Link>
                      <BotaoPadrao
                         type="button"
                         texto="Próximo"
