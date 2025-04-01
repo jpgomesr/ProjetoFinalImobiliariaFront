@@ -17,34 +17,34 @@ interface PageProps {
 }
 export async function generateStaticParams() {
 
-   const session = await getServerSession(authOptions);
-
-   if (!session) {
-      redirect("/login");
-   }
-   if (session.user?.role !== Roles.ADMINISTRADOR && session.user?.role !== Roles.EDITOR) {
-      redirect("/");
-   }
-
+   
    const ids = await buscarIdsProprietarios();
    return ids.map((id) => ({ id: id.toString() }));
 }
 
 const Page = async  ({params }  : PageProps) => {
    let { id } = await params
-
+   
    const proprietario : ModelProprietario = await buscarProprietarioPorId(id)
    
-
    
-
+   
+   const session = await getServerSession(authOptions);
+   
+   if (!session) {
+      redirect("/login");
+   }
+   if (session.user?.role !== Roles.ADMINISTRADOR && session.user?.role !== Roles.EDITOR) {
+      redirect("/");
+   }
+   
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao
                titulo="Edição de proprietário"
                className={`w-full`}
-            >
+               >
                <Formulario proprietario={proprietario}/>
               
             </FundoBrancoPadrao>

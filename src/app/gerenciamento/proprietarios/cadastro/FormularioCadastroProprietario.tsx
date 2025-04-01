@@ -15,7 +15,7 @@ import { preencherCampos, restaurarCampos } from "@/Functions/requisicaoViaCep";
 import List from "@/components/List";
 import { useNotification } from "@/context/NotificationContext";
 import { salvarProprietario } from "./action";
-
+import Link from "next/link";
 const FormularioCadastroProprietario = () => {
    const router = useRouter();
    const { showNotification } = useNotification();
@@ -331,12 +331,20 @@ const FormularioCadastroProprietario = () => {
             />
 
             {/* Botão de Envio */}
-            <div className="flex justify-center">
+            <div className="flex justify-center gap-2">
+               <Link href="/gerenciamento/proprietarios">
+                  <BotaoPadrao
+                     texto="Voltar"
+                     disabled={isSubmitting}
+                     type="button"
+                  />
+               </Link>
                <BotaoPadrao
                   texto={isSubmitting ? "Enviando..." : "Enviar"}
-                  className="border border-black"
                   disabled={isSubmitting}
+                  type="submit"
                />
+            
             </div>
          </form>
       </FundoBrancoPadrao>

@@ -19,7 +19,7 @@ import List from "@/components/List";
 import { useNotification } from "@/context/NotificationContext";
 import ModelUsuario from "@/models/ModelUsuario";
 import { salvarUsuario } from "./action";
-
+import Link from "next/link";
 const FormularioCadastroUsuario = () => {
    const router = useRouter();
    const { showNotification } = useNotification();
@@ -204,11 +204,18 @@ const FormularioCadastroUsuario = () => {
                   />
                )}
             />
-            <div className="flex justify-center">
+            <div className="flex justify-center gap-2">
+               <Link href="/gerenciamento/usuarios">
+               <BotaoPadrao
+                  texto="Voltar"
+                  disabled={isSubmitting}
+                  type="button"
+               />
+               </Link>
                <BotaoPadrao
                   texto="Concluir"
-                  className="border border-black"
                   disabled={isSubmitting}
+                  type="submit"
                />
             </div>
          </form>
