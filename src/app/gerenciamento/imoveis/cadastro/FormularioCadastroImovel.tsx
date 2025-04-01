@@ -20,6 +20,7 @@ import { salvarImovel } from "./actions";
 import { ModelProprietarioList } from "@/models/ModelProprietarioList";
 import { ModelCorretor } from "@/models/ModelCorretor";
 import SearchSelect from "@/components/SearchSelect";
+import Link from "next/link";
 
 const FormularioCadastroImovel = () => {
    const router = useRouter();
@@ -519,7 +520,10 @@ const FormularioCadastroImovel = () => {
                         )}
                      />
                   </div>
-                  <div className="flex justify-center mt-4">
+                  <div className="flex justify-center mt-4 gap-2">
+                  <Link href={"/gerenciamento/imoveis"}>
+                     <BotaoPadrao type="button" texto="Cancelar" />
+                  </Link>
                      <BotaoPadrao
                         type="button"
                         texto="Próximo"

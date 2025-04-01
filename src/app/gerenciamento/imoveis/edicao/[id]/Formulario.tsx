@@ -630,7 +630,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
                   />
                </div>
                <div className="flex justify-center mt-4 gap-2">
-                  <Link href={"/imoveis"}>
+                  <Link href={"/gerenciamento/imoveis"}>
                      <BotaoPadrao type="button" texto="Cancelar" />
                   </Link>
                   <BotaoPadrao
