@@ -7,7 +7,10 @@ import {
    buscarUsuarioPorId,
 } from "@/Functions/usuario/buscaUsuario";
 import Formulario from "./Formulario";
-
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
+import { Roles } from "@/models/Enum/Roles";
 // Interface para os parâmetros da página
 interface PageProps {
    params: Promise<{
@@ -22,6 +25,15 @@ export async function generateStaticParams() {
 }
 
 const Page = async ({ params }: PageProps) => {
+
+   const session = await getServerSession(authOptions);
+
+   if (!session) {
+      redirect("/login");
+   }
+   if (session.user?.role !== Roles.ADMINISTRADOR) {
+      redirect("/");
+   }
 
    const {id} = await params
 

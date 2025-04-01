@@ -37,7 +37,7 @@ const FormularioCadastroImovel = () => {
 
    const [coverImage, setCoverImage] = useState<string | null>(null);
    const [galleryImages, setGalleryImages] = useState<File[]>([]);
-
+ 
    const imovelValidator = createImovelValidator();
    type imovelValidatorSchema = z.infer<typeof imovelValidator>;
 

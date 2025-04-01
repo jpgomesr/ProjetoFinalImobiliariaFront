@@ -119,7 +119,7 @@ const ImoveisView = ({
    };
 
    return (
-      <>
+      <section>
          
 
          {view === "cards" && (
@@ -146,7 +146,7 @@ const ImoveisView = ({
                </Suspense>
             </div>
          )}
-      </>
+      </section>
    );
 };
 

@@ -19,6 +19,7 @@ const UploadGaleriaImagens = ({
    coverImage,
    galleryImages,
    refImagensDeletadas,
+   clearErrors,
 }: UploadGaleriaImagensProps) => {
    const [coverImagePreview, setCoverImagePreview] = useState<string | null>(
       coverImage || null
@@ -102,6 +103,7 @@ const UploadGaleriaImagens = ({
                setCoverImagePreview(imageUrl);
                if (onImageChange) {
                   onImageChange(file);
+                  clearErrors?.();
                }
             } else {
                setGalleryImagesPreview((prev) => {
@@ -111,6 +113,7 @@ const UploadGaleriaImagens = ({
                });
                if (onImageChange) {
                   onImageChange(file, index);
+                  clearErrors?.();
                }
             }
          }

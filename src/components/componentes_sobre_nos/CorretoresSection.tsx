@@ -31,7 +31,7 @@ const CorretoresSection = () => {
    }, []);
 
    return (
-      <div className="flex-row">
+      <section className="flex-row">
          {loading ? (
             <div className="text-havprincipal text-xl">
                Carregando corretores...
@@ -41,7 +41,7 @@ const CorretoresSection = () => {
          ) : (
             <ExibirCorretores corretores={corretores} />
          )}
-      </div>
+      </section>
    );
 };
 
