@@ -6,6 +6,7 @@ import ListFiltroPadrao from "@/components/ListFIltroPadrao";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import InputsPergunta from "@/components/componentes_perguntas_frequentes/InputsPergunta";
 import ModelPergunta, { TipoPerguntaEnum } from "@/models/ModelPergunta";
+import { TipoPergunta } from "@/models/Enum/TipoPerguntaEnum";
 import { enviarPergunta } from "@/app/perguntas-frequentes/action";
 import { useNotification } from "@/context/NotificationContext";
 
@@ -37,7 +38,7 @@ const FormPerguntas = ({ onSuccess }: FormPerguntasProps) => {
 
    useEffect(() => {
       if (opcaoSelecionada) {
-         console.log("Opção selecionada:", opcaoSelecionada); // Log para debug
+         console.log("Opção selecionada:", opcaoSelecionada);
          setPergunta((prev) => ({ ...prev, tipoPergunta: opcaoSelecionada }));
       }
    }, [opcaoSelecionada]);
@@ -46,27 +47,33 @@ const FormPerguntas = ({ onSuccess }: FormPerguntasProps) => {
       e.preventDefault();
       setErros([]);
 
-      console.log("Pergunta antes de enviar:", pergunta); // Log para debug
+      console.log("Pergunta antes de enviar:", pergunta);
 
-      const resultado = await enviarPergunta(pergunta);
+      try {
+         const resultado = await enviarPergunta(pergunta);
+         console.log("Resultado do envio:", resultado);
 
-      if (resultado.success) {
-         setPergunta({
-            tipoPergunta: "OUTROS",
-            email: "",
-            telefone: "",
-            nome: "",
-            mensagem: "",
-         });
-         showNotification("Pergunta enviada com sucesso!");
-         onSuccess?.();
-      } else {
-         if (resultado.erros) {
-            setErros(resultado.erros);
-            showNotification("Por favor, corrija os erros no formulário");
+         if (resultado.success) {
+            setPergunta({
+               tipoPergunta: "OUTROS",
+               email: "",
+               telefone: "",
+               nome: "",
+               mensagem: "",
+            });
+            showNotification("Pergunta enviada com sucesso!");
+            onSuccess?.();
          } else {
-            showNotification("Erro ao enviar pergunta");
+            if (resultado.erros) {
+               setErros(resultado.erros);
+               showNotification("Por favor, corrija os erros no formulário");
+            } else {
+               showNotification(resultado.error || "Erro ao enviar pergunta");
+            }
          }
+      } catch (error) {
+         console.error("Erro no envio:", error);
+         showNotification("Erro ao enviar pergunta");
       }
    };
 
@@ -75,10 +82,13 @@ const FormPerguntas = ({ onSuccess }: FormPerguntasProps) => {
          <ListFiltroPadrao
             width="w-full"
             opcoes={[
-               { id: "LOGIN_OU_CADASTRO", label: "Login ou Cadastro" },
-               { id: "PAGAMENTOS", label: "Pagamentos" },
-               { id: "PROMOCOES", label: "Promoções" },
-               { id: "OUTROS", label: "Outros" },
+               {
+                  id: "LOGIN_OU_CADASTRO",
+                  label: TipoPergunta.LOGIN_OU_CADASTRO,
+               },
+               { id: "PAGAMENTOS", label: TipoPergunta.PAGAMENTOS },
+               { id: "PROMOCOES", label: TipoPergunta.PROMOCOES },
+               { id: "OUTROS", label: TipoPergunta.OUTROS },
             ]}
             buttonHolder="Assunto"
             value={opcaoSelecionada || ""}
@@ -101,7 +111,7 @@ const FormPerguntas = ({ onSuccess }: FormPerguntasProps) => {
             {opcaoSelecionada === "PAGAMENTOS" && (
                <div>
                   <InputsPergunta
-                     placeholder="Ex: Aceita pix?"
+                     placeholder="Ex: Como faço para pagar?"
                      pergunta={pergunta}
                      setPergunta={setPergunta}
                      erros={erros}
@@ -112,7 +122,7 @@ const FormPerguntas = ({ onSuccess }: FormPerguntasProps) => {
             {opcaoSelecionada === "PROMOCOES" && (
                <div>
                   <InputsPergunta
-                     placeholder="Ex: Até quando a promoção estará disponível?"
+                     placeholder="Ex: Como faço para participar das promoções?"
                      pergunta={pergunta}
                      setPergunta={setPergunta}
                      erros={erros}
@@ -123,7 +133,7 @@ const FormPerguntas = ({ onSuccess }: FormPerguntasProps) => {
             {opcaoSelecionada === "OUTROS" && (
                <div>
                   <InputsPergunta
-                     placeholder="Ex: Qual o dono da empresa?"
+                     placeholder="Ex: Como faço para entrar em contato?"
                      pergunta={pergunta}
                      setPergunta={setPergunta}
                      erros={erros}
