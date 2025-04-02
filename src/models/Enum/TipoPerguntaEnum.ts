@@ -1,0 +1,6 @@
+export enum TipoPergunta {
+   LOGIN_OU_CADASTRO = "LOGIN_OU_CADASTRO",
+   PAGAMENTOS = "PAGAMENTOS",
+   PROMOCOES = "PROMOCOES",
+   OUTROS = "OUTROS",
+}
