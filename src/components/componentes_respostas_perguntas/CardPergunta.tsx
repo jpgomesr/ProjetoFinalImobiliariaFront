@@ -6,33 +6,27 @@ interface CardPerguntaProps {
    mensagem: string;
 }
 
-export default function CardPergunta({
-   tipoPergunta,
-   email,
-   mensagem,
-}: CardPerguntaProps) {
+const CardPergunta = ({ tipoPergunta, email, mensagem }: CardPerguntaProps) => {
    return (
-      <div className="border border-gray-300 rounded-lg p-4 mb-4 w-full max-w-md text-xs sm:text-sm md:text-base">
-         <div className="flex flex-col sm:flex-row sm:items-start mb-2">
-            <div className="mb-2 sm:mb-0 sm:w-1/2">
-               <div>
-                  <span className="font-medium">Finalidade:</span>
-               </div>
-               <div className="truncate">{tipoPergunta || "Não informado"}</div>
+      <div className="bg-white rounded-lg p-4 border border-gray-200 h-[200px]">
+         <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="flex flex-col">
+               <span className="font-medium h-6">Tipo:</span>
+               <p className="mt-1 truncate">
+                  {tipoPergunta || "Não informado"}
+               </p>
             </div>
-            <div className="sm:w-1/2">
-               <div>
-                  <span className="font-medium">Email:</span>
-               </div>
-               <div className="truncate">{email}</div>
+            <div className="flex flex-col">
+               <span className="font-medium h-6">Email:</span>
+               <p className="mt-1 truncate">{email}</p>
             </div>
          </div>
-         <div>
-            <div>
-               <span className="font-medium">Mensagem:</span>
-            </div>
-            <div className="line-clamp-2">{mensagem}</div>
+         <div className="flex flex-col">
+            <span className="font-medium h-6">Mensagem:</span>
+            <p className="mt-1 line-clamp-3">{mensagem}</p>
          </div>
       </div>
    );
-}
+};
+
+export default CardPergunta;

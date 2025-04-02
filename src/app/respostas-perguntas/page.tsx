@@ -9,6 +9,7 @@ import { buscarPerguntas } from "./action";
 import ModelPergunta from "@/models/ModelPergunta";
 import { useNotification } from "@/context/NotificationContext";
 import { TipoPergunta } from "@/models/Enum/TipoPerguntaEnum";
+
 const Page = () => {
    const [questions, setQuestions] = useState<ModelPergunta[] | undefined>([]);
    const { showNotification } = useNotification();
@@ -25,14 +26,13 @@ const Page = () => {
       };
 
       carregarPerguntas();
-   }, []);
+   }, [showNotification]);
 
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao titulo="Perguntas" className="w-full">
-               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 
-                w-full  place-content-center place-items-center">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4">
                   {Array.isArray(questions) &&
                      questions.map((question, key) => (
                         <CardPergunta
