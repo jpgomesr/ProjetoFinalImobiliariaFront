@@ -72,22 +72,25 @@ export const buscarTodosImoveis = async (
                 cache: 'no-store',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': session?.accessToken || ''
+                    ...(session?.accessToken ? { 'Authorization': `Bearer ${session.accessToken}` } : {})
                 }
             }
-        );
-     
+        );  
+        
+      
         if (responseImovelRequest.ok) {
             const dataImovel = await responseImovelRequest.json();
 
             const imoveis: ModelImovelGet[] = dataImovel.content;
 
-            const idsImoveisFavoritados = await buscarIdsImoveisFavoritados(session?.user?.id || '');
+            if(session?.user){
+               const idsImoveisFavoritados = await buscarIdsImoveisFavoritados(session?.user?.id || '');
 
-            imoveis.forEach(imovel => {
-                imovel.favoritado = idsImoveisFavoritados.includes(imovel.id);
-            });
-            
+               imoveis.forEach(imovel => {
+                   imovel.favoritado = idsImoveisFavoritados.includes(imovel.id);
+               });
+            }
+           
             const pageableInfo = {
                 totalPaginas: dataImovel.totalPages,
                 ultima: dataImovel.last,
@@ -100,6 +103,7 @@ export const buscarTodosImoveis = async (
                 quantidadeElementos,
             };
         } else {
+         console.log( await responseImovelRequest.json())
             throw new Error("Erro ao buscar os dados do imóvel");
         }
     } catch (error) {
@@ -187,7 +191,6 @@ export const buscarIdsImoveis = async () : Promise<number[]> => {
    const response = await fetch(`${BASE_URL}/imoveis/ids-imoveis`)
 
    const data = await response.json()
-
    return data as number[]
 }
 

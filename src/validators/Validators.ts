@@ -256,7 +256,6 @@ export const createImovelValidator = () => {
          .positive({ message: "O valor não pode ser negativo" }),
       numeroApto: z
          .number()
-         .positive({ message: "O valor não pode ser negativo" })
          .optional(),
       estado: z.string().min(1, { message: "Campo obrigatório" }),
       proprietario: z

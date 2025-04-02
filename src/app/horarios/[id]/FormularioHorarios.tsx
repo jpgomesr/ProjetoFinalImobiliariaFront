@@ -6,7 +6,8 @@ import { Trash } from "lucide-react";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import Link from "next/link";
 import ModalConfirmacao from "@/components/ComponentesCrud/ModalConfirmacao";
-
+import { Session } from "next-auth";
+import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
 interface Horario {
    id: number;
    dataHora: string;
@@ -15,11 +16,13 @@ interface Horario {
 interface FormularioHorariosProps {
    id: string;
    BASE_URL: string;
+   token: string;
 }
 
 export default function FormularioHorarios({
    id,
    BASE_URL,
+   token,
 }: FormularioHorariosProps) {
    const { showNotification } = useNotification();
    const [data, setData] = useState("");
@@ -36,8 +39,12 @@ export default function FormularioHorarios({
 
    const buscarHorarios = async () => {
       try {
-         const response = await fetch(
-            `${BASE_URL}/corretores/horarios/corretor/${id}`
+         const response = await useFetchComAutorizacaoComToken(
+            `${BASE_URL}/corretores/horarios/corretor`,
+            {
+               method: "GET",
+            },
+            token
          );
          if (!response.ok) throw new Error("Erro ao buscar horários");
          const data = await response.json();
@@ -75,7 +82,7 @@ export default function FormularioHorarios({
       }
 
       try {
-         const response = await fetch(`${BASE_URL}/horarios/corretor`, {
+         const response = await useFetchComAutorizacaoComToken(`${BASE_URL}/horarios/corretor`, {
             method: "POST",
             headers: {
                "Content-Type": "application/json",
@@ -84,7 +91,7 @@ export default function FormularioHorarios({
                horario: dataHora,
                idCorretor: id,
             }),
-         });
+         }, token);
 
          if (!response.ok) throw new Error("Erro ao cadastrar horário");
 
@@ -96,6 +103,7 @@ export default function FormularioHorarios({
    };
 
    const excluirHorario = async (horarioId: number) => {
+
       setIdHorarioParaExcluir(horarioId);
       setModalConfirmacao(true);
    };

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { ModelImovelGet } from "@/models/ModelImovelGet";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
+import { fetchComAutorizacao } from "@/hooks/FetchComAuthorization";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -51,7 +52,6 @@ interface salvarImovelProps {
 }
 
 export async function salvarImovel(props: salvarImovelProps) {
-   const session = await getServerSession(authOptions);
 
    const { imovel, imagens } = props;
 
@@ -110,12 +110,9 @@ export async function salvarImovel(props: salvarImovelProps) {
             }
          });
       }
-      const response = await fetch(`${BASE_URL}/imoveis`, {
+      const response = await fetchComAutorizacao(`${BASE_URL}/imoveis`, {
          method: "POST",
-         body: formData,
-         headers: {
-            Authorization: `Bearer ${session?.accessToken}`,
-         }, 
+         body: formData, 
       });
 
       const data = await response.json();

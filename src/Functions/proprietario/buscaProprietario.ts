@@ -1,3 +1,4 @@
+import { fetchComAutorizacao } from "@/hooks/FetchComAuthorization";
 import ModelProprietario from "@/models/ModelProprietario";
 import ModelProprietarioListagem from "@/models/ModelProprietarioListagem";
 
@@ -17,7 +18,7 @@ export const buscarProprietarios = async (
    ativo?: boolean,
    tamanhoPagina?: number
 ): Promise<retornoListaProprietario> => {
-   const response = await fetch(
+   const response = await fetchComAutorizacao(
       `${BASE_URL}/proprietarios?nome=${
          nome ? nome : ""
       }&page=${numeroPagina}&size=${tamanhoPagina}&ativo=${ativo}`
@@ -31,9 +32,9 @@ export const buscarProprietarios = async (
    };
 };
 export const buscarProprietarioPorId = async (
-   id: string
+   id: string  
 ): Promise<ModelProprietario> => {
-   const response = await fetch(`${BASE_URL}/proprietarios/${id}`);
+   const response = await fetchComAutorizacao(`${BASE_URL}/proprietarios/${id}`);
 
    const data = await response.json();
 
