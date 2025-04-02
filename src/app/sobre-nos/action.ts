@@ -4,11 +4,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 import ModelExibirCorretor from "@/models/ModelExibirCorretor";
 
 export async function renderizarUsuariosApi() {
-   console.log("Iniciando busca de corretores...");
-   console.log(
-      "URL da API:",
-      `${BASE_URL}/usuarios/corretorApresentacao/CORRETOR`
-   );
+  
 
    try {
       if (!BASE_URL) {
@@ -18,16 +14,15 @@ export async function renderizarUsuariosApi() {
       const response = await fetch(
          `${BASE_URL}/usuarios/corretorApresentacao/CORRETOR`,
          {
-            cache: "no-store",
             headers: {
                "Content-Type": "application/json",
                Accept: "application/json",
             },
             method: "GET",
+            next: { revalidate: 60 },
          }
       );
 
-      console.log("Status da resposta:", response.status);
 
       if (response.status === 500) {
          console.error(
@@ -47,7 +42,6 @@ export async function renderizarUsuariosApi() {
       }
 
       const data = (await response.json()) as ModelExibirCorretor[];
-      console.log("Dados recebidos com sucesso:", data);
       return data;
    } catch (error) {
       console.error("Erro detalhado ao buscar corretores:", error);

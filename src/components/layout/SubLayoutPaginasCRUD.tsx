@@ -6,7 +6,7 @@ interface SubLayoutPaginasCRUDProps{
 
 const SubLayoutPaginasCRUD = (props : SubLayoutPaginasCRUDProps) => {
   return (
-    <div className="bg-begeClaroPadrao w-full flex flex-col items-center justify-center  py-6
+    <div className="bg-begeClaroPadrao w-full flex flex-col items-center justify-center  py-6 h-full
     lg:py-8
     xl:py-10
     2xl:py-12"> 

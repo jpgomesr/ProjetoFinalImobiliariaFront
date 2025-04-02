@@ -8,6 +8,10 @@ import {
    buscarImovelPorId,
 } from "@/Functions/imovel/buscaImovel";
 import Formulario from "./Formulario";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
+import { Roles } from "@/models/Enum/Roles";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
 // Força revalidação dinâmica
 export const dynamic = "force-dynamic";
@@ -25,7 +29,19 @@ export async function generateStaticParams() {
 }
 
 const Page = async ({ params }: PageProps) => {
+
+
+   const session = await getServerSession(authOptions);
+
+   if (!session) {
+      redirect("/login");
+   }
+   if (session.user?.role !== Roles.ADMINISTRADOR && session.user?.role !== Roles.EDITOR) {
+      redirect("/");
+   }     
+
    const { id } = await params;
+
 
    const imovel: ModelImovelGet = await buscarImovelPorId(id);
 

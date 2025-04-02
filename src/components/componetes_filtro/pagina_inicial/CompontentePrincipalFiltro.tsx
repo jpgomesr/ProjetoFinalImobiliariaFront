@@ -383,7 +383,7 @@ const CompontentePrincipalFiltro = ({
                      className="flex flex-col w-full justify-center items-center text-xs gap-3 
                   md:flex-row"
                   >
-                     <div className="flex gap-4 justify-center items-center">
+                     <div className="flex  flex-wrap gap-4 justify-center items-center">
                         <List
                            mudandoValor={(value) => {
                               setCidade(value);

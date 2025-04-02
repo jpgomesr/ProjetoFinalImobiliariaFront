@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { SearchIcon } from "lucide-react"; // Importe o ícone de lupa
 import { twMerge } from "tailwind-merge";
@@ -42,13 +44,21 @@ const InputPadrao = ({
             <input
                {...props}
                className={twMerge(
-                  `h-6 w-full focus:outline-none text-[10px] bg-transparent border-none  px-2
+                  `h-6 w-full focus:outline-none text-[10px] bg-transparent border-none px-2
                   md:h-8 md:text-sm
                   lg:h-10 lg:py-3 lg:px-3
                   xl:h-12 xl:text-base xl:py-3 xl:px-4
+                  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
+                  [&::-webkit-inner-spin-button]:appearance-none
                   ${search ? "pl-2" : ""}`,
                   props.className
                )} // Adiciona padding à esquerda se search for true
+               onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                     e.preventDefault();
+                  }
+               }}
+               min={0}
             />
             {search && ( // Renderiza o botão de lupa se search for true
                <button

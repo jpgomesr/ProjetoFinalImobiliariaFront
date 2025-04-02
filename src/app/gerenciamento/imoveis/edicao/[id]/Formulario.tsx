@@ -12,14 +12,15 @@ import TextArea from "@/components/ComponentesCrud/TextArea";
 import List from "@/components/List";
 import { TipoBanner } from "@/models/Enum/TipoBanner";
 import { createImovelValidator } from "@/validators/Validators";
-import SearchProprietarioList from "@/components/SearchProprietarioList";
-import CorretoresBoxSelect from "@/components/CorretoresBoxSelect";
 import { useRouter } from "next/navigation";
 import { ModelImovelGet } from "@/models/ModelImovelGet";
 import Link from "next/link";
 import { useNotification } from "@/context/NotificationContext";
 import Erro404 from "@/components/Erro404";
 import { restaurarCampos, preencherCampos } from "@/Functions/requisicaoViaCep";
+import SearchSelect from "@/components/SearchSelect";
+import { ModelCorretor } from "@/models/ModelCorretor";
+import { ModelProprietarioList } from "@/models/ModelProprietarioList";
 
 interface FormularioProps {
    imovel: ModelImovelGet;
@@ -27,6 +28,8 @@ interface FormularioProps {
 
 const Formulario = ({ imovel }: FormularioProps) => {
    const router = useRouter();
+   const proprietarioModel: ModelProprietarioList[] = [];
+   const corretoresModel: ModelCorretor[] = [];
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const { showNotification } = useNotification();
@@ -76,6 +79,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
       formState: { errors, isSubmitting },
       clearErrors,
       setValue,
+      setError,
    } = useForm<imovelValidatorSchema>({
       resolver: zodResolver(imovelValidator),
    });
@@ -106,6 +110,9 @@ const Formulario = ({ imovel }: FormularioProps) => {
    }, []);
 
    const preencherFormulario = (imovel: ModelImovelGet) => {
+      console.log(imovel.proprietario);
+      console.log(imovel.corretores);
+
       setValue("id", imovel.id.toString());
       setValue("titulo", imovel.titulo);
       setValue("descricao", imovel.descricao);
@@ -133,49 +140,80 @@ const Formulario = ({ imovel }: FormularioProps) => {
       setValue("rua", imovel.endereco.rua);
       setValue("numero", Number(imovel.endereco.numeroCasaPredio));
       setValue("numeroApto", Number(imovel.endereco.numeroApartamento));
-      setValue("proprietario", imovel.proprietario?.id);
-      setValue("corretores", imovel.corretores || []);
+      setValue("proprietario", imovel.proprietario);
+      setValue("corretores", imovel.corretores);
       setValue("imagens", {
          imagemPrincipal:
-            imovel.imagens.find((img) => img.imagemCapa)?.referencia || null,
+            imovel.imagens.find((img) => img.imagemCapa)?.referencia || "",
          imagensGaleria:
             imovel.imagens
                .filter((img) => !img.imagemCapa)
                .map((img) => img.referencia) || [],
       });
+      console.log(watch("proprietario"));
+      console.log(watch("corretores"));
    };
 
    const handleNextStep = async (e: React.MouseEvent) => {
       e.preventDefault();
       if (step === 1) {
-         const isValid = await trigger([
-            "titulo",
-            "descricao",
-            "metragem",
-            "qtdQuartos",
-            "qtdBanheiros",
-            "qtdVagas",
-            "valor",
-            "valorPromo",
-            "iptu",
-            "valorCondominio",
-            "objImovel",
-            "tipo",
-         ]);
+         const valor = watch("valor");
+         const valorPromo = watch("valorPromo");
+         if (
+            valor !== undefined &&
+            valorPromo !== undefined &&
+            valor <= valorPromo
+         ) {
+            setError("valorPromo", {
+               message: "Valor promocional deve ser menor que o valor",
+            });
+         } else {
+            const isValid = await trigger(
+               [
+                  "titulo",
+                  "descricao",
+                  "metragem",
+                  "qtdQuartos",
+                  "qtdBanheiros",
+                  "qtdVagas",
+                  "valor",
+                  "valorPromo",
+                  "iptu",
+                  "valorCondominio",
+                  "objImovel",
+                  "tipo",
+               ],
+               { shouldFocus: true }
+            );
+            if (isValid) {
+               setStep((prev) => prev + 1);
+            }
+         }
+      }
+      if (step === 2) {
+         const isValid = await trigger(
+            [
+               "cep",
+               "bairro",
+               "estado",
+               "cidade",
+               "rua",
+               "imagens",
+               "imagens.imagemPrincipal",
+               "imagens.imagensGaleria",
+               "numero",
+               "numeroApto",
+            ],
+            { shouldFocus: true }
+         );
 
          if (isValid) {
             setStep((prev) => prev + 1);
-         }
-      }
-
-      if (step === 2) {
-         const imagens = watch("imagens");
-         const isValid = await trigger();
-         if (isValid && imagens.imagemPrincipal) {
-            setStep((prev) => prev + 1);
+            window.scrollTo({ top: 0, behavior: "smooth" });
          }
       }
    };
+
    useEffect(() => {
       if (watch("cep")) {
          const cepMock = watch("cep").toString();
@@ -220,7 +258,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
          tipoBanner: data.tipoBanner,
          iptu: data.iptu,
          valorCondominio: data.valorCondominio,
-         idProprietario: data.proprietario,
+         idProprietario: data.proprietario.id,
          ativo: data.visibilidade,
          endereco: {
             rua: data.rua,
@@ -285,7 +323,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
    };
 
    if (loading) {
-      return <div>Carregando...</div>; // Exibe um indicado         r de carregamento
+      return <div>Carregando...</div>; // Exibe um indicador de carregamento
    }
 
    if (erro404) {
@@ -592,7 +630,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
                   />
                </div>
                <div className="flex justify-center mt-4 gap-2">
-                  <Link href={"/imoveis"}>
+                  <Link href={"/gerenciamento/imoveis"}>
                      <BotaoPadrao type="button" texto="Cancelar" />
                   </Link>
                   <BotaoPadrao
@@ -609,10 +647,6 @@ const Formulario = ({ imovel }: FormularioProps) => {
                <Controller
                   name="imagens"
                   control={control}
-                  defaultValue={{
-                     imagemPrincipal: null,
-                     imagensGaleria: [],
-                  }}
                   render={({ field }) => {
                      const imagensGaleria = field.value.imagensGaleria || [];
 
@@ -621,7 +655,8 @@ const Formulario = ({ imovel }: FormularioProps) => {
                            onImageChange={(file, index) => {
                               const newValue = { ...field.value };
                               if (index === undefined) {
-                                 newValue.imagemPrincipal = file;
+                                 newValue.imagemPrincipal =
+                                    file || newValue.imagemPrincipal;
                               } else {
                                  const newGallery = [...imagensGaleria];
                                  if (file === null) {
@@ -633,8 +668,11 @@ const Formulario = ({ imovel }: FormularioProps) => {
                               }
                               field.onChange(newValue);
                            }}
-                           mensagemErro={
+                           mensagemErroPrincipal={
                               errors.imagens?.imagemPrincipal?.message
+                           }
+                           mensagemErroGaleria={
+                              errors.imagens?.imagensGaleria?.message
                            }
                            clearErrors={clearErrors}
                            coverImage={
@@ -745,7 +783,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
                                  htmlFor="numero_apartamento"
                                  label={`Número do apartamento`}
                                  placeholder="Digite o número do apartamento"
-                                 type="numberApto"
+                                 type="number"
                                  {...register("numeroApto", {
                                     setValueAs: (value) => parseInt(value, 10),
                                  })}
@@ -768,21 +806,46 @@ const Formulario = ({ imovel }: FormularioProps) => {
                   <BotaoPadrao
                      type="button"
                      texto="Próximo"
-                     onClick={() => setStep(step + 1)}
+                     onClick={(e: React.MouseEvent) => {
+                        handleNextStep(e);
+                     }}
                   />
                </div>
             </>
          )}
          {step === 3 && (
             <div className="flex flex-col gap-4">
-               <SearchProprietarioList
-                  registerProps={register("proprietario")}
-                  selected={watch("proprietario")}
-               />
-               <CorretoresBoxSelect
-                  registerProps={register("corretores")}
-                  arraySelect={watch("corretores")}
-               />
+               <div className="flex flex-row gap-2">
+                  <SearchSelect
+                     register={register("proprietario")}
+                     mensagemErro={errors.proprietario?.message}
+                     title="Proprietário"
+                     url="/proprietarios/lista-select"
+                     method="GET"
+                     model={
+                        proprietarioModel as unknown as new () => {
+                           id: number;
+                           nome: string;
+                        }
+                     }
+                     startSelected={watch("proprietario")}
+                     isSingle
+                  />
+                  <SearchSelect
+                     register={register("corretores")}
+                     mensagemErro={errors.corretores?.message}
+                     title="Corretores"
+                     url="/usuarios/corretores-lista-select"
+                     method="GET"
+                     model={
+                        corretoresModel as unknown as new () => {
+                           id: number;
+                           nome: string;
+                        }
+                     }
+                     startSelected={watch("corretores")}
+                  />
+               </div>
                <div className="flex flex-row gap-2 justify-center">
                   <BotaoPadrao
                      type="button"

@@ -12,7 +12,7 @@ const ExibirCorretores = (props: CardCorretorProps) => {
    return (
       <div className="justify-center flex flex-row gap-4">
          {props.corretores?.map((corretor, i) => (
-            <div key={i} className="flex-col rounded-full">
+            <div key={i} className="flex-col rounded-full flex justify-center items-center">
                
                {corretor.foto ? (
                   
@@ -21,12 +21,14 @@ const ExibirCorretores = (props: CardCorretorProps) => {
                      alt="Imagem corretor"
                      width={1920}
                      height={1080}
-                     className="border-2 border-gray-500 flex justify-center items-center rounded-full h-14 w-16 lg:w-24 lg:h-20 2xl:w-28 2xl:h-24"
+                     className="border-2 border-gray-400 flex justify-center items-center rounded-full h-16 w-16 lg:w-24 lg:h-24 2xl:w-28 2xl:h-28"
                   />
                ) : (
                   <FotoUsuarioDeslogado />
                )}
-               {corretor.nome}
+               <div className="text-havprincipal">
+               <strong> {corretor.nome} </strong>
+               </div>
                
             </div>
          ))}

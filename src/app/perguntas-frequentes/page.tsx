@@ -1,27 +1,21 @@
+import React, { Suspense } from "react";
 import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
-import FormPerguntas from "@/components/componentes_perguntas_frequentes/FormPerguntas";
-import ListaPerguntasFrequentes from "@/components/componentes_perguntas_frequentes/ListaPerguntasFrequentes";
+import PerguntasFrequentesClient from "./cliente";
 
-interface PageProps {
-   searchParams: { [key: string]: string | string[] | undefined };
-}
-
-const page = ({ searchParams }: PageProps) => {
+const Page = () => {
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
-            <FundoBrancoPadrao titulo="Faça uma pergunta" className="w-full">
-               <FormPerguntas />
-            </FundoBrancoPadrao>
-            <div className="flex my-4"></div>
-            <FundoBrancoPadrao titulo="Perguntas Frequentes" className="w-full">
-               <ListaPerguntasFrequentes />
+            <FundoBrancoPadrao className="w-full" titulo="Perguntas Frequentes">
+               <Suspense fallback={<div>Carregando...</div>}>
+                  <PerguntasFrequentesClient />
+               </Suspense>
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
       </Layout>
    );
 };
 
-export default page;
+export default Page;

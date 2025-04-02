@@ -23,8 +23,8 @@ export default async function Home() {
    });
 
    return (
-      <Layout role={Roles.ADMIN} className="pt-0 py-8 bg-begeClaroPadrao">
-         <div className="h-full lg:h-[80vh]">
+      <Layout className="pt-0 py-8 bg-begeClaroPadrao">
+         <div className="lg:h-[80vh]">
             <div
                className="h-[30vh] overflow-hidden relative z-10
                            md:h-[35vh]
@@ -57,6 +57,7 @@ export default async function Home() {
                   <CardImovel key={index} imovel={imovel} />
                ))}
             </div>
+    
          </section>
          <section className="mt-4 flex flex-col gap-6">
             <TituloBgDegrade text="Imóveis em" boldText="condições especias" />

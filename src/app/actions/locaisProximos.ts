@@ -37,7 +37,7 @@ export async function getLocaisProximosServer(latitude: number, longitude: numbe
       try {
         // Construir a query Overpass QL
         const query = `
-          [out:json][timeout:25];
+          [out:json][timeout:1];
           (
             ${categoria.amenity ? 
               `node["amenity"="${categoria.amenity}"](${latitude - deltaLat},${longitude - deltaLon},${latitude + deltaLat},${longitude + deltaLat});
@@ -51,9 +51,6 @@ export async function getLocaisProximosServer(latitude: number, longitude: numbe
           >;
           out skel qt;
         `;
-
-        // Delay entre requisições (1 segundo no servidor)
-        await new Promise(resolve => setTimeout(resolve, 1000));
 
         const response = await fetch('https://overpass-api.de/api/interpreter', {
           method: 'POST',

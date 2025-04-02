@@ -25,7 +25,7 @@ interface salvarImovelProps {
       tipoBanner: string;
       iptu: string;
       valorCondominio: string;
-      idProprietario: string;
+      idProprietario: number;
       ativo: boolean;
       endereco: {
          rua: string;
@@ -49,7 +49,7 @@ interface salvarImovelProps {
 }
 
 export async function salvarImovel(props: salvarImovelProps) {
-   const { imovel } = props;
+   const { imovel, imagens } = props;
 
    const imovelFormatado = {
       ...imovel,
@@ -95,14 +95,13 @@ export async function salvarImovel(props: salvarImovelProps) {
             type: "application/json",
          })
       );
-      if (props.imagens.imagemPrincipal) {
-         formData.append("imagemPrincipal", props.imagens.imagemPrincipal);
+      if (imagens.imagemPrincipal) {
+         console.log(imagens.imagemPrincipal);
+         formData.append("imagemPrincipal", imagens.imagemPrincipal);
       }
-      if (
-         props.imagens.imagensGaleria &&
-         props.imagens.imagensGaleria.length > 0
-      ) {
-         props.imagens.imagensGaleria.forEach((imagem) => {
+      if (imagens.imagensGaleria && imagens.imagensGaleria.length > 0) {
+         console.log(imagens.imagensGaleria);
+         imagens.imagensGaleria.forEach((imagem) => {
             if (imagem != null) {
                formData.append("imagens", imagem);
             }

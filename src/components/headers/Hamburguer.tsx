@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React from "react";
 import CasaIcon from "@/svg/icons/header/CasaIcon";
@@ -59,7 +59,7 @@ const Hamburguer = (props: HamburguerProps) => {
 
    const opcoesRoles = [
       {
-         role: Roles.ADMIN,
+         role: Roles.ADMINISTRADOR,
          title: "Admin",
          items: [
             {
@@ -90,12 +90,12 @@ const Hamburguer = (props: HamburguerProps) => {
          items: [
             {
                label: "Gerenciar imóveis",
-               route: "/chat",
+               route: "/gerenciamento/imoveis",
                icone: <CasaIcon className="h-5" />,
             },
             {
                label: "Proprietários",
-               route: "/",
+               route: "/gerenciamento/proprietarios",
                icone: <CorretoresIcon className="h-5" />,
             },
          ],
@@ -144,8 +144,10 @@ const Hamburguer = (props: HamburguerProps) => {
 
    return (
       <div className="absolute top-[64px] right-0 w-3/4 bg-havprincipal z-50 py-4 px-5 space-y-3">
-         {renderizeOpcoesHamburguer()}
-         {existeRole && renderizeOpcoesRoles()}
+         <div className="flex flex-col gap-4">
+            {renderizeOpcoesHamburguer()}
+            {existeRole && renderizeOpcoesRoles()}
+         </div>
       </div>
    );
 };

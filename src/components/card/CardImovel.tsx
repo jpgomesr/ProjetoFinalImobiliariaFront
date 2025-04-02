@@ -4,7 +4,7 @@ import FavButton from "../FavBotao";
 import CardInfo from "./CardInfo";
 import SaibaMaisBotao from "./SaibaMaisBotao";
 import { ModelImovelGet } from "../../models/ModelImovelGet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CardBanner from "./CardBanner";
 import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -12,18 +12,28 @@ import Image from "next/image";
 import Imovel from "@/models/ModelImovel";
 import Link from "next/link";
 import ModalCofirmacao from "../ComponentesCrud/ModalConfirmacao";
+import { SessionProvider } from "next-auth/react";
+import { useNotification } from "@/context/NotificationContext";
 
 interface HomeProps {
    imovel: ModelImovelGet | Imovel;
    edicao?: boolean;
    edicaoLink?: string;
-   atualizacaoRender?: () => void;
+   atualizacaoRender?: () => void
    deletarImovel?: (id: number) => void;
+   width?: string;
 }
 
 export default function CardImovel(props: HomeProps) {
    const router = useRouter();
    const [isBannerVisible] = useState(props.imovel.banner);
+   const [isFavorited, setIsFavorited] = useState(props.imovel.favoritado);
+   
+   // Força a renderização quando o estado de favorito mudar
+   useEffect(() => {
+      // Este efeito será executado sempre que isFavorited mudar
+      // Não precisa fazer nada aqui, apenas a dependência no array já força a renderização
+   }, [isFavorited]);
 
    const valor = props.imovel.preco;
    const valorFormatado = valor.toLocaleString("pt-BR", {
@@ -65,10 +75,17 @@ export default function CardImovel(props: HomeProps) {
 
    const imagemCapa = getImagemCapa(props.imovel);
 
+   // Função para atualizar o estado de favorito
+   const atualizarFavorito = (novoEstado: boolean) => {
+      setIsFavorited(novoEstado);
+   };
+
    return (
       <>
          <div
-            className={`w-[70%] h-full min-w-[262.5px] max-w-[305px] rounded-2xl shadow-[4px_4px_4px_rgba(0,0,0,0.2)] relative
+            className={`${
+               props.width ? props.width : "w-[70%]"
+            } h-full min-w-[262.5px] max-w-[305px] rounded-2xl shadow-[4px_4px_4px_rgba(0,0,0,0.2)] relative
                      ${
                         !props.imovel?.permitirDestaque
                            ? "bg-begepadrao"
@@ -115,23 +132,21 @@ export default function CardImovel(props: HomeProps) {
                                     ? "text-brancoEscurecido"
                                     : "text-havprincipal"
                               } cursor-pointer w-5 h-5`}
-                              onClick={() =>{
-                                 if(props.deletarImovel){
-                                    props.deletarImovel(props.imovel.id)
+                              onClick={() => {
+                                 if (props.deletarImovel) {
+                                    props.deletarImovel(props.imovel.id);
                                  }
-                              }
-                               
-                              }
+                              }}
                            />
                         ) : (
-                           <FavButton
-                              favorited={
-                                 "favoritado" in props.imovel
-                                    ? props.imovel.favoritado
-                                    : false
-                              }
-                              dark={props.imovel.permitirDestaque}
-                           />
+                           <SessionProvider>
+                              <FavButton
+                                 idImovel={props.imovel.id}
+                                 favorited={isFavorited ?? false}
+                                 dark={props.imovel.permitirDestaque}
+                                 setIsFavorited={setIsFavorited}
+                              />
+                           </SessionProvider>
                         )}
                      </div>
                      <div className="flex flex-row justify-between w-full">
@@ -240,17 +255,19 @@ export default function CardImovel(props: HomeProps) {
                </div>
                <div className="flex justify-center pb-5 items-center gap-2">
                   <Link href={`/imovel/${props.imovel.id}`}>
-                  <SaibaMaisBotao
-                     codigo={"codigo" in props.imovel ? props.imovel.codigo : 0}
-                     dark={props.imovel.permitirDestaque}
-                  />
+                     <SaibaMaisBotao
+                        codigo={
+                           "codigo" in props.imovel ? props.imovel.codigo : 0
+                        }
+                        dark={props.imovel.permitirDestaque}
+                     />
                   </Link>
                   {cardEdicao ? (
                      <button
                         className={`text-sm px-4 py-2 ${
                            props.imovel.permitirDestaque
                               ? "bg-brancoEscurecido text-havprincipal font-bold"
-                              : "bg-havprincipal text-white"
+                              : "bg-havprincipal text-white "
                         } rounded-md`}
                         onClick={() => {
                            if (props.edicaoLink) {
