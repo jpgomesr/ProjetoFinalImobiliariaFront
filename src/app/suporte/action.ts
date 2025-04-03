@@ -15,43 +15,46 @@ const perguntaSchema = z.object({
    mensagem: z.string().min(10, "Mensagem deve ter no mínimo 10 caracteres"),
 });
 
-export async function enviarPergunta(pergunta: ModelPergunta) {
+interface EnviarPerguntaProps {
+   tipoPergunta: TipoPergunta;
+   mensagem: string;
+   email: string;
+}
+
+export async function enviarPergunta({
+   tipoPergunta,
+   mensagem,
+   email,
+}: EnviarPerguntaProps) {
    try {
-      const validacao = perguntaSchema.safeParse(pergunta);
-
-      if (!validacao.success) {
-         return {
-            success: false,
-            error: "Erro de validação",
-            erros: validacao.error.errors.map((err) => ({
-               campo: err.path.join("."),
-               mensagem: err.message,
-            })),
-         };
-      }
-
       const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-      const res = await fetch(`${BASE_URL}/perguntas`, {
+      const response = await fetch(`${BASE_URL}/perguntas`, {
          method: "POST",
          headers: {
             "Content-Type": "application/json",
          },
          body: JSON.stringify({
-            tipoPergunta:
-               TipoPergunta[pergunta.tipoPergunta as keyof typeof TipoPergunta],
-            email: pergunta.email,
-            telefone: pergunta.telefone,
-            nome: pergunta.nome,
-            mensagem: pergunta.mensagem,
+            tipoPergunta,
+            mensagem,
+            email,
          }),
       });
 
-      if (!res.ok) throw new Error("Erro ao enviar pergunta");
+      if (!response.ok) {
+         throw new Error("Erro ao enviar pergunta");
+      }
 
-      const data = await res.json();
-      return { success: true, data };
+      const data = await response.json();
+
+      return {
+         success: true,
+         data,
+      };
    } catch (error) {
-      console.error("Erro:", error);
-      return { success: false, error: "Erro ao enviar pergunta" };
+      console.error("Erro ao enviar pergunta:", error);
+      return {
+         success: false,
+         error: "Erro ao enviar pergunta",
+      };
    }
 }
