@@ -1,4 +1,5 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
+import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
 import { TipoImovelEnum } from "@/models/Enum/TipoImovelEnum";
 import { ModelImovelGet } from "@/models/ModelImovelGet";
 import { getServerSession } from "next-auth";
@@ -84,7 +85,7 @@ export const buscarTodosImoveis = async (
             const imoveis: ModelImovelGet[] = dataImovel.content;
 
             if(session?.user){
-               const idsImoveisFavoritados = await buscarIdsImoveisFavoritados(session?.user?.id || '');
+               const idsImoveisFavoritados = await buscarIdsImoveisFavoritados(session?.user?.id || '', session?.accessToken ?? '');
 
                imoveis.forEach(imovel => {
                    imovel.favoritado = idsImoveisFavoritados.includes(imovel.id);
@@ -194,9 +195,11 @@ export const buscarIdsImoveis = async () : Promise<number[]> => {
    return data as number[]
 }
 
-export const buscarIdsImoveisFavoritados = async (userId: string) : Promise<number[]> => {
+export const buscarIdsImoveisFavoritados = async (userId: string, token: string) : Promise<number[]> => {
    
-   const response = await fetch(`${BASE_URL}/usuarios/ids-imoveis-favoritados/${userId}`)
+   const response = await useFetchComAutorizacaoComToken(`${BASE_URL}/usuarios/ids-imoveis-favoritados`, {
+      method: 'GET'
+   }, token)
 
    const data = await response.json()
    return data as number[]
