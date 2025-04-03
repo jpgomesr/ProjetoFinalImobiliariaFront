@@ -66,6 +66,7 @@ async function ConteudoPrincipal({ searchParams }: PageProps) {
             usuarios={usuariosRenderizados}
             peageableinfo={peageableinfo}
             numeroPaginaAtual={numeroPaginaAtual}
+            token={session.accessToken ?? ""}
          />
       </FundoBrancoPadrao>
    );

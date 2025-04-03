@@ -24,7 +24,7 @@ export const useFetchComAutorizacaoComToken = async(   url: string | URL,
          ...init,
          headers: {
             ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-            "Content-Type": "application/json",
+            ...init?.headers
          },
       });
 

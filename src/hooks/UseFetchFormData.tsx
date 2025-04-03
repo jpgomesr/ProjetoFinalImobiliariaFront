@@ -1,5 +1,4 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
-import { getServerSession } from "next-auth";
+import { useFetchComAutorizacaoComToken } from "./FetchComAuthorization";
 
 export const UseFetchPostFormData = async (
    url: string,
@@ -7,10 +6,10 @@ export const UseFetchPostFormData = async (
    nomeObjeto: string,
    nomeArquivo : string,
    arquivo: File | null,
-   method: string
+   method: string,
+   token: string
 ) => {
-   const formData = new FormData();
-   const session = await getServerSession(authOptions);
+   const formData = new FormData();;
 
    formData.append(
       nomeObjeto,
@@ -21,11 +20,9 @@ export const UseFetchPostFormData = async (
       formData.append(nomeArquivo, arquivo);
    }
 
-   return await fetch(url, {
+   return await useFetchComAutorizacaoComToken(url, {
       method,
       body: formData,
-      headers:{
-         "Authorization" : `Bearrer ${session?.accessToken || ""}`
-      }
-   });
+     
+   }, token);
 };
