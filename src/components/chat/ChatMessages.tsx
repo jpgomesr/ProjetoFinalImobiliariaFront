@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { Send, ArrowLeft } from "lucide-react";
 import { useChat } from "@/context/ChatContext";
+import { enviarNotificacao } from "@/Functions/notificacao/enviarNotificacao";
 
 interface ChatMessagesProps {
    chat: number;
@@ -15,7 +16,7 @@ interface ChatMessagesProps {
 }
 
 interface ChatUser {
-   id: string;
+   id: number | string;
    nome?: string;
 }
 
@@ -251,6 +252,14 @@ const ChatMessages = ({ chat, closeChat, isMobile }: ChatMessagesProps) => {
 
             // Atualizar o estado do chat no contexto
             addNewMessage(chat, chatMessage);
+
+            enviarNotificacao(
+               {
+                  titulo: "Chat",
+                  descricao: "Você tem uma nova mensagem",
+               },
+               chatPartner?.id ?? ""
+            );
 
             // Enviar a mensagem por último para garantir que a interface seja atualizada primeiro
             stompClient.publish({
