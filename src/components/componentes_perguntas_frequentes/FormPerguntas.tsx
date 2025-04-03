@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import ListFiltroPadrao from "@/components/ListFIltroPadrao";
+import ListFiltroPadrao from "@/components/ListFiltroPadrao";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import InputsPergunta from "@/components/componentes_perguntas_frequentes/InputsPergunta";
-import ModelPergunta, { TipoPerguntaEnum } from "@/models/ModelPergunta";
+import ModelPergunta from "@/models/ModelPergunta";
 import { TipoPergunta } from "@/models/Enum/TipoPerguntaEnum";
 import { enviarPergunta } from "@/app/perguntas-frequentes/action";
 import { useNotification } from "@/context/NotificationContext";
@@ -21,9 +21,9 @@ interface ErroValidacao {
 
 const FormPerguntas = ({ onSuccess }: FormPerguntasProps) => {
    const searchParams = useSearchParams();
-   const opcaoSelecionada = searchParams.get(
-      "opcao"
-   ) as TipoPerguntaEnum | null;
+   const opcaoSelecionada = searchParams.get("opcao") as
+      | keyof typeof TipoPergunta
+      | null;
    const { showNotification } = useNotification();
 
    const [pergunta, setPergunta] = useState<ModelPergunta>({
@@ -84,11 +84,20 @@ const FormPerguntas = ({ onSuccess }: FormPerguntasProps) => {
             opcoes={[
                {
                   id: "LOGIN_OU_CADASTRO",
-                  label: TipoPergunta.LOGIN_OU_CADASTRO,
+                  label: "Login ou Cadastro",
                },
-               { id: "PAGAMENTOS", label: TipoPergunta.PAGAMENTOS },
-               { id: "PROMOCOES", label: TipoPergunta.PROMOCOES },
-               { id: "OUTROS", label: TipoPergunta.OUTROS },
+               {
+                  id: "PAGAMENTOS",
+                  label: "Pagamentos",
+               },
+               {
+                  id: "PROMOCOES",
+                  label: "Promoções",
+               },
+               {
+                  id: "OUTROS",
+                  label: "Outros",
+               },
             ]}
             buttonHolder="Assunto"
             value={opcaoSelecionada || ""}

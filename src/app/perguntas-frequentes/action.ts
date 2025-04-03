@@ -30,7 +30,8 @@ export async function enviarPergunta(pergunta: ModelPergunta) {
          };
       }
 
-      const res = await fetch("http://localhost:8082/perguntas", {
+      const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+      const res = await fetch(`${BASE_URL}/perguntas`, {
          method: "POST",
          headers: {
             "Content-Type": "application/json",

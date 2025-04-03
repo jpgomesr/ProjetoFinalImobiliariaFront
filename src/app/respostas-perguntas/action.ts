@@ -4,11 +4,13 @@ import ModelPergunta from "@/models/ModelPergunta";
 
 export async function buscarPerguntas() {
    try {
-      const response = await fetch("http://localhost:8082/perguntas", {
+      const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+      const response = await fetch(`${BASE_URL}/perguntas`, {
          method: "GET",
          headers: {
             "Content-Type": "application/json",
          },
+         cache: "no-store",
       });
 
       if (!response.ok) {
@@ -16,7 +18,6 @@ export async function buscarPerguntas() {
       }
 
       const data = await response.json();
-      
 
       return {
          success: true,
@@ -27,6 +28,7 @@ export async function buscarPerguntas() {
       return {
          success: false,
          error: "Erro ao buscar perguntas",
+         data: [],
       };
    }
 }
