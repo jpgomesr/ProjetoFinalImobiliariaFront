@@ -9,6 +9,7 @@ import {
 } from "@/Functions/usuario/favoritos";
 import { useNotification } from "@/context/NotificationContext";
 import { Heart } from "lucide-react";
+import { redirect } from "next/navigation";
 interface HomeProps {
    idImovel: number;
    favorited: boolean;
@@ -34,7 +35,7 @@ export default function FavButton({
    const removerFavorito = async (idImovel: number) => {
       if (session?.user?.id) {
          try {
-            await removerImovelFavorito(idImovel, session.user.id);
+            await removerImovelFavorito(idImovel,  session.accessToken ?? "");
             setHandleRemoveFav(false);
             setIsFavorited(false);
             showNotification("Imóvel removido dos favoritos");
@@ -45,10 +46,13 @@ export default function FavButton({
       }
    };
 
-   const handleChangeFav = async () => {
+   const handleChangeFav = async () => {  
+      if(!session) {
+         redirect(`/api/auth/signin`) 
+      }
       if (!favorited) {
          try {
-            await adicionarImovelFavorito(idImovel, session?.user?.id ?? "");
+            await adicionarImovelFavorito(idImovel, session?.accessToken ?? "");
             setIsFavorited(true);
             showNotification("Imóvel adicionado aos favoritos");
          } catch (error) {

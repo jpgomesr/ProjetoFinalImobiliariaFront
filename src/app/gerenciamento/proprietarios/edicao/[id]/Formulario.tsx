@@ -24,9 +24,10 @@ import Erro404 from "@/components/Erro404";
 import Link from "next/link";
 interface FormProps {
    proprietario: ModelProprietario;
+   token: string;
 }
 
-const Formulario = ({ proprietario }: FormProps) => {
+const Formulario = ({ proprietario, token }: FormProps) => {
    const { showNotification } = useNotification();
    const router = useRouter();
 
@@ -158,7 +159,8 @@ const Formulario = ({ proprietario }: FormProps) => {
             "proprietario",
             "foto",
             data.imagemPerfil,
-            "PUT"
+            "PUT",
+            token
          );
 
          if (!response.ok) {

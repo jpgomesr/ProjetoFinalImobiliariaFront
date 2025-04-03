@@ -16,7 +16,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { Roles } from "@/models/Enum/Roles";
-
+import { fetchComAutorizacao } from "@/hooks/FetchComAuthorization";
 interface PageProps {
    params: Promise<{
       id: string;
@@ -53,7 +53,7 @@ const page = async ({ params, searchParams }: PageProps) => {
    const fetchAgendamentos = async (role: Roles) => {
       try {
          console.log(parametrosRenderizados);
-         const response = await fetch(
+         const response = await fetchComAutorizacao(
             `http://localhost:8082/agendamentos/${role === Roles.CORRETOR ? "corretor" : "usuario"}/${id}?status=${
                parametrosRenderizados?.status || ""
             }&data=${
@@ -62,8 +62,7 @@ const page = async ({ params, searchParams }: PageProps) => {
          );
          const data = await response.json();
 
-         
-         console.log(data)
+    
          return {
             content: data.content as ModelAgendamento[],
             totalPages: data.totalPages as number,
@@ -125,6 +124,7 @@ const page = async ({ params, searchParams }: PageProps) => {
                                  status={agendamento.status}
                                  localizacao={`${agendamento.endereco.cidade} - ${agendamento.endereco.bairro}`}
                                  endereco={`${agendamento.endereco.rua}, ${agendamento.endereco.numeroCasaPredio}`}
+                                 token={session.accessToken ?? ""}
                               />
                            )
                         )}

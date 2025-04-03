@@ -16,7 +16,11 @@ import List from "@/components/List";
 import { useNotification } from "@/context/NotificationContext";
 import { salvarProprietario } from "./action";
 import Link from "next/link";
-const FormularioCadastroProprietario = () => {
+
+interface FormularioCadastroProprietarioProps {
+   token: string;
+}
+const FormularioCadastroProprietario = ({ token }: FormularioCadastroProprietarioProps) => {
    const router = useRouter();
    const { showNotification } = useNotification();
 
@@ -108,11 +112,12 @@ const FormularioCadastroProprietario = () => {
                   numeroCasaPredio: data.numeroCasaPredio.toString(),
                   numeroApartamento: data.numeroApartamento?.toString() || "",
                },
-            },
+            }, 
             imagemPerfil: data.imagemPerfil,
+            token: token,
          };
 
-         const response = await salvarProprietario(objetoRequisicao);
+         const response = await salvarProprietario(objetoRequisicao,);
 
          if (!response.ok) {
             const responseData = await response;

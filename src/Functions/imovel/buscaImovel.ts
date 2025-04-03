@@ -1,4 +1,5 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
+import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
 import { TipoImovelEnum } from "@/models/Enum/TipoImovelEnum";
 import { ModelImovelGet } from "@/models/ModelImovelGet";
 import { getServerSession } from "next-auth";
@@ -34,7 +35,7 @@ export interface parametrosBuscaImovel {
     sort?: string,
     condicoesEspeciais?: string,
     revalidate?: number,
-    idUsuario?: string
+    idUsuario?: string,
 }
 
 
@@ -61,6 +62,8 @@ export const buscarTodosImoveis = async (
         idUsuario: parametros?.idUsuario || '',
         sort: parametros?.sort || ''
     });
+
+    const session = await getServerSession(authOptions);
       
     try {
         const responseImovelRequest = await fetch(
@@ -69,22 +72,28 @@ export const buscarTodosImoveis = async (
                 method: 'GET',
                 cache: 'no-store',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    ...(session?.accessToken ? { 'Authorization': `Bearer ${session.accessToken}` } : {})
                 }
             }
-        );
-     
+        );  
+        
+      
         if (responseImovelRequest.ok) {
             const dataImovel = await responseImovelRequest.json();
 
             const imoveis: ModelImovelGet[] = dataImovel.content;
-            
-            const session = await getServerSession(authOptions);
-            const idsImoveisFavoritados = await buscarIdsImoveisFavoritados(session?.user?.id || '');
 
-            imoveis.forEach(imovel => {
-                imovel.favoritado = idsImoveisFavoritados.includes(imovel.id);
-            });
+
+            if(session?.user){
+               const idsImoveisFavoritados = await buscarIdsImoveisFavoritados(session?.user?.id || '', session?.accessToken ?? '');
+
+               imoveis.forEach(imovel => {
+                   imovel.favoritado = idsImoveisFavoritados.includes(imovel.id);
+               });
+            }
+           
+
             const pageableInfo = {
                 totalPaginas: dataImovel.totalPages,
                 ultima: dataImovel.last,
@@ -97,6 +106,7 @@ export const buscarTodosImoveis = async (
                 quantidadeElementos,
             };
         } else {
+         console.log( await responseImovelRequest.json())
             throw new Error("Erro ao buscar os dados do imóvel");
         }
     } catch (error) {
@@ -184,13 +194,14 @@ export const buscarIdsImoveis = async () : Promise<number[]> => {
    const response = await fetch(`${BASE_URL}/imoveis/ids-imoveis`)
 
    const data = await response.json()
-
    return data as number[]
 }
 
-export const buscarIdsImoveisFavoritados = async (userId: string) : Promise<number[]> => {
+export const buscarIdsImoveisFavoritados = async (userId: string, token: string) : Promise<number[]> => {
    
-   const response = await fetch(`${BASE_URL}/usuarios/ids-imoveis-favoritados/${userId}`)
+   const response = await useFetchComAutorizacaoComToken(`${BASE_URL}/usuarios/ids-imoveis-favoritados`, {
+      method: 'GET'
+   }, token)
 
    const data = await response.json()
    return data as number[]

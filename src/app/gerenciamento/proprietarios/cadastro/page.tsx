@@ -22,7 +22,7 @@ export default async function Page() {
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
-            <FormularioCadastroProprietario />
+            <FormularioCadastroProprietario token={session.accessToken ?? ""} />
          </SubLayoutPaginasCRUD>
       </Layout>
    );

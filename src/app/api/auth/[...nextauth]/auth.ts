@@ -95,6 +95,5 @@ export const authOptions: NextAuthOptions = {
          return session;
       },
    },
-   debug: process.env.NODE_ENV === "development",
    secret: process.env.NEXTAUTH_SECRET || "meu-segredo-muito-seguro",
 };

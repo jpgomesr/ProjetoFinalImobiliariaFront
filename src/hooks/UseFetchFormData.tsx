@@ -1,12 +1,15 @@
+import { useFetchComAutorizacaoComToken } from "./FetchComAuthorization";
+
 export const UseFetchPostFormData = async (
    url: string,
    data: object,
    nomeObjeto: string,
    nomeArquivo : string,
    arquivo: File | null,
-   method: string
+   method: string,
+   token: string
 ) => {
-   const formData = new FormData();
+   const formData = new FormData();;
 
    formData.append(
       nomeObjeto,
@@ -17,8 +20,9 @@ export const UseFetchPostFormData = async (
       formData.append(nomeArquivo, arquivo);
    }
 
-   return await fetch(url, {
+   return await useFetchComAutorizacaoComToken(url, {
       method,
       body: formData,
-   });
+     
+   }, token);
 };

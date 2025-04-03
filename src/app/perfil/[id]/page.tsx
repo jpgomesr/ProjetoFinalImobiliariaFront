@@ -5,7 +5,7 @@ import FormularioPerfil from "./FormularioPerfil";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { redirect } from "next/navigation";
-
+import { fetchComAutorizacao } from "@/hooks/FetchComAuthorization";
 interface PageProps {
    params: Promise<{
       id: string;
@@ -30,7 +30,7 @@ const Page = async ({ params }: PageProps) => {
    }
 
    try {
-      const response = await fetch(`${BASE_URL}/usuarios/${id}`);
+      const response = await fetchComAutorizacao(`${BASE_URL}/usuarios/${id}`);
       if (!response.ok) {
          throw new Error("Erro ao buscar os dados do usuário");
       }
