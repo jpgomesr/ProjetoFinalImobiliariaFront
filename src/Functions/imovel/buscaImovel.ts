@@ -84,6 +84,7 @@ export const buscarTodosImoveis = async (
 
             const imoveis: ModelImovelGet[] = dataImovel.content;
 
+
             if(session?.user){
                const idsImoveisFavoritados = await buscarIdsImoveisFavoritados(session?.user?.id || '', session?.accessToken ?? '');
 
@@ -92,6 +93,7 @@ export const buscarTodosImoveis = async (
                });
             }
            
+
             const pageableInfo = {
                 totalPaginas: dataImovel.totalPages,
                 ultima: dataImovel.last,
