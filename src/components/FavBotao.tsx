@@ -9,6 +9,7 @@ import {
 } from "@/Functions/usuario/favoritos";
 import { useNotification } from "@/context/NotificationContext";
 import { Heart } from "lucide-react";
+import { redirect } from "next/navigation";
 interface HomeProps {
    idImovel: number;
    favorited: boolean;
@@ -46,6 +47,9 @@ export default function FavButton({
    };
 
    const handleChangeFav = async () => {  
+      if(!session) {
+         redirect(`/api/auth/signin`) 
+      }
       if (!favorited) {
          try {
             await adicionarImovelFavorito(idImovel, session?.accessToken ?? "");

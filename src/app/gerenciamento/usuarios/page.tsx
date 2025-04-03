@@ -45,7 +45,7 @@ async function ConteudoPrincipal({ searchParams }: PageProps) {
       tipoUsuario,
       statusBooleano,
       nomePesquisa,
-      10
+      10,
    );
 
    // Informações de paginação

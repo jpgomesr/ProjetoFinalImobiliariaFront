@@ -14,7 +14,7 @@ interface retornoListaUsuarios {
 
 export const listarUsuarios =  async (numeroPagina:number, tipoUsuario?:string, status? : boolean, nomePesquisa?:string,tamanhoPagina? : number)  : Promise<retornoListaUsuarios> => {
 
-    const response = await fetch(
+    const response = await fetchComAutorizacao(
         `${BASE_URL}/usuarios?role=${tipoUsuario}&ativo=${
            status}&nome=${nomePesquisa}&page=${numeroPagina}&size=${tamanhoPagina}`
      );
