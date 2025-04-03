@@ -4,6 +4,11 @@ interface CardPerguntaProps {
    tipoPergunta: string;
    email: string;
    mensagem: string;
+   data: Date;
+   perguntaRespondida: boolean;
+   resposta?: string;
+   idAdministrador?: string;
+   idEditor?: string;
 }
 
 const CardPergunta = ({ tipoPergunta, email, mensagem }: CardPerguntaProps) => {

@@ -7,7 +7,7 @@ export default function Page() {
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
-            <FundoBrancoPadrao titulo="Perguntas" className="w-full">
+            <FundoBrancoPadrao titulo="Respostas Perguntas" className="w-full">
                <ListaPerguntas />
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>

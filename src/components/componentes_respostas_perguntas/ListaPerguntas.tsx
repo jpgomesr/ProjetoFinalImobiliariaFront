@@ -56,6 +56,11 @@ const ListaPerguntas = () => {
                   }
                   email={question.email}
                   mensagem={question.mensagem}
+                  data={question.data}
+                  perguntaRespondida={question.perguntaRespondida}
+                  resposta={question.resposta}
+                  idAdministrador={question.idAdministrador}
+                  idEditor={question.idEditor}
                />
             ))
          )}

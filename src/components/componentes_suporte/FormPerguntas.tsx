@@ -4,10 +4,10 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import ListFiltroPadrao from "@/components/ListFiltroPadrao";
 import BotaoPadrao from "@/components/BotaoPadrao";
-import InputsPergunta from "@/components/componentes_perguntas_frequentes/InputsPergunta";
+import InputsPergunta from "@/components/componentes_suporte/InputsPergunta";
 import ModelPergunta from "@/models/ModelPergunta";
 import { TipoPergunta } from "@/models/Enum/TipoPerguntaEnum";
-import { enviarPergunta } from "@/app/perguntas-frequentes/action";
+import { enviarPergunta } from "@/app/suporte/action";
 import { useNotification } from "@/context/NotificationContext";
 
 interface FormPerguntasProps {
@@ -32,6 +32,8 @@ const FormPerguntas = ({ onSuccess }: FormPerguntasProps) => {
       telefone: "",
       nome: "",
       mensagem: "",
+      data: new Date(),
+      perguntaRespondida: false,
    });
 
    const [erros, setErros] = useState<ErroValidacao[]>([]);
@@ -60,6 +62,8 @@ const FormPerguntas = ({ onSuccess }: FormPerguntasProps) => {
                telefone: "",
                nome: "",
                mensagem: "",
+               data: new Date(),
+               perguntaRespondida: false,
             });
             showNotification("Pergunta enviada com sucesso!");
             onSuccess?.();
