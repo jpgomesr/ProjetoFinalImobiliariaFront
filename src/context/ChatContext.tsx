@@ -69,8 +69,8 @@ export function ChatProvider({
    const [stompClient, setStompClient] = useState<Client | null>(null);
    const [isConnected, setIsConnected] = useState(false);
    const [forceUpdate, setForceUpdate] = useState(0);
-   const userId = session?.user?.id ?? "";
-   const userName = session?.user?.name ?? "";
+   const userId = session?.user?.id;
+   const userName = session?.user?.name;
 
    // Referências para controlar as inscrições e requisições
    const subscriptions = useRef<Record<string, any>>({});
@@ -127,7 +127,10 @@ export function ChatProvider({
    }, []);
 
    const fetchChats = useCallback(async () => {
-      if (!userId) return;
+      if (!userId) {
+         console.log("Não há usuário logado");
+         return;
+      };
 
       try {
          console.log("Buscando lista de chats para o usuário:", userId);
