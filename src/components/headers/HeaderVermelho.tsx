@@ -61,7 +61,6 @@ const HeaderVermelho = ({ role, id, foto, nome }: HeaderVermelhoProps) => {
             </Link>
          </div>
          <div className="flex justify-center items-center gap-5 md:gap-10 2xl:gap-20">
-            <Notificacao />
             <Link href={id ? "/chat" : "/api/auth/signin"}>
                <button className="text-white">
                   <MessageCircleMore className="hidden md:block md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
@@ -77,11 +76,12 @@ const HeaderVermelho = ({ role, id, foto, nome }: HeaderVermelhoProps) => {
                   <Heart className="hidden md:block md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
                </button>
             </Link>
+            <Notificacao />
             {id ? (
                <PerfilDropdown foto={foto || undefined} id={id} nome={nome} />
             ) : (
                <Link href="/api/auth/signin">
-                  <button className="text-white hover:text-opacity-80">
+                  <button className="text-white hover:text-opacity-80 flex justify-center items-center">
                      <User className="w-6 h-6 md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
                   </button>
                </Link>
