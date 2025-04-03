@@ -38,7 +38,7 @@ export const buscarProprietarioPorId = async (
 
    const data = await response.json();
 
-   return data as ModelProprietario;
+   return data as ModelProprietario;   
 };
 export const buscarIdsProprietarios = async () : Promise<number[]>=> {
 

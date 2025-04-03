@@ -52,6 +52,7 @@ export default async function Page({ searchParams }: PageProps) {
                   paginaAtual={paginaAtual}
                   nomePesquisa={nomePesquisa}
                   status={status}
+                  token={session.accessToken ?? ""}
                />
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>

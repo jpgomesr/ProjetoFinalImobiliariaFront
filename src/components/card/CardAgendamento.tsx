@@ -5,6 +5,7 @@ import CardBanner from "./CardBanner";
 import { useState } from "react";
 import ModalCofirmacao from "../ComponentesCrud/ModalConfirmacao";
 import { Roles } from "@/models/Enum/Roles";
+import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
 interface CardReservaProps {
    id: number;
    urlImagem: string;
@@ -18,6 +19,7 @@ interface CardReservaProps {
    endereco: string;
    onConfirm?: () => void;
    onCancel?: () => void;
+   token: string;
 }
 
 export default function CardReserva({
@@ -31,6 +33,7 @@ export default function CardReserva({
    id = 0,
    role,
    usuario,
+   token,
 }: CardReservaProps) {
    const [modalConfirmacao, setModalConfirmacao] = useState(false);
 
@@ -39,11 +42,12 @@ export default function CardReserva({
       status: "PENDENTE" | "CONFIRMADO" | "CANCELADO"
    ) => {
       try {
-         const response = await fetch(
+         const response = await useFetchComAutorizacaoComToken(
             `http://localhost:8082/agendamentos/${id}?status=${status}`,
             {
                method: "PATCH",
-            }
+            },
+            token
          );
 
          if (!response.ok) {
