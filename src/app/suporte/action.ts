@@ -27,28 +27,10 @@ export async function enviarPergunta({
    email,
 }: EnviarPerguntaProps) {
    try {
-      const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-      const response = await fetch(`${BASE_URL}/perguntas`, {
-         method: "POST",
-         headers: {
-            "Content-Type": "application/json",
-         },
-         body: JSON.stringify({
-            tipoPergunta,
-            mensagem,
-            email,
-         }),
-      });
-
-      if (!response.ok) {
-         throw new Error("Erro ao enviar pergunta");
-      }
-
-      const data = await response.json();
-
+      // TODO: Implementar a chamada à API
       return {
          success: true,
-         data,
+         data: null,
       };
    } catch (error) {
       console.error("Erro ao enviar pergunta:", error);

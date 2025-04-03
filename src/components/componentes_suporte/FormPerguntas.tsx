@@ -1,158 +1,164 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useSession } from "next-auth/react";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useNotification } from "@/context/NotificationContext";
+import { useSession } from "next-auth/react";
 import { TipoPergunta } from "@/models/Enum/TipoPerguntaEnum";
-import { enviarPergunta } from "@/app/suporte/action";
-import BotaoPadrao from "@/components/BotaoPadrao";
 import InputPadrao from "@/components/InputPadrao";
 import TextAreaPadrao from "@/components/TextAreaPadrao";
+import BotaoPadrao from "@/components/BotaoPadrao";
 
-// Schemas
-const baseSchema = {
+const schema = z.object({
+   titulo: z.string().min(1, "O título é obrigatório"),
+   mensagem: z.string().min(1, "A mensagem é obrigatória"),
    tipoPergunta: z.nativeEnum(TipoPergunta, {
       required_error: "Selecione um tipo de pergunta",
    }),
-   mensagem: z
-      .string()
-      .min(1, "Mensagem é obrigatória")
-      .max(500, "Mensagem muito longa"),
-};
-
-const loggedInSchema = z.object(baseSchema);
-const loggedOutSchema = z.object({
-   ...baseSchema,
-   email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
+   email: z.string().email("Email inválido").optional(),
 });
 
-type LoggedInSchema = z.infer<typeof loggedInSchema>;
-type LoggedOutSchema = z.infer<typeof loggedOutSchema>;
+type FormData = z.infer<typeof schema>;
+
+const opcoesPergunta = [
+   { id: TipoPergunta.LOGIN_OU_CADASTRO, label: "Login ou Cadastro" },
+   { id: TipoPergunta.PAGAMENTOS, label: "Pagamentos" },
+   { id: TipoPergunta.PROMOCOES, label: "Promoções" },
+   { id: TipoPergunta.OUTROS, label: "Outros" },
+];
 
 const FormPerguntas = () => {
-   const { data: session, status } = useSession();
+   const { data: session } = useSession();
    const { showNotification } = useNotification();
-   const isLoggedIn = status === "authenticated";
+   const [tipoPergunta, setTipoPergunta] = useState<TipoPergunta>(
+      TipoPergunta.OUTROS
+   );
+   const [isLoading, setIsLoading] = useState(false);
 
    const {
       register,
       handleSubmit,
-      formState: { errors, isSubmitting },
-      clearErrors,
+      formState: { errors },
+      reset,
       setValue,
       watch,
-   } = useForm<LoggedOutSchema | LoggedInSchema>({
-      resolver: zodResolver(isLoggedIn ? loggedInSchema : loggedOutSchema),
+   } = useForm<FormData>({
+      resolver: zodResolver(schema),
+      defaultValues: {
+         email: session?.user?.email || undefined,
+         tipoPergunta: TipoPergunta.OUTROS,
+      },
    });
 
-   const opcoes = [
-      {
-         id: TipoPergunta.LOGIN_OU_CADASTRO,
-         label: "Log-in, fraude e segurança",
-      },
-      { id: TipoPergunta.PAGAMENTOS, label: "Cobrança" },
-      { id: TipoPergunta.PROMOCOES, label: "Assinatura Premium" },
-      { id: TipoPergunta.OUTROS, label: "Outro" },
-   ];
+   const onSubmit = async (data: FormData) => {
+      try {
+         setIsLoading(true);
+         const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+         const response = await fetch(`${BASE_URL}/perguntas`, {
+            method: "POST",
+            headers: {
+               "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+               titulo: data.titulo,
+               mensagem: data.mensagem,
+               tipoPergunta: data.tipoPergunta,
+               email: session?.user?.email || data.email,
+               data: new Date(),
+               perguntaRespondida: false,
+            }),
+         });
 
-   const handleInputChange = (field: string) => {
-      clearErrors(field as any);
+         if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Erro ao enviar pergunta");
+         }
+
+         showNotification("Pergunta enviada com sucesso!");
+         reset({
+            titulo: "",
+            mensagem: "",
+            tipoPergunta: TipoPergunta.OUTROS,
+            email: session?.user?.email || undefined,
+         });
+         setTipoPergunta(TipoPergunta.OUTROS);
+      } catch (error) {
+         showNotification(
+            error instanceof Error ? error.message : "Erro ao enviar pergunta"
+         );
+      } finally {
+         setIsLoading(false);
+      }
    };
 
-   const onSubmit = async (data: LoggedOutSchema | LoggedInSchema) => {
-      try {
-         const userEmail = isLoggedIn
-            ? session?.user?.email
-            : (data as LoggedOutSchema).email;
-
-         if (!userEmail) {
-            showNotification("Email inválido");
-            return;
-         }
-
-         const perguntaData = {
-            ...data,
-            email: userEmail,
-         };
-
-         const resultado = await enviarPergunta(perguntaData);
-
-         if (resultado?.success) {
-            showNotification("Pergunta enviada com sucesso!");
-            setValue("mensagem", "");
-            setValue("tipoPergunta", TipoPergunta.OUTROS);
-         } else {
-            showNotification("Erro ao enviar pergunta");
-         }
-      } catch (error) {
-         showNotification("Erro ao enviar pergunta");
-      }
+   const handleTipoPerguntaChange = (tipo: TipoPergunta) => {
+      setTipoPergunta(tipo);
+      setValue("tipoPergunta", tipo);
    };
 
    const tipoPerguntaSelecionada = watch("tipoPergunta");
 
    return (
-      <div className="flex flex-col gap-6 w-full">
-         <div className="flex flex-wrap gap-2">
-            {opcoes.map((opcao) => (
-               <BotaoPadrao
-                  key={opcao.id}
-                  texto={opcao.label}
-                  onClick={() => {
-                     setValue("tipoPergunta", opcao.id);
-                     handleInputChange("tipoPergunta");
-                  }}
-                  className={`px-4 py-2 rounded-full text-sm transition-all ${
-                     tipoPerguntaSelecionada === opcao.id
-                        ? "bg-gray-200 font-medium"
-                        : "bg-gray-100 hover:bg-gray-200"
-                  }`}
-               />
-            ))}
-         </div>
-         {errors.tipoPergunta && (
-            <span className="text-red-500 text-xs">
-               {errors.tipoPergunta.message}
-            </span>
-         )}
-
-         {tipoPerguntaSelecionada && (
-            <div className="transition-all duration-300 ease-in-out space-y-4">
-               <form
-                  onSubmit={handleSubmit(onSubmit)}
-                  className="flex flex-col gap-4"
-               >
-                  {!isLoggedIn && (
-                     <InputPadrao
-                        type="email"
-                        placeholder="Seu e-mail"
-                        {...register("email" as any)}
-                        mensagemErro={(errors as any).email?.message}
-                        onChange={() => handleInputChange("email")}
-                     />
-                  )}
-                  <TextAreaPadrao
-                     label=""
-                     htmlFor="mensagem"
-                     placeholder={`Descreva sua dúvida sobre ${opcoes
-                        .find((opc) => opc.id === tipoPerguntaSelecionada)
-                        ?.label.toLowerCase()}`}
-                     {...register("mensagem")}
-                     mensagemErro={errors.mensagem?.message}
-                     onChange={() => handleInputChange("mensagem")}
-                  />
+      <div className="w-full">
+         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="flex flex-wrap gap-2">
+               {opcoesPergunta.map((opcao) => (
                   <BotaoPadrao
-                     texto={isSubmitting ? "Enviando..." : "Enviar"}
-                     type="submit"
-                     disabled={isSubmitting}
-                     className="bg-havprincipal text-white w-[120px] whitespace-nowrap"
+                     key={opcao.id}
+                     type="button"
+                     texto={opcao.label}
+                     onClick={() => handleTipoPerguntaChange(opcao.id)}
+                     className={`px-4 py-2 rounded-full text-sm transition-all ${
+                        tipoPerguntaSelecionada === opcao.id
+                           ? "bg-gray-200 font-medium"
+                           : "bg-gray-100 hover:bg-gray-200"
+                     }`}
                   />
-               </form>
+               ))}
             </div>
-         )}
+            {errors.tipoPergunta && (
+               <p className="text-red-500 text-sm">
+                  {errors.tipoPergunta.message}
+               </p>
+            )}
+
+            {!session && (
+               <InputPadrao
+                  type="email"
+                  placeholder="Seu email"
+                  {...register("email")}
+                  mensagemErro={errors.email?.message}
+               />
+            )}
+
+            <InputPadrao
+               type="text"
+               placeholder="Título da sua pergunta"
+               {...register("titulo")}
+               mensagemErro={errors.titulo?.message}
+            />
+
+            <TextAreaPadrao
+               label=""
+               htmlFor="mensagem"
+               placeholder="Sua mensagem"
+               {...register("mensagem")}
+               mensagemErro={errors.mensagem?.message}
+            />
+
+            <div className="flex justify-center">
+               <BotaoPadrao
+                  type="submit"
+                  texto={isLoading ? "Enviando..." : "Enviar"}
+                  className={`bg-havprincipal text-white w-[120px] whitespace-nowrap ${
+                     isLoading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                  disabled={isLoading}
+               />
+            </div>
+         </form>
       </div>
    );
 };
