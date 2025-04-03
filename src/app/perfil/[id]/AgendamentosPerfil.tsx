@@ -6,6 +6,7 @@ import CardReserva from "@/components/card/CardAgendamento";
 import { Roles } from "@/models/Enum/Roles";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
 
 interface AgendamentosPerfilProps {
   id: string;
@@ -22,14 +23,14 @@ export default function AgendamentosPerfil({ id, role, token }: AgendamentosPerf
     const fetchAgendamentos = async () => {
       setLoading(true);
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/agendamentos/${role === Roles.CORRETOR ? "corretor" : "usuario"}/${id}?status=&data=&page=0&size=9&sort=dataHora,desc`
+        const response = await useFetchComAutorizacaoComToken(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/agendamentos/${role === Roles.CORRETOR ? "corretor" : "usuario"}/${id}?status=&data=&page=0&size=9&sort=dataHora,desc`,
+          {}, token
         );
         if (!response.ok) {
           throw new Error("Erro ao buscar agendamentos");
         }
         const data = await response.json();
-        // Ordenar por data mais recente e pegar apenas os 3 primeiros
         const agendamentosOrdenados = data.content.sort((a: ModelAgendamento, b: ModelAgendamento) => {
           return new Date(b.horario).getTime() - new Date(a.horario).getTime();
         }).slice(0, 3);

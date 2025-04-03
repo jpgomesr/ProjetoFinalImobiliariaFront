@@ -1,285 +1,55 @@
-"use client";
 
 import Layout from "@/components/layout/LayoutPadrao";
-import {
-   BedDouble,
-   Car,
-   Heart,
-   Ruler,
-   Share2,
-   ShowerHead,
-   WavesLadder,
-   ChevronLeft,
-   ChevronRight,
-} from "lucide-react";
-import Image from "next/image";
+import { Heart, Share2 } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { EnderecoMapBox } from "@/models/ModelEnrecoMapBox";
-import CardImovel from "@/components/card/CardImovel";
-import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
-import ExibirCorretores from "@/components/componentes_sobre_nos/ExibirCorretores";
+import GaleriaImagens from "@/components/galeria/GaleriaImagens";
+import Image from "next/image";
 import Link from "next/link";
 import LayoutPadraoClient from "@/components/layout/LayoutPadraoClient";
-// Importação dinâmica do MapboxMap para evitar problemas de SSR
-const MapboxMap = dynamic(() => import("@/components/Mapboxmap"), {
-   ssr: false,
-   loading: () => <p>Carregando mapa...</p>,
-});
+import CardImovel from "@/components/card/CardImovel";
+import {
+   ModelImovelGetId,
+   ImovelSemelhanteModel,
+} from "@/models/ModelImovelGet";
+import { buscarImoveisSemelhantes, buscarImovelPorIdPaginaImovel } from "@/Functions/imovel/buscaImovel";
+import Share from "@/components/Share";
+import MapboxMap from "@/components/Mapboxmap";
 
-// Defina a interface para o tipo Imovel
-interface Imovel {
-   id: number;
-   titulo: string;
-   descricao: string;
-   preco: number;
-   precoPromocional?: number;
-   iptu: string;
-   condominio: string;
-   tamanho: string;
-   qtdBanheiros: number;
-   qtdQuartos: number;
-   qtdGaragens: number;
-   qtdPiscina: number;
-   qtdChurrasqueira: number;
-   imagens: {
-      id: number;
-      imagemCapa: boolean;
-      referencia: string;
-   }[];
-   corretores: {
-      id: number;
-      nome: string;
-      email: string;
-      telefone: string;
-      foto: string;
-   }[];
-   endereco: EnderecoMapBox;
+interface PageProps {
+   params: Promise<{
+      id: string;
+   }>;
 }
 
-interface ImovelSemelhante {
-   id: number;
-   titulo: string;
-   preco: number;
-   precoPromocional?: number;
-   qtdBanheiros: number;
-   qtdQuartos: number;
-   imagens: {
-      id: number;
-      imagemCapa: boolean;
-      referencia: string;
-   }[];
-}
-
-const Page = () => {
+const Page = async ({ params }: PageProps) => {
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-   const [showCopiedMessage, setShowCopiedMessage] = useState(false);
-   const [isLoading, setIsLoading] = useState(true);
 
    if (!BASE_URL) {
       throw new Error("A variável NEXT_PUBLIC_BASE_URL não está definida.");
    }
+   const paramsResolvidos = await params;
 
-   const { id } = useParams(); // Obtém o ID do imóvel da URL
-   const [imovel, setImovel] = useState<Imovel | null>(null); // Define o tipo do estado
-   const [loading, setLoading] = useState(true);
-   const [error, setError] = useState<string | null>(null);
-   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-   const [imoveisSemelhantes, setImoveisSemelhantes] = useState<
-      ImovelSemelhante[]
-   >([]);
+   const { id } = paramsResolvidos;
+   const imovel =  await buscarImovelPorIdPaginaImovel(id);
+   const imoveisSemelhantes = await buscarImoveisSemelhantes(imovel);
 
-   // Imagem padrão
-   const IMAGEM_PADRAO =
-      "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg";
+  
 
-   // Função para buscar os dados do imóvel
-   useEffect(() => {
-      if (!id) return; // Verifica se o ID está disponível
 
-      const fetchImovel = async () => {
-         try {
-            const response = await fetch(`${BASE_URL}/imoveis/${id}`);
-            if (!response.ok) {
-               throw new Error("Erro ao buscar os dados do imóvel");
-            }
-            const data = await response.json();
-            setImovel(data);
-         } catch (err) {
-            if (err instanceof Error) {
-               setError(err.message);
-            } else {
-               setError("Ocorreu um erro desconhecido");
-            }
-         } finally {
-            setLoading(false);
-         }
-      };
-
-      fetchImovel();
-   }, [id]);
-
-   useEffect(() => {
-      if (imovel) {
-         const buscarImoveisSemelhantes = async () => {
-            try {
-               const response = await buscarTodosImoveis();
-               const imoveis = response.imoveis;
-               console.log("Todos os imóveis:", imoveis);
-               console.log("Imóvel atual:", imovel);
-
-               const semelhantes = imoveis.filter(
-                  (imovelComparado: ImovelSemelhante) => {
-                     console.log("Comparando com:", imovelComparado);
-
-                     if (
-                        !imovelComparado ||
-                        typeof imovelComparado.preco !== "number" ||
-                        !imovelComparado.qtdBanheiros ||
-                        !imovelComparado.qtdQuartos
-                     ) {
-                        console.log("Imóvel inválido:", imovelComparado);
-                        return false;
-                     }
-
-                     if (imovelComparado.id === Number(id)) {
-                        console.log("Mesmo imóvel, ignorando");
-                        return false;
-                     }
-
-                     try {
-                        const precoAtual = imovel.preco;
-                        const precoComparado = imovelComparado.preco;
-                        const diferencaPreco = Math.abs(precoAtual - precoComparado);
-
-                        console.log("Preços:", {
-                           atual: precoAtual,
-                           comparado: precoComparado,
-                           diferenca: diferencaPreco,
-                        });
-
-                        console.log("Comparações:", {
-                           banheiros:
-                              imovelComparado.qtdBanheiros === imovel.qtdBanheiros,
-                           quartos: imovelComparado.qtdQuartos === imovel.qtdQuartos,
-                           preco: diferencaPreco <= 5000,
-                        });
-
-                        const isSemelhante =
-                           imovelComparado.qtdBanheiros === imovel.qtdBanheiros ||
-                           imovelComparado.qtdQuartos === imovel.qtdQuartos ||
-                           diferencaPreco <= 5000;
-
-                        console.log("É semelhante?", isSemelhante);
-                        return isSemelhante;
-                     } catch (err) {
-                        console.error("Erro ao comparar imóvel:", err);
-                        return false;
-                     }
-                  }
-               );
-
-               console.log("Imóveis semelhantes encontrados:", semelhantes);
-               setImoveisSemelhantes(semelhantes);
-            } catch (err) {
-               console.error("Erro ao buscar imóveis semelhantes:", err);
-            }
-         };
-
-         buscarImoveisSemelhantes();
-      }
-   }, [imovel, id]);
-
-   console.log(imovel);
-
-   if (loading) {
-      return <p>Carregando...</p>;
-   }
-
-   if (error) {
-      return <p>Erro: {error}</p>;
-   }
 
    if (!imovel) {
       return <p>Imóvel não encontrado.</p>;
    }
 
-   const handleNextImage = () => {
-      setCurrentImageIndex((prev) =>
-         prev === imovel.imagens.length - 1 ? 0 : prev + 1
-      );
-   };
-
-   const handlePreviousImage = () => {
-      setCurrentImageIndex((prev) =>
-         prev === 0 ? imovel.imagens.length - 1 : prev - 1
-      );
-   };
-
-   const handleShare = async () => {
-      try {
-         await navigator.clipboard.writeText(window.location.href);
-         setShowCopiedMessage(true);
-         setTimeout(() => {
-            setShowCopiedMessage(false);
-         }, 2000);
-      } catch (err) {
-         console.error("Erro ao copiar link:", err);
-      }
-   };
-
    return (
       <LayoutPadraoClient className="bg-begeClaroPadrao py-8">
          <div className="flex flex-col items-center w-full gap-1 md:flex-row md:px-8 md:items-start">
-            {/* Imagem principal */}
-            <div className="flex w-11/12 flex-col gap-1 items-center md:items-start lg:ml-24 md:ml-20">
-               <div className="flex justify-center items-center w-full relative">
-                  <button
-                     onClick={handlePreviousImage}
-                     className="absolute left-0 md:left-[8%] z-10 bg-havprincipal/50 hover:bg-havprincipal p-1 md:p-2 rounded-full text-begepadrao"
-                  >
-                     <ChevronLeft className="w-4 h-4 md:w-6 md:h-6" />
-                  </button>
-                  <Image
-                     src={
-                        imovel.imagens[currentImageIndex]?.referencia ||
-                        IMAGEM_PADRAO
-                     }
-                     alt="House image"
-                     width={1920}
-                     height={1080}
-                     className="w-full md:w-10/12 lg:w-[400px] md:w-[300px] aspect-[16/9] object-cover"
-                  />
-                  <button
-                     onClick={handleNextImage}
-                     className="absolute right-0 md:right-[8%] z-10 bg-havprincipal/50 hover:bg-havprincipal p-1 md:p-2 rounded-full text-begepadrao"
-                  >
-                     <ChevronRight className="w-4 h-4 md:w-6 md:h-6" />
-                  </button>
-               </div>
-               {/* Grid de 3 imagens */}
-               <div className="grid grid-cols-3 w-full md:w-10/12 gap-1 lg:w-[400px] md:w-[300px] mx-auto">
-                  {[...imovel.imagens, ...imovel.imagens] // Duplicamos o array para permitir rotação circular
-                     .slice(currentImageIndex + 1, currentImageIndex + 4) // Pegamos as próximas 3 imagens após a atual
-                     .map((imagem, index) => (
-                        <Image
-                           key={`${imagem.id}-${index}`}
-                           src={imagem.referencia || IMAGEM_PADRAO}
-                           alt="House image"
-                           width={1920}
-                           height={1080}
-                           className="w-full aspect-[16/9] object-cover cursor-pointer"
-                           onClick={() => {
-                              const targetIndex =
-                                 (currentImageIndex + 1 + index) %
-                                 imovel.imagens.length;
-                              setCurrentImageIndex(targetIndex);
-                           }}
-                        />
-                     ))}
-               </div>
+            <div className="w-11/12 lg:ml-24 md:ml-20">
+               <GaleriaImagens
+                  imagens={imovel.imagens}
+               />
             </div>
 
             {/* Textos alinhados com as imagens */}
@@ -322,14 +92,7 @@ const Page = () => {
                      </Link>
                   </button>
                   <div className="mt-1 flex gap-3 relative">
-                     <button onClick={handleShare} className="relative">
-                        <Share2 />
-                        {showCopiedMessage && (
-                           <span className="absolute -top-10 left-1/2  transform -translate-x-1/2 bg-havprincipal text-white text-sm py-1 px-2 rounded whitespace-nowrap">
-                              Link copiado!
-                           </span>
-                        )}
-                     </button>
+                     <Share/>
                      <Heart />
                   </div>
                </div>
@@ -352,10 +115,11 @@ const Page = () => {
          <h2 className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl font-semibold flex justify-center items-center mx-auto mt-8 mb-8">
             Selecione um de nossos corretores e tenha uma conversa via chat
          </h2>
-         <ExibirCorretores corretores={imovel.corretores.map(corretor => ({
+         {/* Remover temporariamente até implementar o ExibirCorretores*/}
+         {/* <ExibirCorretores corretores={imovel.corretores.map(corretor => ({
             ...corretor,
             agendamentos: 0 // Changed from empty array to number to match ExibirCorretor type
-         }))} />
+         }))} /> */}
          <h2 className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl font-semibold flex justify-center items-center mx-auto mt-8 mb-8">
             Converse conosco via WhatsApp
          </h2>
@@ -377,7 +141,7 @@ const Page = () => {
          </div>
 
          {/* Seção de Imóveis Semelhantes */}
-         {imoveisSemelhantes.length > 0 && (
+         {imoveisSemelhantes && imoveisSemelhantes.length > 0 && (
             <div className="mt-10 px-8">
                <h2 className="text-2xl font-semibold text-havprincipal mb-6 flex justify-center items-center">
                   Imóveis Semelhantes

@@ -1,7 +1,7 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
 import { TipoImovelEnum } from "@/models/Enum/TipoImovelEnum";
-import { ModelImovelGet } from "@/models/ModelImovelGet";
+import { ModelImovelGet, ModelImovelGetId, ImovelSemelhanteModel } from "@/models/ModelImovelGet";
 import { getServerSession } from "next-auth";
 interface retornoGetImovel {
    quantidadeElementos: number;
@@ -188,6 +188,15 @@ export const buscarImovelPorId = async (
 
    return data as ModelImovelGet;
 };
+export const buscarImovelPorIdPaginaImovel = async (
+   id: string | number
+): Promise<ModelImovelGetId> => {
+   const response = await fetch(`${BASE_URL}/imoveis/${id}`);
+
+   const data = await response.json(); 
+
+   return data as ModelImovelGetId;
+};
 
 export const buscarIdsImoveis = async () : Promise<number[]> => {
 
@@ -206,3 +215,26 @@ export const buscarIdsImoveisFavoritados = async (userId: string, token: string)
    const data = await response.json()
    return data as number[]
 }
+
+export const buscarImoveisSemelhantes = async (imovel : ModelImovelGetId) => {
+   try {
+      const response = await buscarTodosImoveis(
+         {
+            ativo: "true",
+            precoMaximo: (imovel.preco * 1.2).toString(),
+            precoMinimo: (imovel.preco * 0.8).toString(),
+            qtdBanheiros: imovel.qtdBanheiros.toString(),
+            qtdQuartos: imovel.qtdQuartos.toString(),
+            cidade: imovel.endereco.cidade,
+            bairro: imovel.endereco.bairro,
+            
+         }
+      );
+      const imoveis = response.imoveis;
+
+
+      return imoveis as ImovelSemelhanteModel[];
+   } catch (error) {
+      console.error("Erro ao buscar imóveis semelhantes:", error);
+   }
+}	

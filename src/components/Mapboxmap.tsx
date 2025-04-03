@@ -1,3 +1,4 @@
+"use client"; 
 import dynamic from 'next/dynamic';
 import { EnderecoMapBox } from "@/models/ModelEnrecoMapBox";
 import { LocalProximo } from "@/app/actions/geoCoding";
