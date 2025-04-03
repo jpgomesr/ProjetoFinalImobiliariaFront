@@ -27,12 +27,14 @@ interface FormularioPerfilProps {
       foto: string;
       role: string;
    };
+   token: string;
 }
 
 const FormularioPerfil = ({
    id,
    BASE_URL,
    dadosIniciais,
+   token,
 }: FormularioPerfilProps) => {
    const router = useRouter();
    const { showNotification } = useNotification();
@@ -96,7 +98,8 @@ const FormularioPerfil = ({
             "usuario",
             "novaImagem",
             data.imagemPerfil,
-            "PUT"
+            "PUT",
+            token
          );
 
          if (!response.ok) {
@@ -353,7 +356,7 @@ const FormularioPerfil = ({
 
                {/* Seção de Agendamentos */}
                <div className="mt-8 w-full sm:w-[90%] md:w-[95%] xl:w-[980px]">
-                  <AgendamentosPerfil id={id} role={dadosIniciais?.role || ""} />
+                  <AgendamentosPerfil id={id} role={dadosIniciais?.role || ""} token={token} />
                </div>
 
                <div className="flex justify-center gap-4 mt-4 xl:ml-96">

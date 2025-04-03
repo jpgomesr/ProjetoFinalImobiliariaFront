@@ -26,12 +26,13 @@ import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
          ativo: boolean;
       };
       imagemPerfil: File | null;
+      token?: string;
    }
    
    export async function salvarUsuario(props: salvarUsuarioProps) {
       console.log("a")
 
-      const { usuario, imagemPerfil } = props;
+      const { usuario, imagemPerfil, token } = props;
 
       console.log("usuario recebido" + usuario)
 
@@ -52,7 +53,8 @@ import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
             "usuario",
             "file",
             props.imagemPerfil,
-            "POST"
+            "POST",
+            token || ""
          );
    
          const data = await response.json()

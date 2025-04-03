@@ -21,7 +21,7 @@ const Page = async ({ params }: PageProps) => {
    if (session.user.id !== id) {
       redirect("/");
    }
-
+   
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -44,6 +44,7 @@ const Page = async ({ params }: PageProps) => {
                      id={id}
                      BASE_URL={BASE_URL}
                      dadosIniciais={dadosIniciais}
+                     token={session.accessToken || ""}
                   />
                </FundoBrancoPadrao>
             </SubLayoutPaginasCRUD>

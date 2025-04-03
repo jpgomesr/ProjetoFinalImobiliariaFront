@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import ListFiltroPadrao from "@/components/ListFIltroPadrao";
+import ListFiltroPadrao from "@/components/ListFiltroPadrao";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import InputsPergunta from "@/components/componentes_perguntas_frequentes/InputsPergunta";
-import ModelPergunta, { TipoPerguntaEnum } from "@/models/ModelPergunta";
+import ModelPergunta from "@/models/ModelPergunta";
 import { TipoPergunta } from "@/models/Enum/TipoPerguntaEnum";
 import { enviarPergunta } from "@/app/perguntas-frequentes/action";
 import { useNotification } from "@/context/NotificationContext";
@@ -23,7 +23,7 @@ const FormPerguntas = ({ onSuccess }: FormPerguntasProps) => {
    const searchParams = useSearchParams();
    const opcaoSelecionada = searchParams.get(
       "opcao"
-   ) as TipoPerguntaEnum | null;
+   ) as TipoPergunta | null;
    const { showNotification } = useNotification();
 
    const [pergunta, setPergunta] = useState<ModelPergunta>({

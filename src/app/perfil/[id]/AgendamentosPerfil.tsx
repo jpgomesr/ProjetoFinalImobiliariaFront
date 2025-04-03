@@ -10,9 +10,10 @@ import Link from "next/link";
 interface AgendamentosPerfilProps {
   id: string;
   role: string;
+  token: string;
 }
 
-export default function AgendamentosPerfil({ id, role }: AgendamentosPerfilProps) {
+export default function AgendamentosPerfil({ id, role, token }: AgendamentosPerfilProps) {
   const [agendamentos, setAgendamentos] = useState<ModelAgendamento[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -76,6 +77,7 @@ export default function AgendamentosPerfil({ id, role }: AgendamentosPerfilProps
                     status={agendamento.status}
                     localizacao={`${agendamento.endereco.cidade} - ${agendamento.endereco.bairro}`}
                     endereco={`${agendamento.endereco.rua}, ${agendamento.endereco.numeroCasaPredio}`}
+                    token={token}
                  />
               ))}
            </div>

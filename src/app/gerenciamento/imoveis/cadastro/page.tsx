@@ -20,7 +20,7 @@ export default async function Page() {
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
-            <FormularioCadastroImovel />
+            <FormularioCadastroImovel token={session.accessToken || ""} />
          </SubLayoutPaginasCRUD>
       </Layout>
    );

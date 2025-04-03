@@ -65,7 +65,7 @@ const Page = async ({ params }: PageProps) => {
                   titulo="Edição de imóvel"
                   className={`w-full`}
                >
-                  <Formulario imovel={imovel} />
+                  <Formulario imovel={imovel} token={session.accessToken || ""} />
                </FundoBrancoPadrao>
             </Suspense>
          </SubLayoutPaginasCRUD>

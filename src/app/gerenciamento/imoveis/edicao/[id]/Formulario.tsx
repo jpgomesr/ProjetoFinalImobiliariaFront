@@ -24,9 +24,10 @@ import { ModelProprietarioList } from "@/models/ModelProprietarioList";
 
 interface FormularioProps {
    imovel: ModelImovelGet;
+   token: string;
 }
 
-const Formulario = ({ imovel }: FormularioProps) => {
+const Formulario = ({ imovel, token }: FormularioProps) => {
    const router = useRouter();
    const proprietarioModel: ModelProprietarioList[] = [];
    const corretoresModel: ModelCorretor[] = [];
@@ -110,8 +111,6 @@ const Formulario = ({ imovel }: FormularioProps) => {
    }, []);
 
    const preencherFormulario = (imovel: ModelImovelGet) => {
-      console.log(imovel.proprietario);
-      console.log(imovel.corretores);
 
       setValue("id", imovel.id.toString());
       setValue("titulo", imovel.titulo);
@@ -817,6 +816,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
             <div className="flex flex-col gap-4">
                <div className="flex flex-row gap-2">
                   <SearchSelect
+                     token={token}
                      register={register("proprietario")}
                      mensagemErro={errors.proprietario?.message}
                      title="Proprietário"
@@ -832,6 +832,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
                      isSingle
                   />
                   <SearchSelect
+                     token={token}
                      register={register("corretores")}
                      mensagemErro={errors.corretores?.message}
                      title="Corretores"
