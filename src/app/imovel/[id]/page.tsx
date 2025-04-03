@@ -1,26 +1,27 @@
-
 import Layout from "@/components/layout/LayoutPadrao";
-import { Heart, Share2 } from "lucide-react";
-import dynamic from "next/dynamic";
+import {Heart} from "lucide-react";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { EnderecoMapBox } from "@/models/ModelEnrecoMapBox";
 import GaleriaImagens from "@/components/galeria/GaleriaImagens";
 import Image from "next/image";
 import Link from "next/link";
-import LayoutPadraoClient from "@/components/layout/LayoutPadraoClient";
 import CardImovel from "@/components/card/CardImovel";
 import {
-   ModelImovelGetId,
-   ImovelSemelhanteModel,
-} from "@/models/ModelImovelGet";
-import { buscarImoveisSemelhantes, buscarImovelPorIdPaginaImovel } from "@/Functions/imovel/buscaImovel";
+   buscarIdsImoveis,
+   buscarImoveisSemelhantes,
+   buscarImovelPorIdPaginaImovel,
+} from "@/Functions/imovel/buscaImovel";
 import Share from "@/components/Share";
 import MapboxMap from "@/components/Mapboxmap";
+import ExibirCorretores from "@/components/componentes_sobre_nos/ExibirCorretores";
 
 interface PageProps {
    params: Promise<{
       id: string;
    }>;
+}
+export async function generateStaticParams() {
+   const ids = await buscarIdsImoveis();
+   return ids.map((id) => ({ id: id.toString() }));
 }
 
 const Page = async ({ params }: PageProps) => {
@@ -32,24 +33,18 @@ const Page = async ({ params }: PageProps) => {
    const paramsResolvidos = await params;
 
    const { id } = paramsResolvidos;
-   const imovel =  await buscarImovelPorIdPaginaImovel(id);
-   const imoveisSemelhantes = await buscarImoveisSemelhantes(imovel);
-
-  
-
-
+   const imovel = await buscarImovelPorIdPaginaImovel(id, 60);
+   const imoveisSemelhantes = await buscarImoveisSemelhantes(imovel, 60);
 
    if (!imovel) {
       return <p>Imóvel não encontrado.</p>;
    }
 
    return (
-      <LayoutPadraoClient className="bg-begeClaroPadrao py-8">
+      <Layout className="bg-begeClaroPadrao py-8">
          <div className="flex flex-col items-center w-full gap-1 md:flex-row md:px-8 md:items-start">
             <div className="w-11/12 lg:ml-24 md:ml-20">
-               <GaleriaImagens
-                  imagens={imovel.imagens}
-               />
+               <GaleriaImagens imagens={imovel.imagens} />
             </div>
 
             {/* Textos alinhados com as imagens */}
@@ -92,7 +87,7 @@ const Page = async ({ params }: PageProps) => {
                      </Link>
                   </button>
                   <div className="mt-1 flex gap-3 relative">
-                     <Share/>
+                     <Share />
                      <Heart />
                   </div>
                </div>
@@ -115,11 +110,12 @@ const Page = async ({ params }: PageProps) => {
          <h2 className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl font-semibold flex justify-center items-center mx-auto mt-8 mb-8">
             Selecione um de nossos corretores e tenha uma conversa via chat
          </h2>
-         {/* Remover temporariamente até implementar o ExibirCorretores*/}
-         {/* <ExibirCorretores corretores={imovel.corretores.map(corretor => ({
-            ...corretor,
-            agendamentos: 0 // Changed from empty array to number to match ExibirCorretor type
-         }))} /> */}
+         <ExibirCorretores
+            corretores={imovel.corretores.map((corretor) => ({
+               ...corretor,
+               agendamentos: 0, // Changed from empty array to number to match ExibirCorretor type
+            }))}
+         />
          <h2 className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl font-semibold flex justify-center items-center mx-auto mt-8 mb-8">
             Converse conosco via WhatsApp
          </h2>
@@ -156,7 +152,7 @@ const Page = async ({ params }: PageProps) => {
                </div>
             </div>
          )}
-      </LayoutPadraoClient>
+      </Layout>
    );
 };
 

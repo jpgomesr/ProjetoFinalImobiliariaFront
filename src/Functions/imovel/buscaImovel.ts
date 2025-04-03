@@ -189,9 +189,11 @@ export const buscarImovelPorId = async (
    return data as ModelImovelGet;
 };
 export const buscarImovelPorIdPaginaImovel = async (
-   id: string | number
+   id: string | number, revalidate?: number
 ): Promise<ModelImovelGetId> => {
-   const response = await fetch(`${BASE_URL}/imoveis/${id}`);
+   const response = await fetch(`${BASE_URL}/imoveis/${id}`, {
+      next: revalidate ? { revalidate: revalidate } : undefined
+   });
 
    const data = await response.json(); 
 
@@ -216,7 +218,7 @@ export const buscarIdsImoveisFavoritados = async (userId: string, token: string)
    return data as number[]
 }
 
-export const buscarImoveisSemelhantes = async (imovel : ModelImovelGetId) => {
+export const buscarImoveisSemelhantes = async (imovel : ModelImovelGetId, revalidate?: number) => {
    try {
       const response = await buscarTodosImoveis(
          {
@@ -227,13 +229,16 @@ export const buscarImoveisSemelhantes = async (imovel : ModelImovelGetId) => {
             qtdQuartos: imovel.qtdQuartos.toString(),
             cidade: imovel.endereco.cidade,
             bairro: imovel.endereco.bairro,
-            
+            revalidate: revalidate
          }
       );
       const imoveis = response.imoveis;
+      if(imoveis.length === 0){
+         return []
+      }
+      const imoveisSemelhantes = imoveis.filter(imovel => imovel.id !== imovel.id)
 
-
-      return imoveis as ImovelSemelhanteModel[];
+      return imoveisSemelhantes as ImovelSemelhanteModel[];
    } catch (error) {
       console.error("Erro ao buscar imóveis semelhantes:", error);
    }
