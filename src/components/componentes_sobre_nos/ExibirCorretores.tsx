@@ -19,8 +19,9 @@ const CorretoresContent = (props: CardCorretorProps) => {
 
    const handleCreateChat = async (corretor: ModelExibirCorretor) => {
       if (!idUsuario) {
-         console.error("Usuário não logado");
-         router.push("/login");
+         // Usar encodeURIComponent para garantir que a URL seja codificada corretamente
+         const currentPath = encodeURIComponent(window.location.pathname);
+         router.push(`/api/auth/signin?callbackUrl=${currentPath}`);
          return;
       }
 

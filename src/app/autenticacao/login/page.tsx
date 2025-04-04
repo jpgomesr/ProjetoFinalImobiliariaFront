@@ -7,12 +7,20 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { redirect } from "next/navigation";
 
-const page = async () => {
+// Definir o tipo de parâmetros que a página pode receber
+interface PageProps {
+   searchParams: {
+      callbackUrl?: string;
+   };
+}
 
+const page = async ({ searchParams }: PageProps) => {
    const session = await getServerSession(authOptions);
    if (session) {
-      redirect("/");
+      // Se tiver callbackUrl, redireciona para lá, senão vai para homepage
+      redirect(searchParams.callbackUrl || "/");
    }
+
    return (
       <>
          <div className="absolute md:top-8 md:left-8 top-4 left-4">
@@ -30,7 +38,7 @@ const page = async () => {
             className="h-screen w-screen flex flex-row justify-center items-center gap-32 bg-gradient-to-b 
                     from-begeEscuroPadrao to-white px-2"
          >
-            <LoginForm />
+            <LoginForm callbackUrl={searchParams.callbackUrl} />
             <Image
                src={"/logoHavVermelhoCEscrita.svg"}
                alt="Logo Hav Vermelho Com Escrita"
