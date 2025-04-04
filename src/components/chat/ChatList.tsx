@@ -178,8 +178,8 @@ export default function ChatList(props: ChatListProps) {
 
    if (loading) {
       return (
-         <div className="flex flex-col h-full bg-[#E8E1D9] rounded-lg md:rounded-r-none md:rounded-l-lg">
-            <div className="py-3 bg-[#6D2639] text-white text-center rounded-t-lg md:rounded-tr-none md:rounded-tl-lg">
+         <div className="flex flex-col h-full bg-begeClaroPadrao rounded-lg md:rounded-r-none md:rounded-l-lg">
+            <div className="py-3 bg-havprincipal text-white text-center rounded-t-lg md:rounded-tr-none md:rounded-tl-lg">
                <h2 className="font-bold text-xl">Chat</h2>
             </div>
             <div className="flex items-center justify-center h-full">
@@ -190,8 +190,8 @@ export default function ChatList(props: ChatListProps) {
    }
 
    return (
-      <div className="flex flex-col h-full bg-[#E8E1D9] rounded-lg md:rounded-l-lg">
-         <div className="py-3 bg-[#6D2639] text-white text-center rounded-t-lg md:rounded-tr-none md:rounded-tl-lg">
+      <div className="flex flex-col h-full bg-begeClaroPadrao rounded-lg md:rounded-l-lg">
+         <div className="py-3 bg-havprincipal text-white text-center rounded-t-lg md:rounded-tr-none md:rounded-tl-lg">
             <h2 className="font-bold text-xl">Chat</h2>
          </div>
          <div className="p-2">

@@ -1,8 +1,7 @@
-"use client";
-
 import dynamic from 'next/dynamic';
 import { EnderecoMapBox } from "@/models/ModelEnrecoMapBox";
 import { LocalProximo } from "@/app/actions/geoCoding";
+
 
 // Importação dinâmica do componente cliente para evitar problemas de SSR
 const MapboxMapClient = dynamic(() => import('./MapboxMapClient'), {
@@ -15,18 +14,19 @@ const MapboxMapClient = dynamic(() => import('./MapboxMapClient'), {
 });
 
 interface MapboxMapProps {
-  endereco: EnderecoMapBox;
-  onLocaisProximosLoad?: (locais: LocalProximo[]) => void;
-  detalhesImovel: {
-    tamanho: string;
-    qtdQuartos: number;
-    qtdGaragens: number;
-    qtdBanheiros: number;
-    qtdPiscina: number;
-    qtdChurrasqueira: number;
-  };
+   endereco: EnderecoMapBox;
+   onLocaisProximosLoad?: (locais: LocalProximo[]) => void;
+   detalhesImovel: {
+      tamanho: string;
+      qtdQuartos: number;
+      qtdGaragens: number;
+      qtdBanheiros: number;
+      qtdPiscina: number;
+      qtdChurrasqueira: number;
+   };
 }
 
 export default function MapboxMap(props: MapboxMapProps) {
   return <MapboxMapClient {...props} />;
 }
+

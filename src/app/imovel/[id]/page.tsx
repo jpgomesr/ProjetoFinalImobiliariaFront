@@ -1,5 +1,5 @@
 import Layout from "@/components/layout/LayoutPadrao";
-import {Heart} from "lucide-react";
+import { Heart } from "lucide-react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import GaleriaImagens from "@/components/galeria/GaleriaImagens";
 import Image from "next/image";

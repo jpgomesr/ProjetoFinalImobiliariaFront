@@ -249,7 +249,7 @@ export const buscarImoveisSemelhantes = async (imovel : ModelImovelGetId, revali
 
       const imoveisSemelhantes = imoveis.filter(imovelFiltrado => imovelFiltrado.id !== imovel.id)
 
-      return imoveisSemelhantes as ImovelSemelhanteModel[];
+      return imoveisSemelhantes as ModelImovelGet[];
    } catch (error) {
       console.error("Erro ao buscar imóveis semelhantes:", error);
    }

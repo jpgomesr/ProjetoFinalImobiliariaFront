@@ -66,7 +66,9 @@ const PerfilDropdown = ({ foto, id, nome }: PerfilDropdownProps) => {
                </Link>
                <button
                   onClick={() => {
-                     signOut({ callbackUrl: "/" });
+                     signOut({
+                        callbackUrl: `/api/auth/signin?callbackUrl=${window.location.pathname}`,
+                     });
                      setIsOpen(false);
                   }}
                   className="block w-full text-left px-4 py-2 text-sm text-havprincipal hover:bg-gray-100"
