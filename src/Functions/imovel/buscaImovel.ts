@@ -36,11 +36,16 @@ export interface parametrosBuscaImovel {
     condicoesEspeciais?: string,
     revalidate?: number,
     idUsuario?: string,
+    noUseSession?: string,
+    cache?: RequestCache
+
 }
 
 
 export const buscarTodosImoveis = async (
-   parametros? : parametrosBuscaImovel
+   parametros? : parametrosBuscaImovel,
+  
+
 ): Promise<retornoGetImovel> => {
     const params = new URLSearchParams({
         page: parametros?.paginaAtual?.toString() || '', 
@@ -60,20 +65,24 @@ export const buscarTodosImoveis = async (
         condicoesEspeciais: parametros?.condicoesEspeciais === 'true' ? 'true' : 'false',
         destaque: parametros?.destaque === 'true' ? 'true' : 'false',
         idUsuario: parametros?.idUsuario || '',
-        sort: parametros?.sort || ''
+        sort: parametros?.sort || '',
+  
     });
 
     const session = await getServerSession(authOptions);
-      
+  
     try {
         const responseImovelRequest = await fetch(
             `${BASE_URL}/imoveis?${params.toString()}`,
             {
                 method: 'GET',
-                cache: 'no-store',
+                cache: parametros?.cache,
                 headers: {
                     'Content-Type': 'application/json',
                     ...(session?.accessToken ? { 'Authorization': `Bearer ${session.accessToken}` } : {})
+                },
+                next: {
+                    revalidate: parametros?.revalidate || 0          
                 }
             }
         );  
@@ -220,7 +229,7 @@ export const buscarIdsImoveisFavoritados = async (userId: string, token: string)
 
 export const buscarImoveisSemelhantes = async (imovel : ModelImovelGetId, revalidate?: number) => {
    try {
-      const response = await buscarTodosImoveis(
+      const {imoveis} = await buscarTodosImoveis(
          {
             ativo: "true",
             precoMaximo: (imovel.preco * 1.2).toString(),
@@ -229,14 +238,16 @@ export const buscarImoveisSemelhantes = async (imovel : ModelImovelGetId, revali
             qtdQuartos: imovel.qtdQuartos.toString(),
             cidade: imovel.endereco.cidade,
             bairro: imovel.endereco.bairro,
-            revalidate: revalidate
+            revalidate: revalidate,
+            noUseSession: 'true',
+            cache: 'force-cache'
          }
       );
-      const imoveis = response.imoveis;
       if(imoveis.length === 0){
          return []
       }
-      const imoveisSemelhantes = imoveis.filter(imovel => imovel.id !== imovel.id)
+
+      const imoveisSemelhantes = imoveis.filter(imovelFiltrado => imovelFiltrado.id !== imovel.id)
 
       return imoveisSemelhantes as ModelImovelGet[];
    } catch (error) {

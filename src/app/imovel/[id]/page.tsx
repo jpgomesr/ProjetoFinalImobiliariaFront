@@ -13,6 +13,7 @@ import {
 import Share from "@/components/Share";
 import MapboxMap from "@/components/Mapboxmap";
 import ExibirCorretores from "@/components/componentes_sobre_nos/ExibirCorretores";
+import { ModelImovelGet } from "@/models/ModelImovelGet";
 
 interface PageProps {
    params: Promise<{
@@ -34,7 +35,10 @@ const Page = async ({ params }: PageProps) => {
 
    const { id } = paramsResolvidos;
    const imovel = await buscarImovelPorIdPaginaImovel(id, 60);
-   const imoveisSemelhantes = await buscarImoveisSemelhantes(imovel, 60);
+
+
+      const imoveisSemelhantes : any  = await buscarImoveisSemelhantes(imovel, 60) ;
+   
 
    if (!imovel) {
       return <p>Imóvel não encontrado.</p>;
@@ -47,7 +51,6 @@ const Page = async ({ params }: PageProps) => {
                <GaleriaImagens imagens={imovel.imagens} />
             </div>
 
-            {/* Textos alinhados com as imagens */}
             <div className="w-9/12 font-inter text-havprincipal mt-3 md:mt-0 md:ml-24 lg:ml-0">
                <p className="font-medium text-sm md:text-xl">À venda por</p>
                {imovel.precoPromocional ? (
@@ -143,10 +146,10 @@ const Page = async ({ params }: PageProps) => {
                   Imóveis Semelhantes
                </h2>
                <div className="flex flex-row gap-4 overflow-x-auto pb-4 hide-scrollbar">
-                  {imoveisSemelhantes.map((imovelSemelhante) => (
+                  {imoveisSemelhantes.map((imovelSemelhante: any) => (
                      <CardImovel
                         key={imovelSemelhante.id}
-                        imovel={imovelSemelhante as any}
+                        imovel={imovelSemelhante}
                      />
                   ))}
                </div>

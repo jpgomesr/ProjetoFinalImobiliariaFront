@@ -121,6 +121,7 @@ export async function salvarImovel(props: salvarImovelProps) {
 
       const imovelSalvo: ModelImovelGet = await data;
       revalidatePath(`/gerenciamento/imoveis/edicao/${imovelSalvo.id}`);
+      revalidatePath(`/imovel/${imovelSalvo.id}`);
 
       return await data;
    } catch (error) {

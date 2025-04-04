@@ -1,9 +1,17 @@
-import dynamic from "next/dynamic";
+import dynamic from 'next/dynamic';
 import { EnderecoMapBox } from "@/models/ModelEnrecoMapBox";
 import { LocalProximo } from "@/app/actions/geoCoding";
-import MapboxMapClient from "./MapboxMapClient";
+
 
 // Importação dinâmica do componente cliente para evitar problemas de SSR
+const MapboxMapClient = dynamic(() => import('./MapboxMapClient'), {
+  ssr: true,
+  loading: () => (
+    <div className="w-full h-[350px] bg-gray-100 animate-pulse flex items-center justify-center">
+      <p className="text-gray-500">Carregando mapa...</p>
+    </div>
+  ),
+});
 
 interface MapboxMapProps {
    endereco: EnderecoMapBox;
@@ -19,5 +27,6 @@ interface MapboxMapProps {
 }
 
 export default function MapboxMap(props: MapboxMapProps) {
-   return <MapboxMapClient {...props} />;
+  return <MapboxMapClient {...props} />;
 }
+
