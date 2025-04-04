@@ -1,5 +1,6 @@
 import { ModelAgendamentoPost } from "@/models/ModelAgendamentoPost";
 import { ErroResposta } from "@/models/ErroResposta";
+import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export interface HorarioDisponivel {
@@ -12,14 +13,15 @@ export interface HorarioDisponivel {
 
 export const buscarHorariosDisponiveis = async (
    data: string,
-   idImovel: string
+   idImovel: string,
+   token: string
 ): Promise<HorarioDisponivel[]> => {
    try {
       console.log("teste");
-      const response = await fetch(
+      const response = await useFetchComAutorizacaoComToken(
          `${BASE_URL}/corretores/horarios/${idImovel}?dia=${
             data.split("-")[2]
-         }&mes=${data.split("-")[1]}`
+         }&mes=${data.split("-")[1]}`,{}, token
       );
 
       if (!response.ok) {
@@ -34,15 +36,15 @@ export const buscarHorariosDisponiveis = async (
    }
 };
 
-export const salvarAgendamento = async (agendamento: ModelAgendamentoPost) => {
+export const salvarAgendamento = async (agendamento: ModelAgendamentoPost, token: string) => {
    try {
-      const response = await fetch(`${BASE_URL}/agendamentos`, {
+      const response = await useFetchComAutorizacaoComToken(`${BASE_URL}/agendamentos`, {
          method: "POST",
          headers: {
             "Content-Type": "application/json",
          },
          body: JSON.stringify(agendamento)
-      });
+      }, token);
 
       if(response.ok){
          console.log(response.status);

@@ -15,9 +15,10 @@ import {
 interface AgendamentoFormProps {
    id: string;
    idUsuario: number | undefined;
+   token: string;
 }
 
-const AgendamentoForm = ({ id, idUsuario }: AgendamentoFormProps) => {
+const    AgendamentoForm = ({ id, idUsuario, token }: AgendamentoFormProps) => {
    const [horarioSelecionado, setHorarioSelecionado] =
       useState<HorarioDisponivel | null>(null);
    const [mostrarModal, setMostrarModal] = useState(false);
@@ -37,7 +38,7 @@ const AgendamentoForm = ({ id, idUsuario }: AgendamentoFormProps) => {
 
       try {
          const dataFormatada = format(data, "yyyy-MM-dd");
-         const horarios = await buscarHorariosDisponiveis(dataFormatada, id);
+         const horarios = await buscarHorariosDisponiveis(dataFormatada, id, token);
          setHorariosDisponiveis(horarios);
       } catch (error) {
          console.error("Erro ao buscar horários:", error);
@@ -128,6 +129,7 @@ const AgendamentoForm = ({ id, idUsuario }: AgendamentoFormProps) => {
                dataFormatadaCapitalizada={dataFormatadaCapitalizada}
                horarioSelecionado={horarioSelecionado.dataHora}
                onClose={() => setMostrarModal(false)}
+               token={token}
             />
          )}
       </>

@@ -15,6 +15,7 @@ interface ModalAgendamentoProps {
    idImovel: number;
    onClose: () => void;
    idUsuario: string;
+   token: string;
 }
 
 const ModalAgendamento = ({
@@ -24,6 +25,7 @@ const ModalAgendamento = ({
    onClose,
    idUsuario,
    idCorretor,
+   token
 }: ModalAgendamentoProps) => {
    const { showNotification } = useNotification();
    const confirmarAgendamento = async () => {
@@ -33,7 +35,7 @@ const ModalAgendamento = ({
          idCorretor: idCorretor,
          idImovel,
          idUsuario: +idUsuario,
-      });
+      }, token);
       showNotification(response.mensagem || "Ocorreu um erro durante o agendamento");
       if(response.status === 201){
          redirect("/imovel/" + idImovel);
