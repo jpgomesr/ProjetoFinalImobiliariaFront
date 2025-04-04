@@ -47,7 +47,9 @@ const imovelSchema = z.object({
 export type ImovelEditPayload = z.infer<typeof imovelSchema>;
 
 // Função auxiliar para converter os dados do formulário para o formato esperado pela action
-export const formatarDadosFormulario = async (data: any): Promise<ImovelEditPayload> => {
+export const formatarDadosFormulario = async (
+   data: any
+): Promise<ImovelEditPayload> => {
    return {
       id: data.id?.toString(),
       titulo: data.titulo,

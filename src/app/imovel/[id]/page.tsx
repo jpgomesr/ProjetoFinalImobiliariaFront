@@ -37,8 +37,7 @@ const Page = async ({ params }: PageProps) => {
    const imovel = await buscarImovelPorIdPaginaImovel(id, 60);
 
 
-      const imoveisSemelhantes : any  = buscarImoveisSemelhantes(imovel, 60) ;
- 
+      const imoveisSemelhantes : any  = await buscarImoveisSemelhantes(imovel, 60) ;
    
 
    if (!imovel) {

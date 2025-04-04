@@ -246,6 +246,7 @@ export const buscarImoveisSemelhantes = async (imovel : ModelImovelGetId, revali
       if(imoveis.length === 0){
          return []
       }
+
       const imoveisSemelhantes = imoveis.filter(imovelFiltrado => imovelFiltrado.id !== imovel.id)
 
       return imoveisSemelhantes as ImovelSemelhanteModel[];
