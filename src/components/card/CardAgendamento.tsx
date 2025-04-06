@@ -6,13 +6,20 @@ import { useState } from "react";
 import ModalCofirmacao from "../ComponentesCrud/ModalConfirmacao";
 import { Roles } from "@/models/Enum/Roles";
 import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
+import ModalHorariosAgendamento from "../agendamentos/ModalHorariosAgendamento";
 interface CardReservaProps {
    id: number;
    urlImagem: string;
    horario: string;
    data: string;
-   corretor: string;
-   usuario?: string;
+   corretor: {
+      id: number;
+      nome: string;
+   };
+   usuario?: {
+      id: number;
+      nome: string;
+   };
    role: Roles;
    status: "PENDENTE" | "CONFIRMADO" | "CANCELADO";
    localizacao: string;
@@ -20,6 +27,7 @@ interface CardReservaProps {
    onConfirm?: () => void;
    onCancel?: () => void;
    token: string;
+   idImovel: number;
 }
 
 export default function CardReserva({
@@ -27,16 +35,17 @@ export default function CardReserva({
    horario = "16:00",
    data = "19/12/2024",
    status = "PENDENTE",
-   corretor = "João Pedro",
+   corretor,
    localizacao = "Vila Lenzi",
    endereco = "Rua Hermann Schulz 210",
    id = 0,
+   idImovel,
    role,
    usuario,
    token,
 }: CardReservaProps) {
    const [modalConfirmacao, setModalConfirmacao] = useState(false);
-
+   const [modalReagendar, setModalReagendar] = useState(false);
    const atualizarStatus = async (
       id: number,
       status: "PENDENTE" | "CONFIRMADO" | "CANCELADO"
@@ -104,7 +113,7 @@ export default function CardReserva({
                   <span className="font-semibold">Data:</span> {data}
                </p>
                <p>
-                     <span className="font-semibold">{role === Roles.CORRETOR ? "Cliente" : "Corretor"}:</span> {role === Roles.CORRETOR ? usuario : corretor}
+                     <span className="font-semibold">{role === Roles.CORRETOR ? "Cliente" : "Corretor"}:</span> {role === Roles.CORRETOR ? usuario?.nome : corretor.nome}
                </p>
                <p>   
                   <span className="font-semibold">Localização:</span>{" "}
@@ -124,7 +133,7 @@ export default function CardReserva({
             </button>
             ) : (
                <button
-                  onClick={() => setModalConfirmacao(true)}
+                  onClick={() => setModalReagendar(true)}
                   className="flex-1 py-2 px-4 bg-white text-havprincipal hover:bg-gray-100 border border-gray-300 rounded-md transition-colors duration-200 font-medium"
                >
                   Reagendar
@@ -146,6 +155,18 @@ export default function CardReserva({
                onConfirm={() => atualizarStatus(id, "CANCELADO")}
             />
          )}
+         {modalReagendar && (
+            <ModalHorariosAgendamento
+               isOpen={modalReagendar}
+               onClose={() => {
+                  setModalReagendar(false);;
+               }}
+               idImovel={idImovel}
+               token={token}
+               idUsuario={usuario?.id || 0} 
+               idAgendamento={id}
+            /> 
+         )} 
       </div>
    );
 }

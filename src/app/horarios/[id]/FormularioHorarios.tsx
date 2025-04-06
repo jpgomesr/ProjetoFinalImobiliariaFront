@@ -110,11 +110,12 @@ export default function FormularioHorarios({
 
    const confirmarDelecao = async () => {
       try {
-         const response = await fetch(
+         const response = await useFetchComAutorizacaoComToken(
             `${BASE_URL}/horarios/corretor/${idHorarioParaExcluir}`,
             {
                method: "DELETE",
-            }
+            },
+            token
          );
 
          if (!response.ok) throw new Error("Erro ao excluir horário");

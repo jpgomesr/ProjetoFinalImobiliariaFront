@@ -5,8 +5,9 @@ import { useNotification } from "@/context/NotificationContext";
 import ModelUsuario from "@/models/ModelUsuario";
 import { buscarUsuarioPorId } from "@/Functions/usuario/buscaUsuario";
 import { useEffect, useState } from "react";
-import { salvarAgendamento } from "@/Functions/agendamento/buscaHorarios";
+import { atualizarAgendamento, salvarAgendamento } from "@/Functions/agendamento/buscaHorarios";
 import { redirect } from "next/navigation";
+import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
 
 interface ModalAgendamentoProps {
    dataFormatadaCapitalizada: string;
@@ -16,6 +17,8 @@ interface ModalAgendamentoProps {
    onClose: () => void;
    idUsuario: string;
    token: string;
+   idAgendamento?: number;
+   method?: "POST" | "PUT";
 }
 
 const ModalAgendamento = ({
@@ -25,32 +28,48 @@ const ModalAgendamento = ({
    onClose,
    idUsuario,
    idCorretor,
-   token
+   token,
+   method = "POST",
+   idAgendamento
 }: ModalAgendamentoProps) => {
    const { showNotification } = useNotification();
+   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const confirmarAgendamento = async () => {
-      console.log(idUsuario, idCorretor, idImovel, horarioSelecionado);
-      const response = await salvarAgendamento({
-         dataHora: horarioSelecionado,
-         idCorretor: idCorretor,
-         idImovel,
-         idUsuario: +idUsuario,
+      if(method === "POST"){
+         const response = await salvarAgendamento({
+            dataHora: horarioSelecionado,
+            idCorretor: idCorretor,
+            idImovel,
+            idUsuario: +idUsuario,
       }, token);
       showNotification(response.mensagem || "Ocorreu um erro durante o agendamento");
       if(response.status === 201){
          redirect("/imovel/" + idImovel);
       }
+      } else if(method === "PUT"){
+      console.log(idAgendamento);
 
-      
+         const response = await atualizarAgendamento({
+            id: idAgendamento || 0,
+            dataHora: horarioSelecionado,
+            idCorretor: idCorretor,
+            idImovel,
+            idUsuario: +idUsuario,  
+         }, token);
+         showNotification(response.mensagem || "Ocorreu um erro durante o agendamento");
+         window.location.reload();
+      }
    };
    const [usuario, setUsuario] = useState<ModelUsuario>();
 
    useEffect(() => {
       const buscarUsuario = async () => {
-         const usuarioRequisicao: ModelUsuario = await buscarUsuarioPorId(
-            idCorretor.toString()
-         );
-         setUsuario(usuarioRequisicao);
+         const usuarioRequisicao = await useFetchComAutorizacaoComToken(`${BASE_URL}/usuarios/${idCorretor}`, {
+            method: "GET",
+         }, token);
+         const usuario = await usuarioRequisicao.json() as ModelUsuario;
+         setUsuario(usuario);   
+         
       };
 
       buscarUsuario();
@@ -92,7 +111,7 @@ const ModalAgendamento = ({
                Concluir
             </button>
          </div>
-      </div>
+      </div>   
    );
 };
 

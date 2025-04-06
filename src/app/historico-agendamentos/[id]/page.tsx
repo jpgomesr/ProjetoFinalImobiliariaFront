@@ -78,6 +78,8 @@ const page = async ({ params, searchParams }: PageProps) => {
 
    const { content: agendamentos, totalPages } = await fetchAgendamentos(session.user.role as Roles);
 
+
+
    return (
       <Layout className="my-0">
          <SubLayoutPaginasCRUD>
@@ -119,12 +121,19 @@ const page = async ({ params, searchParams }: PageProps) => {
                                  data={new Date(
                                     agendamento.horario
                                  ).toLocaleDateString("pt-BR")}
-                                 corretor={agendamento.nomeUsuario}
-                                 usuario={agendamento.nomeCorretor}
+                                 corretor={{
+                                    id: agendamento.usuario.id,
+                                    nome: agendamento.usuario.nome
+                                 }}
+                                 usuario={{
+                                    id: agendamento.corretor.id,
+                                    nome: agendamento.corretor.nome
+                                 }}
                                  status={agendamento.status}
                                  localizacao={`${agendamento.endereco.cidade} - ${agendamento.endereco.bairro}`}
                                  endereco={`${agendamento.endereco.rua}, ${agendamento.endereco.numeroCasaPredio}`}
                                  token={session.accessToken ?? ""}
+                                 idImovel={agendamento.idImovel}
                               />
                            )
                         )}
