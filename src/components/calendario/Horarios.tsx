@@ -27,7 +27,12 @@ const Horario = ({
               ? "opacity-50 cursor-not-allowed"
               : "hover:bg-havprincipal hover:text-begepadrao"
         }`}
-         onClick={onSelecionar}
+         onClick={(e) => {
+            e.preventDefault();
+            onSelecionar()
+            
+         }
+         }
          disabled={!disponivel}
       >
          {horario?.split('T')[1].slice(0, 5)}

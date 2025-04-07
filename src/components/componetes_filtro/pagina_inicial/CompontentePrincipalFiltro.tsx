@@ -294,7 +294,7 @@ const CompontentePrincipalFiltro = ({
 
             <div
                className="flex px-2 border-b mt-2 pb-1 w-full
-            md:border md:border-black md:p-3 md:items-center md:justify-start md:rounded-xl md:w-11/12
+            md:border md:border-gray-300 md:p-3 md:items-center md:justify-start md:rounded-xl md:w-11/12
             2xl:w-10/12"
             >
                <Search className="2xl:w-7 h-7" />
