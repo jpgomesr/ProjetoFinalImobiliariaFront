@@ -204,9 +204,19 @@ export const buscarImovelPorIdPaginaImovel = async (
       next: revalidate ? { revalidate: revalidate } : undefined
    });
 
-   const data = await response.json(); 
+   const imovel  = await response.json() as ModelImovelGetId; 
 
-   return data as ModelImovelGetId;
+
+   const session = await getServerSession(authOptions)
+
+   if(session?.user){
+      const idsImoveisFavoritados = await buscarIdsImoveisFavoritados(session?.user?.id || '', session?.accessToken ?? '');
+
+      imovel.favoritado = idsImoveisFavoritados.includes(imovel.id);
+   }
+
+
+   return imovel as ModelImovelGetId;
 };
 
 export const buscarIdsImoveis = async () : Promise<number[]> => {

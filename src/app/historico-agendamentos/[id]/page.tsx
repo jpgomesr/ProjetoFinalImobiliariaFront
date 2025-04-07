@@ -122,12 +122,12 @@ const page = async ({ params, searchParams }: PageProps) => {
                                     agendamento.horario
                                  ).toLocaleDateString("pt-BR")}
                                  corretor={{
-                                    id: agendamento.usuario.id,
-                                    nome: agendamento.usuario.nome
-                                 }}
-                                 usuario={{
                                     id: agendamento.corretor.id,
                                     nome: agendamento.corretor.nome
+                                 }}
+                                 usuario={{
+                                    id: agendamento.usuario.id,
+                                    nome: agendamento.usuario.nome
                                  }}
                                  status={agendamento.status}
                                  localizacao={`${agendamento.endereco.cidade} - ${agendamento.endereco.bairro}`}

@@ -43,14 +43,14 @@ export default function CardReserva({
    role,
    usuario,
    token,
-}: CardReservaProps) {
+} : CardReservaProps) {
+  
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const [modalConfirmacao, setModalConfirmacao] = useState(false);
    const [modalReagendar, setModalReagendar] = useState(false);
    const [agendamentoPassado, setAgendamentoPassado] = useState(false);
    
    useEffect(() => {
-      // Verifica se o agendamento já passou
       const dataHoraAgendamento = new Date(`${data.split('/').reverse().join('-')}T${horario}`);
       const agora = new Date();
       setAgendamentoPassado(dataHoraAgendamento < agora);

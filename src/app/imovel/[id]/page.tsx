@@ -13,8 +13,7 @@ import {
 import Share from "@/components/Share";
 import MapboxMap from "@/components/Mapboxmap";
 import ExibirCorretores from "@/components/componentes_sobre_nos/ExibirCorretores";
-import { ModelImovelGet } from "@/models/ModelImovelGet";
-
+import IntermediarioBotaoFavorito from "./IntermediarioBotaoFavorito";
 interface PageProps {
    params: Promise<{
       id: string;
@@ -35,6 +34,7 @@ const Page = async ({ params }: PageProps) => {
 
    const { id } = paramsResolvidos;
    const imovel = await buscarImovelPorIdPaginaImovel(id, 60);
+   console.log(imovel)
 
 
       const imoveisSemelhantes : any  = await buscarImoveisSemelhantes(imovel, 60) ;
@@ -91,7 +91,10 @@ const Page = async ({ params }: PageProps) => {
                   </button>
                   <div className="mt-1 flex gap-3 relative">
                      <Share />
-                     <Heart />
+                     <IntermediarioBotaoFavorito
+                        favoritado={imovel.favoritado}
+                        idImovel={imovel.id}
+                     />       
                   </div>
                </div>
             </div>
