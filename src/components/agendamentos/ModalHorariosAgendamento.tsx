@@ -163,13 +163,19 @@ export default function ModalHorariosCorretores({
             {/* Botões de ação */}
             <div className="p-4 border-t flex justify-center  space-x-3">
                <button
-                  onClick={onClose}
+                  onClick={(e) => {
+                     e.preventDefault();
+                     onClose()
+                  }}
                   className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                >
                   Cancelar
                </button>
                <button
-                  onClick={() => setModalConfirmar(true)}
+                  onClick={(e) => {
+                     e.preventDefault();
+                     setModalConfirmar(true)
+                  }}
                   disabled={!horarioSelecionado}
                   className={`px-4 py-2 rounded-md text-white ${
                      horarioSelecionado 

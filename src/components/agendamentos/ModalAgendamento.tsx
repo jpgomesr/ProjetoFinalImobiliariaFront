@@ -102,7 +102,8 @@ const ModalAgendamento = ({
             </div>
             <button
                className="mt-4 md:mt-6 lg:mt-8 bg-havprincipal text-white px-4 md:px-6 lg:px-8 py-2 md:py-3 lg:py-4 rounded-md md:text-lg lg:text-xl"
-               onClick={() => {
+               onClick={(e) => {
+                  e.preventDefault();
                   onClose();
                   confirmarAgendamento();
                   scrollToTop();

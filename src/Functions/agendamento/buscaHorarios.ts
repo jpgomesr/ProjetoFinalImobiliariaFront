@@ -58,6 +58,7 @@ export const salvarAgendamento = async (agendamento: ModelAgendamentoPost, token
 };
 export const atualizarAgendamento = async (agendamento: ModelAgendamentoPut, token: string) => {
    try {
+      console.log(agendamento);
       const response = await useFetchComAutorizacaoComToken(`${BASE_URL}/agendamentos`, {
          method: "PUT",
          headers: {
