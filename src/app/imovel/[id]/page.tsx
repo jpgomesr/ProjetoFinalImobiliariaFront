@@ -40,6 +40,13 @@ const Page = async ({ params }: PageProps) => {
       return <p>Imóvel não encontrado.</p>;
    }
 
+   const valorFormatado = (valor: number) => {
+      return valor.toLocaleString("pt-BR", {
+         style: "currency",
+         currency: "BRL",
+      });
+   };
+
    return (
       <Layout className="bg-begeClaroPadrao py-8">
          <div className="flex flex-col items-center w-full gap-1 md:flex-row md:px-8 md:items-start">
@@ -53,15 +60,15 @@ const Page = async ({ params }: PageProps) => {
                {imovel.precoPromocional ? (
                   <>
                      <h1 className="font-extrabold text-xl text-shadow md:text-3xl">
-                        R${imovel.precoPromocional}
+                        {valorFormatado(imovel.precoPromocional)}
                      </h1>
                      <p className="text-sm line-through opacity-75">
-                        R${imovel.preco}
+                        {valorFormatado(imovel.preco)}
                      </p>
                   </>
                ) : (
                   <h1 className="font-extrabold text-xl text-shadow md:text-3xl">
-                     R${imovel.preco}
+                     {valorFormatado(imovel.preco)}
                   </h1>
                )}
                <p className="font-semibold md:text-xl">{imovel.titulo}</p>
@@ -70,12 +77,14 @@ const Page = async ({ params }: PageProps) => {
                </p>
                {imovel.iptu && (
                   <p className="mt-2">
-                     <strong>IPTU:</strong> R${imovel.iptu}
+                     <strong>IPTU:</strong>{" "}
+                     {valorFormatado(Number(imovel.iptu))}
                   </p>
                )}
                {imovel.condominio && (
                   <p className="mt-2">
-                     <strong>Condominio:</strong> R${imovel.condominio}
+                     <strong>Condominio:</strong>{" "}
+                     {valorFormatado(Number(imovel.condominio))}
                   </p>
                )}
                <div className="flex gap-5 mt-2">
@@ -107,7 +116,10 @@ const Page = async ({ params }: PageProps) => {
             />
          </div>
 
-         <h2 className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl font-semibold flex justify-center items-center mx-auto mt-8 mb-8">
+         <h2
+            className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl 
+                        font-semibold flex justify-center items-center mx-auto mt-8 mb-8"
+         >
             Selecione um de nossos corretores e tenha uma conversa via chat
          </h2>
          <ExibirCorretores
@@ -116,7 +128,10 @@ const Page = async ({ params }: PageProps) => {
                agendamentos: 0, // Changed from empty array to number to match ExibirCorretor type
             }))}
          />
-         <h2 className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl font-semibold flex justify-center items-center mx-auto mt-8 mb-8">
+         <h2
+            className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl 
+                        font-semibold flex justify-center items-center mx-auto mt-8 mb-8"
+         >
             Converse conosco via WhatsApp
          </h2>
          <div className="flex justify-center items-center mb-8">

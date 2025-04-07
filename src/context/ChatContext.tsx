@@ -53,6 +53,7 @@ interface ChatContextType {
    addNewMessage: (chatId: number, message: ChatMessage) => void;
    forceUpdateChats: () => void;
    resetConnection: () => void;
+   token: string;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -76,6 +77,9 @@ export function ChatProvider({
    const subscriptions = useRef<Record<string, any>>({});
    const isInitialFetch = useRef(true);
    const chatIdsRef = useRef<Set<number>>(new Set());
+   const clientRef = useRef<Client | null>(null);
+
+   const token = session?.accessToken;
 
    // Função para forçar uma atualização dos chats
    const forceUpdateChats = useCallback(() => {
@@ -130,7 +134,7 @@ export function ChatProvider({
       if (!userId) {
          console.log("Não há usuário logado");
          return;
-      };
+      }
 
       try {
          console.log("Buscando lista de chats para o usuário:", userId);
@@ -139,10 +143,21 @@ export function ChatProvider({
             {
                headers: {
                   "Content-type": "application/json",
+                  Authorization: `Bearer ${token}`,
                },
                method: "GET",
             }
          );
+
+         if (!response.ok) {
+            console.error(
+               "Erro ao buscar chats:",
+               response.status,
+               response.statusText
+            );
+            return;
+         }
+
          const data = await response.json();
          const newChats = Array.isArray(data) ? data : [];
          console.log("Chats recebidos:", newChats.length);
@@ -219,6 +234,13 @@ export function ChatProvider({
 
    // Inicializar WebSocket uma vez
    useEffect(() => {
+      if (!userId || !userName) {
+         console.log("Usuário não autenticado, não inicializando WebSocket");
+         return;
+      }
+
+      console.log("Inicializando WebSocket para usuário:", userId);
+
       const socket = new SockJS(`${process.env.NEXT_PUBLIC_BASE_URL}/ws/chat`);
       const client = new Client({
          webSocketFactory: () => socket,
@@ -267,6 +289,7 @@ export function ChatProvider({
 
       client.activate();
       setStompClient(client);
+      clientRef.current = client;
 
       return () => {
          // Limpar todas as inscrições
@@ -285,7 +308,10 @@ export function ChatProvider({
 
    // Inscrever em novos chats quando a lista é atualizada
    useEffect(() => {
-      if (!stompClient || !stompClient.connected) return;
+      if (!stompClient || !stompClient.connected) {
+         console.log("Cliente STOMP não conectado, não inscrevendo em chats");
+         return;
+      }
 
       console.log(
          "Atualizando inscrições para chats:",
@@ -357,20 +383,15 @@ export function ChatProvider({
 
    // Buscar chats iniciais apenas uma vez
    useEffect(() => {
-      if (isInitialFetch.current) {
+      if (isInitialFetch.current && userId) {
+         console.log("Realizando busca inicial de chats");
          fetchChats();
          isInitialFetch.current = false;
       }
-   }, [fetchChats]);
+   }, [fetchChats, userId]);
 
    // Atualizar chats periodicamente para garantir sincronização
    useEffect(() => {
-      /*
-       * TODO: Implementar no backend:
-       * 1. Criar um endpoint que emite mensagens para '/topic/chat/global'
-       * 2. Publicar nesse tópico sempre que qualquer mensagem for enviada
-       * 3. Substituir este intervalo pela inscrição no tópico global:
-       */
       if (stompClient && stompClient.connected) {
          const globalSubscription = stompClient.subscribe(
             "/topic/chat/global",
@@ -391,7 +412,7 @@ export function ChatProvider({
             }
          };
       }
-   }, [fetchChats]);
+   }, [fetchChats, stompClient]);
 
    // Efeito para forçar atualização quando necessário
    useEffect(() => {
@@ -416,19 +437,19 @@ export function ChatProvider({
       subscriptions.current = {};
 
       // Desativar cliente se estiver conectado
-      if (stompClient?.connected) {
+      if (clientRef.current?.connected) {
          console.log("Desativando cliente WebSocket");
-         stompClient.deactivate();
+         clientRef.current.deactivate();
       }
 
       // Reativar a conexão após um delay maior
       setTimeout(() => {
-         if (stompClient && !stompClient.connected) {
+         if (clientRef.current && !clientRef.current.connected) {
             console.log("Reativando cliente WebSocket");
-            stompClient.activate();
+            clientRef.current.activate();
          }
-      }, 500); // Aumentado o delay para 500ms
-   }, [stompClient]);
+      }, 1000); // Aumentado o delay para 1000ms
+   }, []);
 
    const contextValue = {
       chats,
@@ -444,6 +465,7 @@ export function ChatProvider({
       addNewMessage,
       forceUpdateChats,
       resetConnection,
+      token,
    };
 
    return (

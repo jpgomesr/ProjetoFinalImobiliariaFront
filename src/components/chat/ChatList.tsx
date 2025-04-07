@@ -26,11 +26,11 @@ interface Chat {
    naoLido?: boolean;
 }
 
-interface ChatListProps {
+interface ChatListServerProps {
    onOpenChat: () => void;
 }
 
-export default function ChatList(props: ChatListProps) {
+export default function ChatListServer(props: ChatListServerProps) {
    const router = useRouter();
    const [search, setSearch] = useState("");
    const [loading, setLoading] = useState(true);
@@ -42,6 +42,7 @@ export default function ChatList(props: ChatListProps) {
       fetchChats,
       userId,
       resetConnection,
+      token,
    } = useChat();
 
    // Atualizar o estado local quando os chats do contexto mudarem
@@ -52,33 +53,37 @@ export default function ChatList(props: ChatListProps) {
 
    const handleContactClick = useCallback(
       async (chatId: number) => {
-         if (selectedChat === chatId) return;
+         if (chatId != selectedChat) {
+            try {
+               resetConnection();
+               setSelectedChat(chatId);
 
-         try {
-            resetConnection();
-            setSelectedChat(chatId);
+               await fetch(
+                  `${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chatId}/marcarLidas?idUsuario=${userId}`,
+                  {
+                     method: "POST",
+                     headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                     },
+                  }
+               );
 
-            await fetch(
-               `${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chatId}/marcarLidas?idUsuario=${userId}`,
-               {
-                  method: "POST",
-               }
-            );
+               setLocalChats((prevChats) =>
+                  prevChats.map((chat) =>
+                     chat.idChat === chatId ? { ...chat, naoLido: false } : chat
+                  )
+               );
 
-            setLocalChats((prevChats) =>
-               prevChats.map((chat) =>
-                  chat.idChat === chatId ? { ...chat, naoLido: false } : chat
-               )
-            );
+               await fetchChats();
 
-            await fetchChats();
-
-            // Navegação instantânea
-            props.onOpenChat();
-            router.replace(`/chat/?chat=${chatId}`);
-         } catch (error) {
-            console.error("Erro ao carregar chat:", error);
-            router.replace(`/chat/?chat=${chatId}`);
+               // Navegação instantânea
+               props.onOpenChat();
+               router.replace(`/chat/?chat=${chatId}`);
+            } catch (error) {
+               console.error("Erro ao carregar chat:", error);
+               router.replace(`/chat/?chat=${chatId}`);
+            }
          }
       },
       [
@@ -123,7 +128,11 @@ export default function ChatList(props: ChatListProps) {
    useEffect(() => {
       const loadChats = async () => {
          try {
+            console.log("Iniciando carregamento de chats...");
             await fetchChats();
+            console.log("Chats carregados com sucesso");
+         } catch (error) {
+            console.error("Erro ao carregar chats:", error);
          } finally {
             setLoading(false);
          }
@@ -138,9 +147,7 @@ export default function ChatList(props: ChatListProps) {
       }, 5000);
 
       return () => clearInterval(intervalId);
-
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, []);
+   }, [fetchChats]);
 
    // Filtrar e ordenar chats de forma otimizada
    const filteredChats = useMemo(() => {
