@@ -1,0 +1,64 @@
+{
+  "common": {
+    "search": "Search",
+    "searchPlaceholder": "Search here",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "back": "Back",
+    "clear": "Clear",
+    "select": "Select"
+  },
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "properties": "Properties",
+    "appointments": "Appointments"
+  },
+  "property": {
+    "title": "Title",
+    "price": "Price",
+    "address": "Address",
+    "description": "Description",
+    "bedrooms": "Bedrooms",
+    "bathrooms": "Bathrooms",
+    "garage": "Garage",
+    "area": "Area",
+    "type": "Property Type",
+    "status": "Status",
+    "forSale": "Buy",
+    "forRent": "Rent",
+    "filters": {
+      "title": "Filters",
+      "minPrice": "Min Price",
+      "maxPrice": "Max Price",
+      "minArea": "Min Area",
+      "maxArea": "Max Area",
+      "propertyType": "Property Type",
+      "bedrooms": "Number of Bedrooms",
+      "garage": "Number of Parking Spaces",
+      "search": "Search",
+      "clear": "Clear Filters",
+      "propertyDescription": "Property Description",
+      "city": "City",
+      "neighborhood": "Neighborhood",
+      "selectCity": "Select a city",
+      "selectNeighborhood": "Select a neighborhood",
+      "loading": "Loading..."
+    }
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "rememberMe": "Remember me"
+  }
+} 

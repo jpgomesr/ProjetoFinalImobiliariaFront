@@ -1,0 +1,60 @@
+{
+  "common": {
+    "search": "Buscar",
+    "searchPlaceholder": "Pesquise aqui",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "confirm": "Confirmar",
+    "back": "Voltar",
+    "clear": "Limpar",
+    "select": "Selecione"
+  },
+  "navigation": {
+    "home": "Página inicial",
+    "about": "Sobre nós",
+    "properties": "Imóveis",
+    "appointments": "Agendamentos"
+  },
+  "property": {
+    "title": "Título",
+    "price": "Preço",
+    "address": "Endereço",
+    "description": "Descrição",
+    "bedrooms": "Quartos",
+    "bathrooms": "Banheiros",
+    "garage": "Vagas",
+    "area": "Área",
+    "type": "Tipo de Imóvel",
+    "status": "Status",
+    "forSale": "Comprar",
+    "forRent": "Alugar",
+    "filters": {
+      "title": "Filtros",
+      "search": "Buscar",
+      "clear": "Limpar Filtros",
+      "minPrice": "Preço Mínimo",
+      "maxPrice": "Preço Máximo",
+      "minArea": "Área Mínima",
+      "maxArea": "Área Máxima",
+      "city": "Cidade",
+      "neighborhood": "Bairro",
+      "propertyType": "Tipo de Imóvel",
+      "propertyDescription": "Descrição do Imóvel",
+      "loading": "Carregando..."
+    }
+  },
+  "auth": {
+    "login": "Entrar",
+    "register": "Cadastrar",
+    "logout": "Sair",
+    "email": "E-mail",
+    "password": "Senha",
+    "forgotPassword": "Esqueceu a senha?",
+    "rememberMe": "Lembrar-me"
+  }
+} 

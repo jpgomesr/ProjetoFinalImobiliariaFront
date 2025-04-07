@@ -18,9 +18,10 @@ interface HeaderVermelhoProps {
    id?: string;
    foto?: string | null;
    nome?: string;
+   t: (key: string) => string; // <-- agora vem como prop
 }
 
-const HeaderVermelho = ({ role, id, foto, nome }: HeaderVermelhoProps) => {
+const HeaderVermelho = ({ role, id, foto, nome, t }: HeaderVermelhoProps) => {
    return (
       <div
          className="bg-havprincipal px-6 py-1
@@ -38,17 +39,17 @@ const HeaderVermelho = ({ role, id, foto, nome }: HeaderVermelhoProps) => {
             </Link>
             <Link href={"/"} className="flex justify-center">
                <button className="hidden md:block text-white md:text-base 2xl:text-xl font-montserrat font-light">
-                  Página inicial
+                  {t("navigation.home")}
                </button>
             </Link>
             <Link href={"/sobre-nos"} className="flex justify-center">
                <button className="hidden md:block text-white md:text-base 2xl:text-xl font-montserrat font-light">
-                  Sobre nós
+                  {t("navigation.about")}
                </button>
             </Link>
             <Link href={"/imoveis"} className="flex justify-center">
                <button className="hidden md:block text-white md:text-base 2xl:text-xl font-montserrat font-light">
-                  Imóveis
+                  {t("navigation.properties")}
                </button>
             </Link>
             <Link
@@ -56,7 +57,7 @@ const HeaderVermelho = ({ role, id, foto, nome }: HeaderVermelhoProps) => {
                className="flex justify-center"
             >
                <button className="hidden md:block text-white md:text-base 2xl:text-xl font-montserrat font-light">
-                  Agendamentos
+                  {t("navigation.appointments")}
                </button>
             </Link>
          </div>

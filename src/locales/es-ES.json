@@ -1,0 +1,60 @@
+{
+   "common": {
+      "search": "Buscar",
+      "searchPlaceholder": "Busca aquí",
+      "loading": "Cargando...",
+      "error": "Error",
+      "success": "Éxito",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "confirm": "Confirmar",
+      "back": "Volver",
+      "clear": "Limpiar",
+      "select": "Seleccionar"
+   },
+   "navigation": {
+      "home": "Página principal",
+      "about": "Sobre nosotros",
+      "properties": "Propiedades",
+      "appointments": "Citas"
+   },
+   "property": {
+      "title": "Título",
+      "price": "Precio",
+      "address": "Dirección",
+      "description": "Descripción",
+      "bedrooms": "Dormitorios",
+      "bathrooms": "Baños",
+      "garage": "Cochera",
+      "area": "Área",
+      "type": "Tipo de Propiedad",
+      "status": "Estado",
+      "forSale": "Comprar",
+      "forRent": "Alquilar",
+      "filters": {
+         "title": "Filtros",
+         "search": "Buscar",
+         "clear": "Limpiar Filtros",
+         "minPrice": "Precio Mínimo",
+         "maxPrice": "Precio Máximo",
+         "minArea": "Área Mínima",
+         "maxArea": "Área Máxima",
+         "city": "Ciudad",
+         "neighborhood": "Barrio",
+         "propertyType": "Tipo de Propiedad",
+         "propertyDescription": "Descripción de la Propiedad",
+         "loading": "Cargando..."
+      }
+   },
+   "auth": {
+      "login": "Iniciar sesión",
+      "register": "Registrarse",
+      "logout": "Cerrar sesión",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "rememberMe": "Recordarme"
+   }
+}
