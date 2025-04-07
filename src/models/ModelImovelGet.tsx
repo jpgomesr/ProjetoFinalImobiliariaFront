@@ -77,6 +77,7 @@ export interface ModelImovelGetId {
       foto: string;
    }[];
    endereco: EnderecoMapBox;
+   favoritado : boolean
 }
 
 export interface ImovelSemelhanteModel {

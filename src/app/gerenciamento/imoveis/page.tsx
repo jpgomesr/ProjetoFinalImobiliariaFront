@@ -70,6 +70,7 @@ const Page = async ({ searchParams }: PageProps) => {
          finalidade: params.finalidade,
          sort: params.sort,
          ativo: params.ativo,
+         cache: "no-store" 
       });
 
    

@@ -31,6 +31,7 @@ export default function FormularioHorarios({
    const [horariosAgrupados, setHorariosAgrupados] = useState<{
       [key: string]: Horario[];
    }>({});
+   console.log("horariosAgrupados",horariosAgrupados);
    console.log(id);
    const [modalConfirmacao, setModalConfirmacao] = useState(false);
    const [idHorarioParaExcluir, setIdHorarioParaExcluir] = useState<
@@ -110,11 +111,12 @@ export default function FormularioHorarios({
 
    const confirmarDelecao = async () => {
       try {
-         const response = await fetch(
+         const response = await useFetchComAutorizacaoComToken(
             `${BASE_URL}/horarios/corretor/${idHorarioParaExcluir}`,
             {
                method: "DELETE",
-            }
+            },
+            token
          );
 
          if (!response.ok) throw new Error("Erro ao excluir horário");
@@ -163,10 +165,12 @@ export default function FormularioHorarios({
             </div>
          </div>
 
-         {Object.entries(horariosAgrupados).map(([data, horarios]) => (
+         {Object.entries(horariosAgrupados).map(([data, horarios]) => {
+        
+            return (
             <div key={data} className="flex flex-col gap-4">
                <h3 className="text-lg font-semibold text-havprincipal">
-                  Dia {new Date(data).toLocaleDateString("pt-BR")}
+                  Dia {new Date(data + 'T00:00:00').toLocaleDateString("pt-BR")}
                </h3>
                <div className="flex flex-wrap gap-3">
                   {horarios.map((horario) => (
@@ -193,7 +197,8 @@ export default function FormularioHorarios({
                   ))}
                </div>
             </div>
-         ))}
+            )
+         })}
          <ModalConfirmacao
             isOpen={modalConfirmacao}
             onClose={() => setModalConfirmacao(false)}

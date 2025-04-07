@@ -51,16 +51,19 @@ const HeaderVermelho = ({ role, id, foto, nome }: HeaderVermelhoProps) => {
                   Imóveis
                </button>
             </Link>
-            <Link
-               href={id ? `/historico-agendamentos/${id}` : "/api/auth/signin"}
-               className="flex justify-center"
+            {(role === Roles.USUARIO || role === Roles.CORRETOR) && (
+               <Link
+                  href={id ? `/historico-agendamentos/${id}` : "/api/auth/signin"}
+                  className="flex justify-center"
             >
                <button className="hidden md:block text-white md:text-base 2xl:text-xl font-montserrat font-light">
                   Agendamentos
                </button>
             </Link>
+            )}
          </div>
          <div className="flex justify-center items-center gap-5 md:gap-10 2xl:gap-20">
+            <Notificacao />
             <Link href={id ? "/chat" : "/api/auth/signin"}>
                <button className="text-white">
                   <MessageCircleMore className="hidden md:block md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
@@ -76,12 +79,11 @@ const HeaderVermelho = ({ role, id, foto, nome }: HeaderVermelhoProps) => {
                   <Heart className="hidden md:block md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
                </button>
             </Link>
-            <Notificacao />
             {id ? (
                <PerfilDropdown foto={foto || undefined} id={id} nome={nome} />
             ) : (
                <Link href="/api/auth/signin">
-                  <button className="text-white hover:text-opacity-80 flex justify-center items-center">
+                  <button className="text-white hover:text-opacity-80">
                      <User className="w-6 h-6 md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
                   </button>
                </Link>

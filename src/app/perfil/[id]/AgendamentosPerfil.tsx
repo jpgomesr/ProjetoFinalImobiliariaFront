@@ -30,7 +30,7 @@ export default function AgendamentosPerfil({ id, role, token }: AgendamentosPerf
         if (!response.ok) {
           throw new Error("Erro ao buscar agendamentos");
         }
-        const data = await response.json();
+        const data = await response.json() as { content: ModelAgendamento[] };
         const agendamentosOrdenados = data.content.sort((a: ModelAgendamento, b: ModelAgendamento) => {
           return new Date(b.horario).getTime() - new Date(a.horario).getTime();
         }).slice(0, 3);
@@ -62,7 +62,7 @@ export default function AgendamentosPerfil({ id, role, token }: AgendamentosPerf
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-havprincipal"></div>
            </div>
         ) : agendamentos.length > 0 ? (
-           <div className="grid grid-cols-1 gap-4 px-4 sm:px-0 max-w-[400px] mx-auto sm:max-w-[450px]">
+           <div className="flex flex-wrap  justify-around gap-12">
               {agendamentos.map((agendamento) => (
                  <CardReserva
                     key={agendamento.id}
@@ -73,12 +73,13 @@ export default function AgendamentosPerfil({ id, role, token }: AgendamentosPerf
                     data={new Date(agendamento.horario).toLocaleDateString(
                        "pt-BR"
                     )}
-                    corretor={agendamento.nomeUsuario}
-                    usuario={agendamento.nomeCorretor}
+                    corretor={agendamento.corretor}
+                    usuario={agendamento.usuario}
                     status={agendamento.status}
                     localizacao={`${agendamento.endereco.cidade} - ${agendamento.endereco.bairro}`}
                     endereco={`${agendamento.endereco.rua}, ${agendamento.endereco.numeroCasaPredio}`}
                     token={token}
+                    idImovel={agendamento.idImovel}
                  />
               ))}
            </div>
