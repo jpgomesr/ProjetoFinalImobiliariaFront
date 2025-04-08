@@ -22,7 +22,7 @@ const page = () => {
             className="h-screen w-screen flex flex-row justify-center items-center gap-32 bg-gradient-to-b 
                     from-begeEscuroPadrao to-white px-2"
          >
-            <TrocaSenhaForm />
+            <TrocaSenhaForm/>
             <Image
                src={"/logoHavVermelhoCEscrita.svg"}
                alt="Logo Hav Vermelho Com Escrita"

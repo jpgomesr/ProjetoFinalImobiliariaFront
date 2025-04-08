@@ -1,5 +1,5 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
-import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
+import { fetchComAutorizacao, useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
 import { TipoImovelEnum } from "@/models/Enum/TipoImovelEnum";
 import { ModelImovelGet, ModelImovelGetId, ImovelSemelhanteModel } from "@/models/ModelImovelGet";
 import { getServerSession } from "next-auth";
@@ -72,14 +72,13 @@ export const buscarTodosImoveis = async (
     const session = await getServerSession(authOptions);
   
     try {
-        const responseImovelRequest = await fetch(
+        const responseImovelRequest = await fetchComAutorizacao(
             `${BASE_URL}/imoveis?${params.toString()}`,
             {
                 method: 'GET',
                 cache: parametros?.cache,
                 headers: {
                     'Content-Type': 'application/json',
-                    ...(session?.accessToken ? { 'Authorization': `Bearer ${session.accessToken}` } : {})
                 },
                 next: {
                     revalidate: parametros?.revalidate || 0          

@@ -144,9 +144,11 @@ const LoginForm = ({ callbackUrl }: LoginFormProps) => {
                         )}
                      </button>
                   </div>
-                  <span className="text-xs sm:text-sm font-light ml-2 font-montserrat">
-                     Esqueceu sua senha?
-                  </span>
+                  <Link href="/autenticacao/recuperacao">
+                     <span className="text-xs sm:text-sm font-light ml-2 font-montserrat">
+                        Esqueceu sua senha?
+                     </span>
+                  </Link>
                </div>
                <div className="flex justify-center items-center gap-3 sm:gap-4">
                   <button
