@@ -3,11 +3,8 @@ import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
 import ListaPerguntasFrequentes from "@/components/componentes_perguntas_frequentes/ListaPerguntasFrequentes";
 
-interface PageProps {
-   searchParams: { [key: string]: string | string[] | undefined };
-}
 
-const page = ({ searchParams }: PageProps) => {
+const page = () => {
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>

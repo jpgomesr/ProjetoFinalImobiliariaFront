@@ -153,7 +153,7 @@ const FormPerguntas = () => {
                   type="submit"
                   texto={isLoading ? "Enviando..." : "Enviar"}
                   className={`bg-havprincipal text-white w-[120px] whitespace-nowrap ${
-                     isLoading ? "opacity-50 cursor-not-allowed" : ""
+                     isLoading ? "opacity-50" : ""
                   }`}
                   disabled={isLoading}
                />

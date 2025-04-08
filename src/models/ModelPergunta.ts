@@ -1,4 +1,5 @@
 export default interface ModelPergunta {
+   id: string;
    titulo: string;
    tipoPergunta: string;
    email: string;

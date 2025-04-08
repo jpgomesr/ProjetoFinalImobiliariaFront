@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { buscarPerguntas } from "@/app/respostas-perguntas/action";
 import ModelPergunta from "@/models/ModelPergunta";
 import { useNotification } from "@/context/NotificationContext";
-import { TipoPergunta } from "@/models/Enum/TipoPerguntaEnum";
 import CardPergunta from "./CardPergunta";
 
 const ListaPerguntas = () => {
@@ -34,17 +33,16 @@ const ListaPerguntas = () => {
    }, []);
 
    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4">
+      <div className="flex flex-col gap-4 w-full max-w-3xl mx-auto">
          {isLoading ? (
-            <div className="col-span-2 text-center">Carregando...</div>
+            <div className="text-center py-4">Carregando...</div>
          ) : questions.length === 0 ? (
-            <div className="col-span-2 text-center">
-               Nenhuma pergunta encontrada
-            </div>
+            <div className="text-center py-4">Nenhuma pergunta encontrada</div>
          ) : (
             questions.map((question, key) => (
                <CardPergunta
                   key={key}
+                  id={question.id}
                   tipoPergunta={
                      question.tipoPergunta === "LOGIN_OU_CADASTRO"
                         ? "Login ou Cadastro"
@@ -54,6 +52,7 @@ const ListaPerguntas = () => {
                         ? "Promoções"
                         : "Outros"
                   }
+                  titulo={question.titulo}
                   email={question.email}
                   mensagem={question.mensagem}
                   data={question.data}
