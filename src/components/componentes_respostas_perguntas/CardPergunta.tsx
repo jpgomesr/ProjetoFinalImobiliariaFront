@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import TextAreaPadrao from "@/components/TextAreaPadrao";
 
@@ -30,7 +30,41 @@ const CardPergunta = ({
    const [isResponding, setIsResponding] = useState(false);
    const [respostaTexto, setRespostaTexto] = useState("");
    const [isLoading, setIsLoading] = useState(false);
-   console.log(id);
+   const [respostaAtual, setRespostaAtual] = useState(resposta || "");
+   const [perguntaRespondidaAtual, setPerguntaRespondidaAtual] =
+      useState(perguntaRespondida);
+
+   // Carrega os dados da pergunta quando o componente é montado
+   useEffect(() => {
+      const carregarDadosPergunta = async () => {
+         try {
+            const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+            const url = `${BASE_URL}/perguntas/${id}`;
+
+            console.log("Carregando dados da pergunta:", url);
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+               console.error(`Erro ao carregar dados: ${response.status}`);
+               return;
+            }
+
+            const data = await response.json();
+            console.log("Dados carregados:", data);
+
+            // Atualiza os estados locais com os dados do servidor
+            if (data.resposta) {
+               setRespostaAtual(data.resposta);
+               setPerguntaRespondidaAtual(true);
+            }
+         } catch (error) {
+            console.error("Erro ao carregar dados da pergunta:", error);
+         }
+      };
+
+      carregarDadosPergunta();
+   }, [id]);
 
    const formatarData = (data: string | Date) => {
       if (!data) return "Data não informada";
@@ -67,6 +101,8 @@ const CardPergunta = ({
          }
 
          // Atualiza o estado local
+         setRespostaAtual(respostaTexto);
+         setPerguntaRespondidaAtual(true);
          setIsResponding(false);
          setRespostaTexto("");
          window.location.reload(); // Recarrega a página para mostrar a resposta atualizada
@@ -108,10 +144,10 @@ const CardPergunta = ({
             <p className="line-clamp-3">{mensagem || "Não informado"}</p>
          </div>
          <div className="text-sm text-gray-500">
-            {perguntaRespondida ? (
+            {perguntaRespondidaAtual ? (
                <div>
                   <span className="font-medium text-gray-700">Resposta:</span>
-                  <p className="mt-1 line-clamp-2">{resposta}</p>
+                  <p className="mt-1 line-clamp-2">{respostaAtual}</p>
                </div>
             ) : isResponding ? (
                <div className="space-y-4">
