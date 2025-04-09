@@ -15,6 +15,7 @@ import { FaPencilAlt, FaUser } from "react-icons/fa";
 import { Mail, MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
 import AgendamentosPerfil from "./AgendamentosPerfil";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface FormularioPerfilProps {
    id: string;
@@ -38,6 +39,7 @@ const FormularioPerfil = ({
 }: FormularioPerfilProps) => {
    const router = useRouter();
    const { showNotification } = useNotification();
+   const { t } = useLanguage();
    const [preview, setPreview] = useState<string>(dadosIniciais?.foto || "");
    const [selectedContact, setSelectedContact] = useState("");
    const [selected2FA, setSelected2FA] = useState<"email" | "sms" | null>(null);
@@ -201,7 +203,7 @@ const FormularioPerfil = ({
                   <div className="col-span-2">
                      <InputPadrao
                         htmlFor="nomeCompleto"
-                        label="Nome"
+                        label={t("perfil.name")}
                         type="text"
                         placeholder="Seu nome completo"
                         className="text-sm sm:text-base"
@@ -213,7 +215,7 @@ const FormularioPerfil = ({
                   <div className="col-span-2">
                      <InputPadrao
                         htmlFor="email"
-                        label="E-mail"
+                        label={t("perfil.email")}
                         type="email"
                         placeholder="Seu e-mail"
                         className="text-sm sm:text-base"
@@ -225,7 +227,7 @@ const FormularioPerfil = ({
                   <div className="col-span-2">
                      <InputPadrao
                         htmlFor="telefone"
-                        label="Telefone"
+                        label={t("perfil.phone")}
                         type="tel"
                         placeholder="Seu telefone"
                         className="text-sm sm:text-base"
@@ -237,7 +239,7 @@ const FormularioPerfil = ({
                   <div className="col-span-2 sm:w-[300px] md:w-[500px] xl:w-[980px]">
                      <TextAreaPadrao
                         htmlFor="descricao"
-                        label="Biografia"
+                        label={t("perfil.bio")}
                         className="text-sm sm:text-base h-24 sm:h-28 md:h-32"
                         {...register("descricao")}
                         mensagemErro={errors.descricao?.message}
@@ -250,7 +252,7 @@ const FormularioPerfil = ({
                            htmlFor="contactOption"
                            className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
                         >
-                           Preferência de Contato
+                           {t("perfil.contact")}
                         </label>
                         <select
                            id="contactOption"
@@ -258,9 +260,9 @@ const FormularioPerfil = ({
                            value={selectedContact}
                            onChange={(e) => setSelectedContact(e.target.value)}
                         >
-                           <option value="">Selecione a opção de contato</option>
-                           <option value="email">E-mail</option>
-                           <option value="telefone">Telefone</option>
+                           <option value="">{t("perfil.select")}</option>
+                           <option value="email">{t("perfil.contactOptions.email")}</option>
+                           <option value="telefone">{t("perfil.contactOptions.phone")}</option>
                         </select>
                         <div className="absolute right-1 top-[28px] sm:top-[30px] md:top-[32px] xl:top-[34px] xl:left-[950px] pointer-events-none">
                            <svg
@@ -282,7 +284,7 @@ const FormularioPerfil = ({
 
                   <div className="col-span-2 flex flex-col gap-2">
                      <h2 className="text-xs sm:text-sm font-medium text-gray-700">
-                        Autenticação de dois fatores (2FA)
+                        {t("perfil.auth")}
                      </h2>
                      <div className="w-full min-h-[160px] sm:min-h-[180px] md:min-h-[200px] xl:w-[980px] bg-white border border-gray-300 rounded-md p-3 sm:p-4 md:p-5 flex flex-col xl:flex-row items-center justify-between relative z-10">
                         <div className="flex flex-col xl:flex-row items-center gap-2 sm:gap-3 xl:gap-4">
@@ -291,13 +293,10 @@ const FormularioPerfil = ({
                            </div>
                            <div className="flex flex-col">
                               <span className="text-sm sm:text-base font-medium text-center xl:text-start xl:ml-2">
-                                 Autenticação Via E-mail
+                                 {t("perfil.authEmail")}
                               </span>
                               <p className="w-40 sm:w-48 xl:w-[600px] text-xs sm:text-sm xl:text-start text-gray-500 text-center px-2">
-                                 Use o código de segurança enviado para o seu
-                                 e-mail como a sua autenticação de dois fatores
-                                 (2FA). O código de segurança será enviado ao
-                                 e-mail vinculado à sua conta
+                                 {t("perfil.authEmailDescription")}
                               </p>
                            </div>
                         </div>
@@ -314,7 +313,7 @@ const FormularioPerfil = ({
                                  : "border border-gray-300 hover:bg-gray-50"
                            }`}
                         >
-                           {selected2FA === "email" ? "SELECIONADO" : "SELECIONAR"}
+                           {selected2FA === "email" ? t("perfil.selected") : t("perfil.selection")}
                         </button>
                      </div>
                   </div>
@@ -327,13 +326,10 @@ const FormularioPerfil = ({
                            </div>
                            <div className="flex flex-col">
                               <span className="text-sm sm:text-base font-medium text-center xl:text-start xl:ml-2">
-                                 Autenticação Via SMS
+                                 {t("perfil.authPhone")}
                               </span>
                               <p className="w-40 sm:w-48 xl:w-[650px] text-xs sm:text-sm xl:text-start text-gray-500 text-center px-2">
-                                 Use o seu número de telefone como o seu código de
-                                 autenticação de dois fatores (2FA).Você precisará
-                                 fornecer o código de segurança que o enviamos via
-                                 mensagem SMS
+                                 {t("perfil.authPhoneDescription")}
                               </p>
                            </div>
                         </div>
@@ -348,7 +344,7 @@ const FormularioPerfil = ({
                                  : "border border-gray-300 hover:bg-gray-50"
                            }`}
                         >
-                           {selected2FA === "sms" ? "SELECIONADO" : "SELECIONAR"}
+                           {selected2FA === "sms" ? t("perfil.selected") : t("perfil.selection")}
                         </button>
                      </div>
                   </div>
@@ -361,13 +357,13 @@ const FormularioPerfil = ({
 
                <div className="flex justify-center gap-4 mt-4 xl:ml-96">
                   <BotaoPadrao
-                     texto="Salvar"
+                     texto={t("perfil.save")}
                      className="border border-black text-sm sm:text-base px-4 sm:px-6 py-1 sm:py-2"
                      disabled={isSubmitting}
                      type="submit"
                   />
                   <BotaoPadrao
-                     texto="Cancelar"
+                     texto={t("perfil.cancel")}
                      className="bg-gray-200 text-gray-700 text-sm sm:text-base px-4 sm:px-6 py-1 sm:py-2"
                      onClick={() => router.back()}
                      type="button"

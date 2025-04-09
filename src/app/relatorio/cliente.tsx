@@ -44,9 +44,10 @@ interface RelatorioClientProps {
       imoveisAluguel: ModelImovelGet[];
     };
   };
+  t: (key: string) => string;
 }
 
-export default function RelatorioClient({ initialData, graficosData }: RelatorioClientProps) {
+export default function RelatorioClient({ initialData, graficosData, t }: RelatorioClientProps) {
   const { showNotification } = useNotification();
   const [loading, setLoading] = useState(false);
 
@@ -89,12 +90,12 @@ export default function RelatorioClient({ initialData, graficosData }: Relatorio
 
   const dadosDistribuicao = {
     labels: [
-      "Comuns",
-      "Desconto",
-      "Melhor Preço",
-      "Promoção",
-      "Adquirido",
-      "Alugado",
+      t("relatorios.type1"),
+      t("relatorios.type2"),
+      t("relatorios.type3"),
+      t("relatorios.type4"),
+      t("relatorios.type5"),
+      t("relatorios.type6"),
     ],
     datasets: [
       {
@@ -398,14 +399,14 @@ export default function RelatorioClient({ initialData, graficosData }: Relatorio
   return (
     <div className="flex flex-col w-full max-w-[90rem] mx-auto">
       <h2 className="text-havprincipal text-2xl font-bold mb-4 text-center">
-        Imóveis
+        {t("relatorios.properties")}
       </h2>
       {/* Container dos gráficos */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
         {/* Gráfico de Distribuição de Imóveis */}
         <div className="bg-white p-6 rounded-lg shadow w-full flex flex-col">
           <h2 className="text-lg font-semibold text-havprincipal mb-4 text-center">
-            Distribuição de Imóveis
+            {t("relatorios.tittleRel1")}
           </h2>
           <div className="flex-1 flex flex-col justify-center min-h-[300px]">
             <div className="w-full aspect-square max-w-[260px] mx-auto">
@@ -417,7 +418,7 @@ export default function RelatorioClient({ initialData, graficosData }: Relatorio
         {/* Gráfico de Preços de Venda */}
         <div className="bg-white p-6 rounded-lg shadow w-full flex flex-col">
           <h2 className="text-lg font-semibold text-havprincipal mb-4 text-center">
-            Preços de Venda
+            {t("relatorios.tittleRel2")}
           </h2>
           <div className="flex-1 flex flex-col justify-center min-h-[300px]">
             <div className="w-full aspect-square max-w-[260px] mx-auto">
@@ -429,7 +430,7 @@ export default function RelatorioClient({ initialData, graficosData }: Relatorio
         {/* Gráfico de Preços de Aluguel */}
         <div className="bg-white p-6 rounded-lg shadow w-full flex flex-col">
           <h2 className="text-lg font-semibold text-havprincipal mb-4 text-center">
-            Preços de Aluguel
+            {t("relatorios.tittleRel3")}
           </h2>
           <div className="flex-1 flex flex-col justify-center min-h-[300px]">
             <div className="w-full aspect-square max-w-[220px] mx-auto">
@@ -444,7 +445,7 @@ export default function RelatorioClient({ initialData, graficosData }: Relatorio
         {/* Valor Médio Venda */}
         <div className="bg-white p-6 rounded-lg shadow text-center">
           <h2 className="text-lg font-semibold text-havprincipal mb-2">
-            Valor Médio dos Imóveis para Venda
+            {t("relatorios.titleValue1")}
           </h2>
           <p className="text-3xl font-bold text-havprincipal">
             {formatarPreco(calcularMediaPrecos(graficosData.finalidades.imoveisVenda))}
@@ -454,7 +455,7 @@ export default function RelatorioClient({ initialData, graficosData }: Relatorio
         {/* Valor Médio Aluguel */}
         <div className="bg-white p-6 rounded-lg shadow text-center">
           <h2 className="text-lg font-semibold text-havprincipal mb-2">
-            Valor Médio dos Imóveis para Aluguel
+            {t("relatorios.titleValue2")}
           </h2>
           <p className="text-3xl font-bold text-havprincipal">
             {formatarPreco(calcularMediaPrecos(graficosData.finalidades.imoveisAluguel))}
@@ -464,13 +465,13 @@ export default function RelatorioClient({ initialData, graficosData }: Relatorio
 
       {/* Relatório de Usuários */}
       <h2 className="text-havprincipal text-2xl font-bold mb-4 text-center mt-8">
-        Usuários
+        {t("relatorios.users")}
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
         {/* Usuários Ativos */}
         <div className="bg-white p-6 rounded-lg shadow w-full">
           <h2 className="text-lg font-semibold text-havprincipal mb-4 text-center">
-            Usuários Ativos
+            {t("relatorios.tittleUsers1")}
           </h2>
           <div className="flex flex-col items-center">
             <p className="text-5xl font-bold text-havprincipal mb-2">
@@ -487,7 +488,7 @@ export default function RelatorioClient({ initialData, graficosData }: Relatorio
         {/* Usuários Bloqueados */}
         <div className="bg-white p-6 rounded-lg shadow w-full">
           <h2 className="text-lg font-semibold text-havprincipal mb-4 text-center">
-            Usuários Bloqueados
+            {t("relatorios.tittleUsers2")}
           </h2>
           <div className="flex flex-col items-center">
             <p className="text-5xl font-bold text-havprincipal mb-2">
@@ -504,7 +505,7 @@ export default function RelatorioClient({ initialData, graficosData }: Relatorio
         {/* Total de Usuários */}
         <div className="bg-white p-6 rounded-lg shadow w-full">
           <h2 className="text-lg font-semibold text-havprincipal mb-4 text-center">
-            Total de Usuários
+            {t("relatorios.tittleUsers3")}
           </h2>
           <div className="flex flex-col items-center">
             <p className="text-5xl font-bold text-havprincipal mb-2">
@@ -524,7 +525,7 @@ export default function RelatorioClient({ initialData, graficosData }: Relatorio
 
       {/* Lista de Corretores */}
       <h2 className="text-havprincipal text-2xl font-bold mb-4 text-center mt-8">
-        Corretores
+        {t("relatorios.brokers")}
       </h2>
       <div className="bg-white rounded-lg shadow overflow-hidden max-w-3xl mx-auto">
         {initialData.usuariosAtivos.map((corretor, index) => (
@@ -566,7 +567,7 @@ export default function RelatorioClient({ initialData, graficosData }: Relatorio
               </div>
               <div className="flex-1 text-right">
                 <span className="text-gray-700 text-base md:text-lg">
-                  Agendamentos:{" "}
+                  {t("relatorios.appointments")}:{" "}
                   {initialData.agendamentosPorCorretor[corretor.nome] || 0}
                 </span>
               </div>
@@ -596,7 +597,7 @@ export default function RelatorioClient({ initialData, graficosData }: Relatorio
               d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
             />
           </svg>
-          {loading ? "Exportando..." : "Exportar PDF"}
+          {loading ? t("common.loading") : t("relatorios.button1")}
         </button>
         <button
           onClick={exportarExcel}
@@ -617,7 +618,7 @@ export default function RelatorioClient({ initialData, graficosData }: Relatorio
               d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
             />
           </svg>
-          {loading ? "Exportando..." : "Exportar Excel"}
+          {loading ? t("common.loading") : t("relatorios.button2")}
         </button>
       </div>
     </div>

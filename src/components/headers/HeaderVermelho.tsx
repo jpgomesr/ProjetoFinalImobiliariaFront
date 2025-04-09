@@ -6,6 +6,7 @@ import FuncoesHeader from "./FuncoesHeader";
 import HamburguerButton from "./HamburguerButton";
 import PerfilDropdown from "./PerfilDropdown";
 import Notificacao from "@/components/notificacao/Notificacao";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import {
    User,
    MessageCircleQuestion,
@@ -62,6 +63,7 @@ const HeaderVermelho = ({ role, id, foto, nome, t }: HeaderVermelhoProps) => {
             </Link>
          </div>
          <div className="flex justify-center items-center gap-5 md:gap-10 2xl:gap-20">
+            <LanguageSwitcher />
             <Notificacao />
             <Link href={id ? "/chat" : "/api/auth/signin"}>
                <button className="text-white">
