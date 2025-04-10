@@ -35,6 +35,7 @@ export default function ChatListServer(props: ChatListServerProps) {
    const [search, setSearch] = useState("");
    const [loading, setLoading] = useState(true);
    const [localChats, setLocalChats] = useState<Chat[]>([]);
+   const [isLoadingChat, setIsLoadingChat] = useState(false);
    const {
       chats,
       selectedChat,
@@ -53,37 +54,52 @@ export default function ChatListServer(props: ChatListServerProps) {
 
    const handleContactClick = useCallback(
       async (chatId: number) => {
-         if (chatId != selectedChat) {
-            try {
-               resetConnection();
-               setSelectedChat(chatId);
+         // Não permitir cliques se já estiver carregando um chat
+         if (isLoadingChat || chatId === selectedChat) {
+            console.log(
+               "Ignorando clique: chat já está carregando ou é o mesmo chat selecionado"
+            );
+            return;
+         }
 
-               await fetch(
-                  `${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chatId}/marcarLidas?idUsuario=${userId}`,
-                  {
-                     method: "POST",
-                     headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                     },
-                  }
-               );
+         try {
+            setIsLoadingChat(true);
+            console.log(`Iniciando carregamento do chat ${chatId}`);
 
-               setLocalChats((prevChats) =>
-                  prevChats.map((chat) =>
-                     chat.idChat === chatId ? { ...chat, naoLido: false } : chat
-                  )
-               );
+            resetConnection();
+            setSelectedChat(chatId);
 
-               await fetchChats();
+            await fetch(
+               `${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chatId}/marcarLidas?idUsuario=${userId}`,
+               {
+                  method: "POST",
+                  headers: {
+                     "Content-Type": "application/json",
+                     Authorization: `Bearer ${token}`,
+                  },
+               }
+            );
 
-               // Navegação instantânea
-               props.onOpenChat();
-               router.replace(`/chat/?chat=${chatId}`);
-            } catch (error) {
-               console.error("Erro ao carregar chat:", error);
-               router.replace(`/chat/?chat=${chatId}`);
-            }
+            setLocalChats((prevChats) =>
+               prevChats.map((chat) =>
+                  chat.idChat === chatId ? { ...chat, naoLido: false } : chat
+               )
+            );
+
+            await fetchChats();
+
+            // Navegação instantânea
+            props.onOpenChat();
+            router.replace(`/chat/?chat=${chatId}`);
+         } catch (error) {
+            console.error("Erro ao carregar chat:", error);
+            router.replace(`/chat/?chat=${chatId}`);
+         } finally {
+            // Adicionar um pequeno atraso antes de permitir cliques novamente
+            setTimeout(() => {
+               setIsLoadingChat(false);
+               console.log("Chat carregado, permitindo cliques novamente");
+            }, 300);
          }
       },
       [
@@ -93,6 +109,9 @@ export default function ChatListServer(props: ChatListServerProps) {
          selectedChat,
          resetConnection,
          fetchChats,
+         token,
+         props,
+         isLoadingChat,
       ]
    );
 
@@ -190,7 +209,7 @@ export default function ChatListServer(props: ChatListServerProps) {
                <h2 className="font-bold text-xl">Chat</h2>
             </div>
             <div className="flex items-center justify-center h-full">
-               <p>Carregando chats...</p>
+               <p>Carregando...</p>
             </div>
          </div>
       );
@@ -212,6 +231,13 @@ export default function ChatListServer(props: ChatListServerProps) {
             />
          </div>
          <div className="h-full overflow-y-auto hide-scrollbar">
+            {isLoadingChat && (
+               <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center z-10">
+                  <div className="bg-white p-4 rounded-lg shadow-md">
+                     <p className="text-gray-700">Carregando chat...</p>
+                  </div>
+               </div>
+            )}
             {filteredChats.length > 0 ? (
                filteredChats.map((chat, index) => (
                   <div
@@ -225,6 +251,8 @@ export default function ChatListServer(props: ChatListServerProps) {
                         index === filteredChats.length - 1
                            ? ""
                            : "border-b border-gray-400"
+                     } ${
+                        isLoadingChat ? "opacity-70 pointer-events-none" : ""
                      }`}
                      onClick={() => handleContactClick(chat.idChat)}
                   >

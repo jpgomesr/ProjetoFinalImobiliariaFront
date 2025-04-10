@@ -185,9 +185,6 @@ export function ChatProvider({
          console.log("É chat selecionado:", isSelectedChat);
 
          // Determinar se o chat deve ser marcado como não lido
-         // Só marca como não lido se:
-         // 1. A mensagem NÃO for do usuário atual
-         // 2. E o chat NÃO estiver selecionado atualmente
          const shouldMarkAsUnread = !isMessageFromUser && !isSelectedChat;
          console.log("Deve marcar como não lido:", shouldMarkAsUnread);
 
@@ -202,34 +199,50 @@ export function ChatProvider({
                   timeStamp: message.timeStamp || new Date().toISOString(),
                   remetente: message.remetente,
                },
-               // Define naoLido com base em quem enviou a mensagem e se o chat está selecionado
                naoLido: shouldMarkAsUnread,
             });
 
-            // Log para debug
             if (shouldMarkAsUnread) {
                console.log(`Chat ${chatId} marcado como não lido`);
             }
-
-            // Se a mensagem não for do usuário atual e o chat não estiver selecionado,
-            // forçar uma atualização adicional para garantir que o chat seja marcado como não lido
-            if (shouldMarkAsUnread) {
-               setTimeout(() => {
-                  console.log(
-                     `Forçando atualização do chat ${chatId} como não lido`
-                  );
-                  forceUpdateChats();
-               }, 300);
-            }
          } else {
-            // Se o chat não existir, busca todos os chats novamente
+            // Se o chat não existir, busca apenas o chat específico
             console.log(
-               `Chat ${chatId} não encontrado, buscando todos novamente`
+               `Chat ${chatId} não encontrado, buscando chat específico`
             );
-            fetchChats();
+            fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chatId}`, {
+               headers: {
+                  "Content-type": "application/json",
+                  Authorization: `Bearer ${token}`,
+               },
+               method: "GET",
+            })
+               .then((response) => response.json())
+               .then((newChat) => {
+                  setChats((prevChats) => {
+                     const updatedChats = [...prevChats];
+                     chatIdsRef.current.add(chatId);
+                     return [
+                        ...updatedChats,
+                        {
+                           ...newChat,
+                           ultimaMensagem: {
+                              conteudo: message.conteudo,
+                              timeStamp:
+                                 message.timeStamp || new Date().toISOString(),
+                              remetente: message.remetente,
+                           },
+                           naoLido: shouldMarkAsUnread,
+                        },
+                     ];
+                  });
+               })
+               .catch((error) => {
+                  console.error("Erro ao buscar chat específico:", error);
+               });
          }
       },
-      [fetchChats, updateChat, userId, selectedChat, forceUpdateChats]
+      [updateChat, userId, selectedChat, token]
    );
 
    // Inicializar WebSocket uma vez
@@ -250,6 +263,7 @@ export function ChatProvider({
          connectHeaders: {
             userId: userId,
             userName: userName,
+            Authorization: `Bearer ${token}`,
          },
       });
 
