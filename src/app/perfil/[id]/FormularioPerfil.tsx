@@ -26,6 +26,7 @@ interface FormularioPerfilProps {
       descricao: string;
       foto: string;
       role: string;
+      autenticacaoDoisFatoresHabilitado: boolean;
    };
    token: string;
 }
@@ -40,6 +41,7 @@ const FormularioPerfil = ({
    const { showNotification } = useNotification();
    const [preview, setPreview] = useState<string>(dadosIniciais?.foto || "");
    const [selectedContact, setSelectedContact] = useState("");
+   const [doisFatores, setDoisFatores] = useState<boolean>(dadosIniciais?.autenticacaoDoisFatoresHabilitado || false);
    const [selected2FA, setSelected2FA] = useState<"email" | "sms" | null>(null);
    const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -94,6 +96,7 @@ const FormularioPerfil = ({
                telefone: data.telefone?.trim() === "" ? null : data.telefone,
                descricao: data.descricao,
                role: data.tipoUsuario,
+               autenticacaoDoisFatoresHabilitado: doisFatores,
             },
             "usuario",
             "novaImagem",
@@ -306,23 +309,21 @@ const FormularioPerfil = ({
                         <button
                            type="button"
                            onClick={() =>
-                              setSelected2FA(
-                                 selected2FA === "email" ? null : "email"
-                              )
+                              setDoisFatores(!doisFatores)
                            }
                            className={`mt-3 sm:mt-4 px-4 sm:px-6 py-1 sm:py-2 text-xs sm:text-sm font-medium rounded-md transition-colors relative z-20 ${
-                              selected2FA === "email"
+                              doisFatores
                                  ? "bg-havprincipal text-white"
                                  : "border border-gray-300 hover:bg-gray-50"
                            }`}
                         >
-                           {selected2FA === "email"
+                           {doisFatores
                               ? "SELECIONADO"
                               : "SELECIONAR"}
                         </button>
                      </div>
                   </div>
-
+{/* 
                   <div className="col-span-2 flex flex-col gap-2">
                      <div className="w-full min-h-[160px] sm:min-h-[180px] md:min-h-[200px] xl:w-[980px] bg-white border border-gray-300 rounded-md p-3 sm:p-4 md:p-5 flex flex-col xl:flex-row items-center justify-between relative z-10">
                         <div className="flex flex-col xl:flex-row items-center gap-2 sm:gap-3 xl:gap-4">
@@ -359,7 +360,7 @@ const FormularioPerfil = ({
                               : "SELECIONAR"}
                         </button>
                      </div>
-                  </div>
+                  </div> */}
                </div>
 
                {/* Seção de Agendamentos */}
