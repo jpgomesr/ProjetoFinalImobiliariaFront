@@ -7,41 +7,41 @@
 
 /* Estilos personalizados para o popup do Mapbox */
 .mapboxgl-popup-content {
-  padding: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
-  background-color: #6B1D1D !important;
+   padding: 0 !important;
+   border-radius: 0 !important;
+   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+   background-color: #6b1d1d !important;
 }
 
 .mapboxgl-popup-content h3,
 .mapboxgl-popup-content p,
 .mapboxgl-popup-content div {
-  color: #F5F5DC !important;
+   color: #f5f5dc !important;
 }
 
 .mapboxgl-popup-close-button {
-  color: #F5F5DC !important;
-  font-size: 20px !important;
-  padding: 4px 8px !important;
-  right: 0 !important;
-  top: 0 !important;
-  background-color: transparent !important;
-  border: none !important;
-  z-index: 1 !important;
+   color: #f5f5dc !important;
+   font-size: 20px !important;
+   padding: 4px 8px !important;
+   right: 0 !important;
+   top: 0 !important;
+   background-color: transparent !important;
+   border: none !important;
+   z-index: 1 !important;
 }
 
 .mapboxgl-popup-close-button:hover {
-  background-color: rgba(245, 245, 220, 0.1) !important;
-  color: #F5F5DC !important;
+   background-color: rgba(245, 245, 220, 0.1) !important;
+   color: #f5f5dc !important;
 }
 
 .mapboxgl-popup-tip {
-  display: none !important;
+   display: none !important;
 }
 
 /* Força a cor do texto no popup */
 .custom-popup * {
-  color: #F5F5DC !important;
+   color: #f5f5dc !important;
 }
 
 :root {
@@ -79,102 +79,121 @@ body {
    display: none; /* Chrome, Safari, and Opera */
 }
 
+/* Estilos personalizados para a scrollbar */
+::-webkit-scrollbar {
+   width: 10px;
+}
+
+::-webkit-scrollbar-track {
+   background: #f1f1f1;
+   border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+   background: #702632;
+   border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+   background: #702632;
+}
+
 /* Estilos do Swiper */
 .swiper {
-  padding: 0 40px 40px 40px !important;
-  position: relative !important;
+   padding: 0 40px 40px 40px !important;
+   position: relative !important;
 }
 
 .swiper-slide {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
+   display: flex !important;
+   justify-content: center !important;
+   align-items: center !important;
 }
 
 .swiper-button-next,
 .swiper-button-prev {
-  color: #7a2638 !important;
-  width: 30px !important;
-  height: 30px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  margin-top: -20px !important;
+   color: #7a2638 !important;
+   width: 30px !important;
+   height: 30px !important;
+   top: 50% !important;
+   transform: translateY(-50%) !important;
+   margin-top: -20px !important;
 }
 
 .swiper-button-prev {
-  left: 5px !important;
+   left: 5px !important;
 }
 
 .swiper-button-next {
-  right: 5px !important;
+   right: 5px !important;
 }
 
 .swiper-button-next:after,
 .swiper-button-prev:after {
-  font-size: 20px !important;
+   font-size: 20px !important;
 }
 
 .swiper-pagination {
-  position: relative !important;
-  bottom: 0 !important;
-  margin-top: 20px !important;
+   position: relative !important;
+   bottom: 0 !important;
+   margin-top: 20px !important;
 }
 
 .swiper-pagination-bullet {
-  background: #7a2638 !important;
+   background: #7a2638 !important;
 }
 
 .swiper-pagination-bullet-active {
-  background: #7a2638 !important;
+   background: #7a2638 !important;
 }
 
 @media (max-width: 640px) {
-  .swiper {
-    padding: 0 30px 30px 30px !important;
-  }
+   .swiper {
+      padding: 0 30px 30px 30px !important;
+   }
 
-  .swiper-button-next,
-  .swiper-button-prev {
-    width: 25px !important;
-    height: 25px !important;
-  }
+   .swiper-button-next,
+   .swiper-button-prev {
+      width: 25px !important;
+      height: 25px !important;
+   }
 
-  .swiper-button-next:after,
-  .swiper-button-prev:after {
-    font-size: 16px !important;
-  }
+   .swiper-button-next:after,
+   .swiper-button-prev:after {
+      font-size: 16px !important;
+   }
 }
 
 /* Estilos para o VLibras */
 div[vw].enabled {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 100000;
-  max-width: 100%;
-  max-height: 70%;
-  pointer-events: none;
+   position: fixed;
+   bottom: 0;
+   right: 0;
+   width: 100%;
+   height: 100%;
+   z-index: 100000;
+   max-width: 100%;
+   max-height: 70%;
+   pointer-events: none;
 }
 
 div[vw-access-button].active {
-  pointer-events: auto;
-  top: 300;
-  width: 130px;
-  height: 130px;
+   pointer-events: auto;
+   top: 300;
+   width: 130px;
+   height: 130px;
 }
 
 div[vw-plugin-wrapper] {
-  width: 300px;
-  height: 300px;
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  pointer-events: auto;
+   width: 300px;
+   height: 300px;
+   position: fixed;
+   bottom: 0;
+   right: 0;
+   pointer-events: auto;
 }
 
 div[vw-plugin-wrapper]:has(.access-button) {
-  width: 130px;
-  height: 130px;
+   width: 130px;
+   height: 130px;
 }
