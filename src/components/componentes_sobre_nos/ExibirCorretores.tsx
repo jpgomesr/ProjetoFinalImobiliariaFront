@@ -19,7 +19,6 @@ const CorretoresContent = (props: CardCorretorProps) => {
 
    const handleCreateChat = async (corretor: ModelExibirCorretor) => {
       if (!idUsuario) {
-         // Usar encodeURIComponent para garantir que a URL seja codificada corretamente
          const currentPath = encodeURIComponent(window.location.pathname);
          router.push(`/api/auth/signin?callbackUrl=${currentPath}`);
          return;
@@ -39,6 +38,8 @@ const CorretoresContent = (props: CardCorretorProps) => {
             headers,
          });
 
+         let chatId;
+
          // Se o chat já existe (código 422), busca o chat existente
          if (response.status === 422) {
             const chatResponse = await fetch(`${baseUrl}${endpoint}`, {
@@ -51,37 +52,30 @@ const CorretoresContent = (props: CardCorretorProps) => {
             }
 
             const data = await chatResponse.json();
-            // Navegue primeiro para a página do chat sem parâmetros
-            // e depois para o chat específico para garantir inicialização correta
-            await router.push("/chat");
-
-            // Pequeno atraso para garantir que a página carregou e o ChatProvider foi inicializado
-            setTimeout(() => {
-               router.push(`/chat?chat=${data.idChat}`);
-            }, 100);
-
-            return;
-         }
-
-         // Se a criação falhou por outro motivo
-         if (!response.ok) {
+            chatId = data.idChat;
+         } else if (!response.ok) {
             throw new Error("Erro ao criar chat");
+         } else {
+            const data = await response.json();
+            chatId = data.idChat;
          }
 
-         // Se a criação foi bem-sucedida
-         const data = await response.json();
+         // Navegação simples e direta - resolver problemas de STOMP
+         // Vamos para a página de chat sem parâmetros primeiro, depois adicionamos
+         // o ID do chat como parte da URL após uma segunda navegação
 
-         // Navegue primeiro para a página do chat sem parâmetros
-         // e depois para o chat específico para garantir inicialização correta
-         await router.push("/chat");
+         // Usar replace em vez de push para evitar problemas de navegação com back button
+         router.replace("/chat");
 
-         // Pequeno atraso para garantir que a página carregou e o ChatProvider foi inicializado
+         // Aguardar um tempo maior para garantir que a página carregou completamente
+         // e a conexão STOMP foi estabelecida antes de adicionar o parâmetro
          setTimeout(() => {
-            router.push(`/chat?chat=${data.idChat}`);
-         }, 100);
+            // Usar replace em vez de push para evitar problemas de histórico
+            router.replace(`/chat?chat=${chatId}`);
+         }, 500);
       } catch (error) {
          console.error("Erro na operação de chat:", error);
-         router.push("/chat");
+         router.replace("/chat");
       }
    };
 

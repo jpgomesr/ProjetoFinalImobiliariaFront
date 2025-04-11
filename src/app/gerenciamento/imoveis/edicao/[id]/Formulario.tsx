@@ -130,7 +130,7 @@ const Formulario = ({ imovel, token }: FormularioProps) => {
       setValue("banner", imovel.banner || false);
       setValue("tipoBanner", imovel.tipoBanner || tipoBanner[0].id);
       setValue("destaque", imovel.permitirDestaque || false);
-      setValue("visibilidade", imovel.habilitarVisibilidade || false);
+      setValue("visibilidade", imovel.ativo || false);
       setValue("academia", imovel.academia || false);
       setValue("cep", Number(imovel.endereco.cep));
       setValue("bairro", imovel.endereco.bairro);
