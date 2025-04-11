@@ -226,8 +226,10 @@ export const createImovelValidator = () => {
          .refine((val) => val.toString().length === 8, {
             message: "O CEP deve ter exatamente 8 dígitos.",
          }),
+
       numero: z.number({ message: "Campo obrigatório" }),
       numeroApto: z.number().optional(),
+
       estado: z.string().min(1, { message: "Campo obrigatório" }),
       proprietario: z
          .object({

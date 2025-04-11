@@ -49,7 +49,6 @@ export default function Filtros({ status, tipoUsuario, nomePesquisa }: FiltrosPr
          <List
             mudandoValor={(value) => atualizarURL({ status: value })}
             opcoes={opcoesStatus}
-            bordaPreta
             placeholder="Ativo"
             value={status}
          />
@@ -69,7 +68,6 @@ export default function Filtros({ status, tipoUsuario, nomePesquisa }: FiltrosPr
                opcoes={tiposDeUsuarios}
                mudandoValor={(value) => atualizarURL({ tipoUsuario: value })}
                placeholder="USUARIO"
-               bordaPreta
                value={tipoUsuario}
             />
          </div>

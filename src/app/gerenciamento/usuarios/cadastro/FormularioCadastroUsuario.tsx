@@ -20,7 +20,12 @@ import { useNotification } from "@/context/NotificationContext";
 import ModelUsuario from "@/models/ModelUsuario";
 import { salvarUsuario } from "./action";
 import Link from "next/link";
-const FormularioCadastroUsuario = () => {
+
+interface FormularioCadastroUsuarioProps {
+   token: string;
+}
+
+const FormularioCadastroUsuario = (props: FormularioCadastroUsuarioProps) => {
    const router = useRouter();
    const { showNotification } = useNotification();
 
@@ -78,6 +83,7 @@ const FormularioCadastroUsuario = () => {
                ativo: data.ativo === "Ativo", // Converte para booleano
             },
             imagemPerfil: data.imagemPerfil || null, // Mantém null ou substitui por um valor padrão
+            token: props.token,
          };
 
          const response = await salvarUsuario(objetoRequest);
@@ -175,7 +181,6 @@ const FormularioCadastroUsuario = () => {
                         opcoes={tiposDeUsuarios}
                         mudandoValor={field.onChange}
                         placeholder="Tipo usuario"
-                        bordaPreta
                      />
                   )}
                />
@@ -190,7 +195,6 @@ const FormularioCadastroUsuario = () => {
                         opcoes={opcoesStatus}
                         mudandoValor={field.onChange}
                         placeholder="Ativo"
-                        bordaPreta
                      />
                   )}
                />

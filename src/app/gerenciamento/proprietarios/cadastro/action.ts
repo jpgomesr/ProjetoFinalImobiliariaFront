@@ -26,10 +26,11 @@ interface salvarProprietarioProps {
       };
    };
    imagemPerfil: File | null;
+   token: string;
 }
 
 export async function salvarProprietario(props: salvarProprietarioProps) {
-   const { proprietario, imagemPerfil } = props;
+   const { proprietario, imagemPerfil, token } = props;
 
    const proprietarioFormatado = {
       ...proprietario,
@@ -52,7 +53,8 @@ export async function salvarProprietario(props: salvarProprietarioProps) {
          "proprietario",
          "foto",
          props.imagemPerfil,
-         "POST"
+         "POST",
+         token
       );
 
       const data = await response.json();

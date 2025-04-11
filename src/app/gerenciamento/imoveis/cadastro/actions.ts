@@ -2,6 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { ModelImovelGet } from "@/models/ModelImovelGet";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
+import { fetchComAutorizacao } from "@/hooks/FetchComAuthorization";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -49,6 +52,7 @@ interface salvarImovelProps {
 }
 
 export async function salvarImovel(props: salvarImovelProps) {
+
    const { imovel, imagens } = props;
 
    const imovelFormatado = {
@@ -96,7 +100,6 @@ export async function salvarImovel(props: salvarImovelProps) {
          })
       );
       if (imagens.imagemPrincipal) {
-         console.log(imagens.imagemPrincipal);
          formData.append("imagemPrincipal", imagens.imagemPrincipal);
       }
       if (imagens.imagensGaleria && imagens.imagensGaleria.length > 0) {
@@ -107,9 +110,9 @@ export async function salvarImovel(props: salvarImovelProps) {
             }
          });
       }
-      const response = await fetch(`${BASE_URL}/imoveis`, {
+      const response = await fetchComAutorizacao(`${BASE_URL}/imoveis`, {
          method: "POST",
-         body: formData,
+         body: formData, 
       });
 
       const data = await response.json();
@@ -118,6 +121,7 @@ export async function salvarImovel(props: salvarImovelProps) {
 
       const imovelSalvo: ModelImovelGet = await data;
       revalidatePath(`/gerenciamento/imoveis/edicao/${imovelSalvo.id}`);
+      revalidatePath(`/imovel/${imovelSalvo.id}`);
 
       return await data;
    } catch (error) {

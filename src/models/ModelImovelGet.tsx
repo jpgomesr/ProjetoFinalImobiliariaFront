@@ -1,3 +1,5 @@
+import { EnderecoMapBox } from "./ModelEnrecoMapBox";
+
 interface Endereco {
    bairro: string;
    cidade: string;
@@ -46,4 +48,48 @@ export interface ModelImovelGet {
    proprietario: Pessoa;
    corretores: Pessoa[];
    favoritado?: boolean;
+}
+
+export interface ModelImovelGetId {
+   id: number;
+   titulo: string;
+   descricao: string;
+   preco: number;
+   precoPromocional?: number;
+   iptu: string;
+   condominio: string;
+   tamanho: string;
+   qtdBanheiros: number;
+   qtdQuartos: number;
+   qtdGaragens: number;
+   qtdPiscina: number;
+   qtdChurrasqueira: number;
+   imagens: {
+      id: number;
+      imagemCapa: boolean;
+      referencia: string;
+   }[];
+   corretores: {
+      id: number;
+      nome: string;
+      email: string;
+      telefone: string;
+      foto: string;
+   }[];
+   endereco: EnderecoMapBox;
+   favoritado : boolean
+}
+
+export interface ImovelSemelhanteModel {
+   id: number;
+   titulo: string;
+   preco: number;
+   precoPromocional?: number;
+   qtdBanheiros: number;
+   qtdQuartos: number;
+   imagens: {
+      id: number;
+      imagemCapa: boolean;
+      referencia: string;
+   }[];
 }

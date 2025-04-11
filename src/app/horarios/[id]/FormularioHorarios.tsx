@@ -6,7 +6,8 @@ import { Trash } from "lucide-react";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import Link from "next/link";
 import ModalConfirmacao from "@/components/ComponentesCrud/ModalConfirmacao";
-
+import { Session } from "next-auth";
+import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
 interface Horario {
    id: number;
    dataHora: string;
@@ -15,11 +16,13 @@ interface Horario {
 interface FormularioHorariosProps {
    id: string;
    BASE_URL: string;
+   token: string;
 }
 
 export default function FormularioHorarios({
    id,
    BASE_URL,
+   token,
 }: FormularioHorariosProps) {
    const { showNotification } = useNotification();
    const [data, setData] = useState("");
@@ -28,6 +31,7 @@ export default function FormularioHorarios({
    const [horariosAgrupados, setHorariosAgrupados] = useState<{
       [key: string]: Horario[];
    }>({});
+   console.log("horariosAgrupados",horariosAgrupados);
    console.log(id);
    const [modalConfirmacao, setModalConfirmacao] = useState(false);
    const [idHorarioParaExcluir, setIdHorarioParaExcluir] = useState<
@@ -36,8 +40,12 @@ export default function FormularioHorarios({
 
    const buscarHorarios = async () => {
       try {
-         const response = await fetch(
-            `${BASE_URL}/corretores/horarios/corretor/${id}`
+         const response = await useFetchComAutorizacaoComToken(
+            `${BASE_URL}/corretores/horarios/corretor`,
+            {
+               method: "GET",
+            },
+            token
          );
          if (!response.ok) throw new Error("Erro ao buscar horários");
          const data = await response.json();
@@ -75,7 +83,7 @@ export default function FormularioHorarios({
       }
 
       try {
-         const response = await fetch(`${BASE_URL}/horarios/corretor`, {
+         const response = await useFetchComAutorizacaoComToken(`${BASE_URL}/horarios/corretor`, {
             method: "POST",
             headers: {
                "Content-Type": "application/json",
@@ -84,7 +92,7 @@ export default function FormularioHorarios({
                horario: dataHora,
                idCorretor: id,
             }),
-         });
+         }, token);
 
          if (!response.ok) throw new Error("Erro ao cadastrar horário");
 
@@ -96,17 +104,19 @@ export default function FormularioHorarios({
    };
 
    const excluirHorario = async (horarioId: number) => {
+
       setIdHorarioParaExcluir(horarioId);
       setModalConfirmacao(true);
    };
 
    const confirmarDelecao = async () => {
       try {
-         const response = await fetch(
+         const response = await useFetchComAutorizacaoComToken(
             `${BASE_URL}/horarios/corretor/${idHorarioParaExcluir}`,
             {
                method: "DELETE",
-            }
+            },
+            token
          );
 
          if (!response.ok) throw new Error("Erro ao excluir horário");
@@ -155,10 +165,12 @@ export default function FormularioHorarios({
             </div>
          </div>
 
-         {Object.entries(horariosAgrupados).map(([data, horarios]) => (
+         {Object.entries(horariosAgrupados).map(([data, horarios]) => {
+        
+            return (
             <div key={data} className="flex flex-col gap-4">
                <h3 className="text-lg font-semibold text-havprincipal">
-                  Dia {new Date(data).toLocaleDateString("pt-BR")}
+                  Dia {new Date(data + 'T00:00:00').toLocaleDateString("pt-BR")}
                </h3>
                <div className="flex flex-wrap gap-3">
                   {horarios.map((horario) => (
@@ -185,7 +197,8 @@ export default function FormularioHorarios({
                   ))}
                </div>
             </div>
-         ))}
+            )
+         })}
          <ModalConfirmacao
             isOpen={modalConfirmacao}
             onClose={() => setModalConfirmacao(false)}

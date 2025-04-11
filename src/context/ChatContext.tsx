@@ -53,6 +53,7 @@ interface ChatContextType {
    addNewMessage: (chatId: number, message: ChatMessage) => void;
    forceUpdateChats: () => void;
    resetConnection: () => void;
+   token: string;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -69,13 +70,16 @@ export function ChatProvider({
    const [stompClient, setStompClient] = useState<Client | null>(null);
    const [isConnected, setIsConnected] = useState(false);
    const [forceUpdate, setForceUpdate] = useState(0);
-   const userId = session?.user?.id ?? "";
-   const userName = session?.user?.name ?? "";
+   const userId = session?.user?.id;
+   const userName = session?.user?.name;
 
    // Referências para controlar as inscrições e requisições
    const subscriptions = useRef<Record<string, any>>({});
    const isInitialFetch = useRef(true);
    const chatIdsRef = useRef<Set<number>>(new Set());
+   const clientRef = useRef<Client | null>(null);
+
+   const token = session?.accessToken;
 
    // Função para forçar uma atualização dos chats
    const forceUpdateChats = useCallback(() => {
@@ -127,7 +131,10 @@ export function ChatProvider({
    }, []);
 
    const fetchChats = useCallback(async () => {
-      if (!userId) return;
+      if (!userId) {
+         console.log("Não há usuário logado");
+         return;
+      }
 
       try {
          console.log("Buscando lista de chats para o usuário:", userId);
@@ -136,10 +143,21 @@ export function ChatProvider({
             {
                headers: {
                   "Content-type": "application/json",
+                  Authorization: `Bearer ${token}`,
                },
                method: "GET",
             }
          );
+
+         if (!response.ok) {
+            console.error(
+               "Erro ao buscar chats:",
+               response.status,
+               response.statusText
+            );
+            return;
+         }
+
          const data = await response.json();
          const newChats = Array.isArray(data) ? data : [];
          console.log("Chats recebidos:", newChats.length);
@@ -167,9 +185,6 @@ export function ChatProvider({
          console.log("É chat selecionado:", isSelectedChat);
 
          // Determinar se o chat deve ser marcado como não lido
-         // Só marca como não lido se:
-         // 1. A mensagem NÃO for do usuário atual
-         // 2. E o chat NÃO estiver selecionado atualmente
          const shouldMarkAsUnread = !isMessageFromUser && !isSelectedChat;
          console.log("Deve marcar como não lido:", shouldMarkAsUnread);
 
@@ -184,38 +199,61 @@ export function ChatProvider({
                   timeStamp: message.timeStamp || new Date().toISOString(),
                   remetente: message.remetente,
                },
-               // Define naoLido com base em quem enviou a mensagem e se o chat está selecionado
                naoLido: shouldMarkAsUnread,
             });
 
-            // Log para debug
             if (shouldMarkAsUnread) {
                console.log(`Chat ${chatId} marcado como não lido`);
             }
-
-            // Se a mensagem não for do usuário atual e o chat não estiver selecionado,
-            // forçar uma atualização adicional para garantir que o chat seja marcado como não lido
-            if (shouldMarkAsUnread) {
-               setTimeout(() => {
-                  console.log(
-                     `Forçando atualização do chat ${chatId} como não lido`
-                  );
-                  forceUpdateChats();
-               }, 300);
-            }
          } else {
-            // Se o chat não existir, busca todos os chats novamente
+            // Se o chat não existir, busca apenas o chat específico
             console.log(
-               `Chat ${chatId} não encontrado, buscando todos novamente`
+               `Chat ${chatId} não encontrado, buscando chat específico`
             );
-            fetchChats();
+            fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chatId}`, {
+               headers: {
+                  "Content-type": "application/json",
+                  Authorization: `Bearer ${token}`,
+               },
+               method: "GET",
+            })
+               .then((response) => response.json())
+               .then((newChat) => {
+                  setChats((prevChats) => {
+                     const updatedChats = [...prevChats];
+                     chatIdsRef.current.add(chatId);
+                     return [
+                        ...updatedChats,
+                        {
+                           ...newChat,
+                           ultimaMensagem: {
+                              conteudo: message.conteudo,
+                              timeStamp:
+                                 message.timeStamp || new Date().toISOString(),
+                              remetente: message.remetente,
+                           },
+                           naoLido: shouldMarkAsUnread,
+                        },
+                     ];
+                  });
+               })
+               .catch((error) => {
+                  console.error("Erro ao buscar chat específico:", error);
+               });
          }
       },
-      [fetchChats, updateChat, userId, selectedChat, forceUpdateChats]
+      [updateChat, userId, selectedChat, token]
    );
 
    // Inicializar WebSocket uma vez
    useEffect(() => {
+      if (!userId || !userName) {
+         console.log("Usuário não autenticado, não inicializando WebSocket");
+         return;
+      }
+
+      console.log("Inicializando WebSocket para usuário:", userId);
+
       const socket = new SockJS(`${process.env.NEXT_PUBLIC_BASE_URL}/ws/chat`);
       const client = new Client({
          webSocketFactory: () => socket,
@@ -225,6 +263,7 @@ export function ChatProvider({
          connectHeaders: {
             userId: userId,
             userName: userName,
+            Authorization: `Bearer ${token}`,
          },
       });
 
@@ -264,6 +303,7 @@ export function ChatProvider({
 
       client.activate();
       setStompClient(client);
+      clientRef.current = client;
 
       return () => {
          // Limpar todas as inscrições
@@ -282,7 +322,10 @@ export function ChatProvider({
 
    // Inscrever em novos chats quando a lista é atualizada
    useEffect(() => {
-      if (!stompClient || !stompClient.connected) return;
+      if (!stompClient || !stompClient.connected) {
+         console.log("Cliente STOMP não conectado, não inscrevendo em chats");
+         return;
+      }
 
       console.log(
          "Atualizando inscrições para chats:",
@@ -354,20 +397,15 @@ export function ChatProvider({
 
    // Buscar chats iniciais apenas uma vez
    useEffect(() => {
-      if (isInitialFetch.current) {
+      if (isInitialFetch.current && userId) {
+         console.log("Realizando busca inicial de chats");
          fetchChats();
          isInitialFetch.current = false;
       }
-   }, [fetchChats]);
+   }, [fetchChats, userId]);
 
    // Atualizar chats periodicamente para garantir sincronização
    useEffect(() => {
-      /*
-       * TODO: Implementar no backend:
-       * 1. Criar um endpoint que emite mensagens para '/topic/chat/global'
-       * 2. Publicar nesse tópico sempre que qualquer mensagem for enviada
-       * 3. Substituir este intervalo pela inscrição no tópico global:
-       */
       if (stompClient && stompClient.connected) {
          const globalSubscription = stompClient.subscribe(
             "/topic/chat/global",
@@ -388,7 +426,7 @@ export function ChatProvider({
             }
          };
       }
-   }, [fetchChats]);
+   }, [fetchChats, stompClient]);
 
    // Efeito para forçar atualização quando necessário
    useEffect(() => {
@@ -413,19 +451,19 @@ export function ChatProvider({
       subscriptions.current = {};
 
       // Desativar cliente se estiver conectado
-      if (stompClient?.connected) {
+      if (clientRef.current?.connected) {
          console.log("Desativando cliente WebSocket");
-         stompClient.deactivate();
+         clientRef.current.deactivate();
       }
 
       // Reativar a conexão após um delay maior
       setTimeout(() => {
-         if (stompClient && !stompClient.connected) {
+         if (clientRef.current && !clientRef.current.connected) {
             console.log("Reativando cliente WebSocket");
-            stompClient.activate();
+            clientRef.current.activate();
          }
-      }, 500); // Aumentado o delay para 500ms
-   }, [stompClient]);
+      }, 1000); // Aumentado o delay para 1000ms
+   }, []);
 
    const contextValue = {
       chats,
@@ -441,6 +479,7 @@ export function ChatProvider({
       addNewMessage,
       forceUpdateChats,
       resetConnection,
+      token,
    };
 
    return (

@@ -28,7 +28,8 @@ export default async function MeusHorarios({ params }: PageProps) {
       <Layout className="my-0">
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao titulo="Meus horários">
-               <FormularioHorarios id={paramsResolvidos.id} BASE_URL={BASE_URL} />
+               
+               <FormularioHorarios id={paramsResolvidos.id} BASE_URL={BASE_URL} token={session.accessToken || ""} />
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
       </Layout>

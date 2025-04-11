@@ -6,13 +6,15 @@ import CardReserva from "@/components/card/CardAgendamento";
 import { Roles } from "@/models/Enum/Roles";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
 
 interface AgendamentosPerfilProps {
   id: string;
   role: string;
+  token: string;
 }
 
-export default function AgendamentosPerfil({ id, role }: AgendamentosPerfilProps) {
+export default function AgendamentosPerfil({ id, role, token }: AgendamentosPerfilProps) {
   const [agendamentos, setAgendamentos] = useState<ModelAgendamento[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -21,14 +23,14 @@ export default function AgendamentosPerfil({ id, role }: AgendamentosPerfilProps
     const fetchAgendamentos = async () => {
       setLoading(true);
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/agendamentos/${role === Roles.CORRETOR ? "corretor" : "usuario"}/${id}?status=&data=&page=0&size=9&sort=dataHora,desc`
+        const response = await useFetchComAutorizacaoComToken(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/agendamentos/${role === Roles.CORRETOR ? "corretor" : "usuario"}/${id}?status=&data=&page=0&size=9&sort=dataHora,desc`,
+          {}, token
         );
         if (!response.ok) {
-          throw new Error("Erro ao buscar agendamentos");
+          throw new Error("Erro ao buscar agendamentos", await response.json());
         }
-        const data = await response.json();
-        // Ordenar por data mais recente e pegar apenas os 3 primeiros
+        const data = await response.json() as { content: ModelAgendamento[] };
         const agendamentosOrdenados = data.content.sort((a: ModelAgendamento, b: ModelAgendamento) => {
           return new Date(b.horario).getTime() - new Date(a.horario).getTime();
         }).slice(0, 3);
@@ -60,7 +62,7 @@ export default function AgendamentosPerfil({ id, role }: AgendamentosPerfilProps
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-havprincipal"></div>
            </div>
         ) : agendamentos.length > 0 ? (
-           <div className="grid grid-cols-1 gap-4 px-4 sm:px-0 max-w-[400px] mx-auto sm:max-w-[450px]">
+           <div className="flex flex-wrap  justify-around gap-12">
               {agendamentos.map((agendamento) => (
                  <CardReserva
                     key={agendamento.id}
@@ -71,11 +73,13 @@ export default function AgendamentosPerfil({ id, role }: AgendamentosPerfilProps
                     data={new Date(agendamento.horario).toLocaleDateString(
                        "pt-BR"
                     )}
-                    corretor={agendamento.nomeUsuario}
-                    usuario={agendamento.nomeCorretor}
+                    corretor={agendamento.corretor}
+                    usuario={agendamento.usuario}
                     status={agendamento.status}
                     localizacao={`${agendamento.endereco.cidade} - ${agendamento.endereco.bairro}`}
                     endereco={`${agendamento.endereco.rua}, ${agendamento.endereco.numeroCasaPredio}`}
+                    token={token}
+                    idImovel={agendamento.idImovel}
                  />
               ))}
            </div>

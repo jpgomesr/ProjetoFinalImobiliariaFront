@@ -21,12 +21,14 @@ import { restaurarCampos, preencherCampos } from "@/Functions/requisicaoViaCep";
 import SearchSelect from "@/components/SearchSelect";
 import { ModelCorretor } from "@/models/ModelCorretor";
 import { ModelProprietarioList } from "@/models/ModelProprietarioList";
+import { editarImovel } from "./action";
 
 interface FormularioProps {
    imovel: ModelImovelGet;
+   token: string;
 }
 
-const Formulario = ({ imovel }: FormularioProps) => {
+const Formulario = ({ imovel, token }: FormularioProps) => {
    const router = useRouter();
    const proprietarioModel: ModelProprietarioList[] = [];
    const corretoresModel: ModelCorretor[] = [];
@@ -110,9 +112,6 @@ const Formulario = ({ imovel }: FormularioProps) => {
    }, []);
 
    const preencherFormulario = (imovel: ModelImovelGet) => {
-      console.log(imovel.proprietario);
-      console.log(imovel.corretores);
-
       setValue("id", imovel.id.toString());
       setValue("titulo", imovel.titulo);
       setValue("descricao", imovel.descricao);
@@ -237,88 +236,23 @@ const Formulario = ({ imovel }: FormularioProps) => {
    }, [errors]);
 
    const handleEditarImovel = async (data: imovelValidatorSchema) => {
-      console.log(data);
+      try {
+         const resultado = await editarImovel(data, token, refImagensDeletadas);
 
-      const jsonRequest = {
-         titulo: data.titulo,
-         descricao: data.descricao,
-         tamanho: data.metragem,
-         qtdQuartos: data.qtdQuartos,
-         qtdBanheiros: data.qtdBanheiros,
-         qtdGaragens: data.qtdVagas,
-         qtdChurrasqueira: data.qtdChurrasqueiras,
-         qtdPiscina: data.qtdPiscinas,
-         finalidade: data.objImovel,
-         academia: data.academia,
-         preco: data.valor,
-         precoPromocional: data.valorPromo,
-         permitirDestaque: data.destaque,
-         habilitarVisibilidade: data.visibilidade,
-         banner: data.banner,
-         tipoBanner: data.tipoBanner,
-         iptu: data.iptu,
-         valorCondominio: data.valorCondominio,
-         idProprietario: data.proprietario.id,
-         ativo: data.visibilidade,
-         endereco: {
-            rua: data.rua,
-            bairro: data.bairro,
-            cidade: data.cidade,
-            estado: data.estado,
-            tipoResidencia: data.tipo,
-            cep: data.cep,
-            numeroCasaPredio: data.numero,
-            numeroApartamento: data.numeroApto,
-         },
-         corretores: data.corretores,
-      };
+         if (resultado.success) {
+            showNotification(resultado.message);
+            clearErrors();
 
-      const formData = new FormData();
-      const params = new URLSearchParams();
-      formData.append(
-         "imovel",
-         new Blob([JSON.stringify(jsonRequest)], { type: "application/json" })
-      );
-      if (
-         data.imagens.imagemPrincipal &&
-         data.imagens.imagemPrincipal instanceof File
-      ) {
-         formData.append("imagemPrincipal", data.imagens.imagemPrincipal);
-      }
-      if (
-         data.imagens.imagensGaleria &&
-         data.imagens.imagensGaleria.length > 0
-      ) {
-         data.imagens.imagensGaleria.forEach((imagem) => {
-            if (imagem instanceof File) {
-               formData.append("imagens", imagem);
-            }
-         });
-      }
-      if (refImagensDeletadas) {
-         refImagensDeletadas.forEach((ref) => {
-            params.append(`refImagensDeletadas`, ref);
-         });
-      }
-
-      const url = new URL(`${BASE_URL}/imoveis/${data.id}`);
-      url.search = params.toString();
-
-      const response = await fetch(url, {
-         method: "PUT",
-         body: formData,
-      });
-      console.log(await response.json());
-
-      if (response.ok) {
-         showNotification("Imóvel editado com sucesso");
-         clearErrors();
-
-         // Força revalidação e redireciona
-         router.refresh();
-         router.push("/gerenciamento/imoveis");
-      } else {
-         console.error("Erro ao salvar o imóvel");
+            // Força revalidação e redireciona
+            router.refresh();
+            router.push("/gerenciamento/imoveis");
+         } else {
+            console.error("Erro ao salvar o imóvel:", resultado.error);
+            showNotification("Erro ao editar imóvel");
+         }
+      } catch (error) {
+         console.error("Erro ao processar edição:", error);
+         showNotification("Ocorreu um erro ao processar sua solicitação");
       }
    };
 
@@ -542,7 +476,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
                                     mudandoValor={(value) =>
                                        field.onChange(value)
                                     }
-                                    bordaPreta={true}
+                                    
                                     divClassName="justify-end"
                                     differentSize="h-8"
                                  />
@@ -605,7 +539,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
                      render={({ field }) => (
                         <List
                            opcoes={objImovel}
-                           bordaPreta={true}
+                           
                            title="Objetivo"
                            value={field.value}
                            mudandoValor={(value) => field.onChange(value)}
@@ -620,7 +554,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
                      render={({ field }) => (
                         <List
                            opcoes={tiposDeImovel}
-                           bordaPreta={true}
+                           
                            title="Tipo"
                            value={field.value}
                            mudandoValor={(value) => field.onChange(value)}
@@ -817,6 +751,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
             <div className="flex flex-col gap-4">
                <div className="flex flex-row gap-2">
                   <SearchSelect
+                     token={token}
                      register={register("proprietario")}
                      mensagemErro={errors.proprietario?.message}
                      title="Proprietário"
@@ -832,6 +767,7 @@ const Formulario = ({ imovel }: FormularioProps) => {
                      isSingle
                   />
                   <SearchSelect
+                     token={token}
                      register={register("corretores")}
                      mensagemErro={errors.corretores?.message}
                      title="Corretores"

@@ -15,6 +15,7 @@ import { FaPencilAlt, FaUser } from "react-icons/fa";
 import { Mail, MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
 import AgendamentosPerfil from "./AgendamentosPerfil";
+import { Roles } from "@/models/Enum/Roles";
 
 interface FormularioPerfilProps {
    id: string;
@@ -26,24 +27,29 @@ interface FormularioPerfilProps {
       descricao: string;
       foto: string;
       role: string;
+      autenticacaoDoisFatoresHabilitado: boolean;
    };
+   token: string;
 }
 
 const FormularioPerfil = ({
    id,
    BASE_URL,
    dadosIniciais,
+   token,
 }: FormularioPerfilProps) => {
    const router = useRouter();
    const { showNotification } = useNotification();
    const [preview, setPreview] = useState<string>(dadosIniciais?.foto || "");
    const [selectedContact, setSelectedContact] = useState("");
+   const [doisFatores, setDoisFatores] = useState<boolean>(dadosIniciais?.autenticacaoDoisFatoresHabilitado || false);
    const [selected2FA, setSelected2FA] = useState<"email" | "sms" | null>(null);
    const fileInputRef = useRef<HTMLInputElement>(null);
 
    const usuarioValidator = createUsuarioValidator(false);
    type usuarioValidatorSchema = z.infer<typeof usuarioValidator>;
 
+   
    const {
       register,
       handleSubmit,
@@ -92,11 +98,13 @@ const FormularioPerfil = ({
                telefone: data.telefone?.trim() === "" ? null : data.telefone,
                descricao: data.descricao,
                role: data.tipoUsuario,
+               autenticacaoDoisFatoresHabilitado: doisFatores,
             },
             "usuario",
             "novaImagem",
             data.imagemPerfil,
-            "PUT"
+            "PUT",
+            token
          );
 
          if (!response.ok) {
@@ -255,7 +263,9 @@ const FormularioPerfil = ({
                            value={selectedContact}
                            onChange={(e) => setSelectedContact(e.target.value)}
                         >
-                           <option value="">Selecione a opção de contato</option>
+                           <option value="">
+                              Selecione a opção de contato
+                           </option>
                            <option value="email">E-mail</option>
                            <option value="telefone">Telefone</option>
                         </select>
@@ -301,21 +311,21 @@ const FormularioPerfil = ({
                         <button
                            type="button"
                            onClick={() =>
-                              setSelected2FA(
-                                 selected2FA === "email" ? null : "email"
-                              )
+                              setDoisFatores(!doisFatores)
                            }
                            className={`mt-3 sm:mt-4 px-4 sm:px-6 py-1 sm:py-2 text-xs sm:text-sm font-medium rounded-md transition-colors relative z-20 ${
-                              selected2FA === "email"
+                              doisFatores
                                  ? "bg-havprincipal text-white"
                                  : "border border-gray-300 hover:bg-gray-50"
                            }`}
                         >
-                           {selected2FA === "email" ? "SELECIONADO" : "SELECIONAR"}
+                           {doisFatores
+                              ? "SELECIONADO"
+                              : "SELECIONAR"}
                         </button>
                      </div>
                   </div>
-
+{/* 
                   <div className="col-span-2 flex flex-col gap-2">
                      <div className="w-full min-h-[160px] sm:min-h-[180px] md:min-h-[200px] xl:w-[980px] bg-white border border-gray-300 rounded-md p-3 sm:p-4 md:p-5 flex flex-col xl:flex-row items-center justify-between relative z-10">
                         <div className="flex flex-col xl:flex-row items-center gap-2 sm:gap-3 xl:gap-4">
@@ -327,17 +337,19 @@ const FormularioPerfil = ({
                                  Autenticação Via SMS
                               </span>
                               <p className="w-40 sm:w-48 xl:w-[650px] text-xs sm:text-sm xl:text-start text-gray-500 text-center px-2">
-                                 Use o seu número de telefone como o seu código de
-                                 autenticação de dois fatores (2FA).Você precisará
-                                 fornecer o código de segurança que o enviamos via
-                                 mensagem SMS
+                                 Use o seu número de telefone como o seu código
+                                 de autenticação de dois fatores (2FA).Você
+                                 precisará fornecer o código de segurança que o
+                                 enviamos via mensagem SMS
                               </p>
                            </div>
                         </div>
                         <button
                            type="button"
                            onClick={() =>
-                              setSelected2FA(selected2FA === "sms" ? null : "sms")
+                              setSelected2FA(
+                                 selected2FA === "sms" ? null : "sms"
+                              )
                            }
                            className={`mt-3 sm:mt-4 px-4 sm:px-6 py-1 sm:py-2 text-xs sm:text-sm font-medium rounded-md transition-colors relative z-20 ${
                               selected2FA === "sms"
@@ -345,21 +357,29 @@ const FormularioPerfil = ({
                                  : "border border-gray-300 hover:bg-gray-50"
                            }`}
                         >
-                           {selected2FA === "sms" ? "SELECIONADO" : "SELECIONAR"}
+                           {selected2FA === "sms"
+                              ? "SELECIONADO"
+                              : "SELECIONAR"}
                         </button>
                      </div>
-                  </div>
+                  </div> */}
                </div>
 
                {/* Seção de Agendamentos */}
+               {(dadosIniciais?.role === Roles.CORRETOR ||  dadosIniciais?.role === Roles.USUARIO)  && 
                <div className="mt-8 w-full sm:w-[90%] md:w-[95%] xl:w-[980px]">
-                  <AgendamentosPerfil id={id} role={dadosIniciais?.role || ""} />
-               </div>
+                  <AgendamentosPerfil
+                     id={id}
+                     role={dadosIniciais?.role || ""}
+                     token={token}
+                  />
+               </div> 
+               }
 
                <div className="flex justify-center gap-4 mt-4 xl:ml-96">
                   <BotaoPadrao
                      texto="Salvar"
-                     className="border border-black text-sm sm:text-base px-4 sm:px-6 py-1 sm:py-2"
+                     className="bg-havprincipal text-white text-sm sm:text-base px-4 sm:px-6 py-1 sm:py-2"
                      disabled={isSubmitting}
                      type="submit"
                   />

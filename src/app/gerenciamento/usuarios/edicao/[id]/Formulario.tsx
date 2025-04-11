@@ -29,10 +29,11 @@ import Link from "next/link";
 // Interface para os valores do formulário
 
 interface FormProps { 
-    usuario: ModelUsuario
+    usuario: ModelUsuario,
+    token: string
 }
 
-const Formulario = ({usuario} : FormProps) => {
+const Formulario = ({usuario, token} : FormProps) => {
    const { showNotification } = useNotification();
    const router = useRouter();
 
@@ -148,7 +149,8 @@ const Formulario = ({usuario} : FormProps) => {
             "usuario",
             "novaImagem",
             data.imagemPerfil,
-            "PUT"
+            "PUT",
+            token
          );
 
          if (!response.ok) {
@@ -168,6 +170,7 @@ const Formulario = ({usuario} : FormProps) => {
                   setFocus(primeiroCampoComErro);
                }
             }
+            console.log(responseData)
             throw new Error(responseData.mensagem || "Erro ao editar usuário.");
          }
 
@@ -252,7 +255,6 @@ const Formulario = ({usuario} : FormProps) => {
                      title="Tipo usuario"
                      opcoes={tiposDeUsuarios}
                      mudandoValor={field.onChange}
-                     bordaPreta
                      placeholder="Tipo usuario"
                      value={field.value || undefined}
                   />
@@ -268,7 +270,6 @@ const Formulario = ({usuario} : FormProps) => {
                      title="Status"
                      opcoes={opcoesStatus}
                      mudandoValor={field.onChange}
-                     bordaPreta
                      value={field.value}
                   />
                )}

@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { deletarUsuario, restaurarUsuario } from "./actions";
 import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
-
+import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
 interface ListaUsuariosProps {
    usuarios: ModelUsuarioListagem[] | undefined;
    peageableinfo: {
@@ -17,9 +17,10 @@ interface ListaUsuariosProps {
       maximoPaginasVisiveis: number;
    };
    numeroPaginaAtual: number;
+   token: string;
 }
 
-export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtual }: ListaUsuariosProps) {
+export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtual, token }: ListaUsuariosProps) {
    const router = useRouter();
    
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
@@ -32,9 +33,9 @@ export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtu
     setItemDeletadoId(null);
  };
  const desfazendoDelete = async () => {
-    await fetch(`${BASE_URL}/usuarios/restaurar/${itemDeletadoId}`, {
+    await useFetchComAutorizacaoComToken(`${BASE_URL}/usuarios/restaurar/${itemDeletadoId}`, {
        method: "POST",
-    });
+    }, token);
     router.refresh();
  };
 
@@ -56,15 +57,13 @@ export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtu
  };
  const confirmarDelecao = async () => {
     if (idItemParaDeletar) {
-       // Aqui você pode chamar a API para deletar o usuário
-       await fetch(`${BASE_URL}/usuarios/${idItemParaDeletar}`, {
+       await useFetchComAutorizacaoComToken(`${BASE_URL}/usuarios/${idItemParaDeletar}`, {
           method: "DELETE",
-       });
-       // Fecha o modal e recarrega a página para refletir as mudanças
+       }, token);
        setItemDeletadoId(idItemParaDeletar)
        setMostrarNotificacao(true)
        fecharModal();
-       router.refresh(); // Atualiza a página para refletir a deleção
+       router.refresh(); 
     }
  };
 

@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { signIn } from "next-auth/react";
 
 const codRecContaSchema = z.object({
    codigo: z.string().length(6, { message: "Código inválido" }),
@@ -11,7 +12,13 @@ const codRecContaSchema = z.object({
 
 type CodRecContaFormData = z.infer<typeof codRecContaSchema>;
 
-const CodRecContaForm = () => {
+interface CodRecContaFormProps {
+   email: string;
+   senha : string;
+   callbackUrl?: string;
+}
+
+const CodRecContaForm = ({ email, senha, callbackUrl }: CodRecContaFormProps) => {
    const [codigo, setCodigo] = useState<string[]>(["", "", "", "", "", ""]);
 
    const {
@@ -26,8 +33,14 @@ const CodRecContaForm = () => {
       },
    });
 
-   const onSubmit = (data: CodRecContaFormData) => {
-      console.log(data);
+   const onSubmit = async (data: CodRecContaFormData) => {
+      const response = await signIn("credentials", {
+         email: email,
+         password: senha,
+         codigo: data.codigo,
+         callbackUrl: callbackUrl || "/",
+         redirect: true,
+      });
    };
 
    const handleChange = (index: number, value: string) => {
@@ -63,7 +76,7 @@ const CodRecContaForm = () => {
       <div className="flex justify-center items-center w-full max-w-[450px]">
          <div className="flex flex-col gap-3 sm:gap-4 w-full bg-havprincipal text-white rounded-lg p-4 sm:p-5 md:p-6">
             <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center">
-               Recuperação de senha
+               Verificação de dois fatores
             </h1>
             {errors.codigo && (
                <div className="w-full flex justify-center">

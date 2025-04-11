@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Trash2, Search } from "lucide-react";
 import { UseFormRegisterReturn } from "react-hook-form";
+import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
 
 interface ModelPadraoSelect {
    id: number;
@@ -18,6 +19,7 @@ interface SearchSelectProps<T> {
    register: UseFormRegisterReturn;
    startSelected?: T | T[];
    isSingle?: boolean;
+   token: string;
 }
 
 const SearchSelect = <T extends ModelPadraoSelect>(
@@ -32,6 +34,7 @@ const SearchSelect = <T extends ModelPadraoSelect>(
       method = "GET",
       startSelected,
       isSingle = false, // Default to multiple selection
+      token,
    } = props;
 
    // Initialize state based on isSingle
@@ -51,9 +54,9 @@ const SearchSelect = <T extends ModelPadraoSelect>(
 
    useEffect(() => {
       const fetchData = async () => {
-         const response = await fetch(`${BASE_URL}${url}`, {
+         const response = await useFetchComAutorizacaoComToken(`${BASE_URL}${url}`, {
             method: method,
-         });
+         }, token);
          if (!response.ok) {
             throw new Error("Erro ao buscar dados");
          }

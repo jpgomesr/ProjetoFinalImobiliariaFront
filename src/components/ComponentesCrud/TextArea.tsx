@@ -30,7 +30,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
                               ${
                                  mensagemErro
                                     ? "border-red-500"
-                                    : "border-black"
+                                    : "border-gray-300 border-2"
                               }`}
                />
             </div>
