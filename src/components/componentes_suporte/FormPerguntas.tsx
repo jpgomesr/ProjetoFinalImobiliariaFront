@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -10,6 +10,7 @@ import { TipoPergunta } from "@/models/Enum/TipoPerguntaEnum";
 import InputPadrao from "@/components/InputPadrao";
 import TextAreaPadrao from "@/components/TextAreaPadrao";
 import BotaoPadrao from "@/components/BotaoPadrao";
+import Email from "next-auth/providers/email";
 
 const schema = z.object({
    titulo: z.string().min(1, "O título é obrigatório"),
@@ -17,7 +18,7 @@ const schema = z.object({
    tipoPergunta: z.nativeEnum(TipoPergunta, {
       required_error: "Selecione um tipo de pergunta",
    }),
-   email: z.string().email("Email inválido").optional(),
+   email: z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -32,9 +33,6 @@ const opcoesPergunta = [
 const FormPerguntas = () => {
    const { data: session } = useSession();
    const { showNotification } = useNotification();
-   const [tipoPergunta, setTipoPergunta] = useState<TipoPergunta>(
-      TipoPergunta.OUTROS
-   );
    const [isLoading, setIsLoading] = useState(false);
 
    const {
@@ -44,32 +42,44 @@ const FormPerguntas = () => {
       reset,
       setValue,
       watch,
+
    } = useForm<FormData>({
       resolver: zodResolver(schema),
       defaultValues: {
          email: session?.user?.email || undefined,
          tipoPergunta: TipoPergunta.OUTROS,
+         titulo: "",
+         mensagem: "",
       },
    });
 
+   useEffect(() => {
+      console.log(session?.user?.email)
+      console.log(errors);
+   }, [errors]);
+
    const onSubmit = async (data: FormData) => {
       try {
+         console.log("Iniciando envio de pergunta:", data);
          setIsLoading(true);
-         const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-         const response = await fetch(`${BASE_URL}/perguntas`, {
-            method: "POST",
-            headers: {
-               "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-               titulo: data.titulo,
-               mensagem: data.mensagem,
-               tipoPergunta: data.tipoPergunta,
-               email: session?.user?.email || data.email,
-               data: new Date(),
-               perguntaRespondida: false,
-            }),
-         });
+
+         const response = await fetch(
+            process.env.NEXT_PUBLIC_BASE_URL + "/perguntas",
+            {
+               method: "POST",
+               headers: {
+                  "Content-Type": "application/json",
+               },
+               body: JSON.stringify({
+                  tipoPergunta: data.tipoPergunta,
+                  mensagem: data.mensagem,
+                  email: session?.user?.email || data.email || "",
+                  titulo: data.titulo,
+                  data: new Date(),
+                  perguntaRespondida: false,
+               }),
+            }
+         );
 
          if (!response.ok) {
             const errorData = await response.json();
@@ -83,8 +93,8 @@ const FormPerguntas = () => {
             tipoPergunta: TipoPergunta.OUTROS,
             email: session?.user?.email || undefined,
          });
-         setTipoPergunta(TipoPergunta.OUTROS);
       } catch (error) {
+         console.error("Erro ao enviar pergunta:", error);
          showNotification(
             error instanceof Error ? error.message : "Erro ao enviar pergunta"
          );
@@ -94,8 +104,7 @@ const FormPerguntas = () => {
    };
 
    const handleTipoPerguntaChange = (tipo: TipoPergunta) => {
-      setTipoPergunta(tipo);
-      setValue("tipoPergunta", tipo);
+      setValue("tipoPergunta", tipo, { shouldValidate: true });
    };
 
    const tipoPerguntaSelecionada = watch("tipoPergunta");
@@ -118,6 +127,11 @@ const FormPerguntas = () => {
                   />
                ))}
             </div>
+            <input
+               type="hidden"
+               {...register("tipoPergunta")}
+               defaultValue={TipoPergunta.OUTROS}
+            />
             {errors.tipoPergunta && (
                <p className="text-red-500 text-sm">
                   {errors.tipoPergunta.message}

@@ -1,9 +1,9 @@
-"use server";
+"use client";
 
 import { TipoPergunta } from "@/models/Enum/TipoPerguntaEnum";
 import ModelPergunta from "@/models/ModelPergunta";
 import { z } from "zod";
-
+import { useSession } from "next-auth/react";
 const perguntaSchema = z.object({
    tipoPergunta: z.string().min(1, "Selecione um assunto"),
    email: z.string().email("Email inválido"),
@@ -19,24 +19,53 @@ interface EnviarPerguntaProps {
    tipoPergunta: TipoPergunta;
    mensagem: string;
    email: string;
+   titulo: string;
 }
 
 export async function enviarPergunta({
    tipoPergunta,
    mensagem,
    email,
+   titulo,
 }: EnviarPerguntaProps) {
    try {
-      // TODO: Implementar a chamada à API
+      const url = process.env.NEXT_PUBLIC_BASE_URL + "/perguntas";
+      const session = useSession();
+      const token = session.data?.accessToken;
+
+      const response = await fetch(url, {
+         method: "POST",
+         headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+         },
+         body: JSON.stringify({
+            tipoPergunta,
+            mensagem,
+            email,
+            titulo,
+            data: new Date(),
+            perguntaRespondida: false,
+         }),
+      });
+
+      if (!response.ok) {
+         const errorData = await response.json();
+         throw new Error(errorData.error || "Erro ao enviar pergunta");
+      }
+
+      const data = await response.json();
+
       return {
          success: true,
-         data: null,
+         data,
       };
    } catch (error) {
       console.error("Erro ao enviar pergunta:", error);
       return {
          success: false,
-         error: "Erro ao enviar pergunta",
+         error:
+            error instanceof Error ? error.message : "Erro ao enviar pergunta",
       };
    }
 }

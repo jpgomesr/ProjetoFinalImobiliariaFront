@@ -90,9 +90,14 @@ const CardPergunta = ({
       try {
          const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
          const response = await fetch(
-            `${BASE_URL}/perguntas/${id}?resposta=${respostaTexto}`,
+            `${BASE_URL}/perguntas/${id}?resposta=${encodeURIComponent(
+               respostaTexto
+            )}&perguntaRespondida=true`,
             {
                method: "PATCH",
+               headers: {
+                  "Content-Type": "application/json",
+               },
             }
          );
 

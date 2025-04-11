@@ -1,78 +1,70 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
-import CardPerguntaRespondida from "./CardPerguntaRespondida";
 import { buscarPerguntasRespondidas } from "@/app/perguntas-respondidas/action";
+import ModelPergunta from "@/models/ModelPergunta";
+import { useNotification } from "@/context/NotificationContext";
+import CardPerguntaRespondida from "./CardPerguntaRespondida";
 
-interface Pergunta {
-   id: string;
-   tipoPergunta: string;
-   email: string;
-   titulo: string;
-   mensagem: string;
-   data: string;
-   resposta: string;
-   idAdministrador?: string;
-   idEditor?: string;
-}
-
-const ListaPerguntasRespondidas: React.FC = () => {
-   const [perguntas, setPerguntas] = useState<Pergunta[]>([]);
-   const [loading, setLoading] = useState(true);
-   const [error, setError] = useState<string | null>(null);
+const ListaPerguntasRespondidas = () => {
+   const [questions, setQuestions] = useState<ModelPergunta[]>([]);
+   const [isLoading, setIsLoading] = useState(true);
+   const { showNotification } = useNotification();
 
    useEffect(() => {
       const carregarPerguntas = async () => {
          try {
+            setIsLoading(true);
             const resultado = await buscarPerguntasRespondidas();
 
-            if (resultado.success) {
-               setPerguntas(resultado.data);
+            if (resultado?.success) {
+               setQuestions(resultado.data || []);
             } else {
-               throw new Error(
-                  resultado.error || "Erro ao carregar perguntas respondidas"
-               );
+               showNotification("Erro ao carregar perguntas respondidas");
             }
          } catch (error) {
-            console.error("Erro ao carregar perguntas:", error);
-            setError("Não foi possível carregar as perguntas respondidas");
+            showNotification("Erro ao carregar perguntas respondidas");
          } finally {
-            setLoading(false);
+            setIsLoading(false);
          }
       };
 
       carregarPerguntas();
    }, []);
 
-   if (loading) {
-      return (
-         <div className="flex justify-center items-center min-h-[400px]">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-havprincipal"></div>
-         </div>
-      );
-   }
-
-   if (error) {
-      return (
-         <div className="text-center text-red-500 p-4">
-            <p>{error}</p>
-         </div>
-      );
-   }
-
-   if (perguntas.length === 0) {
-      return (
-         <div className="text-center p-8">
-            <p className="text-gray-500">
-               Nenhuma pergunta respondida encontrada.
-            </p>
-         </div>
-      );
-   }
-
    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-         {perguntas.map((pergunta) => (
-            <CardPerguntaRespondida key={pergunta.id} {...pergunta} />
-         ))}
+      <div className="flex flex-col gap-4 w-full max-w-3xl mx-auto">
+         {isLoading ? (
+            <div className="text-center py-4">Carregando...</div>
+         ) : questions.length === 0 ? (
+            <div className="text-center py-4">
+               Nenhuma pergunta respondida encontrada
+            </div>
+         ) : (
+            questions.map((question, key) => (
+               <CardPerguntaRespondida
+                  key={key}
+                  id={question.id}
+                  tipoPergunta={
+                     question.tipoPergunta === "LOGIN_OU_CADASTRO"
+                        ? "Login ou Cadastro"
+                        : question.tipoPergunta === "PAGAMENTOS"
+                        ? "Pagamentos"
+                        : question.tipoPergunta === "PROMOCOES"
+                        ? "Promoções"
+                        : "Outros"
+                  }
+                  titulo={question.titulo}
+                  email={question.email}
+                  mensagem={question.mensagem}
+                  data={question.data}
+                  perguntaRespondida={question.perguntaRespondida}
+                  resposta={question.resposta}
+                  idAdministrador={question.idAdministrador}
+                  idEditor={question.idEditor}
+               />
+            ))
+         )}
       </div>
    );
 };
