@@ -24,11 +24,11 @@ interface Pessoa {
 
 export interface ModelImovelGet {
    banner: boolean;
-   destaque : boolean;
+   destaque: boolean;
    descricao: string;
    endereco: Endereco;
    finalidade: string;
-   habilitarVisibilidade: boolean;
+   ativo: boolean;
    id: number;
    imagens: Imagem[];
    permitirDestaque: boolean;
@@ -77,7 +77,8 @@ export interface ModelImovelGetId {
       foto: string;
    }[];
    endereco: EnderecoMapBox;
-   favoritado : boolean
+   favoritado: boolean;
+   ativo: boolean;
 }
 
 export interface ImovelSemelhanteModel {
