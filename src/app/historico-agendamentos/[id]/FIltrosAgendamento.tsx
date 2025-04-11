@@ -44,6 +44,10 @@ const FIltrosAgendamento = ({ id, url, status = "", data }: FiltrosAgendamentoPr
          label: "Pendente",
       },
       {
+         id: "CONCLUIDO",
+         label: "Concluido",
+      },
+      {
          id: "",
          label: "Todos",
       },
