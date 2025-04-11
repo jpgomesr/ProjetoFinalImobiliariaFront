@@ -18,7 +18,7 @@ const Page = async () => {
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
-            <FormularioCadastroUsuario />
+            <FormularioCadastroUsuario token={session.accessToken || ""} />
          </SubLayoutPaginasCRUD>
       </Layout>
    );

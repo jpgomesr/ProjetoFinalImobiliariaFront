@@ -1,309 +1,77 @@
-"use client";
-
 import Layout from "@/components/layout/LayoutPadrao";
-import {
-   BedDouble,
-   Car,
-   Heart,
-   Ruler,
-   Share2,
-   ShowerHead,
-   WavesLadder,
-   ChevronLeft,
-   ChevronRight,
-} from "lucide-react";
-import Image from "next/image";
-import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Heart } from "lucide-react";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { EnderecoMapBox } from "@/models/ModelEnrecoMapBox";
-import CardImovel from "@/components/card/CardImovel";
-import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
-import ExibirCorretores from "@/components/componentes_sobre_nos/ExibirCorretores";
+import GaleriaImagens from "@/components/galeria/GaleriaImagens";
+import Image from "next/image";
 import Link from "next/link";
-import LayoutPadraoClient from "@/components/layout/LayoutPadraoClient";
-// Importação dinâmica do MapboxMap para evitar problemas de SSR
-const MapboxMap = dynamic(() => import("@/components/Mapboxmap"), {
-   ssr: false,
-   loading: () => <p>Carregando mapa...</p>,
-});
-
-// Defina a interface para o tipo Imovel
-interface Imovel {
-   id: number;
-   titulo: string;
-   descricao: string;
-   preco: number;
-   precoPromocional?: number;
-   iptu: string;
-   condominio: string;
-   tamanho: string;
-   qtdBanheiros: number;
-   qtdQuartos: number;
-   qtdGaragens: number;
-   qtdPiscina: number;
-   qtdChurrasqueira: number;
-   imagens: {
-      id: number;
-      imagemCapa: boolean;
-      referencia: string;
-   }[];
-   corretores: {
-      id: number;
-      nome: string;
-      email: string;
-      telefone: string;
-      foto: string;
-   }[];
-   endereco: EnderecoMapBox;
+import CardImovel from "@/components/card/CardImovel";
+import {
+   buscarIdsImoveis,
+   buscarImoveisSemelhantes,
+   buscarImovelPorIdPaginaImovel,
+} from "@/Functions/imovel/buscaImovel";
+import Share from "@/components/Share";
+import MapboxMap from "@/components/Mapboxmap";
+import ExibirCorretores from "@/components/componentes_sobre_nos/ExibirCorretores";
+import IntermediarioBotaoFavorito from "./IntermediarioBotaoFavorito";
+interface PageProps {
+   params: Promise<{
+      id: string;
+   }>;
+}
+export async function generateStaticParams() {
+   const ids = await buscarIdsImoveis();
+   return ids.map((id) => ({ id: id.toString() }));
 }
 
-interface ImovelSemelhante {
-   id: number;
-   titulo: string;
-   preco: number;
-   precoPromocional?: number;
-   qtdBanheiros: number;
-   qtdQuartos: number;
-   imagens: {
-      id: number;
-      imagemCapa: boolean;
-      referencia: string;
-   }[];
-}
-
-const Page = () => {
+const Page = async ({ params }: PageProps) => {
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-   const [showCopiedMessage, setShowCopiedMessage] = useState(false);
-   const [isLoading, setIsLoading] = useState(true);
 
    if (!BASE_URL) {
       throw new Error("A variável NEXT_PUBLIC_BASE_URL não está definida.");
    }
+   const paramsResolvidos = await params;
 
-   const { id } = useParams(); // Obtém o ID do imóvel da URL
-   const [imovel, setImovel] = useState<Imovel | null>(null); // Define o tipo do estado
-   const [loading, setLoading] = useState(true);
-   const [error, setError] = useState<string | null>(null);
-   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-   const [imoveisSemelhantes, setImoveisSemelhantes] = useState<
-      ImovelSemelhante[]
-   >([]);
+   const { id } = paramsResolvidos;
+   const imovel = await buscarImovelPorIdPaginaImovel(id, 60);
+   console.log(imovel)
 
-   // Imagem padrão
-   const IMAGEM_PADRAO =
-      "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg";
 
-   // Função para buscar os dados do imóvel
-   useEffect(() => {
-      if (!id) return; // Verifica se o ID está disponível
-
-      const fetchImovel = async () => {
-         try {
-            const response = await fetch(`${BASE_URL}/imoveis/${id}`);
-            if (!response.ok) {
-               throw new Error("Erro ao buscar os dados do imóvel");
-            }
-            const data = await response.json();
-            setImovel(data);
-         } catch (err) {
-            if (err instanceof Error) {
-               setError(err.message);
-            } else {
-               setError("Ocorreu um erro desconhecido");
-            }
-         } finally {
-            setLoading(false);
-         }
-      };
-
-      fetchImovel();
-   }, [id]);
-
-   const buscarImoveisSemelhantes = async () => {
-      try {
-         const response = await buscarTodosImoveis();
-         console.log("Todos os imóveis:", response); // Debug todos os imóveis
-         console.log("Imóvel atual:", imovel); // Debug imóvel atual
-
-         // Garantir que response.imoveis é um array antes de usar filter
-         const imoveis = Array.isArray(response.imoveis)
-            ? response.imoveis
-            : [];
-         console.log("Imóveis para filtrar:", imoveis); // Debug array de imóveis
-
-         if (!imovel) return; // Garantir que temos o imóvel atual
-
-         const semelhantes = imoveis.filter(
-            (imovelComparado: ImovelSemelhante) => {
-               console.log("Comparando com:", imovelComparado); // Debug cada comparação
-
-               // Validar se o imóvel comparado tem todos os campos necessários
-               if (
-                  !imovelComparado ||
-                  typeof imovelComparado.preco !== "number" ||
-                  !imovelComparado.qtdBanheiros ||
-                  !imovelComparado.qtdQuartos
-               ) {
-                  console.log("Imóvel inválido:", imovelComparado);
-                  return false;
-               }
-
-               if (imovelComparado.id === Number(id)) {
-                  console.log("Mesmo imóvel, ignorando");
-                  return false;
-               }
-               try {
-                  const precoAtual = imovel.preco;
-                  const precoComparado = imovelComparado.preco;
-                  const diferencaPreco = Math.abs(precoAtual - precoComparado);
-
-                  console.log("Preços:", {
-                     atual: precoAtual,
-                     comparado: precoComparado,
-                     diferenca: diferencaPreco,
-                  });
-
-                  console.log("Comparações:", {
-                     banheiros:
-                        imovelComparado.qtdBanheiros === imovel.qtdBanheiros,
-                     quartos: imovelComparado.qtdQuartos === imovel.qtdQuartos,
-                     preco: diferencaPreco <= 5000,
-                  });
-
-                  const isSemelhante =
-                     imovelComparado.qtdBanheiros === imovel.qtdBanheiros ||
-                     imovelComparado.qtdQuartos === imovel.qtdQuartos ||
-                     diferencaPreco <= 5000;
-
-                  console.log("É semelhante?", isSemelhante);
-                  return isSemelhante;
-               } catch (err) {
-                  console.error("Erro ao comparar imóvel:", err);
-                  return false;
-               }
-            }
-         );
-
-         console.log("Imóveis semelhantes encontrados:", semelhantes); // Debug resultado final
-         setImoveisSemelhantes(semelhantes);
-      } catch (err) {
-         console.error("Erro ao buscar imóveis semelhantes:", err);
-      }
-   };
-
-   useEffect(() => {
-      if (imovel) {
-         buscarImoveisSemelhantes();
-      }
-   }, [imovel]);
-
-   console.log(imovel);
-
-   if (loading) {
-      return <p>Carregando...</p>;
-   }
-
-   if (error) {
-      return <p>Erro: {error}</p>;
-   }
+      const imoveisSemelhantes : any  = await buscarImoveisSemelhantes(imovel, 60) ;
+   
 
    if (!imovel) {
       return <p>Imóvel não encontrado.</p>;
    }
 
-   const handleNextImage = () => {
-      setCurrentImageIndex((prev) =>
-         prev === imovel.imagens.length - 1 ? 0 : prev + 1
-      );
-   };
-
-   const handlePreviousImage = () => {
-      setCurrentImageIndex((prev) =>
-         prev === 0 ? imovel.imagens.length - 1 : prev - 1
-      );
-   };
-
-   const handleShare = async () => {
-      try {
-         await navigator.clipboard.writeText(window.location.href);
-         setShowCopiedMessage(true);
-         setTimeout(() => {
-            setShowCopiedMessage(false);
-         }, 2000);
-      } catch (err) {
-         console.error("Erro ao copiar link:", err);
-      }
+   const valorFormatado = (valor: number) => {
+      return valor.toLocaleString("pt-BR", {
+         style: "currency",
+         currency: "BRL",
+      });
    };
 
    return (
-      <LayoutPadraoClient className="bg-begeClaroPadrao py-8">
+      <Layout className="bg-begeClaroPadrao py-8">
          <div className="flex flex-col items-center w-full gap-1 md:flex-row md:px-8 md:items-start">
-            {/* Imagem principal */}
-            <div className="flex w-11/12 flex-col gap-1 items-center md:items-start lg:ml-24 md:ml-20">
-               <div className="flex justify-center items-center w-full relative">
-                  <button
-                     onClick={handlePreviousImage}
-                     className="absolute left-0 md:left-[8%] z-10 bg-havprincipal/50 hover:bg-havprincipal p-1 md:p-2 rounded-full text-begepadrao"
-                  >
-                     <ChevronLeft className="w-4 h-4 md:w-6 md:h-6" />
-                  </button>
-                  <Image
-                     src={
-                        imovel.imagens[currentImageIndex]?.referencia ||
-                        IMAGEM_PADRAO
-                     }
-                     alt="House image"
-                     width={1920}
-                     height={1080}
-                     className="w-full md:w-10/12 lg:w-[400px] md:w-[300px] aspect-[16/9] object-cover"
-                  />
-                  <button
-                     onClick={handleNextImage}
-                     className="absolute right-0 md:right-[8%] z-10 bg-havprincipal/50 hover:bg-havprincipal p-1 md:p-2 rounded-full text-begepadrao"
-                  >
-                     <ChevronRight className="w-4 h-4 md:w-6 md:h-6" />
-                  </button>
-               </div>
-               {/* Grid de 3 imagens */}
-               <div className="grid grid-cols-3 w-full md:w-10/12 gap-1 lg:w-[400px] md:w-[300px] mx-auto">
-                  {[...imovel.imagens, ...imovel.imagens] // Duplicamos o array para permitir rotação circular
-                     .slice(currentImageIndex + 1, currentImageIndex + 4) // Pegamos as próximas 3 imagens após a atual
-                     .map((imagem, index) => (
-                        <Image
-                           key={`${imagem.id}-${index}`}
-                           src={imagem.referencia || IMAGEM_PADRAO}
-                           alt="House image"
-                           width={1920}
-                           height={1080}
-                           className="w-full aspect-[16/9] object-cover cursor-pointer"
-                           onClick={() => {
-                              const targetIndex =
-                                 (currentImageIndex + 1 + index) %
-                                 imovel.imagens.length;
-                              setCurrentImageIndex(targetIndex);
-                           }}
-                        />
-                     ))}
-               </div>
+            <div className="w-11/12 lg:ml-24 md:ml-20">
+               <GaleriaImagens imagens={imovel.imagens} />
             </div>
 
-            {/* Textos alinhados com as imagens */}
             <div className="w-9/12 font-inter text-havprincipal mt-3 md:mt-0 md:ml-24 lg:ml-0">
                <p className="font-medium text-sm md:text-xl">À venda por</p>
                {imovel.precoPromocional ? (
                   <>
                      <h1 className="font-extrabold text-xl text-shadow md:text-3xl">
-                        R${imovel.precoPromocional}
+                        {valorFormatado(imovel.precoPromocional)}
                      </h1>
                      <p className="text-sm line-through opacity-75">
-                        R${imovel.preco}
+                        {valorFormatado(imovel.preco)}
                      </p>
                   </>
                ) : (
                   <h1 className="font-extrabold text-xl text-shadow md:text-3xl">
-                     R${imovel.preco}
+                     {valorFormatado(imovel.preco)}
                   </h1>
                )}
                <p className="font-semibold md:text-xl">{imovel.titulo}</p>
@@ -312,12 +80,14 @@ const Page = () => {
                </p>
                {imovel.iptu && (
                   <p className="mt-2">
-                     <strong>IPTU:</strong> R${imovel.iptu}
+                     <strong>IPTU:</strong>{" "}
+                     {valorFormatado(Number(imovel.iptu))}
                   </p>
                )}
                {imovel.condominio && (
                   <p className="mt-2">
-                     <strong>Condominio:</strong> R${imovel.condominio}
+                     <strong>Condominio:</strong>{" "}
+                     {valorFormatado(Number(imovel.condominio))}
                   </p>
                )}
                <div className="flex gap-5 mt-2">
@@ -329,15 +99,11 @@ const Page = () => {
                      </Link>
                   </button>
                   <div className="mt-1 flex gap-3 relative">
-                     <button onClick={handleShare} className="relative">
-                        <Share2 />
-                        {showCopiedMessage && (
-                           <span className="absolute -top-10 left-1/2  transform -translate-x-1/2 bg-havprincipal text-white text-sm py-1 px-2 rounded whitespace-nowrap">
-                              Link copiado!
-                           </span>
-                        )}
-                     </button>
-                     <Heart />
+                     <Share />
+                     <IntermediarioBotaoFavorito
+                        favoritado={imovel.favoritado}
+                        idImovel={imovel.id}
+                     />       
                   </div>
                </div>
             </div>
@@ -356,11 +122,22 @@ const Page = () => {
             />
          </div>
 
-         <h2 className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl font-semibold flex justify-center items-center mx-auto mt-8 mb-8">
+         <h2
+            className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl 
+                        font-semibold flex justify-center items-center mx-auto mt-8 mb-8"
+         >
             Selecione um de nossos corretores e tenha uma conversa via chat
          </h2>
-         <ExibirCorretores corretores={imovel.corretores} />
-         <h2 className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl font-semibold flex justify-center items-center mx-auto mt-8 mb-8">
+         <ExibirCorretores
+            corretores={imovel.corretores.map((corretor) => ({
+               ...corretor,
+               agendamentos: 0, // Changed from empty array to number to match ExibirCorretor type
+            }))}
+         />
+         <h2
+            className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl 
+                        font-semibold flex justify-center items-center mx-auto mt-8 mb-8"
+         >
             Converse conosco via WhatsApp
          </h2>
          <div className="flex justify-center items-center mb-8">
@@ -381,22 +158,22 @@ const Page = () => {
          </div>
 
          {/* Seção de Imóveis Semelhantes */}
-         {imoveisSemelhantes.length > 0 && (
+         {imoveisSemelhantes && imoveisSemelhantes.length > 0 && (
             <div className="mt-10 px-8">
                <h2 className="text-2xl font-semibold text-havprincipal mb-6 flex justify-center items-center">
                   Imóveis Semelhantes
                </h2>
                <div className="flex flex-row gap-4 overflow-x-auto pb-4 hide-scrollbar">
-                  {imoveisSemelhantes.map((imovelSemelhante) => (
+                  {imoveisSemelhantes.map((imovelSemelhante: any) => (
                      <CardImovel
                         key={imovelSemelhante.id}
-                        imovel={imovelSemelhante as any}
+                        imovel={imovelSemelhante}
                      />
                   ))}
                </div>
             </div>
          )}
-      </LayoutPadraoClient>
+      </Layout>
    );
 };
 

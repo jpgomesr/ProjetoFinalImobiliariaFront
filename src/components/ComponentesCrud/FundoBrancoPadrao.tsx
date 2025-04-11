@@ -9,7 +9,7 @@ import React from "react";
 const FundoBrancoPadrao = (props: FundoBrancoPadraoProps) => {
    return (
       <div
-         className="py-4 px-4  flex flex-col bg-white w-11/12 rounded-md
+         className="py-4 px-4  flex flex-col bg-white w-11/12 rounded-md   
       md:w-10/12
       lg:py-6 lg:px-6
       2xl:py-8 2xl:px-8

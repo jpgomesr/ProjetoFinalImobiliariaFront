@@ -45,7 +45,7 @@ async function ConteudoPrincipal({ searchParams }: PageProps) {
       tipoUsuario,
       statusBooleano,
       nomePesquisa,
-      10
+      10,
    );
 
    // Informações de paginação
@@ -66,6 +66,7 @@ async function ConteudoPrincipal({ searchParams }: PageProps) {
             usuarios={usuariosRenderizados}
             peageableinfo={peageableinfo}
             numeroPaginaAtual={numeroPaginaAtual}
+            token={session.accessToken ?? ""}
          />
       </FundoBrancoPadrao>
    );

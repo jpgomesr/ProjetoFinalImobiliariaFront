@@ -45,7 +45,7 @@ const Page = async  ({params }  : PageProps) => {
                titulo="Edição de proprietário"
                className={`w-full`}
                >
-               <Formulario proprietario={proprietario}/>
+               <Formulario proprietario={proprietario} token={session.accessToken || ""}/>
               
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>

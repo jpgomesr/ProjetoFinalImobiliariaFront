@@ -1,14 +1,6 @@
-"use client";
-
-import React from "react";
-import { useSearchParams } from "next/navigation";
-import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
 import ListText from "@/components/ListText";
 
-const PerguntasFrequentesClient = () => {
-   const searchParams = useSearchParams();
-   const opcaoSelecionada = searchParams.get("opcao");
-
+const ListaPerguntasFrequentes = () => {
    return (
       <div className="flex flex-col gap-4">
          <ListText
@@ -75,4 +67,4 @@ const PerguntasFrequentesClient = () => {
    );
 };
 
-export default PerguntasFrequentesClient; 
+export default ListaPerguntasFrequentes;

@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-
+import { useNotification } from "@/context/NotificationContext";
 const trocaSenhaSchema = z
    .object({
       newPassword: z
@@ -35,10 +35,11 @@ const trocaSenhaSchema = z
 
 type TrocaSenhaFormData = z.infer<typeof trocaSenhaSchema>;
 
-const TrocaSenhaForm = () => {
+const TrocaSenhaForm = ({token}: {token: string}) => {
    const [showPassword, setShowPassword] = useState(false);
    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
    const router = useRouter();
+   const {showNotification} = useNotification();
    const {
       register,
       handleSubmit,
@@ -53,7 +54,27 @@ const TrocaSenhaForm = () => {
    });
 
    const onSubmit = (data: TrocaSenhaFormData) => {
-      console.log(data);
+      const fetchData = async () => {
+         const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/usuarios/redefinir-senha`, {
+            method: "PATCH",
+            body: JSON.stringify({
+               token: token, 
+               senha: data.newPassword.toString(),
+            }),
+            headers: {
+               "Content-Type": "application/json",
+            },
+         });
+         if (response.ok) {
+            router.push("/api/auth/signin");
+         }
+         else{
+            const data = await response.json();
+            console.log(data);
+            showNotification(data.mensagem || "Ocorreu um erro ao redefinir a senha")
+         }
+      };
+      fetchData();
    };
 
    return (

@@ -38,16 +38,18 @@ const InputPadrao = ({
 
          <div
             className={`relative flex items-center rounded-md border ${
-               mensagemErro ? "border-red-500" : "border-black"
+               mensagemErro ? "border-red-500" : "border-gray-300 border-2"
             } ${props.disabled ? "opacity-30" : ""}`}
          >
             <input
                {...props}
                className={twMerge(
-                  `h-6 w-full focus:outline-none text-[10px] bg-transparent border-none  px-2
+                  `h-6 w-full focus:outline-none text-[10px] bg-transparent border-none px-2
                   md:h-8 md:text-sm
                   lg:h-10 lg:py-3 lg:px-3
                   xl:h-12 xl:text-base xl:py-3 xl:px-4
+                  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none 
+                  [&::-webkit-inner-spin-button]:appearance-none
                   ${search ? "pl-2" : ""}`,
                   props.className
                )} // Adiciona padding à esquerda se search for true
@@ -56,6 +58,7 @@ const InputPadrao = ({
                      e.preventDefault();
                   }
                }}
+               min={0}
             />
             {search && ( // Renderiza o botão de lupa se search for true
                <button

@@ -1,3 +1,4 @@
+import { fetchComAutorizacao } from "@/hooks/FetchComAuthorization";
 import ModelUsuario from "@/models/ModelUsuario";
 import ModelUsuarioListagem from "@/models/ModelUsuarioListagem";
 
@@ -13,7 +14,7 @@ interface retornoListaUsuarios {
 
 export const listarUsuarios =  async (numeroPagina:number, tipoUsuario?:string, status? : boolean, nomePesquisa?:string,tamanhoPagina? : number)  : Promise<retornoListaUsuarios> => {
 
-    const response = await fetch(
+    const response = await fetchComAutorizacao(
         `${BASE_URL}/usuarios?role=${tipoUsuario}&ativo=${
            status}&nome=${nomePesquisa}&page=${numeroPagina}&size=${tamanhoPagina}`
      );
@@ -27,7 +28,7 @@ export const listarUsuarios =  async (numeroPagina:number, tipoUsuario?:string, 
 }
 export const buscarUsuarioPorId = async (id : string) => {
 
-    const response = await fetch(`${BASE_URL}/usuarios/${id}`);
+    const response = await fetchComAutorizacao(`${BASE_URL}/usuarios/${id}`);
 
     const data = await response.json();
 

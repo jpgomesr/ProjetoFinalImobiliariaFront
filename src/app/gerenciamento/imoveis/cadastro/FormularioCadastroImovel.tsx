@@ -21,8 +21,11 @@ import { ModelProprietarioList } from "@/models/ModelProprietarioList";
 import { ModelCorretor } from "@/models/ModelCorretor";
 import SearchSelect from "@/components/SearchSelect";
 import Link from "next/link";
+interface FormularioCadastroImovelProps {
+   token: string;
+}
 
-const FormularioCadastroImovel = () => {
+const FormularioCadastroImovel = (props: FormularioCadastroImovelProps) => {
    const router = useRouter();
    const { showNotification } = useNotification();
    const proprietarioModel: ModelProprietarioList[] = [];
@@ -38,7 +41,7 @@ const FormularioCadastroImovel = () => {
 
    const [coverImage, setCoverImage] = useState<string | null>(null);
    const [galleryImages, setGalleryImages] = useState<File[]>([]);
- 
+
    const imovelValidator = createImovelValidator();
    type imovelValidatorSchema = z.infer<typeof imovelValidator>;
 
@@ -427,7 +430,6 @@ const FormularioCadastroImovel = () => {
                                        mudandoValor={(value) =>
                                           field.onChange(value)
                                        }
-                                       bordaPreta={true}
                                        divClassName="justify-end"
                                        differentSize="h-8"
                                     />
@@ -496,7 +498,6 @@ const FormularioCadastroImovel = () => {
                         render={({ field }) => (
                            <List
                               opcoes={objImovel}
-                              bordaPreta={true}
                               title="Objetivo"
                               value={field.value}
                               mudandoValor={(value) => field.onChange(value)}
@@ -511,7 +512,6 @@ const FormularioCadastroImovel = () => {
                         render={({ field }) => (
                            <List
                               opcoes={tiposDeImovel}
-                              bordaPreta={true}
                               title="Tipo"
                               value={field.value}
                               mudandoValor={(value) => field.onChange(value)}
@@ -521,9 +521,9 @@ const FormularioCadastroImovel = () => {
                      />
                   </div>
                   <div className="flex justify-center mt-4 gap-2">
-                  <Link href={"/gerenciamento/imoveis"}>
-                     <BotaoPadrao type="button" texto="Cancelar" />
-                  </Link>
+                     <Link href={"/gerenciamento/imoveis"}>
+                        <BotaoPadrao type="button" texto="Cancelar" />
+                     </Link>
                      <BotaoPadrao
                         type="button"
                         texto="Próximo"
@@ -698,6 +698,7 @@ const FormularioCadastroImovel = () => {
                <div className="flex flex-col gap-4">
                   <div className="flex flex-row gap-2">
                      <SearchSelect
+                        token={props.token}
                         register={register("proprietario")}
                         mensagemErro={errors.proprietario?.message}
                         title="Proprietário"
@@ -713,6 +714,7 @@ const FormularioCadastroImovel = () => {
                         isSingle
                      />
                      <SearchSelect
+                        token={props.token}
                         register={register("corretores")}
                         mensagemErro={errors.corretores?.message}
                         title="Corretores"

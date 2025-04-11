@@ -9,11 +9,13 @@ import {
 } from "@/Functions/usuario/favoritos";
 import { useNotification } from "@/context/NotificationContext";
 import { Heart } from "lucide-react";
+import { redirect } from "next/navigation";
 interface HomeProps {
    idImovel: number;
    favorited: boolean;
    dark: boolean;
    setIsFavorited: (favorited: boolean) => void;
+   className?: string;
 }
 
 export default function FavButton({
@@ -21,6 +23,7 @@ export default function FavButton({
    favorited,
    dark,
    setIsFavorited,
+   className
 }: HomeProps) {
    const [handleRemoveFav, setHandleRemoveFav] = useState(false);
    const { data: session } = useSession();
@@ -34,7 +37,7 @@ export default function FavButton({
    const removerFavorito = async (idImovel: number) => {
       if (session?.user?.id) {
          try {
-            await removerImovelFavorito(idImovel, session.user.id);
+            await removerImovelFavorito(idImovel,  session.accessToken ?? "");
             setHandleRemoveFav(false);
             setIsFavorited(false);
             showNotification("Imóvel removido dos favoritos");
@@ -45,10 +48,13 @@ export default function FavButton({
       }
    };
 
-   const handleChangeFav = async () => {
+   const handleChangeFav = async () => {  
+      if(!session) {
+         redirect(`/api/auth/signin`) 
+      }
       if (!favorited) {
          try {
-            await adicionarImovelFavorito(idImovel, session?.user?.id ?? "");
+            await adicionarImovelFavorito(idImovel, session?.accessToken ?? "");
             setIsFavorited(true);
             showNotification("Imóvel adicionado aos favoritos");
          } catch (error) {
@@ -69,8 +75,8 @@ export default function FavButton({
             <Heart
                className={`text-havprincipal ${
                   !dark ? "text-havprincipal" : "text-white"
-               }`}
-               size={15}
+               } ${className ?? "w-4 h-4"}`}
+               
                fill={
                   
                   favorited ? "currentColor" : "none"}

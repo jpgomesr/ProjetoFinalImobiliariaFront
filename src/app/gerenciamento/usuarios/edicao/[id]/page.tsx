@@ -55,7 +55,7 @@ const Page = async ({ params }: PageProps) => {
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao titulo="Edição de usuário" className="w-full">
-               <Formulario usuario={usuario} />
+               <Formulario usuario={usuario} token={session.accessToken ?? ""} />
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
       </Layout>

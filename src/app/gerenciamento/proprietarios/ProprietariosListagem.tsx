@@ -16,6 +16,7 @@ import { UseFetchDelete } from "@/hooks/UseFetchDelete";
 import ModelProprietarioListagem from "@/models/ModelProprietarioListagem";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
+import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
 
 interface ProprietariosListagemProps {
    proprietariosIniciais: ModelProprietarioListagem[] | [];
@@ -24,6 +25,7 @@ interface ProprietariosListagemProps {
    paginaAtual: number;
    nomePesquisa: string;
    status: string;
+   token: string;
 }
 
 const ProprietariosListagem = ({
@@ -33,6 +35,7 @@ const ProprietariosListagem = ({
    paginaAtual,
    nomePesquisa,
    status,
+   token,
 }: ProprietariosListagemProps) => {
    const [proprietarios, setProprietarios] = useState(proprietariosIniciais);
    const [modalConfirmacaoAberto, setModalConfirmacaoAberto] = useState(false);
@@ -51,7 +54,8 @@ const ProprietariosListagem = ({
 
    const deletarUsuario = async () => {
       const response = await UseFetchDelete(
-         `${BASE_URL}/proprietarios/${idItemParaDeletar}`
+         `${BASE_URL}/proprietarios/${idItemParaDeletar}`,
+         token
       );
       setItemDeletadoId(idItemParaDeletar);
       setMostrarNotificacao(true);
@@ -65,9 +69,9 @@ const ProprietariosListagem = ({
    };
 
    const desfazendoDelete = async () => {
-      await fetch(`${BASE_URL}/proprietarios/restaurar/${itemDeletadoId}`, {
+      await useFetchComAutorizacaoComToken(`${BASE_URL}/proprietarios/restaurar/${itemDeletadoId}`, {
          method: "POST",
-      });
+      }, token);
       router.refresh();
    };
 
@@ -101,7 +105,6 @@ const ProprietariosListagem = ({
                   { id: "Desativado", label: "Desativado" },
                ]}
                placeholder="Ativo"
-               bordaPreta
                value={status}
             />
             <InputPadrao

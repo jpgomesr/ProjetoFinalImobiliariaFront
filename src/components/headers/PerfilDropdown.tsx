@@ -33,10 +33,10 @@ const PerfilDropdown = ({ foto, id, nome }: PerfilDropdownProps) => {
    }, []);
 
    return (
-      <div className="relative " ref={dropdownRef}>
+      <div className="relative" ref={dropdownRef}>
          <button
             onClick={() => setIsOpen(!isOpen)}
-            className=""
+            className="flex items-center gap-2"
          >
             {foto ? (
                <Image
@@ -47,7 +47,10 @@ const PerfilDropdown = ({ foto, id, nome }: PerfilDropdownProps) => {
                   className="rounded-full w-6 h-6 md:w-7 md:h-7 2xl:w-8 2xl:h-8 object-cover"
                />
             ) : (
-               <User  className="w-6 h-6 md:w-7 md:h-7 2xl:w-8 2xl:h-8 text-white" />
+               <User
+                  className="w-6 h-6 md:w-7 md:h-7 2xl:w-8 2xl:h-8 text-white"
+                  onClick={() => setIsOpen(!isOpen)}
+               />
             )}
             <span className="hidden md:block text-sm">{nome}</span>
          </button>
@@ -63,7 +66,9 @@ const PerfilDropdown = ({ foto, id, nome }: PerfilDropdownProps) => {
                </Link>
                <button
                   onClick={() => {
-                     signOut({ callbackUrl: "/" });
+                     signOut({
+                        callbackUrl: `/api/auth/signin?callbackUrl=${window.location.pathname}`,
+                     });
                      setIsOpen(false);
                   }}
                   className="block w-full text-left px-4 py-2 text-sm text-havprincipal hover:bg-gray-100"

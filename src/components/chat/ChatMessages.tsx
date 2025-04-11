@@ -5,15 +5,18 @@ import React, {
    useCallback,
    useMemo,
 } from "react";
-import { Send } from "lucide-react";
+import { Send, ArrowLeft } from "lucide-react";
 import { useChat } from "@/context/ChatContext";
+import { enviarNotificacao } from "@/Functions/notificacao/enviarNotificacao";
 
 interface ChatMessagesProps {
    chat: number;
+   closeChat: () => void;
+   isMobile: boolean;
 }
 
 interface ChatUser {
-   id: string;
+   id: number | string;
    nome?: string;
 }
 
@@ -27,13 +30,15 @@ interface DisplayMessage {
    nomeRemetente?: string;
 }
 
-const ChatMessages = ({ chat }: ChatMessagesProps) => {
+const ChatMessages = ({ chat, closeChat, isMobile }: ChatMessagesProps) => {
    const [messages, setMessages] = useState<DisplayMessage[]>([]);
    const [chatPartner, setChatPartner] = useState<ChatUser | null>(null);
    const messagesEndRef = useRef<HTMLDivElement>(null);
    const inputRef = useRef<HTMLInputElement>(null);
    const messagesFetchedRef = useRef(false);
    const chatSubscriptionRef = useRef<any>(null);
+   const idDestinatarioRef = useRef<string | number>("");
+   const initialLoadDoneRef = useRef(false);
 
    // Usar o contexto global
    const {
@@ -43,6 +48,8 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
       userName,
       updateChat,
       addNewMessage,
+      chats,
+      token,
    } = useChat();
 
    const scrollToBottom = useCallback(() => {
@@ -67,71 +74,76 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
       }
    }, [chat, userId, updateChat]);
 
-   useEffect(() => {
+   // Função para carregar informações iniciais do chat
+   const loadInitialChatInfo = useCallback(async () => {
       if (!userId) return;
 
-      // Resetar estado ao trocar de chat
-      setMessages([]);
-      setChatPartner(null);
-      messagesFetchedRef.current = false;
+      console.log(`Carregando informações do chat ${chat}`);
 
-      const createOrJoinChat = async () => {
-         try {
-            const response = await fetch(
-               `${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chat}?idUsuario=${userId}`,
-               { method: "GET" }
-            );
-
-            if (!response.ok && response.status !== 409) {
-               console.error("Erro ao carregar chat");
-               return;
+      try {
+         const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/chat/join/${chat}?idUsuario=${userId}`,
+            {
+               method: "GET",
+               headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+               },
             }
+         );
 
-            const data = await response.json();
-
-            if (data) {
-               const parceiro =
-                  data.usuario1?.id.toString() === userId
-                     ? data.usuario2
-                     : data.usuario1;
-
-               if (parceiro) {
-                  setChatPartner({
-                     id: parceiro.id.toString(),
-                     nome: parceiro.nome || `Usuário ${parceiro.id}`,
-                  });
-               }
-
-               if (data.mensagens?.length > 0) {
-                  const formattedMessages: DisplayMessage[] =
-                     data.mensagens.map((msg: any) => ({
-                        id: msg.id,
-                        conteudo: msg.conteudo,
-                        remetente: msg.remetente,
-                        idChat: chat,
-                        timestamp: msg.timeStamp || new Date().toISOString(),
-                        isSender: msg.remetente === userId,
-                        nomeRemetente:
-                           msg.remetente === userId
-                              ? userName
-                              : parceiro?.nome || `Usuário ${msg.remetente}`,
-                     }));
-
-                  setMessages(formattedMessages);
-
-                  // Marcar mensagens como lidas se houver mensagens não lidas
-                  if (formattedMessages.some((msg) => !msg.isSender)) {
-                     await markMessagesAsRead();
-                  }
-               }
-            }
-         } catch (error) {
-            console.error("Erro ao carregar mensagens:", error);
+         if (!response.ok && response.status !== 409) {
+            console.error("Erro ao carregar chat");
+            return;
          }
-      };
 
-      createOrJoinChat();
-   }, [chat, userId, userName, markMessagesAsRead]);
+         const data = await response.json();
+
+         if (data) {
+            const parceiro =
+               data.usuario1?.id.toString() === userId
+                  ? data.usuario2
+                  : data.usuario1;
+
+            if (parceiro) {
+               idDestinatarioRef.current = parceiro.id.toString();
+
+               setChatPartner({
+                  id: parceiro.id.toString(),
+                  nome: parceiro.nome || `Usuário ${parceiro.id}`,
+               });
+            }
+
+            if (data.mensagens?.length > 0) {
+               const formattedMessages: DisplayMessage[] = data.mensagens.map(
+                  (msg: any) => ({
+                     id: msg.id,
+                     conteudo: msg.conteudo,
+                     remetente: msg.remetente,
+                     idChat: chat,
+                     timestamp: msg.timeStamp || new Date().toISOString(),
+                     isSender: msg.remetente === userId,
+                     nomeRemetente:
+                        msg.remetente === userId
+                           ? userName
+                           : parceiro?.nome || `Usuário ${msg.remetente}`,
+                  })
+               );
+
+               setMessages(formattedMessages);
+
+               // Marcar mensagens como lidas se houver mensagens não lidas
+               if (formattedMessages.some((msg) => !msg.isSender)) {
+                  await markMessagesAsRead();
+               }
+            }
+
+            initialLoadDoneRef.current = true;
+         }
+      } catch (error) {
+         console.error("Erro ao carregar informações do chat:", error);
+      }
+   }, [chat, userId, userName, markMessagesAsRead, token]);
 
    // Lidar com mensagens recebidas para este chat específico
    const handleMessage = useCallback(
@@ -139,8 +151,6 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
          try {
             const chatMessage = JSON.parse(message.body);
             console.log("Mensagem recebida:", chatMessage);
-
-            // Não filtrar por chatId aqui, pois já estamos inscritos no tópico específico deste chat
 
             const newMessage: DisplayMessage = {
                conteudo: chatMessage.conteudo,
@@ -169,16 +179,23 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
 
    // Resetar o estado quando o chat mudar
    useEffect(() => {
+      console.log(`Chat mudou para: ${chat}`);
+
       // Limpar mensagens e referências ao trocar de chat
       setMessages([]);
+      setChatPartner(null);
       messagesFetchedRef.current = false;
+      initialLoadDoneRef.current = false;
 
       // Limpar inscrição anterior se existir
       if (chatSubscriptionRef.current) {
          chatSubscriptionRef.current.unsubscribe();
          chatSubscriptionRef.current = null;
       }
-   }, [chat]);
+
+      // Carregar informações do novo chat
+      loadInitialChatInfo();
+   }, [chat, loadInitialChatInfo]);
 
    // Configurar inscrição no WebSocket
    useEffect(() => {
@@ -250,11 +267,33 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
             // Atualizar o estado do chat no contexto
             addNewMessage(chat, chatMessage);
 
+            // Verificar se temos um ID de destinatário válido antes de enviar a notificação
+            if (idDestinatarioRef.current) {
+               console.log(
+                  "Enviando notificação para:",
+                  idDestinatarioRef.current
+               );
+               enviarNotificacao(
+                  {
+                     titulo: "Chat",
+                     descricao: "Você tem uma nova mensagem",
+                  },
+                  idDestinatarioRef.current
+               );
+            } else {
+               console.error(
+                  "ID do destinatário não disponível para enviar notificação"
+               );
+            }
+
             // Enviar a mensagem por último para garantir que a interface seja atualizada primeiro
             stompClient.publish({
                destination: `/app/sendMessage/${chat}`,
                body: JSON.stringify(chatMessage),
-               headers: { "content-type": "application/json" },
+               headers: {
+                  "content-type": "application/json",
+                  Authorization: `Bearer ${token}`,
+               },
             });
          } catch (error) {
             console.error("Erro ao enviar mensagem:", error);
@@ -283,7 +322,16 @@ const ChatMessages = ({ chat }: ChatMessagesProps) => {
 
    return (
       <div className="flex flex-col gap-2 h-full">
-         <div className="bg-havprincipal rounded-tr-lg">
+         <div className="bg-havprincipal rounded-t-lg md:rounded-tl-none md:rounded-tr-lg flex flex-row gap-2 sm:gap-4 items-center">
+            {isMobile && (
+               <ArrowLeft
+                  className="text-white cursor-pointer ml-2 sm:ml-4"
+                  onClick={(e: React.MouseEvent<SVGSVGElement>) => {
+                     e.stopPropagation();
+                     closeChat();
+                  }}
+               />
+            )}
             <p className="text-xl font-semibold text-white px-8 py-3 truncate">
                {chatPartner && `${chatPartner.nome}`}
             </p>
