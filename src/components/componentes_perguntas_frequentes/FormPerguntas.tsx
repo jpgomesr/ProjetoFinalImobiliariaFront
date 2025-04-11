@@ -39,6 +39,7 @@ const FormPerguntas = () => {
             tipoPergunta: opcaoSelecionada,
             mensagem,
             email,
+            titulo: "Pergunta Frequentes",
          });
 
          if (resultado?.success) {
