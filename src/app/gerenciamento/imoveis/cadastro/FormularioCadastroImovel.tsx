@@ -430,7 +430,6 @@ const FormularioCadastroImovel = (props: FormularioCadastroImovelProps) => {
                                        mudandoValor={(value) =>
                                           field.onChange(value)
                                        }
-                                       bordaPreta={true}
                                        divClassName="justify-end"
                                        differentSize="h-8"
                                     />
@@ -499,7 +498,6 @@ const FormularioCadastroImovel = (props: FormularioCadastroImovelProps) => {
                         render={({ field }) => (
                            <List
                               opcoes={objImovel}
-                              bordaPreta={true}
                               title="Objetivo"
                               value={field.value}
                               mudandoValor={(value) => field.onChange(value)}
@@ -514,7 +512,6 @@ const FormularioCadastroImovel = (props: FormularioCadastroImovelProps) => {
                         render={({ field }) => (
                            <List
                               opcoes={tiposDeImovel}
-                              bordaPreta={true}
                               title="Tipo"
                               value={field.value}
                               mudandoValor={(value) => field.onChange(value)}

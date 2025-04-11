@@ -324,7 +324,7 @@ const Formulario = ({ proprietario, token }: FormProps) => {
                      mudandoValor={field.onChange}
                      value={watch("tipoResidencia")}
                      placeholder="Selecione o tipo de residência"
-                     bordaPreta
+                     
                   />
                )}
             />
@@ -371,7 +371,7 @@ const Formulario = ({ proprietario, token }: FormProps) => {
                      opcoes={opcoesStatus}
                      mudandoValor={field.onChange}
                      placeholder="Ativo"
-                     bordaPreta
+                     
                   />
                )}
             />

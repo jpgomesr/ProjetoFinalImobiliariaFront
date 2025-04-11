@@ -181,7 +181,6 @@ const FormularioCadastroUsuario = (props: FormularioCadastroUsuarioProps) => {
                         opcoes={tiposDeUsuarios}
                         mudandoValor={field.onChange}
                         placeholder="Tipo usuario"
-                        bordaPreta
                      />
                   )}
                />
@@ -196,7 +195,6 @@ const FormularioCadastroUsuario = (props: FormularioCadastroUsuarioProps) => {
                         opcoes={opcoesStatus}
                         mudandoValor={field.onChange}
                         placeholder="Ativo"
-                        bordaPreta
                      />
                   )}
                />

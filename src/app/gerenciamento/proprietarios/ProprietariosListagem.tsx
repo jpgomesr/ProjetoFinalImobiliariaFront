@@ -105,7 +105,6 @@ const ProprietariosListagem = ({
                   { id: "Desativado", label: "Desativado" },
                ]}
                placeholder="Ativo"
-               bordaPreta
                value={status}
             />
             <InputPadrao

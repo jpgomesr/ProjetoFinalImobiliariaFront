@@ -276,7 +276,7 @@ const FormularioCadastroProprietario = ({ token }: FormularioCadastroProprietari
                         opcoes={opcoesTipoResidencia}
                         mudandoValor={field.onChange}
                         placeholder="Selecione o tipo de residência"
-                        bordaPreta
+                        
                      />
                   )}
                />
@@ -319,7 +319,7 @@ const FormularioCadastroProprietario = ({ token }: FormularioCadastroProprietari
                         opcoes={opcoesStatus}
                         mudandoValor={field.onChange}
                         placeholder="Ativo"
-                        bordaPreta
+                        
                      />
                   )}
                />

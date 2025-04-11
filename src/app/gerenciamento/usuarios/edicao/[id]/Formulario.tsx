@@ -255,7 +255,6 @@ const Formulario = ({usuario, token} : FormProps) => {
                      title="Tipo usuario"
                      opcoes={tiposDeUsuarios}
                      mudandoValor={field.onChange}
-                     bordaPreta
                      placeholder="Tipo usuario"
                      value={field.value || undefined}
                   />
@@ -271,7 +270,6 @@ const Formulario = ({usuario, token} : FormProps) => {
                      title="Status"
                      opcoes={opcoesStatus}
                      mudandoValor={field.onChange}
-                     bordaPreta
                      value={field.value}
                   />
                )}

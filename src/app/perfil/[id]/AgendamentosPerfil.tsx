@@ -28,7 +28,7 @@ export default function AgendamentosPerfil({ id, role, token }: AgendamentosPerf
           {}, token
         );
         if (!response.ok) {
-          throw new Error("Erro ao buscar agendamentos");
+          throw new Error("Erro ao buscar agendamentos", await response.json());
         }
         const data = await response.json() as { content: ModelAgendamento[] };
         const agendamentosOrdenados = data.content.sort((a: ModelAgendamento, b: ModelAgendamento) => {
