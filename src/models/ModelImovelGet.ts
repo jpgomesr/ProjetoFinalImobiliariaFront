@@ -76,6 +76,7 @@ export interface ModelImovelGetId {
       telefone: string;
       foto: string;
    }[];
+   proprietario: Pessoa;
    endereco: EnderecoMapBox;
    favoritado: boolean;
    ativo: boolean;

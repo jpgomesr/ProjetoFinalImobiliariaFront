@@ -14,6 +14,9 @@ import Share from "@/components/Share";
 import MapboxMap from "@/components/Mapboxmap";
 import ExibirCorretores from "@/components/componentes_sobre_nos/ExibirCorretores";
 import IntermediarioBotaoFavorito from "./IntermediarioBotaoFavorito";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
+import { getServerSession } from "next-auth";
+import { Roles } from "@/models/Enum/Roles";
 interface PageProps {
    params: Promise<{
       id: string;
@@ -34,7 +37,7 @@ const Page = async ({ params }: PageProps) => {
 
    const { id } = paramsResolvidos;
    const imovel = await buscarImovelPorIdPaginaImovel(id, 60);
-   console.log(imovel)
+   const session = await getServerSession(authOptions);
 
 
       const imoveisSemelhantes : any  = await buscarImoveisSemelhantes(imovel, 60) ;
@@ -106,6 +109,11 @@ const Page = async ({ params }: PageProps) => {
                      />       
                   </div>
                </div>
+               {(session?.user.role === Roles.ADMINISTRADOR || session?.user.role === Roles.CORRETOR || session?.user.role === Roles.EDITOR)  && (
+                  <p className="mt-2">
+                     Proprietário : {imovel.proprietario?.nome}
+                  </p>
+               )}
             </div>
          </div>
          <div className="w-full">
