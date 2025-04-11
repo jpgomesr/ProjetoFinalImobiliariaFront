@@ -85,6 +85,28 @@
      "expansion": "Estamos em constante evolução, ampliando nossa presença e fortalecendo a nossa marca no mercado imobiliário. Investimos em marketing estratégico, tecnologia e parcerias sólidas para alcançar novos públicos e reforçar nosso compromisso com qualidade, credibilidade e inovação.",
      "tittle6": "Nossa equipe"
   },
+  "HomePage":{
+    "featuredProperties": "Imóveis em ",
+    "featuredProperties2": "destaque",
+    "specialProperties": "Imóveis em ",
+    "specialProperties2": "condições especiais",
+    "recentlyAddedProperties": "Imóveis ",
+    "recentlyAddedProperties2": "recentemente adicionados"
+  },
+  "PropertyManagement":{
+    "title": "Gerenciadir de Imóveis"
+  },
+
+  "OwnerManagement":{
+    "title": "Gerenciamento de Proprietários",
+    "buttonActive":"Ativo",
+    "buttonDesactive":"Desativado",
+    "placeholderSearch":"Digite o nome que deseja pesquisar",
+    "buttonAddOwner":"Adicionar",
+    "information": "Informações",
+    "editUser": "Editar usuário",
+    "sendMessage": "Enviar comunicado"
+  },
   "common": {
     "search": "Buscar",
     "searchPlaceholder": "Pesquise aqui",

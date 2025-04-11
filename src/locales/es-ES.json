@@ -143,5 +143,23 @@
       "topic3": "50 mil propiedades para alquiler y venta",
       "topic4": "7 mil corredores asociados",
       "topic5": "4 tiendas propias"
+   },
+   "HomePage":{
+      "featuredProperties": "Propiedades en ",
+      "featuredProperties2": "destacadas",
+      "specialProperties": "Propiedades en ",
+      "specialProperties2": "condiciones especiales",
+      "recentlyAddedProperties": "Propiedades ",
+      "recentlyAddedProperties2": "agregadas recientemente"
+   },
+   "OwnerManagement":{
+      "title": "Gestión de Propietarios",
+      "buttonActive": "Activo",
+      "buttonDesactive": "Inactivo",
+      "placeholderSearch": "Escriba el nombre que desea buscar",
+      "buttonAddOwner": "Agregar",
+      "information": "Información",
+      "editUser": "Editar usuario",
+      "sendMessage": "Enviar mensaje"
    }
 }

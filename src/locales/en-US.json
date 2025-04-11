@@ -147,5 +147,23 @@
     "topic3": "50 thousand properties for rent and sale",
     "topic4": "7 thousand associated brokers",
     "topic5": "4 own stores"
+  },
+  "HomePage":{
+    "featuredProperties": "Properties in ",
+    "featuredProperties2": "spotlight",
+    "specialProperties": "Properties with ",
+    "specialProperties2": "special conditions",
+    "recentlyAddedProperties": "Properties ",
+    "recentlyAddedProperties2": "recently added"
+  },
+  "OwnerManagement":{
+    "title": "Owner Management",
+    "buttonActive": "Active",
+    "buttonDesactive": "Inactive",
+    "placeholderSearch": "Type the name you want to search",
+    "buttonAddOwner": "Add",
+    "information": "Information",
+    "editUser": "Edit user",
+    "sendMessage": "Send message"
   }
 } 

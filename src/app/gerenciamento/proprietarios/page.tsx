@@ -42,8 +42,9 @@ export default async function Page({ searchParams }: PageProps) {
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao
-               titulo="Gerenciamento de proprietarios"
+               titulo="OwnerManagement.title"
                className="w-full"
+               isTranslationKey={true}
             >
                <ProprietariosListagem
                   proprietariosIniciais={proprietariosRenderizados || []}
