@@ -1,12 +1,20 @@
 import React, { TextareaHTMLAttributes } from "react";
 
-interface TextAreaPadraoProps extends React.InputHTMLAttributes<HTMLTextAreaElement> {
+interface TextAreaPadraoProps
+   extends React.InputHTMLAttributes<HTMLTextAreaElement> {
    label: string;
    htmlFor: string;
-   mensagemErro? : string | undefined;
+   mensagemErro?: string | undefined;
+   tituloErro?: string | undefined;
 }
 
-const TextAreaPadrao = ({label, htmlFor, mensagemErro, ...props}: TextAreaPadraoProps) => {
+const TextAreaPadrao = ({
+   label,
+   htmlFor,
+   mensagemErro,
+   tituloErro,
+   ...props
+}: TextAreaPadraoProps) => {
    return (
       <div className="flex flex-col lg:gap-1 2xl:gap-2">
          <label
@@ -22,12 +30,23 @@ const TextAreaPadrao = ({label, htmlFor, mensagemErro, ...props}: TextAreaPadrao
          </label>
          <textarea
             {...props}
-            className={`border ${mensagemErro ? "border-red-500" : "border-gray-300 border-2"} rounded-md min-h-20 text-xs py-2 px-2
+            className={`border ${
+               mensagemErro ? "border-red-500" : "border-black"
+            } rounded-md min-h-20 text-xs py-2 px-2
             md:h-8 md:text-sm
             lg:h-10 lg:py-3 lg:px-3
             xl:h-12 xl:text-base xl:py-3 xl:px-4`}
          ></textarea>
-       {mensagemErro && <span className="text-red-500 text-xs mt-1 md:text-sm xl:text-base">{mensagemErro}</span>}
+         {mensagemErro && (
+            <span className="text-red-500 text-xs mt-1 md:text-sm xl:text-base">
+               {mensagemErro}
+            </span>
+         )}
+         {tituloErro && (
+            <span className="text-red-500 text-xs mt-1 md:text-sm xl:text-base">
+               {tituloErro}
+            </span>
+         )}
       </div>
    );
 };
