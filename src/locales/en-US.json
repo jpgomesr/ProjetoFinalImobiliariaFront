@@ -164,6 +164,20 @@
     "buttonAddOwner": "Add",
     "information": "Information",
     "editUser": "Edit user",
-    "sendMessage": "Send message"
+    "sendMessage": "Send message",
+    "titleOwner": "Owner",
+    "nameOwner": "Owner Name",
+    "phoneOwner": "Owner Phone",
+    "ownerButton": "Edit Owner",
+    "ownerButton2": "Send Message",
+    "form1": "Name",
+    "form2": "Phone number",
+    "form3": "State",
+    "form4": "City",
+    "form5": "Neighborhood",
+    "form6": "Street",
+    "form7": "Residence type",
+    "form8": "House/Building Number",
+    "form9": "Profile picture"
   }
 } 

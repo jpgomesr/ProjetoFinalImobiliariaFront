@@ -1,7 +1,9 @@
+"use client"
 import React from "react";
 import FotoUsuarioDeslogado from "./FotoUsuarioDeslogado";
 import Image from "next/image";
 import CardUsuarioActions from "./CardUsuarioActions";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface CardUsuarioServerProps {
    id: number;
@@ -19,6 +21,8 @@ interface CardUsuarioServerProps {
 }
 
 const CardUsuarioServer = (props: CardUsuarioServerProps) => {
+   const { t } = useLanguage();
+
    const formatarTerceiroValor = (valor: string): string => {
       if (valor.length === 11) {
          return valor.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");

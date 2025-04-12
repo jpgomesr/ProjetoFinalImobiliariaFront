@@ -160,6 +160,20 @@
       "buttonAddOwner": "Agregar",
       "information": "Información",
       "editUser": "Editar usuario",
-      "sendMessage": "Enviar mensaje"
+      "sendMessage": "Enviar mensaje",
+      "titleOwner": "Propietario",
+      "nameOwner": "Nombre del Propietario",
+      "phoneOwner": "Teléfono del Propietario",
+      "ownerButton": "Editar Propietario",
+      "ownerButton2": "Enviar Mensaje",
+      "form1": "Nombre",
+      "form2": "Número de teléfono",
+      "form3": "Estado",
+      "form4": "Ciudad",
+      "form5": "Barrio",
+      "form6": "Calle",
+      "form7": "Tipo de residencia",
+      "form8": "Número de Casa/Edificio",
+      "form9": "Foto de perfil"
    }
 }
