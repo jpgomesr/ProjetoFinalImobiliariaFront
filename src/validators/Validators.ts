@@ -62,6 +62,7 @@ export const createUsuarioValidator = (isPasswordChangeEnabled = true) => {
          descricao: z
             .string()
             .max(500, { message: "A descrição deve conter até 500 caracteres" })
+            .nullable()
             .optional(),
          ativo: z.string().optional(),
          imagemPerfil: z
