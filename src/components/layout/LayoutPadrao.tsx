@@ -1,6 +1,6 @@
 import React from "react";
 import { Roles } from "@/models/Enum/Roles";
-import ClientLanguageProvider from "@/components/headers/ClientLanguageProvider";
+import HeaderVermelho from "../headers/HeaderVermelho";
 import Footer from "../footer/Footer";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
@@ -17,7 +17,7 @@ const Layout = async (props: LayoutProps) => {
 
    return (
       <div className="h-screen flex flex-col">
-         <ClientLanguageProvider
+         <HeaderVermelho
             role={
                session?.user?.role
                   ? (session.user.role as unknown as Roles)

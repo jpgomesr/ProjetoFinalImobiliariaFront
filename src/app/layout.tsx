@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { NotificationProvider } from "@/context/NotificationContext";
 import { ChatProvider } from "@/context/ChatContext";
-import { LanguageProvider } from "@/context/LanguageContext";
 import VLibras from "@/components/VLibras";
 
 export const metadata: Metadata = {
@@ -21,14 +20,10 @@ export default function RootLayout({
    return (
       <html lang="pt-br">
          <body className={`antialiased`}>
-            <LanguageProvider>
-               <NotificationProvider>
-                  <ChatProvider>
-                     {children}
-                  </ChatProvider>
-               </NotificationProvider>
-            </LanguageProvider>
-            <VLibras />
+            <NotificationProvider>
+               {children}
+               <VLibras />
+            </NotificationProvider>
          </body>
       </html>
    );

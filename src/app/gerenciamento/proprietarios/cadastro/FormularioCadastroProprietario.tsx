@@ -16,7 +16,6 @@ import List from "@/components/List";
 import { useNotification } from "@/context/NotificationContext";
 import { salvarProprietario } from "./action";
 import Link from "next/link";
-import { useLanguage } from "@/context/LanguageContext";
 
 interface FormularioCadastroProprietarioProps {
    token: string;
@@ -24,7 +23,6 @@ interface FormularioCadastroProprietarioProps {
 const FormularioCadastroProprietario = ({ token }: FormularioCadastroProprietarioProps) => {
    const router = useRouter();
    const { showNotification } = useNotification();
-   const { t } = useLanguage();
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const opcoesTipoResidencia = [
@@ -154,15 +152,14 @@ const FormularioCadastroProprietario = ({ token }: FormularioCadastroProprietari
 
    return (
       <FundoBrancoPadrao
-         titulo="OwnerManagement.title"
+         titulo="Cadastro de proprietário"
          className={`w-full ${isSubmitting ? "opacity-40" : "opacity-100"}`}
-         isTranslationKey={true}
       >
          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Campo Nome */}
             <InputPadrao
                htmlFor="nome"
-               label={t("perfil.name")}
+               label="Nome"
                type="text"
                placeholder="Ex: João Silva"
                {...register("nome")}
@@ -172,7 +169,7 @@ const FormularioCadastroProprietario = ({ token }: FormularioCadastroProprietari
             {/* Campo Celular */}
             <InputPadrao
                htmlFor="celular"
-               label={t("perfil.phone")}
+               label="Celular"
                type="text"
                placeholder="Ex: 47912345678"
                {...register("celular")}
@@ -182,7 +179,7 @@ const FormularioCadastroProprietario = ({ token }: FormularioCadastroProprietari
             {/* Campo Telefone */}
             <InputPadrao
                htmlFor="telefone"
-               label={t("perfil.phone")}
+               label="Telefone"
                type="text"
                placeholder="Ex: 47912312121"
                {...register("telefone")}
@@ -192,7 +189,7 @@ const FormularioCadastroProprietario = ({ token }: FormularioCadastroProprietari
             {/* Campo Email */}
             <InputPadrao
                htmlFor="email"
-               label={t("perfil.email")}
+               label="Email"
                type="email"
                placeholder="Ex: joao.silva@example.com"
                {...register("email")}
@@ -339,11 +336,20 @@ const FormularioCadastroProprietario = ({ token }: FormularioCadastroProprietari
             />
 
             {/* Botão de Envio */}
-            <div className="flex justify-end gap-4">
+            <div className="flex justify-center gap-2">
                <Link href="/gerenciamento/proprietarios">
-                  <BotaoPadrao type="button" texto={t("common.cancel")} />
+                  <BotaoPadrao
+                     texto="Voltar"
+                     disabled={isSubmitting}
+                     type="button"
+                  />
                </Link>
-               <BotaoPadrao type="submit" texto={t("common.save")} />
+               <BotaoPadrao
+                  texto={isSubmitting ? "Concluindo..." : "Concluir"}
+                  disabled={isSubmitting}
+                  type="submit"
+               />
+            
             </div>
          </form>
       </FundoBrancoPadrao>
