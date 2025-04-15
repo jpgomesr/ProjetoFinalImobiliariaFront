@@ -176,7 +176,7 @@ export const createImovelValidator = () => {
       valor: z.number({ message: "Campo obrigatório" }),
       valorPromo: z.number().optional(),
       iptu: z.number().optional(),
-      valorCondominio: z.number().optional(),
+      valorCondominio: z.number().optional().nullable(),
       codigo: z.number().optional(),
       rua: z.string().min(1, { message: "Campo obrigatório" }),
       bairro: z.string().min(1, { message: "Campo obrigatório" }),
@@ -192,7 +192,7 @@ export const createImovelValidator = () => {
       tipoBanner: z.string().optional(),
       academia: z.boolean(),
       destaque: z.boolean(),
-      visibilidade: z.boolean(),
+      visibilidade: z.boolean().optional().default(true),
       imagens: z.object({
          imagemPrincipal: z.union([
             z.instanceof(File, {
@@ -247,5 +247,6 @@ export const createImovelValidator = () => {
          })
          .min(1, { message: "Precisa ter pelo menos um corretor" }),
       id: z.string().optional(),
+      ativo: z.boolean().optional().default(true),
    });
 };

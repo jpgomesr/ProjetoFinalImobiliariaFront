@@ -48,6 +48,7 @@ export interface ModelImovelGet {
    proprietario: Pessoa;
    corretores: Pessoa[];
    favoritado?: boolean;
+   visibilidade: boolean;
 }
 
 export interface ModelImovelGetId {
@@ -80,6 +81,7 @@ export interface ModelImovelGetId {
    endereco: EnderecoMapBox;
    favoritado: boolean;
    ativo: boolean;
+   visibilidade: boolean;
 }
 
 export interface ImovelSemelhanteModel {

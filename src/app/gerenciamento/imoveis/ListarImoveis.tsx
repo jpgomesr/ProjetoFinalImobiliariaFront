@@ -19,7 +19,7 @@ interface ListarImoveisProps {
 }
 
 const ListarImoveisSession = ({
-   imoveis, 
+   imoveis,
    pageableInfo,
 }: ListarImoveisProps) => {
    const [paginaAtual, setPaginaAtual] = useState(0);
@@ -34,8 +34,8 @@ const ListarImoveisSession = ({
    const token = session?.accessToken;
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-   const desfazendoDelete = async () => {
-      await fetch(`${BASE_URL}/imoveis/restaurar/${itemDeletadoId}`, {
+   const desfazendoDelete = async (id: number) => {
+      await fetch(`${BASE_URL}/imoveis/restaurar/${id}`, {
          method: "POST",
          headers: {
             "Content-Type": "application/json",
@@ -91,6 +91,7 @@ const ListarImoveisSession = ({
                   edicao={true}
                   edicaoLink={`/gerenciamento/imoveis/edicao/${imovel.id}`}
                   deletarImovel={() => handleExcluir(imovel.id)}
+                  restaurarImovel={() => desfazendoDelete(imovel.id)}
                />
             ))}
          </div>
@@ -113,7 +114,7 @@ const ListarImoveisSession = ({
             message="Imóvel excluído com sucesso!"
             isVisible={mostrarNotificacao}
             onClose={() => setMostrarNotificacao(false)}
-            onUndo={desfazendoDelete}
+            onUndo={() => itemDeletadoId && desfazendoDelete(itemDeletadoId)}
          />
       </div>
    );
