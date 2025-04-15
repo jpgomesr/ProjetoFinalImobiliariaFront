@@ -9,6 +9,8 @@ import { useState } from "react";
 import { deletarUsuario, restaurarUsuario } from "./actions";
 import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
 import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
+import { useLanguage } from "@/context/LanguageContext";
+
 interface ListaUsuariosProps {
    usuarios: ModelUsuarioListagem[] | undefined;
    peageableinfo: {
@@ -22,6 +24,7 @@ interface ListaUsuariosProps {
 
 export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtual, token }: ListaUsuariosProps) {
    const router = useRouter();
+   const { t } = useLanguage();
    
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
@@ -29,67 +32,71 @@ export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtu
    const [itemDeletadoId, setItemDeletadoId] = useState<number | null>(null);
 
    const fechandoNotificacao = () => {
-    setMostrarNotificacao(false);
-    setItemDeletadoId(null);
- };
- const desfazendoDelete = async () => {
-    await useFetchComAutorizacaoComToken(`${BASE_URL}/usuarios/restaurar/${itemDeletadoId}`, {
-       method: "POST",
-    }, token);
-    router.refresh();
- };
+      setMostrarNotificacao(false);
+      setItemDeletadoId(null);
+   };
+
+   const desfazendoDelete = async () => {
+      await useFetchComAutorizacaoComToken(`${BASE_URL}/usuarios/restaurar/${itemDeletadoId}`, {
+         method: "POST",
+      }, token);
+      router.refresh();
+   };
 
    const mudarPagina = (pagina: number) => {
       const params = new URLSearchParams(window.location.search);
       params.set("numeroPaginaAtual", pagina.toString());
       router.push(`/gerenciamento/usuarios?${params.toString()}`);
    };
+
    const [idItemParaDeletar, setIdItemParaDeletar] = useState<number | null>(null);
    const [modalConfirmacaoAberto, setModalConfirmacaoAberto] = useState(false);
 
    const exibirModal = (id: number) => {
-    setIdItemParaDeletar(id);
-    setModalConfirmacaoAberto(true);
- };
- const fecharModal = () => {
-    setModalConfirmacaoAberto(false);
-    setIdItemParaDeletar(null);
- };
- const confirmarDelecao = async () => {
-    if (idItemParaDeletar) {
-       await useFetchComAutorizacaoComToken(`${BASE_URL}/usuarios/${idItemParaDeletar}`, {
-          method: "DELETE",
-       }, token);
-       setItemDeletadoId(idItemParaDeletar)
-       setMostrarNotificacao(true)
-       fecharModal();
-       router.refresh(); 
-    }
- };
+      setIdItemParaDeletar(id);
+      setModalConfirmacaoAberto(true);
+   };
+
+   const fecharModal = () => {
+      setModalConfirmacaoAberto(false);
+      setIdItemParaDeletar(null);
+   };
+
+   const confirmarDelecao = async () => {
+      if (idItemParaDeletar) {
+         await useFetchComAutorizacaoComToken(`${BASE_URL}/usuarios/${idItemParaDeletar}`, {
+            method: "DELETE",
+         }, token);
+         setItemDeletadoId(idItemParaDeletar)
+         setMostrarNotificacao(true)
+         fecharModal();
+         router.refresh(); 
+      }
+   };
 
    return (
       <div>
          <div className="grid grid-cols-1 gap-4 w-full md:mt-2 lg:place-content-center lg:self-center lg:grid-cols-2 lg:mt-4 2xl:mt-6">
             {usuarios?.map((usuario) => (
                <CardUsuario
-               labelPrimeiroValor="E-mail:"
-               primeiroValor={usuario.email}
-               labelSegundoValor="Nome:"
-               segundoValor={usuario.nome}
-               labelTerceiroValor="Status:"
-               terceiroValor={usuario.ativo ? "Ativo" : "Desativado"}
-               labelQuartoValor="Tipo usuario:"
-               quartoValor={usuario.role}
-               key={usuario.id}
-               id={usuario.id}
-               imagem={usuario.foto}
-               deletarUsuario={exibirModal}
-               linkEdicao={`/gerenciamento/usuarios/edicao/${usuario.id}`}
-            />
+                  labelPrimeiroValor={t("perfil.email") + ":"}
+                  primeiroValor={usuario.email}
+                  labelSegundoValor={t("perfil.name") + ":"}
+                  segundoValor={usuario.nome}
+                  labelTerceiroValor={t("UserManagement.status") + ":"}
+                  terceiroValor={usuario.ativo ? t("UserManagement.buttonActive") : t("UserManagement.buttonDesactive")}
+                  labelQuartoValor={t("UserManagement.role") + ":"}
+                  quartoValor={usuario.role}
+                  key={usuario.id}
+                  id={usuario.id}
+                  imagem={usuario.foto}
+                  deletarUsuario={exibirModal}
+                  linkEdicao={`/gerenciamento/usuarios/edicao/${usuario.id}`}
+               />
             ))}
          </div>
          {usuarios?.length === 0 && (
-            <div className="text-center w-full col-span-2">Nenhum usuário encontrado...</div>
+            <div className="text-center w-full col-span-2">{t("common.loading")}</div>
          )}
          {peageableinfo.totalPaginas > 0 && (
             <ComponentePaginacao
@@ -100,19 +107,19 @@ export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtu
                ultimaPagina={peageableinfo.ultima}
             />
          )}
-          <ModalCofirmacao
+         <ModalCofirmacao
             isOpen={modalConfirmacaoAberto}
             onClose={fecharModal}
             onConfirm={confirmarDelecao}
-            message="Você realmente deseja remover este usuário?"
+            message={t("UserManagement.editUser")}
          />
-          <NotificacaoCrud
-                                          message="Desfazer"
-                                          isVisible={mostrarNotificacao}
-                                          onClose={fechandoNotificacao}
-                                          onUndo={desfazendoDelete}
-                                          duration={5000}
-                                       />
+         <NotificacaoCrud
+            message={t("common.cancel")}
+            isVisible={mostrarNotificacao}
+            onClose={fechandoNotificacao}
+            onUndo={desfazendoDelete}
+            duration={5000}
+         />
       </div>
    );
 }
