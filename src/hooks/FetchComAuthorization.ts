@@ -1,6 +1,6 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { getServerSession } from "next-auth";
-import { useSession } from "next-auth/react";
+import { redirect} from "next/navigation";
 
 // Versão para Server Components
 export const fetchComAutorizacao = async (
@@ -9,18 +9,28 @@ export const fetchComAutorizacao = async (
 ) => {
    const session = await getServerSession(authOptions);
 
-   return await fetch(url, {
+    const response = await fetch(url, {
       ...init,
       headers: {
          ...(session?.accessToken ? { 'Authorization': `Bearer ${session.accessToken}` } : {})
       },
    });
-};
+      if(response.status === 401 || response.status === 403){
+         console.log('to chegando aqui')
+         redirect('/logout')
+      }
+      
+
+   return response;
+   };
 
 export const useFetchComAutorizacaoComToken = async(   url: string | URL,
    init?: RequestInit, token? : string) => {
+
+      "use client"
      
-      return await fetch(url, {
+
+     const response = await fetch(url, {
          ...init,
          headers: {
             ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
@@ -28,4 +38,7 @@ export const useFetchComAutorizacaoComToken = async(   url: string | URL,
          },
       });
 
-   }
+
+      return response;  
+}
+

@@ -77,7 +77,6 @@ export const buscarTodosImoveis = async (
 
    const session = await getServerSession(authOptions);
 
-   try {
       const responseImovelRequest = await fetchComAutorizacao(
          `${BASE_URL}/imoveis?${params.toString()}`,
          {
@@ -120,20 +119,15 @@ export const buscarTodosImoveis = async (
             quantidadeElementos,
          };
       } else {
-         console.log(await responseImovelRequest.json());
-         throw new Error("Erro ao buscar os dados do imóvel");
+         return {
+            imoveis: [],
+            pageableInfo: {
+               totalPaginas: 0,
+               ultima: true,
+            },
+            quantidadeElementos: 0,
+         };
       }
-   } catch (error) {
-      console.error("Erro ao buscar os dados do imóvel:", error);
-      return {
-         imoveis: [],
-         pageableInfo: {
-            totalPaginas: 0,
-            ultima: true,
-         },
-         quantidadeElementos: 0,
-      };
-   }
 };
 
 export const buscarImoveisFavoritos = async (

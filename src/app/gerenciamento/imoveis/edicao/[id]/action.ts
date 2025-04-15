@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -100,7 +101,6 @@ export async function editarImovel(
    token: string,
    refImagensDeletadas?: string[]
 ) {
-   try {
       // Formatar os dados para garantir o formato correto
       const data = await formatarDadosFormulario(formData);
 
@@ -194,7 +194,10 @@ export async function editarImovel(
       revalidatePath(`/imovel/${data.id}`);
       revalidatePath(`/gerenciamento/imoveis`);
 
-      // Retorna o resultado para o cliente
+      if(response.status === 401 || response.status === 403){
+         redirect('/logout')
+      } 
+       
       if (!response.ok) {
          const errorData = await response.json();
          return {
@@ -210,12 +213,6 @@ export async function editarImovel(
          message: "Imóvel editado com sucesso",
          data: result,
       };
-   } catch (error) {
-      console.error("Erro ao editar imóvel:", error);
-      return {
-         success: false,
-         message: "Erro ao processar a requisição",
-         error: error instanceof Error ? error.message : String(error),
-      };
-   }
-}
+   } 
+   
+

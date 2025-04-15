@@ -31,8 +31,8 @@ const TextAreaPadrao = ({
          <textarea
             {...props}
             className={`border ${
-               mensagemErro ? "border-red-500" : "border-black"
-            } rounded-md min-h-20 text-xs py-2 px-2
+               mensagemErro ? "border-red-500" : "border-gray-300 border-2"
+            } focus:outline-none rounded-md min-h-20 text-xs py-2 px-2
             md:h-8 md:text-sm
             lg:h-10 lg:py-3 lg:px-3
             xl:h-12 xl:text-base xl:py-3 xl:px-4`}
