@@ -22,7 +22,8 @@
     "buttonAppointments":"Ver todos",
     "warning":"Nenhum agendamento encontrado",
     "save": "Salvar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "profileImage": "Imagem de perfil"
   },
   "relatorios":{
     "title":"Relatório",
@@ -178,5 +179,34 @@
     "password": "Senha",
     "forgotPassword": "Esqueceu a senha?",
     "rememberMe": "Lembrar-me"
+  },
+  "UserManagement": {
+    "title": "Gerenciamento de Usuários",
+    "buttonActive": "Ativo",
+    "buttonDesactive": "Desativado",
+    "placeholderSearch": "Digite o nome que deseja pesquisar",
+    "buttonAddUser": "Adicionar",
+    "information": "Informações",
+    "editUser": "Editar usuário",
+    "sendMessage": "Enviar comunicado",
+    "titleUser": "Usuário",
+    "titleBroker": "Corretor",
+    "titleAdmin": "Administrador",
+    "titleEditor": "Editor",
+    "nameUser": "Nome do Usuário",
+    "phoneUser": "Telefone do Usuário",
+    "userButton": "Editar Usuário",
+    "userButton2": "Enviar Mensagem",
+    "form1": "Nome",
+    "form2": "Telefone",
+    "form3": "Estado",
+    "form4": "Cidade",
+    "form5": "Bairro",
+    "form6": "Rua",
+    "form7": "Tipo de residência",
+    "form8": "Número da Casa/Prédio",
+    "form9": "Imagem de perfil",
+    "role": "Função",
+    "status": "Status"
   }
 } 

@@ -56,7 +56,7 @@ async function ConteudoPrincipal({ searchParams }: PageProps) {
    };
 
    return (
-      <FundoBrancoPadrao className="w-full" titulo="Gerenciamento de usuários">
+      <FundoBrancoPadrao className="w-full" titulo="UserManagement.title" isTranslationKey={true}>
          <Filtros
             status={status}
             tipoUsuario={tipoUsuario}

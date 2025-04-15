@@ -25,6 +25,7 @@ import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
 import { useNotification } from "@/context/NotificationContext";
 import Erro404 from "@/components/Erro404";
 import Link from "next/link";
+import { useLanguage } from "@/context/LanguageContext";
 
 // Interface para os valores do formulário
 
@@ -36,6 +37,7 @@ interface FormProps {
 const Formulario = ({usuario, token} : FormProps) => {
    const { showNotification } = useNotification();
    const router = useRouter();
+   const { t } = useLanguage();
 
    const [preview, setPreview] = useState<string>();
    const [alterarSenha, setAlterarSenha] = useState(false);
@@ -81,14 +83,14 @@ const Formulario = ({usuario, token} : FormProps) => {
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const tiposDeUsuarios = [
-      { id: TipoUsuarioEnum.USUARIO, label: "Usuário" },
-      { id: TipoUsuarioEnum.CORRETOR, label: "Corretor" },
-      { id: TipoUsuarioEnum.ADMINISTRADOR, label: "Administrador" },
-      { id: TipoUsuarioEnum.EDITOR, label: "Editor" },
+      { id: TipoUsuarioEnum.USUARIO, label: t("UserManagement.titleUser") },
+      { id: TipoUsuarioEnum.CORRETOR, label: t("UserManagement.titleBroker") },
+      { id: TipoUsuarioEnum.ADMINISTRADOR, label: t("UserManagement.titleAdmin") },
+      { id: TipoUsuarioEnum.EDITOR, label: t("UserManagement.titleEditor") },
    ];
    const opcoesStatus = [
-      { id: "Ativo", label: "Ativo" },
-      { id: "Desativado", label: "Desativado" },
+      { id: "Ativo", label: t("UserManagement.buttonActive") },
+      { id: "Desativado", label: t("UserManagement.buttonDesactive") },
    ];
 
    const preencherInformacoesAtuaisDoUsuario = async () => {
@@ -183,125 +185,99 @@ const Formulario = ({usuario, token} : FormProps) => {
    };
 
    return (
-      <form
-         onSubmit={handleSubmit(onSubmit)}
-         className={`flex flex-col gap-2 md:gap-3 lg:gap-4 xl:gap-5 2xl:gap-6 ${isSubmitting ? "opacity-40" : "opacity-100"}`}
+      <FundoBrancoPadrao
+         titulo="UserManagement.title"
+         className={`w-full ${isSubmitting ? "opacity-40" : "opacity-100"}`}
+         isTranslationKey={true}
       >
-         <InputPadrao
-            htmlFor="nomeCompleto"
-            label="Nome completo"
-            type="text"
-            placeholder="Ex: Carlos"
-            {...register("nomeCompleto")}
-            mensagemErro={errors.nomeCompleto?.message}
-         />
-         <InputPadrao
-            htmlFor="email"
-            label="E-mail"
-            type="email"
-            placeholder="Ex: Carlos@gmail.com"
-            {...register("email")}
-            mensagemErro={errors.email?.message}
-         />
-         <div>
-            <p className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl">
-               Alterar Senha?
-            </p>
+         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <InputPadrao
+               htmlFor="nomeCompleto"
+               label={t("perfil.name")}
+               type="text"
+               placeholder="Ex: João Silva"
+               {...register("nomeCompleto")}
+               mensagemErro={errors.nomeCompleto?.message}
+            />
 
-            <Switch
-               onChange={(e) => handleTrocaDeSenha(e.target.checked)}
-               className="w-8 h-4 sm:w-12 sm:h-6 md:w-14 md:h-7 lg:w-16 lg:h-8"
-               checked={alterarSenha}
+            <InputPadrao
+               htmlFor="email"
+               label={t("perfil.email")}
+               type="email"
+               placeholder="Ex: joao.silva@example.com"
+               {...register("email")}
+               mensagemErro={errors.email?.message}
             />
-         </div>
-         <InputPadrao
-            htmlFor="senha"
-            label="Senha"
-            type="password"
-            placeholder="Ex: 123C@31s$"
-            {...register("senha")}
-            mensagemErro={errors.senha?.message}
-            disabled={!alterarSenha}
-         />
-         <InputPadrao
-            htmlFor="confirmaSenha"
-            label="Confirmar senha"
-            type="password"
-            placeholder="Digite a senha novamente"
-            {...register("confirmaSenha")}
-            mensagemErro={errors.confirmaSenha?.message}
-            disabled={!alterarSenha}
-         />
-         <InputPadrao
-            htmlFor="telefone"
-            label="Telefone"
-            type="text"
-            placeholder="Ex: 47912312121"
-            {...register("telefone")}
-            mensagemErro={errors.telefone?.message}
-         />
-         <TextAreaPadrao
-            htmlFor="descricao"
-            label="Descricao"
-            {...register("descricao")}
-            mensagemErro={errors.descricao?.message}
-         />
-         <div className="flex flex-col">
-            <Controller
-               name="tipoUsuario"
-               control={control}
-               render={({ field }) => (
-                  <List
-                     title="Tipo usuario"
-                     opcoes={tiposDeUsuarios}
-                     mudandoValor={field.onChange}
-                     bordaPreta
-                     placeholder="Tipo usuario"
-                     value={field.value || undefined}
-                  />
-               )}
+
+            <InputPadrao
+               htmlFor="telefone"
+               label={t("perfil.phone")}
+               type="text"
+               placeholder="Ex: 47912345678"
+               {...register("telefone")}
+               mensagemErro={errors.telefone?.message}
             />
-         </div>
-         <div className="flex flex-col">
-            <Controller
-               name="ativo"
-               control={control}
-               render={({ field }) => (
-                  <List
-                     title="Status"
-                     opcoes={opcoesStatus}
-                     mudandoValor={field.onChange}
-                     bordaPreta
-                     value={field.value}
-                  />
-               )}
+
+            <TextAreaPadrao
+               htmlFor="descricao"
+               label={t("property.description")}
+               {...register("descricao")}
+               mensagemErro={errors.descricao?.message}
             />
-         </div>
-         <Controller
-            name="imagemPerfil"
-            control={control}
-            render={({ field }) => (
-               <UploadImagem
-                  onChange={(file: File | null) => field.onChange(file)}
-                  preview={preview}
+
+            <div className="flex flex-col">
+               <Controller
+                  name="tipoUsuario"
+                  control={control}
+                  render={({ field }) => (
+                     <List
+                        title={t("UserManagement.role")}
+                        opcoes={tiposDeUsuarios}
+                        mudandoValor={field.onChange}
+                        placeholder={t("UserManagement.role")}
+                        bordaPreta
+                        value={field.value || undefined}
+                     />
+                  )}
                />
-            )}
-         />
-         <div className="flex justify-center gap-2">
-            <Link href="/gerenciamento/usuarios">
-            <BotaoPadrao
-               texto="Voltar"
-               disabled={isSubmitting}
-               type="button"
+            </div>
+
+            <div className="flex flex-col">
+               <Controller
+                  name="ativo"
+                  control={control}
+                  render={({ field }) => (
+                     <List
+                        title={t("UserManagement.status")}
+                        opcoes={opcoesStatus}
+                        mudandoValor={field.onChange}
+                        placeholder={t("UserManagement.buttonActive")}
+                        bordaPreta
+                        value={field.value}
+                     />
+                  )}
+               />
+            </div>
+
+            <Controller
+               name="imagemPerfil"
+               control={control}
+               render={({ field }) => (
+                  <UploadImagem
+                     onChange={(file: File | null) => field.onChange(file)}
+                     preview={preview}
+                  />
+               )}
             />
-            </Link>
-            <BotaoPadrao
-               texto="Concluir"
-               disabled={isSubmitting}
-               type="submit"
-            />
-         </div>
-      </form>
+
+            <div className="flex justify-end gap-4">
+               <Link href="/gerenciamento/usuarios">
+                  <BotaoPadrao type="button" texto={t("common.cancel")} />
+               </Link>
+               <BotaoPadrao type="submit" texto={t("common.save")} />
+            </div>
+         </form>
+      </FundoBrancoPadrao>
    );
 };
 
