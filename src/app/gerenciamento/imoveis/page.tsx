@@ -7,7 +7,7 @@ import { PlusIcon } from "lucide-react";
 import ListarImoveis from "./ListarImoveis";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 import FiltroList from "@/components/componetes_filtro/FiltroList";
-import { opcoesSort } from "@/data/opcoesSort"; 
+import { opcoesSort } from "@/data/opcoesSort";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { redirect } from "next/navigation";
@@ -35,7 +35,10 @@ const Page = async ({ searchParams }: PageProps) => {
    if (!session) {
       redirect("/login");
    }
-   if (session.user?.role !== Roles.ADMINISTRADOR && session.user?.role !== Roles.EDITOR) {
+   if (
+      session.user?.role !== Roles.ADMINISTRADOR &&
+      session.user?.role !== Roles.EDITOR
+   ) {
       redirect("/");
    }
 
@@ -69,11 +72,17 @@ const Page = async ({ searchParams }: PageProps) => {
          tipoResidencia: params.tipoImovel,
          finalidade: params.finalidade,
          sort: params.sort,
-         ativo: params.ativo,
-         cache: "no-store" 
+         ativo: params.ativo === "" ? undefined : params.ativo,
+         cache: "no-store",
+         buscarIndependenteAtivo:
+            params.ativo === "" ||
+            params.ativo === undefined ||
+            params.ativo === null,
       });
 
-   
+   console.log(params.ativo === "" ||
+      params.ativo === undefined ||
+      params.ativo === null,);
 
    return (
       <Layout className="py-0">
@@ -94,7 +103,6 @@ const Page = async ({ searchParams }: PageProps) => {
                      defaultPlaceholder="Todas"
                      value={params.finalidade}
                   />
-                   
 
                   <div
                      className="flex flex-row items-center px-2 py-1 gap-2 rounded-md border-2 border-gray-300 

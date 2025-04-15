@@ -7,6 +7,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ModalConfirmacao from "@/components/ComponentesCrud/ModalConfirmacao";
 import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
+import { useSession } from "next-auth/react";
+import { SessionProvider } from "next-auth/react";
 
 interface ListarImoveisProps {
    imoveis: ModelImovelGet[];
@@ -14,21 +16,12 @@ interface ListarImoveisProps {
       totalPaginas: number;
       ultima: boolean;
    };
-   precoMinimo?: string;
-   precoMaximo?: string;
-   metrosQuadradosMinimo?: string;
-   metrosQuadradosMaximo?: string;
-   quantidadeDeQuartos?: string;
-   quantidadeDeVagas?: string;
-   cidade?: string;
-   bairro?: string;
-   tipoImovel?: string;
 }
 
-export default function ListarImoveis({
-   imoveis,
+const ListarImoveisSession = ({
+   imoveis, 
    pageableInfo,
-}: ListarImoveisProps) {
+}: ListarImoveisProps) => {
    const [paginaAtual, setPaginaAtual] = useState(0);
    const [modalAberto, setModalAberto] = useState(false);
    const [imovelParaExcluir, setImovelParaExcluir] = useState<number | null>(
@@ -37,10 +30,17 @@ export default function ListarImoveis({
    const [itemDeletadoId, setItemDeletadoId] = useState<number | null>(null);
    const router = useRouter();
 
+   const { data: session } = useSession();
+   const token = session?.accessToken;
+
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const desfazendoDelete = async () => {
       await fetch(`${BASE_URL}/imoveis/restaurar/${itemDeletadoId}`, {
          method: "POST",
+         headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+         },
       });
       router.refresh();
    };
@@ -55,12 +55,28 @@ export default function ListarImoveis({
    const confirmarExclusao = async () => {
       if (imovelParaExcluir) {
          try {
-            setItemDeletadoId(imovelParaExcluir);
-            setMostrarNotificacao(true);
-            setModalAberto(false);
-            router.refresh();
-         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-         } catch (error) {}
+            const response = await fetch(
+               `${BASE_URL}/imoveis/${imovelParaExcluir}`,
+               {
+                  method: "DELETE",
+                  headers: {
+                     "Content-Type": "application/json",
+                     Authorization: `Bearer ${token}`,
+                  },
+               }
+            );
+
+            if (response.ok) {
+               setItemDeletadoId(imovelParaExcluir);
+               setMostrarNotificacao(true);
+               setModalAberto(false);
+               router.refresh();
+            } else {
+               console.error("Erro ao deletar imóvel");
+            }
+         } catch (error) {
+            console.error("Erro ao deletar imóvel:", error);
+         }
       }
       setModalAberto(false);
    };
@@ -101,4 +117,14 @@ export default function ListarImoveis({
          />
       </div>
    );
-}
+};
+
+const ListarImoveis = ({ imoveis, pageableInfo }: ListarImoveisProps) => {
+   return (
+      <SessionProvider>
+         <ListarImoveisSession imoveis={imoveis} pageableInfo={pageableInfo} />
+      </SessionProvider>
+   );
+};
+
+export default ListarImoveis;
