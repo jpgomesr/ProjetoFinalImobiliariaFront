@@ -14,17 +14,23 @@ export default async function Home() {
       destaque: "true",
       paginaAtual: "0",
       revalidate: 0,
+      buscarArquivados: true,
+
+      
    });
    const imoveisCondicoesEspeciais = await buscarTodosImoveis({
       ativo: "true",
       condicoesEspeciais: "true",
       revalidate: 60,
+      buscarArquivados: true,
+
    });
    const imoveisRecentes = await buscarTodosImoveis({
       ativo: "true",
       sort: "dataCadastro,desc",
       paginaAtual: "0",
       revalidate: 60,
+      buscarArquivados: true,
    });
 
    return (
