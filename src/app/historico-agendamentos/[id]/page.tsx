@@ -49,13 +49,12 @@ const page = async ({ params, searchParams }: PageProps) => {
    if(session.user.role !== Roles.USUARIO && session.user.role !== Roles.CORRETOR){
       redirect("/")
    }
-   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
    const fetchAgendamentos = async (role: Roles) => {
       try {
          console.log(parametrosRenderizados);
          const response = await fetchComAutorizacao(
-            `${BASE_URL}/agendamentos/${role === Roles.CORRETOR ? "corretor" : "usuario"}/${id}?status=${
+            `http://localhost:8082/agendamentos/${role === Roles.CORRETOR ? "corretor" : "usuario"}/${id}?status=${
                parametrosRenderizados?.status || ""
             }&data=${
                parametrosRenderizados?.data || ""
