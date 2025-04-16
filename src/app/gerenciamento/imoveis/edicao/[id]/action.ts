@@ -71,8 +71,8 @@ export const formatarDadosFormulario = async (
       valor: Number(data.valor),
       valorPromo: data.valorPromo ? Number(data.valorPromo) : null,
       destaque: data.destaque || false,
-      visibilidade: data.visibilidade,
-      ativo: data.ativo,
+      visibilidade: data.visibilidade || true,
+      ativo: data.ativo || true,
       banner: data.banner,
       tipoBanner: data.tipoBanner,
       iptu: data.iptu ? Number(data.iptu) : null,
@@ -187,13 +187,12 @@ export async function editarImovel(
             Authorization: `Bearer ${token}`,
          },
          body: formDataToSend,
-         cache: 'no-store'
       });
 
-      // Força revalidação dos caminhos
-      revalidatePath(`/gerenciamento/imoveis/edicao/${data.id}`, 'layout');
-      revalidatePath(`/imovel/${data.id}`, 'layout');
-      revalidatePath(`/gerenciamento/imoveis`, 'layout');
+      // Revalida os caminhos para atualizar a página
+      revalidatePath(`/gerenciamento/imoveis/edicao/${data.id}`);
+      revalidatePath(`/imovel/${data.id}`);
+      revalidatePath(`/gerenciamento/imoveis`);
 
       if(response.status === 401 || response.status === 403){
          redirect('/logout')

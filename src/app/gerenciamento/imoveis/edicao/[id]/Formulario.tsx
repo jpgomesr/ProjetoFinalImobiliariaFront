@@ -240,8 +240,6 @@ const Formulario = ({ imovel, token }: FormularioProps) => {
       try {
          const resultado = await editarImovel(data, token, refImagensDeletadas);
 
-         console.log("resultado", data);
-
          if (resultado.success) {
             showNotification(resultado.message);
             clearErrors();

@@ -1,6 +1,5 @@
 "use client"
 
-import { useLanguage } from "@/context/LanguageContext";
 interface ModalCofirmacaoProps {
   isOpen: boolean
   onClose: () => void
@@ -20,7 +19,6 @@ export default function ModalCofirmacao({
     onConfirm()
     onClose()
   }
-  const { t } = useLanguage();
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
@@ -31,13 +29,13 @@ export default function ModalCofirmacao({
             onClick={handleConfirm}
             className="bg-[#7e2639] hover:bg-[#6a1f30] text-white py-2 px-8 rounded-md font-medium"
           >
-            {t("Schedules.ModalButtonYes")}
+            Sim
           </button>
           <button
             onClick={onClose}
             className="bg-[#7e2639] hover:bg-[#6a1f30] text-white py-2 px-8 rounded-md font-medium"
           >
-            {t("Schedules.ModalButtonNo")}
+            Não
           </button>
         </div>
       </div>

@@ -1,11 +1,11 @@
 import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
+import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
+import FormularioHorarios from "./FormularioHorarios";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { redirect } from "next/navigation";
 import { Roles } from "@/models/Enum/Roles";
-import HorariosClient from "./HorariosClient";
-
 interface PageProps {
    params: Promise<{
       id: string;
@@ -27,11 +27,10 @@ export default async function MeusHorarios({ params }: PageProps) {
    return (
       <Layout className="my-0">
          <SubLayoutPaginasCRUD>
-            <HorariosClient 
-               id={paramsResolvidos.id} 
-               BASE_URL={BASE_URL} 
-               token={session.accessToken || ""} 
-            />
+            <FundoBrancoPadrao titulo="Meus horários">
+               
+               <FormularioHorarios id={paramsResolvidos.id} BASE_URL={BASE_URL} token={session.accessToken || ""} />
+            </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
       </Layout>
    );

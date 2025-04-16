@@ -4,7 +4,6 @@ import List from "@/components/List";
 import ListFiltroPadrao from "@/components/ListFiltroPadrao";
 import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useLanguage } from "@/context/LanguageContext";
 
 interface FiltrosAgendamentoProps {
    id: string;
@@ -13,16 +12,12 @@ interface FiltrosAgendamentoProps {
    data: string;
 }
 
-const FIltrosAgendamento = ({
-   id,
-   url,
-   status = "",
-   data,
-}: FiltrosAgendamentoProps) => {
+const FIltrosAgendamento = ({ id, url, status = "", data }: FiltrosAgendamentoProps) => {
    const [dataAtual, setDataAtual] = useState("");
    const searchParams = useSearchParams();
    const router = useRouter();
-   const { t } = useLanguage();
+   console.log(status);
+
 
    const atualizarURL = (data: string) => {
       const params = new URLSearchParams(searchParams.toString());
@@ -37,23 +32,27 @@ const FIltrosAgendamento = ({
 
    const opcoesAgendamento = [
       {
-         id: "",
-         label: t("SchedulingHistory.status4"),
-      },
-      {
          id: "CANCELADO",
-         label: t("SchedulingHistory.status1"),
+         label: "Cancelado",
       },
       {
          id: "CONFIRMADO",
-         label: t("SchedulingHistory.status2"),
+         label: "Confirmado",
       },
       {
          id: "PENDENTE",
-         label: t("SchedulingHistory.status3"),
+         label: "Pendente",
+      },
+      {
+         id: "CONCLUIDO",
+         label: "Concluido",
+      },
+      {
+         id: "",
+         label: "Todos",
       },
    ];
-   const [statusAtual, setStatusAtual] = useState(opcoesAgendamento[0].id);
+   const [statusAtual, setStatusAtual] = useState(opcoesAgendamento[3].id);
 
    return (
       <div className="w-full flex gap-4 flex-col md:flex-row justify-between">

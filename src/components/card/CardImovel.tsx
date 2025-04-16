@@ -7,11 +7,13 @@ import { ModelImovelGet } from "../../models/ModelImovelGet";
 import { useEffect, useState } from "react";
 import CardBanner from "./CardBanner";
 import { RotateCcw, Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Imovel from "@/models/ModelImovel";
 import Link from "next/link";
+import ModalCofirmacao from "../ComponentesCrud/ModalConfirmacao";
 import { SessionProvider } from "next-auth/react";
-import { NotificationProvider } from "@/context/NotificationContext";
+import { useNotification } from "@/context/NotificationContext";
 
 interface HomeProps {
    imovel: ModelImovelGet | Imovel;
@@ -24,6 +26,7 @@ interface HomeProps {
 }
 
 export default function CardImovel(props: HomeProps) {
+   const router = useRouter();
    const [isBannerVisible] = useState(props.imovel.banner);
    const [isFavorited, setIsFavorited] = useState(props.imovel.favoritado);
 
@@ -155,14 +158,12 @@ export default function CardImovel(props: HomeProps) {
                            )
                         ) : (
                            <SessionProvider>
-                              <NotificationProvider>
-                                 <FavButton
-                                    idImovel={props.imovel.id}
-                                    favorited={isFavorited ?? false}
-                                    dark={props.imovel.permitirDestaque}
-                                    setIsFavorited={setIsFavorited}
-                                 />
-                              </NotificationProvider>
+                              <FavButton
+                                 idImovel={props.imovel.id}
+                                 favorited={isFavorited ?? false}
+                                 dark={props.imovel.permitirDestaque}
+                                 setIsFavorited={setIsFavorited}
+                              />
                            </SessionProvider>
                         )}
                      </div>
@@ -280,17 +281,20 @@ export default function CardImovel(props: HomeProps) {
                      />
                   </Link>
                   {cardEdicao ? (
-                     <Link href={props.edicaoLink || ""}>
-                        <button
-                           className={`text-sm px-4 py-2 ${
-                              props.imovel.permitirDestaque
-                                 ? "bg-brancoEscurecido text-havprincipal font-bold"
-                                 : "bg-havprincipal text-white "
-                           } rounded-md`}
-                        >
-                           Editar
-                        </button>
-                     </Link>
+                     <button
+                        className={`text-sm px-4 py-2 ${
+                           props.imovel.permitirDestaque
+                              ? "bg-brancoEscurecido text-havprincipal font-bold"
+                              : "bg-havprincipal text-white "
+                        } rounded-md`}
+                        onClick={() => {
+                           if (props.edicaoLink) {
+                              router.push(props.edicaoLink);
+                           }
+                        }}
+                     >
+                        Editar
+                     </button>
                   ) : null}
                </div>
             </div>
