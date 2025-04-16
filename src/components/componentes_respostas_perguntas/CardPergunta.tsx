@@ -113,7 +113,7 @@ const CardPergunta = ({
       setIsLoading(true);
       try {
          const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-         const url = `${BASE_URL}/perguntas/${id}`;
+         const url = `${BASE_URL}/perguntas/${id}?resposta=${respostaTexto}`;
          console.log("Enviando resposta para:", url);
          console.log("Token:", token);
 
@@ -123,9 +123,6 @@ const CardPergunta = ({
                "Content-Type": "application/json",
                Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({
-               resposta: respostaTexto,
-            }),
          });
 
          if (!response.ok) {
