@@ -42,7 +42,7 @@ export default async function Home() {
                            lg:h-full"
             >
                <Image
-                  src="/image-paginaprincipal.png"
+                  src="/imagem_capa.svg"
                   alt="Imagem da pagina principal"
                   fill
                   quality={100}
