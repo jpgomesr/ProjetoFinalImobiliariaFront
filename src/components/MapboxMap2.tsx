@@ -11,6 +11,7 @@ import { Heart, Bed, Bath, Car, Ruler, MapPin, X } from "lucide-react";
 import { SessionProvider, useSession } from "next-auth/react";
 import { NotificationProvider } from "@/context/NotificationContext";
 import { useNotification } from "@/context/NotificationContext";
+import { TipoBanner } from "@/models/Enum/TipoBanner";
 
 interface ImovelComCoordenadas extends ModelImovelGet {
    coordenadas?: {
@@ -153,90 +154,107 @@ const MapCard = ({ imovel }: { imovel: ImovelComCoordenadas }) => {
    const imagemCapa = getImagemCapa();
 
    return (
-      <div className="w-full min-w-[250px] max-w-[300px] rounded-lg bg-white shadow-md overflow-visible">
-         <div className="relative h-36 w-full">
-            {imovel.destaque && (
-               <div className="absolute top-0 left-0 bg-yellow-500 text-white text-xs font-bold py-1 px-2 z-10">
-                  Destaque
-               </div>
-            )}
-            <Image
-               src={imagemCapa || "/images/fallback.jpg"}
-               alt={imovel.titulo}
-               fill
-               className="object-cover rounded-t-lg"
-            />
-         </div>
-
-         <div className="p-3">
-            <div className="flex justify-between items-start">
-               <h3 className="text-sm font-semibold line-clamp-1 text-havprincipal">
-                  {imovel.titulo}
-               </h3>
-               <button
-                  onClick={handleFavoriteClick}
-                  className="text-havprincipal hover:text-red-500 transition-colors"
-               >
-                  {isFavorited ? (
-                     <Heart className="w-4 h-4 fill-current" />
-                  ) : (
-                     <Heart className="w-4 h-4" />
-                  )}
-               </button>
-            </div>
-
-            <div className="mt-1 flex items-center text-xs text-havprincipal">
-               <MapPin className="w-3 h-3 mr-1" />
-               <span>
-                  {imovel.endereco.bairro}, {imovel.endereco.cidade}
-               </span>
-            </div>
-
-            <div className="mt-1 flex items-center">
-               <span className="text-sm font-bold text-havprincipal">
-                  R$ {valorFormatado}
-               </span>
-            </div>
-
-            <div className="mt-2 flex justify-between text-xs text-havprincipal">
-               <div className="flex items-center">
-                  <Bed className="w-3 h-3 mr-1" />
-                  <span>{imovel.qtdQuartos}</span>
-               </div>
-               <div className="flex items-center">
-                  <Bath className="w-3 h-3 mr-1" />
-                  <span>{imovel.qtdBanheiros}</span>
-               </div>
-               <div className="flex items-center">
-                  <Car className="w-3 h-3 mr-1" />
-                  <span>{imovel.qtdGaragens}</span>
-               </div>
-               <div className="flex items-center">
-                  <Ruler className="w-3 h-3 mr-1" />
-                  <span>{imovel.tamanho}m²</span>
-               </div>
-            </div>
-
-            <Link
-               href={`/imovel/${imovel.id}`}
-               className="mt-3 block w-full text-center text-xs bg-havprincipal text-white py-1.5 rounded hover:bg-opacity-90 transition"
-            >
-               Ver detalhes
-            </Link>
-         </div>
-
-         {/* Modal para confirmar desfavoritar */}
-         <Modal
-            isOpen={showUnfavoriteModal}
-            onClose={() => setShowUnfavoriteModal(false)}
-            title="Remover dos favoritos"
-            onConfirm={toggleFavorite}
+      <>
+         <div
+            className={`w-full h-full z-50 absolute top-0 left-0 ${
+               imovel.tipoBanner == TipoBanner.ADQUIRIDO ||
+               imovel.tipoBanner == TipoBanner.ALUGADO
+                  ? "bg-white bg-opacity-40 pointer-events-none"
+                  : "hidden"
+            }`}
+         />
+         <div
+            className={`w-full min-w-[250px] max-w-[300px] rounded-lg bg-white shadow-md overflow-visible relative`}
          >
-            <p className="text-gray-600">
-               Tem certeza que deseja remover este imóvel dos seus favoritos?
-            </p>
-         </Modal>
-      </div>
+            <div className="relative h-36 w-full">
+               {imovel.destaque && (
+                  <div className="absolute top-0 left-0 bg-yellow-500 text-white text-xs font-bold py-1 px-2 z-10">
+                     Destaque
+                  </div>
+               )}
+               {imovel.banner && (
+                  <div className="absolute w-full text-center top-6 right-0 bg-havprincipal text-white text-xs font-bold py-1 px-2 z-10">
+                     {imovel.tipoBanner}
+                  </div>
+               )}
+               <Image
+                  src={imagemCapa || "/images/fallback.jpg"}
+                  alt={imovel.titulo}
+                  fill
+                  className="object-cover rounded-t-lg"
+               />
+            </div>
+
+            <div className="p-3">
+               <div className="flex justify-between items-start">
+                  <h3 className="text-sm font-semibold line-clamp-1 text-havprincipal">
+                     {imovel.titulo}
+                  </h3>
+                  <button
+                     onClick={handleFavoriteClick}
+                     className="text-havprincipal hover:text-red-500 transition-colors"
+                  >
+                     {isFavorited ? (
+                        <Heart className="w-4 h-4 fill-current" />
+                     ) : (
+                        <Heart className="w-4 h-4" />
+                     )}
+                  </button>
+               </div>
+
+               <div className="mt-1 flex items-center text-xs text-havprincipal">
+                  <MapPin className="w-3 h-3 mr-1" />
+                  <span>
+                     {imovel.endereco.bairro}, {imovel.endereco.cidade}
+                  </span>
+               </div>
+
+               <div className="mt-1 flex items-center">
+                  <span className="text-sm font-bold text-havprincipal">
+                     R$ {valorFormatado}
+                  </span>
+               </div>
+
+               <div className="mt-2 flex justify-between text-xs text-havprincipal">
+                  <div className="flex items-center">
+                     <Bed className="w-3 h-3 mr-1" />
+                     <span>{imovel.qtdQuartos}</span>
+                  </div>
+                  <div className="flex items-center">
+                     <Bath className="w-3 h-3 mr-1" />
+                     <span>{imovel.qtdBanheiros}</span>
+                  </div>
+                  <div className="flex items-center">
+                     <Car className="w-3 h-3 mr-1" />
+                     <span>{imovel.qtdGaragens}</span>
+                  </div>
+                  <div className="flex items-center">
+                     <Ruler className="w-3 h-3 mr-1" />
+                     <span>{imovel.tamanho}m²</span>
+                  </div>
+               </div>
+
+               <Link
+                  href={`/imovel/${imovel.id}`}
+                  className="mt-3 block w-full text-center text-xs bg-havprincipal text-white py-1.5 rounded hover:bg-opacity-90 transition"
+               >
+                  Ver detalhes
+               </Link>
+            </div>
+
+            {/* Modal para confirmar desfavoritar */}
+            <Modal
+               isOpen={showUnfavoriteModal}
+               onClose={() => setShowUnfavoriteModal(false)}
+               title="Remover dos favoritos"
+               onConfirm={toggleFavorite}
+            >
+               <p className="text-gray-600">
+                  Tem certeza que deseja remover este imóvel dos seus favoritos?
+               </p>
+            </Modal>
+         </div>
+      </>
    );
 };
 
