@@ -22,8 +22,6 @@ import List from "@/components/List";
 import { useNotification } from "@/context/NotificationContext";
 import Erro404 from "@/components/Erro404";
 import Link from "next/link";
-import { useLanguage } from "@/context/LanguageContext";
-
 interface FormProps {
    proprietario: ModelProprietario;
    token: string;
@@ -32,7 +30,6 @@ interface FormProps {
 const Formulario = ({ proprietario, token }: FormProps) => {
    const { showNotification } = useNotification();
    const router = useRouter();
-   const { t } = useLanguage();
 
    const [camposDesabilitados, setCamposDesabilitados] = useState({
       cidadeDesabilitada: true,
@@ -218,7 +215,7 @@ const Formulario = ({ proprietario, token }: FormProps) => {
          {/* Campo Nome */}
          <InputPadrao
             htmlFor="nome"
-            label={t("perfil.name")}
+            label="Nome"
             type="text"
             placeholder="Ex: João Silva"
             {...register("nome")}
@@ -228,7 +225,7 @@ const Formulario = ({ proprietario, token }: FormProps) => {
          {/* Campo Celular */}
          <InputPadrao
             htmlFor="celular"
-            label={t("perfil.phone")}
+            label="Celular"
             type="text"
             placeholder="Ex: 47912345678"
             {...register("celular")}
@@ -238,7 +235,7 @@ const Formulario = ({ proprietario, token }: FormProps) => {
          {/* Campo Telefone */}
          <InputPadrao
             htmlFor="telefone"
-            label={t("perfil.phone")}
+            label="Telefone"
             type="text"
             placeholder="Ex: 47912312121"
             {...register("telefone")}
@@ -248,7 +245,7 @@ const Formulario = ({ proprietario, token }: FormProps) => {
          {/* Campo Email */}
          <InputPadrao
             htmlFor="email"
-            label={t("perfil.email")}
+            label="Email"
             type="email"
             placeholder="Ex: joao.silva@example.com"
             {...register("email")}
@@ -327,7 +324,7 @@ const Formulario = ({ proprietario, token }: FormProps) => {
                      mudandoValor={field.onChange}
                      value={watch("tipoResidencia")}
                      placeholder="Selecione o tipo de residência"
-                     bordaPreta
+                     
                   />
                )}
             />
@@ -374,7 +371,7 @@ const Formulario = ({ proprietario, token }: FormProps) => {
                      opcoes={opcoesStatus}
                      mudandoValor={field.onChange}
                      placeholder="Ativo"
-                     bordaPreta
+                     
                   />
                )}
             />
@@ -392,11 +389,19 @@ const Formulario = ({ proprietario, token }: FormProps) => {
          />
 
          {/* Botão de Envio */}
-         <div className="flex justify-end gap-4">
+         <div className="flex justify-center gap-2">
             <Link href="/gerenciamento/proprietarios">
-               <BotaoPadrao type="button" texto={t("common.cancel")} />
+               <BotaoPadrao
+                  texto="Voltar"
+                  disabled={isSubmitting}
+                  type="button"
+               />
             </Link>
-            <BotaoPadrao type="submit" texto={t("common.save")} />
+            <BotaoPadrao
+               texto={isSubmitting ? "Concluindo..." : "Concluir"}
+               disabled={isSubmitting}
+               type="submit"
+            />
          </div>
       </form>
    );

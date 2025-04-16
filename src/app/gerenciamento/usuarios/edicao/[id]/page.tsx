@@ -43,9 +43,9 @@ const Page = async ({ params }: PageProps) => {
       return (
          <Layout className="py-0">
             <SubLayoutPaginasCRUD>
-               <div className="w-full">
+               <FundoBrancoPadrao titulo="Edição de usuário" className="w-full">
                   <p>Usuário não encontrado.</p>
-               </div>
+               </FundoBrancoPadrao>
             </SubLayoutPaginasCRUD>
          </Layout>
       );
@@ -54,7 +54,9 @@ const Page = async ({ params }: PageProps) => {
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
-            <Formulario usuario={usuario} token={session.accessToken ?? ""} />
+            <FundoBrancoPadrao titulo="Edição de usuário" className="w-full">
+               <Formulario usuario={usuario} token={session.accessToken ?? ""} />
+            </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
       </Layout>
    );

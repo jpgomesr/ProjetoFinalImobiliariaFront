@@ -32,6 +32,7 @@ export default function FormularioHorarios({
    const [horariosAgrupados, setHorariosAgrupados] = useState<{
       [key: string]: Horario[];
    }>({});
+   console.log("horariosAgrupados", horariosAgrupados);
    console.log(id);
    const [modalConfirmacao, setModalConfirmacao] = useState(false);
    const [idHorarioParaExcluir, setIdHorarioParaExcluir] = useState<
@@ -39,7 +40,6 @@ export default function FormularioHorarios({
    >(null);
 
    const buscarHorarios = async () => {
-      
       try {
          const response = await useFetchComAutorizacaoComToken(
             `${BASE_URL}/corretores/horarios/corretor`,
@@ -84,16 +84,20 @@ export default function FormularioHorarios({
       }
 
       try {
-         const response = await useFetchComAutorizacaoComToken(`${BASE_URL}/horarios/corretor`, {
-            method: "POST",
-            headers: {
-               "Content-Type": "application/json",
+         const response = await useFetchComAutorizacaoComToken(
+            `${BASE_URL}/horarios/corretor`,
+            {
+               method: "POST",
+               headers: {
+                  "Content-Type": "application/json",
+               },
+               body: JSON.stringify({
+                  horario: dataHora,
+                  idCorretor: id,
+               }),
             },
-            body: JSON.stringify({
-               horario: dataHora,
-               idCorretor: id,
-            }),
-         }, token);
+            token
+         );
 
          if (!response.ok) throw new Error("Erro ao cadastrar horário");
 
@@ -105,18 +109,18 @@ export default function FormularioHorarios({
    };
 
    const excluirHorario = async (horarioId: number) => {
-
       setIdHorarioParaExcluir(horarioId);
       setModalConfirmacao(true);
    };
 
    const confirmarDelecao = async () => {
       try {
-         const response = await fetch(
+         const response = await useFetchComAutorizacaoComToken(
             `${BASE_URL}/horarios/corretor/${idHorarioParaExcluir}`,
             {
                method: "DELETE",
-            }
+            },
+            token
          );
 
          if (!response.ok) throw new Error("Erro ao excluir horário");
@@ -138,7 +142,9 @@ export default function FormularioHorarios({
             <Link href={`/historico-agendamentos/${id}`}>
                <BotaoPadrao texto={t("Schedules.mySchedules")} />
             </Link>
-            <h2 className="text-xl text-havprincipal">{t("Schedules.Schedule registration")}</h2>
+            <h2 className="text-xl text-havprincipal">
+               {t("Schedules.Schedule registration")}
+            </h2>
             <div className="flex flex-col md:flex-row gap-4 items-start">
                <div className="flex-1 w-full">
                   <input
@@ -166,37 +172,40 @@ export default function FormularioHorarios({
             </div>
          </div>
 
-         {Object.entries(horariosAgrupados).map(([data, horarios]) => (
-            <div key={data} className="flex flex-col gap-4">
-               <h3 className="text-lg font-semibold text-havprincipal">
-                  {t("Schedules.Day")} {new Date(data).toLocaleDateString("pt-BR")}
-               </h3>
-               <div className="flex flex-wrap gap-3">
-                  {horarios.map((horario) => (
-                     <div
-                        key={horario.id}
-                        className="bg-havprincipal text-white px-4 py-2 rounded-lg relative group cursor-pointer"
-                        onClick={() => excluirHorario(horario.id)}
-                     >
-                        {horario.dataHora.split("T")[1].substring(0, 5)}
+         {Object.entries(horariosAgrupados).map(([data, horarios]) => {
+            return (
+               <div key={data} className="flex flex-col gap-4">
+                  <h3 className="text-lg font-semibold text-havprincipal">
+                     {t("Schedules.Day")}{" "}
+                     {new Date(data).toLocaleDateString("pt-BR")}
+                  </h3>
+                  <div className="flex flex-wrap gap-3">
+                     {horarios.map((horario) => (
                         <div
-                           className="absolute top-[-10px] right-[-10px] bg-red-200  p-1 rounded-full cursor-pointer"
-                           onClick={(e) => {
-                              e.stopPropagation();
-                              excluirHorario(horario.id);
-                           }}
+                           key={horario.id}
+                           className="bg-havprincipal text-white px-4 py-2 rounded-lg relative group cursor-pointer"
+                           onClick={() => excluirHorario(horario.id)}
                         >
-                           <Trash
-                              className="text-havprincipal"
-                              width={16}
-                              height={16}
-                           />
+                           {horario.dataHora.split("T")[1].substring(0, 5)}
+                           <div
+                              className="absolute top-[-10px] right-[-10px] bg-red-200  p-1 rounded-full cursor-pointer"
+                              onClick={(e) => {
+                                 e.stopPropagation();
+                                 excluirHorario(horario.id);
+                              }}
+                           >
+                              <Trash
+                                 className="text-havprincipal"
+                                 width={16}
+                                 height={16}
+                              />
+                           </div>
                         </div>
-                     </div>
-                  ))}
+                     ))}
+                  </div>
                </div>
-            </div>
-         ))}
+            );
+         })}
          <ModalConfirmacao
             isOpen={modalConfirmacao}
             onClose={() => setModalConfirmacao(false)}

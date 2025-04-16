@@ -26,15 +26,16 @@ interface Chat {
    naoLido?: boolean;
 }
 
-interface ChatListProps {
+interface ChatListServerProps {
    onOpenChat: () => void;
 }
 
-export default function ChatList(props: ChatListProps) {
+export default function ChatListServer(props: ChatListServerProps) {
    const router = useRouter();
    const [search, setSearch] = useState("");
    const [loading, setLoading] = useState(true);
    const [localChats, setLocalChats] = useState<Chat[]>([]);
+   const [isLoadingChat, setIsLoadingChat] = useState(false);
    const {
       chats,
       selectedChat,
@@ -42,19 +43,22 @@ export default function ChatList(props: ChatListProps) {
       fetchChats,
       userId,
       resetConnection,
+      token,
    } = useChat();
 
    // Atualizar o estado local quando os chats do contexto mudarem
    useEffect(() => {
-      console.log("Atualizando lista local de chats:", chats.length);
       setLocalChats(chats);
    }, [chats]);
 
    const handleContactClick = useCallback(
       async (chatId: number) => {
-         if (selectedChat === chatId) return;
+         if (isLoadingChat || chatId === selectedChat) {
+            return;
+         }
 
          try {
+            setIsLoadingChat(true);
             resetConnection();
             setSelectedChat(chatId);
 
@@ -62,23 +66,23 @@ export default function ChatList(props: ChatListProps) {
                `${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chatId}/marcarLidas?idUsuario=${userId}`,
                {
                   method: "POST",
+                  headers: {
+                     "Content-Type": "application/json",
+                     Authorization: `Bearer ${token}`,
+                  },
                }
             );
 
-            setLocalChats((prevChats) =>
-               prevChats.map((chat) =>
-                  chat.idChat === chatId ? { ...chat, naoLido: false } : chat
-               )
-            );
-
             await fetchChats();
-
-            // Navegação instantânea
             props.onOpenChat();
             router.replace(`/chat/?chat=${chatId}`);
          } catch (error) {
             console.error("Erro ao carregar chat:", error);
             router.replace(`/chat/?chat=${chatId}`);
+         } finally {
+            setTimeout(() => {
+               setIsLoadingChat(false);
+            }, 300);
          }
       },
       [
@@ -88,6 +92,9 @@ export default function ChatList(props: ChatListProps) {
          selectedChat,
          resetConnection,
          fetchChats,
+         token,
+         props,
+         isLoadingChat,
       ]
    );
 
@@ -123,33 +130,20 @@ export default function ChatList(props: ChatListProps) {
    useEffect(() => {
       const loadChats = async () => {
          try {
-            await fetchChats();
+            // Não fazemos fetchChats aqui para evitar chamadas duplicadas
+            // O fetchChats já é chamado no ChatContext
+         } catch (error) {
+            console.error("Erro ao carregar chats:", error);
          } finally {
             setLoading(false);
          }
       };
 
       loadChats();
-
-      // Configurar intervalo para forçar a re-renderização da lista periodicamente
-      const intervalId = setInterval(() => {
-         console.log("Forçando atualização visual da lista de chats");
-         setLocalChats((prevChats) => [...prevChats]); // Força re-renderização
-      }, 5000);
-
-      return () => clearInterval(intervalId);
-
-      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, []);
 
    // Filtrar e ordenar chats de forma otimizada
    const filteredChats = useMemo(() => {
-      console.log("Filtrando lista de chats com", localChats.length, "itens");
-      console.log(
-         "Chats não lidos:",
-         localChats.filter((c) => c.naoLido).length
-      );
-
       return Array.isArray(localChats)
          ? localChats
               .filter((chat) => {
@@ -183,7 +177,7 @@ export default function ChatList(props: ChatListProps) {
                <h2 className="font-bold text-xl">Chat</h2>
             </div>
             <div className="flex items-center justify-center h-full">
-               <p>Carregando chats...</p>
+               <p>Carregando...</p>
             </div>
          </div>
       );
@@ -205,10 +199,17 @@ export default function ChatList(props: ChatListProps) {
             />
          </div>
          <div className="h-full overflow-y-auto hide-scrollbar">
+            {isLoadingChat && (
+               <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center z-10">
+                  <div className="bg-white p-4 rounded-lg shadow-md">
+                     <p className="text-gray-700">Carregando chat...</p>
+                  </div>
+               </div>
+            )}
             {filteredChats.length > 0 ? (
                filteredChats.map((chat, index) => (
                   <div
-                     key={chat.id}
+                     key={`chat-${chat.idChat}`}
                      className={`flex items-center gap-3 p-3 hover:bg-gray-100 hover:rounded-lg
                                cursor-pointer ${
                                   selectedChat === chat.idChat
@@ -218,6 +219,8 @@ export default function ChatList(props: ChatListProps) {
                         index === filteredChats.length - 1
                            ? ""
                            : "border-b border-gray-400"
+                     } ${
+                        isLoadingChat ? "opacity-70 pointer-events-none" : ""
                      }`}
                      onClick={() => handleContactClick(chat.idChat)}
                   >

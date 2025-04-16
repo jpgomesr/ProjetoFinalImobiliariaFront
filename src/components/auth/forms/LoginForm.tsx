@@ -9,7 +9,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-
+import CodRecContaForm from "./CodRecContaForm";
 const loginSchema = z.object({
    login: z.string().min(1, { message: "Login é obrigatório" }),
    password: z.string().min(1, { message: "Senha é obrigatória" }),
@@ -25,6 +25,9 @@ const LoginForm = ({ callbackUrl }: LoginFormProps) => {
    const [showPassword, setShowPassword] = useState(false);
    const [loginError, setLoginError] = useState(false);
    const [isLoading, setIsLoading] = useState(false);
+   const [formCodigo, setFormCodigo] = useState(false);
+   const [email, setEmail] = useState("");
+   const [senha, setSenha] = useState("");
    const router = useRouter();
    const {
       register,
@@ -42,6 +45,16 @@ const LoginForm = ({ callbackUrl }: LoginFormProps) => {
 
    const onSubmit = async (data: LoginFormData) => {
       try {
+         
+         const verificaDoisFatores = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/verificar-2fa-habilitado/${data.login}`) 
+         const dataVerificaDoisFatores = await verificaDoisFatores.json()
+         if(dataVerificaDoisFatores.habilitado){
+            setEmail(data.login)
+            setSenha(data.password)
+            setFormCodigo(true)
+            return;
+         }
+         
          setIsLoading(true);
          const finalCallbackUrl = callbackUrl || "/";
 
@@ -75,7 +88,7 @@ const LoginForm = ({ callbackUrl }: LoginFormProps) => {
       }
    };
 
-   return (
+   return !formCodigo ? (
       <div className="flex justify-center items-center w-full max-w-[400px]">
          <div className="flex flex-col gap-3 sm:gap-4 w-full bg-havprincipal text-white rounded-lg p-4 sm:p-5 md:p-6">
             <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center">
@@ -144,9 +157,11 @@ const LoginForm = ({ callbackUrl }: LoginFormProps) => {
                         )}
                      </button>
                   </div>
-                  <span className="text-xs sm:text-sm font-light ml-2 font-montserrat">
-                     Esqueceu sua senha?
-                  </span>
+                  <Link href="/autenticacao/recuperacao">
+                     <span className="text-xs sm:text-sm font-light ml-2 font-montserrat">
+                        Esqueceu sua senha?
+                     </span>
+                  </Link>
                </div>
                <div className="flex justify-center items-center gap-3 sm:gap-4">
                   <button
@@ -191,8 +206,10 @@ const LoginForm = ({ callbackUrl }: LoginFormProps) => {
                </div>
             </form>
          </div>
-      </div>
+         </div>
+   ) : (
+      <CodRecContaForm email={email} senha={senha} callbackUrl={callbackUrl}/>
    );
 };
 
-export default LoginForm;
+export default LoginForm;  

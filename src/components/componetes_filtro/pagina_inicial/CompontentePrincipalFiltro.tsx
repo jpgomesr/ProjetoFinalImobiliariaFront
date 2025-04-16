@@ -7,7 +7,6 @@ import ComponenteRadioFiltro from "./ComponenteRadioFiltro";
 import List from "@/components/List";
 import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useLanguage } from "@/context/LanguageContext";
 
 interface ComponentePrincipalFiltroProps {
    initialFinalidade?: string;
@@ -38,7 +37,6 @@ const CompontentePrincipalFiltro = ({
 }: ComponentePrincipalFiltroProps) => {
    const router = useRouter();
    const searchParams = useSearchParams();
-   const { t } = useLanguage();
 
    const [tipoVenda, setTipoVenda] = useState<"venda" | "aluguel">(
       initialFinalidade === "aluguel" ? "aluguel" : "venda"
@@ -69,16 +67,16 @@ const CompontentePrincipalFiltro = ({
 
    // Estados para opções
    const [opcoesCidade, setOpcoesCidade] = useState([
-      { id: "", label: t("property.filters.selectCity") },
+      { id: "", label: "Selecione uma cidade" },
    ]);
 
    const [opcoesBairro, setOpcoesBairro] = useState([
-      { id: "", label: t("property.filters.selectNeighborhood") },
+      { id: "", label: "Selecione um bairro" },
    ]);
 
    const tipoImovelExemplo = [
-      { id: "CASA", label: t("property.type") },
-      { id: "APARTAMENTO", label: t("property.type") },
+      { id: "CASA", label: "Casa" },
+      { id: "APARTAMENTO", label: "Apartamento" },
    ];
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -226,6 +224,8 @@ const CompontentePrincipalFiltro = ({
       setQuantidadeQuartos(null);
       setQuantidadeVagas(null);
       setTermoBusca("");
+
+
    }
 
    // Função para realizar a busca
@@ -276,7 +276,7 @@ const CompontentePrincipalFiltro = ({
                }`}
                   onClick={() => setTipoVenda("venda")}
                >
-                  {t("property.forSale")}
+                  Venda
                </p>
                <p
                   className={`hover:cursor-pointer text-mobilePadrao md:text-1xl xl:text-2xl ${
@@ -286,7 +286,7 @@ const CompontentePrincipalFiltro = ({
                   }`}
                   onClick={() => setTipoVenda("aluguel")}
                >
-                  {t("property.forRent")}
+                  Aluguel
                </p>
             </div>
 
@@ -294,7 +294,7 @@ const CompontentePrincipalFiltro = ({
 
             <div
                className="flex px-2 border-b mt-2 pb-1 w-full
-            md:border md:border-black md:p-3 md:items-center md:justify-start md:rounded-xl md:w-11/12
+            md:border md:border-gray-300 md:p-3 md:items-center md:justify-start md:rounded-xl md:w-11/12
             2xl:w-10/12"
             >
                <Search className="2xl:w-7 h-7" />
@@ -302,7 +302,7 @@ const CompontentePrincipalFiltro = ({
                   type="text"
                   className="ml-2 placeholder:text-mobilePadrao text-xs
                   md:p-1 w-full lg:p-2 lg:text-base focus:outline-none"
-                  placeholder={t("property.filters.propertyDescription")}
+                  placeholder="Fale um pouco sobre o imóvel"
                   value={termoBusca}
                   onChange={(e) => setTermoBusca(e.target.value)}
                />
@@ -315,14 +315,14 @@ const CompontentePrincipalFiltro = ({
                >
                   <div>
                      <p className="mb-2 text-sm text-center xl:text-xl">
-                        {t("property.price")}
+                        Preço
                      </p>
                      <div className="flex justify-center gap-6 w-full">
                         <ComponenteInputFiltro
                            tipoInput="number"
                            onChange={setPrecoMinimo}
                            valor={precoMinimo}
-                           placeholder={t("property.filters.minPrice")}
+                           placeholder="mínimo"
                            htmlFor="preco-minimo"
                            label="R$"
                         />
@@ -330,19 +330,18 @@ const CompontentePrincipalFiltro = ({
                            tipoInput="number"
                            onChange={setPrecoMaximo}
                            valor={precoMaximo}
-                           placeholder={t("property.filters.maxPrice")}
+                           placeholder="máximo"
                            htmlFor="preco-maximo"
                            label="R$"
                         />
                      </div>
                   </div>
-                  
                   <div>
                      <p
                         className="mb-2 text-sm text-center
                      xl:text-xl"
                      >
-                        {t("property.area")}
+                        Área
                      </p>
 
                      <div className="flex justify-center gap-6 mb-3 w-full">
@@ -350,7 +349,7 @@ const CompontentePrincipalFiltro = ({
                            tipoInput="number"
                            onChange={setMetrosQuadradosMinimo}
                            valor={metrosQuadradosMinimo}
-                           placeholder={t("property.filters.minArea")}
+                           placeholder="mínimo"
                            htmlFor="metros-minimo"
                            label="m²"
                         />
@@ -358,7 +357,7 @@ const CompontentePrincipalFiltro = ({
                            tipoInput="number"
                            onChange={setMetrosQuadradosMaximo}
                            valor={metrosQuadradosMaximo}
-                           placeholder={t("property.filters.maxArea")}
+                           placeholder="máximo"
                            htmlFor="metros-maximo"
                            label="m²"
                         />
@@ -369,12 +368,12 @@ const CompontentePrincipalFiltro = ({
                   md:max-w-96 w-72 lg:max-w-fit"
                   >
                      <ComponenteRadioFiltro
-                        titulo={t("property.garage")}
+                        titulo="Vagas"
                         onChange={setQuantidadeVagas}
                         selecionado={quantidadeDeVagas}
                      />
                      <ComponenteRadioFiltro
-                        titulo={t("property.bedrooms")}
+                        titulo="Dormitório"
                         onChange={setQuantidadeQuartos}
                         selecionado={quantidadeDeQuartos}
                      />
@@ -392,9 +391,9 @@ const CompontentePrincipalFiltro = ({
                            }}
                            opcoes={opcoesCidade}
                            buttonHolder={
-                              carregandoCidades ? t("property.filters.loading") : t("property.filters.city")
+                              carregandoCidades ? "Carregando..." : "Cidade"
                            }
-                           placeholder={t("property.filters.city")}
+                           placeholder="Cidade"
                            value={cidade}
                            disabled={carregandoCidades}
                         />
@@ -402,17 +401,18 @@ const CompontentePrincipalFiltro = ({
                            mudandoValor={setBairro}
                            opcoes={opcoesBairro}
                            buttonHolder={
-                              carregandoBairros ? t("property.filters.loading") : t("property.filters.neighborhood")
+                              carregandoBairros ? "Carregando..." : "Bairro"
                            }
-                           placeholder={t("property.filters.neighborhood")}
+                           placeholder="Bairro"
                            value={bairro}
                            disabled={carregandoBairros || !cidade}
                         />
                         <List
                            mudandoValor={(value) => setTipoImovel(value.toUpperCase())}
                            opcoes={tipoImovelExemplo}
-                           buttonHolder={t("property.filters.propertyType")}
-                           placeholder={t("property.type")}
+                           buttonHolder="Tipo imóvel"
+                           placeholder="Casa"
+                           
                            value={tipoImovel}
                         />
                      </div>
@@ -421,12 +421,12 @@ const CompontentePrincipalFiltro = ({
             )}
 
             <div className="flex items-center justify-center gap-4 mt-3 lg:mt-4">
-               <BotaoPadrao texto={t("property.filters.search")} onClick={handleBusca} />
+               <BotaoPadrao texto="BUSCAR" onClick={handleBusca} />
                <div
                   className="botao bg-gray-100 text-black drop-shadow-xl flex items-center justify-center"
                   onClick={() => setFiltroAberto(!filtroAberto)}
                >
-                  <p>{t("property.filters.title")}</p>
+                  <p>FILTROS</p>
                </div>
             </div>
          </div>
@@ -437,7 +437,7 @@ const CompontentePrincipalFiltro = ({
                   className="cursor-pointer lg:text-xl 2xl:text-2xl"
                   onClick={limparFiltro}
                >
-                  {t("property.filters.clear")}
+                  Limpar filtros
                </p>
             </div>
          )}

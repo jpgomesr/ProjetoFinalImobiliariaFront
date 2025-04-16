@@ -1,3 +1,4 @@
+
 import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
 import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
@@ -9,14 +10,14 @@ import { Roles } from "@/models/Enum/Roles";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { redirect } from "next/navigation";
-
 interface PageProps {
    params: Promise<{
       id: string;
    }>;
 }
-
 export async function generateStaticParams() {
+
+   
    const ids = await buscarIdsProprietarios();
    return ids.map((id) => ({ id: id.toString() }));
 }
@@ -25,6 +26,8 @@ const Page = async  ({params }  : PageProps) => {
    let { id } = await params
    
    const proprietario : ModelProprietario = await buscarProprietarioPorId(id)
+   
+   
    
    const session = await getServerSession(authOptions);
    
@@ -39,11 +42,11 @@ const Page = async  ({params }  : PageProps) => {
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao
-               titulo="OwnerManagement.title"
+               titulo="Edição de proprietário"
                className={`w-full`}
-               isTranslationKey={true}
-            >
+               >
                <Formulario proprietario={proprietario} token={session.accessToken || ""}/>
+              
             </FundoBrancoPadrao>
          </SubLayoutPaginasCRUD>
       </Layout>

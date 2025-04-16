@@ -13,7 +13,12 @@ interface FiltrosAgendamentoProps {
    data: string;
 }
 
-const FIltrosAgendamento = ({ id, url, status = "", data }: FiltrosAgendamentoProps) => {
+const FIltrosAgendamento = ({
+   id,
+   url,
+   status = "",
+   data,
+}: FiltrosAgendamentoProps) => {
    const [dataAtual, setDataAtual] = useState("");
    const searchParams = useSearchParams();
    const router = useRouter();
@@ -46,7 +51,7 @@ const FIltrosAgendamento = ({ id, url, status = "", data }: FiltrosAgendamentoPr
       {
          id: "PENDENTE",
          label: t("SchedulingHistory.status3"),
-      }
+      },
    ];
    const [statusAtual, setStatusAtual] = useState(opcoesAgendamento[0].id);
 

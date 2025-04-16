@@ -23,13 +23,13 @@ interface salvarImovelProps {
       preco: string;
       precoPromocional: string;
       permitirDestaque: boolean;
-      habilitarVisibilidade: boolean;
       banner: boolean;
       tipoBanner: string;
       iptu: string;
       valorCondominio: string;
       idProprietario: number;
       ativo: boolean;
+      visibilidade: boolean;
       endereco: {
          rua: string;
          bairro: string;
@@ -52,7 +52,6 @@ interface salvarImovelProps {
 }
 
 export async function salvarImovel(props: salvarImovelProps) {
-
    const { imovel, imagens } = props;
 
    const imovelFormatado = {
@@ -112,7 +111,10 @@ export async function salvarImovel(props: salvarImovelProps) {
       }
       const response = await fetchComAutorizacao(`${BASE_URL}/imoveis`, {
          method: "POST",
-         body: formData, 
+         body: formData,
+         headers: {
+            "Content-Type": "multipart/form-data",
+         },
       });
 
       const data = await response.json();

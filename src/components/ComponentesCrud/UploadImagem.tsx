@@ -1,6 +1,6 @@
+
 import { Plus } from "lucide-react";
 import { useState,useEffect } from "react";
-import { useLanguage } from "@/context/LanguageContext";
 
 interface UploadImagemProps {
    onChange: (foto: File) => void;
@@ -9,11 +9,12 @@ interface UploadImagemProps {
 
 export default function UploadImagem(props: UploadImagemProps) {
    const [preview, setPreview] = useState<string | undefined>(undefined);
-   const { t } = useLanguage();
 
    useEffect(() => {
       setPreview(props.preview);
    }, [props.preview]);
+
+
 
    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
@@ -38,7 +39,7 @@ export default function UploadImagem(props: UploadImagemProps) {
                      lg:text-base lg:rounded-lg
                      2xl:text-xl 2xl:rounded-xl"
          >
-            {t("UserManagement.form9")}
+            Imagem de perfil
          </label>
          <label
             htmlFor="imagem-usuario"

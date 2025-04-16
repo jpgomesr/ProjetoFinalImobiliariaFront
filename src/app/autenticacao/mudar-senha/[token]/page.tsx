@@ -4,7 +4,15 @@ import TrocaSenhaForm from "@/components/auth/forms/TrocaSenhaForm";
 import Link from "next/link";
 import { Home } from "lucide-react";
 
-const page = () => {
+
+interface PageProps {
+   params: Promise<{
+      token: string;
+   }>;
+}
+
+const page =  async ({params}: PageProps) => {
+   const {token} = await params;
    return (
       <>
          <div className="absolute md:top-8 md:left-8 top-4 left-4">
@@ -22,7 +30,7 @@ const page = () => {
             className="h-screen w-screen flex flex-row justify-center items-center gap-32 bg-gradient-to-b 
                     from-begeEscuroPadrao to-white px-2"
          >
-            <TrocaSenhaForm />
+            <TrocaSenhaForm token={token}/>
             <Image
                src={"/logoHavVermelhoCEscrita.svg"}
                alt="Logo Hav Vermelho Com Escrita"

@@ -178,13 +178,13 @@ const FormularioCadastroImovel = (props: FormularioCadastroImovelProps) => {
             preco: data.valor.toString(),
             precoPromocional: data.valorPromo?.toString() || "",
             permitirDestaque: data.destaque,
-            habilitarVisibilidade: data.visibilidade,
+            visibilidade: data.visibilidade,
             banner: data.banner,
             tipoBanner: data.tipoBanner || "",
             iptu: data.iptu?.toString() || "",
             valorCondominio: data.valorCondominio?.toString() || "",
             idProprietario: data.proprietario.id,
-            ativo: data.visibilidade,
+            ativo: true,
             endereco: {
                rua: data.rua,
                bairro: data.bairro,
@@ -430,7 +430,6 @@ const FormularioCadastroImovel = (props: FormularioCadastroImovelProps) => {
                                        mudandoValor={(value) =>
                                           field.onChange(value)
                                        }
-                                       bordaPreta={true}
                                        divClassName="justify-end"
                                        differentSize="h-8"
                                     />
@@ -499,7 +498,6 @@ const FormularioCadastroImovel = (props: FormularioCadastroImovelProps) => {
                         render={({ field }) => (
                            <List
                               opcoes={objImovel}
-                              bordaPreta={true}
                               title="Objetivo"
                               value={field.value}
                               mudandoValor={(value) => field.onChange(value)}
@@ -514,7 +512,6 @@ const FormularioCadastroImovel = (props: FormularioCadastroImovelProps) => {
                         render={({ field }) => (
                            <List
                               opcoes={tiposDeImovel}
-                              bordaPreta={true}
                               title="Tipo"
                               value={field.value}
                               mudandoValor={(value) => field.onChange(value)}

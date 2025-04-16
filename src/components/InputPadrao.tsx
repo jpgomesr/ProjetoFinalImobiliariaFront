@@ -38,7 +38,7 @@ const InputPadrao = ({
 
          <div
             className={`relative flex items-center rounded-md border ${
-               mensagemErro ? "border-red-500" : "border-black"
+               mensagemErro ? "border-red-500" : "border-gray-300 border-2"
             } ${props.disabled ? "opacity-30" : ""}`}
          >
             <input

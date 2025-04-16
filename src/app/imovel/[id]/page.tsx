@@ -13,8 +13,10 @@ import {
 import Share from "@/components/Share";
 import MapboxMap from "@/components/Mapboxmap";
 import ExibirCorretores from "@/components/componentes_sobre_nos/ExibirCorretores";
-import { ModelImovelGet } from "@/models/ModelImovelGet";
-
+import IntermediarioBotaoFavorito from "./IntermediarioBotaoFavorito";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
+import { getServerSession } from "next-auth";
+import { Roles } from "@/models/Enum/Roles";
 interface PageProps {
    params: Promise<{
       id: string;
@@ -35,6 +37,7 @@ const Page = async ({ params }: PageProps) => {
 
    const { id } = paramsResolvidos;
    const imovel = await buscarImovelPorIdPaginaImovel(id, 60);
+   const session = await getServerSession(authOptions);
 
 
       const imoveisSemelhantes : any  = await buscarImoveisSemelhantes(imovel, 60) ;
@@ -43,6 +46,13 @@ const Page = async ({ params }: PageProps) => {
    if (!imovel) {
       return <p>Imóvel não encontrado.</p>;
    }
+
+   const valorFormatado = (valor: number) => {
+      return valor.toLocaleString("pt-BR", {
+         style: "currency",
+         currency: "BRL",
+      });
+   };
 
    return (
       <Layout className="bg-begeClaroPadrao py-8">
@@ -56,15 +66,15 @@ const Page = async ({ params }: PageProps) => {
                {imovel.precoPromocional ? (
                   <>
                      <h1 className="font-extrabold text-xl text-shadow md:text-3xl">
-                        R${imovel.precoPromocional}
+                        {valorFormatado(imovel.precoPromocional)}
                      </h1>
                      <p className="text-sm line-through opacity-75">
-                        R${imovel.preco}
+                        {valorFormatado(imovel.preco)}
                      </p>
                   </>
                ) : (
                   <h1 className="font-extrabold text-xl text-shadow md:text-3xl">
-                     R${imovel.preco}
+                     {valorFormatado(imovel.preco)}
                   </h1>
                )}
                <p className="font-semibold md:text-xl">{imovel.titulo}</p>
@@ -73,12 +83,14 @@ const Page = async ({ params }: PageProps) => {
                </p>
                {imovel.iptu && (
                   <p className="mt-2">
-                     <strong>IPTU:</strong> R${imovel.iptu}
+                     <strong>IPTU:</strong>{" "}
+                     {valorFormatado(Number(imovel.iptu))}
                   </p>
                )}
                {imovel.condominio && (
                   <p className="mt-2">
-                     <strong>Condominio:</strong> R${imovel.condominio}
+                     <strong>Condominio:</strong>{" "}
+                     {valorFormatado(Number(imovel.condominio))}
                   </p>
                )}
                <div className="flex gap-5 mt-2">
@@ -91,9 +103,17 @@ const Page = async ({ params }: PageProps) => {
                   </button>
                   <div className="mt-1 flex gap-3 relative">
                      <Share />
-                     <Heart />
+                     <IntermediarioBotaoFavorito
+                        favoritado={imovel.favoritado}
+                        idImovel={imovel.id}
+                     />       
                   </div>
                </div>
+               {(session?.user.role === Roles.ADMINISTRADOR || session?.user.role === Roles.CORRETOR || session?.user.role === Roles.EDITOR)  && (
+                  <p className="mt-2">
+                     Proprietário : {imovel.proprietario?.nome}
+                  </p>
+               )}
             </div>
          </div>
          <div className="w-full">
@@ -110,7 +130,10 @@ const Page = async ({ params }: PageProps) => {
             />
          </div>
 
-         <h2 className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl font-semibold flex justify-center items-center mx-auto mt-8 mb-8">
+         <h2
+            className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl 
+                        font-semibold flex justify-center items-center mx-auto mt-8 mb-8"
+         >
             Selecione um de nossos corretores e tenha uma conversa via chat
          </h2>
          <ExibirCorretores
@@ -119,7 +142,10 @@ const Page = async ({ params }: PageProps) => {
                agendamentos: 0, // Changed from empty array to number to match ExibirCorretor type
             }))}
          />
-         <h2 className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl font-semibold flex justify-center items-center mx-auto mt-8 mb-8">
+         <h2
+            className="text-havprincipal text-center w-2/3 md:w-2/6 text-lg md:text-2xl 
+                        font-semibold flex justify-center items-center mx-auto mt-8 mb-8"
+         >
             Converse conosco via WhatsApp
          </h2>
          <div className="flex justify-center items-center mb-8">

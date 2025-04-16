@@ -1,17 +1,26 @@
+import CardImovel from "../components/card/CardImovel";
+import ModelImovel from "../models/ModelImovel";
 import Layout from "../components/layout/LayoutPadrao";
 import CompontentePrincipalFiltro from "@/components/componetes_filtro/pagina_inicial/CompontentePrincipalFiltro";
+import { Roles } from "@/models/Enum/Roles";
 import Image from "next/image";
+import TituloBgDegrade from "@/components/TituloBgDegrade";
 import { Suspense } from "react";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
-import HomePage from "@/components/HomePage";
 
 export default async function Home() {
-   const imoveisDestaque = await buscarTodosImoveis({ destaque: "true" });
+   const imoveisDestaque = await buscarTodosImoveis({
+      ativo: "true",
+      destaque: "true",
+      paginaAtual: "0",
+      revalidate: 0,
+   });
    const imoveisCondicoesEspeciais = await buscarTodosImoveis({
       ativo: "true",
       condicoesEspeciais: "true",
       revalidate: 60,
    });
+   console.log("imoveisDestaque", imoveisCondicoesEspeciais)
    const imoveisRecentes = await buscarTodosImoveis({
       ativo: "true",
       sort: "dataCadastro,desc",
@@ -47,11 +56,36 @@ export default async function Home() {
                </div>
             </div>
          </div>
-         <HomePage 
-            imoveisDestaque={imoveisDestaque}
-            imoveisCondicoesEspeciais={imoveisCondicoesEspeciais}
-            imoveisRecentes={imoveisRecentes}
-         />
+         <section className="mt-4 flex flex-col gap-6">
+            <TituloBgDegrade text="Imóveis em" boldText="destaque" />
+            <div className="flex flex-row gap-4 overflow-x-auto px-8 pb-2 bg-scroll hide-scrollbar">
+               {imoveisDestaque.imoveis.map((imovel, index) => (
+                  <CardImovel key={index} imovel={imovel} />
+               ))}
+            </div>
+    
+         </section>
+         <section className="mt-4 flex flex-col gap-6">
+            <TituloBgDegrade text="Imóveis em" boldText="condições especias" />
+            <div className="flex flex-row gap-4 overflow-x-auto px-8 pb-2 bg-scroll hide-scrollbar">
+               {imoveisCondicoesEspeciais.imoveis.map((imovel, index) => (
+                  imovel.permitirDestaque = false,
+                  <CardImovel key={index} imovel={imovel} />
+               ))}
+            </div>
+         </section>
+         <section className="mt-4 flex flex-col gap-6">
+            <TituloBgDegrade
+               text="Imóveis "
+               boldText="recentemente adicionados"
+            />
+            <div className="flex flex-row gap-4 overflow-x-auto px-8 pb-2 bg-scroll hide-scrollbar">
+               {imoveisRecentes.imoveis.map((imovel, index) => (
+                  imovel.permitirDestaque = false,
+                  <CardImovel key={index} imovel={imovel} />
+               ))}
+            </div>
+         </section>
       </Layout>
    );
 }
