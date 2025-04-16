@@ -11,7 +11,7 @@ import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 export default async function Home() {
    const imoveisDestaque = await buscarTodosImoveis({
       ativo: "true",
-      sort: "dataCadastro,desc",
+      destaque: "true",
       paginaAtual: "0",
       revalidate: 0,
    });
