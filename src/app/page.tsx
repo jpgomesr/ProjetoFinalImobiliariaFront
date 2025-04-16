@@ -9,7 +9,7 @@ import { Suspense } from "react";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 
 export default async function Home() {
-   const imoveisDestaque = await buscarTodosImoveis({ destaque: "true" });
+   const imoveisDestaque = await buscarTodosImoveis({ destaque: "true", ativo: "true", revalidate: 60});
    const imoveisCondicoesEspeciais = await buscarTodosImoveis({
       ativo: "true",
       condicoesEspeciais: "true",
