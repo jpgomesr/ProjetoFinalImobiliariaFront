@@ -225,5 +225,50 @@
       "status1": "Activo",
       "status2": "Inactivo",
       "warning": "propiedades encontradas"
+   },
+   "SchedulingHistory":{
+      "title": "Historial de Citas",
+      "mySchedules": "Mis Citas",
+      "status1": "Cancelado",
+      "status2": "Confirmado",
+      "status3": "Pendiente",
+      "status4": "Todos"
+   },
+   "Schedules":{
+      "title": "Mis Citas",
+      "mySchedules": "Citas",
+      "Schedule registration": "Registro de Horario",
+      "AddSchedule": "Agregar",
+      "Day": "Día",
+      "ModalTitle": "¿Está seguro de que desea eliminar este horario?",
+      "ModalButtonYes": "Sí",
+      "ModalButtonNo": "No"
+   },
+   "FrequentlyAskedQuestions":{
+      "title":"Preguntas Frecuentes",
+      "question1":"¿Cómo programar una visita a una propiedad?",
+      "answer1":"Puede programar directamente a través de nuestro sitio web, eligiendo la propiedad y seleccionando un horario disponible. Si lo prefiere, también puede programar una visita por WhatsApp o contactando a uno de nuestros corredores.",
+      "question2":"¿Qué documentos se necesitan para alquilar una propiedad?",
+      "answer2":"Para alquilar una propiedad, debe presentar identificación, número de seguro social, comprobante de ingresos y comprobante de domicilio. Según el contrato, también puede requerirse un fiador, depósito de garantía o seguro de alquiler para garantizar el pago del alquiler.",
+      "question3":"¿Cuál es el plazo para aprobar una solicitud de alquiler?",
+      "answer3":"El tiempo de revisión de la solicitud varía según la demanda, pero generalmente toma hasta 48 horas después de enviar todos los documentos requeridos. Si se necesita información adicional, el análisis puede llevar un poco más de tiempo.",
+      "question4":"¿Puedo alquilar una propiedad sin fiador?",
+      "answer4":"Sí, es posible alquilar una propiedad sin fiador. Sin embargo, el inquilino debe proporcionar comprobante de ingresos y comprobante de domicilio. Según la demanda y la propiedad, se puede solicitar al inquilino que proporcione un fiador o un depósito de garantía para garantizar el pago del alquiler.",
+      "question5":"¿Cómo funciona el financiamiento de una propiedad?",
+      "answer5":"El financiamiento de una propiedad es un proceso que implica obtener un préstamo para comprar una propiedad. El proceso comienza con la solicitud de financiamiento a través de una institución financiera. La institución financiera analiza la solicitud y decide si otorga o no el financiamiento. Si se otorga el financiamiento, la propiedad se entrega al cliente y el financiamiento se paga en cuotas mensuales.",
+      "question6":"¿El impuesto predial está incluido en el alquiler?",
+      "answer6":"No, el impuesto predial no está incluido en el alquiler. El impuesto predial es un impuesto que debe pagar el propietario de la propiedad, no el inquilino.",
+      "question7":"¿Qué debo hacer si la propiedad alquilada necesita reparaciones?",
+      "answer7":"El inquilino debe notificar al propietario para que se resuelva el problema. Si el problema no se resuelve, el inquilino puede contactar al corredor para que se resuelva el problema.",
+      "question8":"¿Puedo negociar el monto del alquiler?",
+      "answer8":"Sí, es posible negociar el monto del alquiler. El inquilino debe contactar al propietario para negociar el monto del alquiler.",
+      "question9":"¿Cómo funciona la terminación del contrato de alquiler?",
+      "answer9":"La terminación del contrato de alquiler se puede realizar mediante previo aviso. El inquilino debe contactar al propietario para dar el aviso previo. El aviso previo debe darse con 30 días de anticipación.",
+      "question10":"¿La inmobiliaria cobra una tarifa de servicio?",
+      "answer10":"Sí, la inmobiliaria cobra una tarifa de servicio por todos los servicios relacionados con la propiedad. La tarifa de servicio es del 10% del valor de la propiedad."
+   },
+   "PerfilOptions": {
+      "option1": "Mi Perfil",
+      "option2": "Cerrar Sesión"
    }
 }

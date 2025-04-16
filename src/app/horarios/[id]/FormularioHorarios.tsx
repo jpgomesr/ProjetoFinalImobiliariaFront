@@ -8,6 +8,7 @@ import Link from "next/link";
 import ModalConfirmacao from "@/components/ComponentesCrud/ModalConfirmacao";
 import { Session } from "next-auth";
 import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
+import { useLanguage } from "@/context/LanguageContext";
 interface Horario {
    id: number;
    dataHora: string;
@@ -38,6 +39,7 @@ export default function FormularioHorarios({
    >(null);
 
    const buscarHorarios = async () => {
+      
       try {
          const response = await useFetchComAutorizacaoComToken(
             `${BASE_URL}/corretores/horarios/corretor`,
@@ -129,13 +131,14 @@ export default function FormularioHorarios({
 
    const dataMinima = new Date().toISOString().split("T")[0];
 
+   const { t } = useLanguage();
    return (
       <div className="flex flex-col gap-6">
          <div className="flex flex-col gap-4">
             <Link href={`/historico-agendamentos/${id}`}>
-               <BotaoPadrao texto="Agendamentos" />
+               <BotaoPadrao texto={t("Schedules.mySchedules")} />
             </Link>
-            <h2 className="text-xl text-havprincipal">Cadastro de horário</h2>
+            <h2 className="text-xl text-havprincipal">{t("Schedules.Schedule registration")}</h2>
             <div className="flex flex-col md:flex-row gap-4 items-start">
                <div className="flex-1 w-full">
                   <input
@@ -158,7 +161,7 @@ export default function FormularioHorarios({
                   onClick={handleSubmit}
                   className="bg-havprincipal text-white px-6 py-2 rounded-lg hover:bg-opacity-90"
                >
-                  Adicionar +
+                  {t("Schedules.AddSchedule")} +
                </button>
             </div>
          </div>
@@ -166,7 +169,7 @@ export default function FormularioHorarios({
          {Object.entries(horariosAgrupados).map(([data, horarios]) => (
             <div key={data} className="flex flex-col gap-4">
                <h3 className="text-lg font-semibold text-havprincipal">
-                  Dia {new Date(data).toLocaleDateString("pt-BR")}
+                  {t("Schedules.Day")} {new Date(data).toLocaleDateString("pt-BR")}
                </h3>
                <div className="flex flex-wrap gap-3">
                   {horarios.map((horario) => (
@@ -198,7 +201,7 @@ export default function FormularioHorarios({
             isOpen={modalConfirmacao}
             onClose={() => setModalConfirmacao(false)}
             onConfirm={confirmarDelecao}
-            message="Tem certeza que deseja excluir este horário?"
+            message={t("Schedules.ModalTitle")}
          />
       </div>
    );

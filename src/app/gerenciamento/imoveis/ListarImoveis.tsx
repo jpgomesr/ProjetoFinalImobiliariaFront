@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 import ModalConfirmacao from "@/components/ComponentesCrud/ModalConfirmacao";
 import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
 
+
+
 interface ListarImoveisProps {
    imoveis: ModelImovelGet[];
    pageableInfo: {

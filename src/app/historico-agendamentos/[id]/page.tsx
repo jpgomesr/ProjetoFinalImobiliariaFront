@@ -1,22 +1,14 @@
-import CardReserva from "@/components/card/CardAgendamento";
-import FundoBrancoPadrao from "@/components/ComponentesCrud/FundoBrancoPadrao";
-import InputPadrao from "@/components/InputPadrao";
 import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
-import React, { Suspense } from "react";
-import FIltrosAgendamento from "./FIltrosAgendamento";
 import { buscarIdsUsuarios } from "@/Functions/usuario/buscaUsuario";
 import { ModelAgendamento } from "@/models/ModelAgendamento";
-import ComponentePaginacao from "@/components/ComponentePaginacao";
-import PaginacaoHistorico from "./PaginacaoHistórico";
-import Link from "next/link";
-import BotaoPadrao from "@/components/BotaoPadrao";
-import { useSession } from "next-auth/react";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { Roles } from "@/models/Enum/Roles";
 import { fetchComAutorizacao } from "@/hooks/FetchComAuthorization";
+import HistoricoAgendamentosClient from "./HistoricoAgendamentosClient";
+
 interface PageProps {
    params: Promise<{
       id: string;
@@ -52,7 +44,6 @@ const page = async ({ params, searchParams }: PageProps) => {
 
    const fetchAgendamentos = async (role: Roles) => {
       try {
-         console.log(parametrosRenderizados);
          const response = await fetchComAutorizacao(
             `http://localhost:8082/agendamentos/${role === Roles.CORRETOR ? "corretor" : "usuario"}/${id}?status=${
                parametrosRenderizados?.status || ""
@@ -62,7 +53,6 @@ const page = async ({ params, searchParams }: PageProps) => {
          );
          const data = await response.json();
 
-    
          return {
             content: data.content as ModelAgendamento[],
             totalPages: data.totalPages as number,
@@ -81,60 +71,15 @@ const page = async ({ params, searchParams }: PageProps) => {
    return (
       <Layout className="my-0">
          <SubLayoutPaginasCRUD>
-            <FundoBrancoPadrao
-               titulo="Histórico de agendamentos"
-               className="w-full px-2"
-            >
-               {session.user.role === Roles.CORRETOR && (
-                  <Link href={`/horarios/${id}`} className="w-fit">
-                     <BotaoPadrao texto="Meus horários" />
-                  </Link>
-               )}
-               <FIltrosAgendamento
-                  id={id}
-                  url={`/historico-agendamentos/${id}`}
-                  status={parametrosRenderizados?.status || ""}
-                  data={parametrosRenderizados?.data || ""}
-               />
-               <Suspense fallback={<div>Carregando...</div>}>
-                  <section
-                     className="grid grid-cols-1 w-full my-4 place-items-center gap-8 '
-               md:grid-cols-2 
-               lg:grid-cols-3
-               "
-                  >
-                     {agendamentos &&
-                        agendamentos.map(
-                           (agendamento: ModelAgendamento, key) => (
-                              <CardReserva
-                                 role={session.user.role as Roles}
-                                 id={agendamento.id}
-                                 key={key}
-                                 urlImagem={
-                                    agendamento.referenciaImagemPrincipal
-                                 }
-                                 horario={agendamento.horario
-                                    .split("T")[1]
-                                    .substring(0, 5)}
-                                 data={new Date(
-                                    agendamento.horario
-                                 ).toLocaleDateString("pt-BR")}
-                                 corretor={agendamento.nomeUsuario}
-                                 usuario={agendamento.nomeCorretor}
-                                 status={agendamento.status}
-                                 localizacao={`${agendamento.endereco.cidade} - ${agendamento.endereco.bairro}`}
-                                 endereco={`${agendamento.endereco.rua}, ${agendamento.endereco.numeroCasaPredio}`}
-                                 token={session.accessToken ?? ""}
-                              />
-                           )
-                        )}
-                  </section>
-                  <PaginacaoHistorico
-                     totalPages={totalPages}
-                     currentPage={currentPage}
-                  />
-               </Suspense>
-            </FundoBrancoPadrao>
+            <HistoricoAgendamentosClient
+               id={id}
+               role={session.user.role as Roles}
+               parametrosRenderizados={parametrosRenderizados || {}}
+               currentPage={currentPage}
+               agendamentos={agendamentos}
+               totalPages={totalPages}
+               token={session.accessToken ?? ""}
+            />
          </SubLayoutPaginasCRUD>
       </Layout>
    );

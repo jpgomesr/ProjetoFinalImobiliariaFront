@@ -229,5 +229,50 @@
     "status1": "Active",
     "status2": "Inactive",
     "warning": "properties found"
+  },
+  "SchedulingHistory":{
+    "title": "Scheduling History",
+    "mySchedules": "My Schedules",
+    "status1": "Cancelled",
+    "status2": "Confirmed",
+    "status3": "Pending",
+    "status4": "All"
+  },
+  "Schedules":{
+    "title": "My Appointments",
+    "mySchedules": "Appointments",
+    "Schedule registration": "Schedule Registration",
+    "AddSchedule": "Add",
+    "Day": "Day",
+    "ModalTitle": "Are you sure you want to delete this schedule?",
+    "ModalButtonYes": "Yes",
+    "ModalButtonNo": "No"
+  },
+  "FrequentlyAskedQuestions":{
+    "title":"Frequently Asked Questions",
+    "question1":"How do I schedule a property viewing?",
+    "answer1":"You can schedule directly through our website by choosing the property and selecting an available time slot. If you prefer, you can also schedule a visit via WhatsApp or by contacting one of our brokers.",
+    "question2":"What documents are required to rent a property?",
+    "answer2":"To rent a property, you need to provide ID, SSN, proof of income, and proof of residence. Depending on the contract, a guarantor, security deposit, or rent insurance may also be required to guarantee rent payment.",
+    "question3":"How long does it take to approve a rental application?",
+    "answer3":"The application review time varies according to demand, but usually takes up to 48 hours after submitting all required documents. If additional information is needed, the analysis may take a bit longer.",
+    "question4":"Can I rent a property without a guarantor?",
+    "answer4":"Yes, it is possible to rent a property without a guarantor. However, the tenant must provide proof of income and proof of residence. Depending on the demand and the property, the tenant may be asked to provide a guarantor or a security deposit to guarantee rent payment.",
+    "question5":"How does property financing work?",
+    "answer5":"Property financing is a process that involves taking out a loan to purchase a property. The process begins with applying for financing through a financial institution. The financial institution analyzes the financing request and decides whether to grant the financing or not. If financing is granted, the property is delivered to the client and the financing is paid in monthly installments.",
+    "question6":"Is property tax included in the rent?",
+    "answer6":"No, property tax is not included in the rent. Property tax is a tax that must be paid by the property owner, not the tenant.",
+    "question7":"What should I do if the rented property needs repairs?",
+    "answer7":"The tenant should notify the property owner so that the problem can be resolved. If the problem is not resolved, the tenant can contact the broker to have the problem resolved.",
+    "question8":"Can I negotiate the rent amount?",
+    "answer8":"Yes, it is possible to negotiate the rent amount. The tenant should contact the property owner to negotiate the rent amount.",
+    "question9":"How does lease termination work?",
+    "answer9":"Lease termination can be done through prior notice. The tenant must contact the property owner to give prior notice. Prior notice must be given 30 days in advance.",
+    "question10":"Does the real estate agency charge a service fee?",
+    "answer10":"Yes, the real estate agency charges a service fee for all property-related services. The service fee is 10% of the property value."
+  },
+  "PerfilOptions": {
+    "option1": "My Profile",
+    "option2": "Logout"
   }
 } 
