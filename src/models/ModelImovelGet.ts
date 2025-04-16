@@ -65,6 +65,8 @@ export interface ModelImovelGetId {
    qtdGaragens: number;
    qtdPiscina: number;
    qtdChurrasqueira: number;
+   tipoBanner: string;
+
    imagens: {
       id: number;
       imagemCapa: boolean;

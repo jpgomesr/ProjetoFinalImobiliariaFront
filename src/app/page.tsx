@@ -20,7 +20,6 @@ export default async function Home() {
       condicoesEspeciais: "true",
       revalidate: 60,
    });
-   console.log("imoveisDestaque", imoveisCondicoesEspeciais)
    const imoveisRecentes = await buscarTodosImoveis({
       ativo: "true",
       sort: "dataCadastro,desc",
@@ -33,7 +32,7 @@ export default async function Home() {
          <div className="lg:h-[80vh]">
             <div
                className="h-[30vh] overflow-hidden relative z-10
-                           md:h-[35vh]
+                           md:h-[35vh] 
                            lg:h-full"
             >
                <Image

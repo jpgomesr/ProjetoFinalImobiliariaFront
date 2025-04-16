@@ -80,10 +80,12 @@ export default function CardImovel(props: HomeProps) {
    const atualizarFavorito = (novoEstado: boolean) => {
       setIsFavorited(novoEstado);
    };
+   const desabilitado = props.imovel.tipoBanner === "ALUGADO" || props.imovel.tipoBanner === "ADQUIRIDO"
 
    return (
       <>
          <div
+            data-disabled={desabilitado}
             className={`${
                props.width ? props.width : "w-[70%]"
             } h-full min-w-[262.5px] max-w-[305px] rounded-2xl shadow-[4px_4px_4px_rgba(0,0,0,0.2)] relative
@@ -91,7 +93,7 @@ export default function CardImovel(props: HomeProps) {
                         !props.imovel?.permitirDestaque
                            ? "bg-begepadrao"
                            : "bg-havprincipal"
-                     }`}
+                     } ${desabilitado ? "opacity-50" : ""}`}
          >
             {isBannerVisible && (
                <CardBanner
