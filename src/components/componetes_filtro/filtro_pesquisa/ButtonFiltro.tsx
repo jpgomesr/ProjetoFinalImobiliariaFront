@@ -19,7 +19,6 @@ interface ButtonFiltroProps {
    url: string;
    bordaPreta?: boolean;
 }
-
 const ButtonFiltro = (props: ButtonFiltroProps) => {
    const [qtdFiltros, setQtdFiltros] = useState(0);
    const [filtroAberto, setFiltroAberto] = useState<boolean>(false);

@@ -3,6 +3,7 @@
 import List from "@/components/List";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface FiltrosProps {
    defaultValue?: string;
@@ -17,6 +18,8 @@ interface FiltrosProps {
 }
 
 const FiltroList = (props: FiltrosProps) => {
+const { t } = useLanguage();
+
    const router = useRouter();
    const searchParams = useSearchParams();
    const [valorMomento, setValorMomento] = useState<string>(
@@ -39,7 +42,7 @@ const FiltroList = (props: FiltrosProps) => {
       <List
          opcoes={props.opcoes}
          value={valorMomento || "todos"}
-         buttonHolder={props.buttonHolder || "Finalidade"}
+         buttonHolder={props.buttonHolder || t("property.specifically")}
          mudandoValor={(value) => {
             setValorMomento(value);
             atualizarURL(value);
