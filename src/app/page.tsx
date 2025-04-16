@@ -9,12 +9,18 @@ import { Suspense } from "react";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 
 export default async function Home() {
-   const imoveisDestaque = await buscarTodosImoveis({ destaque: "true", ativo: "true", revalidate: 60});
+   const imoveisDestaque = await buscarTodosImoveis({
+      ativo: "true",
+      sort: "dataCadastro,desc",
+      paginaAtual: "0",
+      revalidate: 0,
+   });
    const imoveisCondicoesEspeciais = await buscarTodosImoveis({
       ativo: "true",
       condicoesEspeciais: "true",
       revalidate: 60,
    });
+   console.log("imoveisDestaque", imoveisCondicoesEspeciais)
    const imoveisRecentes = await buscarTodosImoveis({
       ativo: "true",
       sort: "dataCadastro,desc",

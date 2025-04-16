@@ -8,16 +8,18 @@ export const fetchComAutorizacao = async (
    init?: RequestInit
 ) => {
    const session = await getServerSession(authOptions);
-
+   console.log("session", session);
+   console.log("url", url);
     const response = await fetch(url, {
       ...init,
       headers: {
          ...(session?.accessToken ? { 'Authorization': `Bearer ${session.accessToken}` } : {})
       },
    });
+   console.log("response", response.status);
       if(response.status === 401 || response.status === 403){
-         console.log('to chegando aqui')
-         redirect('/logout')
+         console.log("Token expirado ou não autorizado");
+         redirect('http://localhost:3000/api/auth/manual-sign-out')
       }
       
 

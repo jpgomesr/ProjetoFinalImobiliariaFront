@@ -10,6 +10,7 @@ import {
    ImovelSemelhanteModel,
 } from "@/models/ModelImovelGet";
 import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 interface retornoGetImovel {
    quantidadeElementos: number;
    imoveis: ModelImovelGet[];
@@ -90,6 +91,11 @@ export const buscarTodosImoveis = async (
             },
          }
       );
+      console.log("responseImovelRequest", responseImovelRequest.status);
+      if(responseImovelRequest.status === 401 || responseImovelRequest.status === 403){
+         console.log("Token expirado ou não autorizado");
+         redirect('http://localhost:3000/api/auth/manual-sign-out')
+      }  
 
       if (responseImovelRequest.ok) {
          const dataImovel = await responseImovelRequest.json();
