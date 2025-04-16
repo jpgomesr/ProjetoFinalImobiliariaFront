@@ -6,7 +6,7 @@ import SaibaMaisBotao from "./SaibaMaisBotao";
 import { ModelImovelGet } from "../../models/ModelImovelGet";
 import { useEffect, useState } from "react";
 import CardBanner from "./CardBanner";
-import { RotateCcw, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Imovel from "@/models/ModelImovel";
@@ -19,9 +19,8 @@ interface HomeProps {
    imovel: ModelImovelGet | Imovel;
    edicao?: boolean;
    edicaoLink?: string;
-   atualizacaoRender?: () => void;
+   atualizacaoRender?: () => void
    deletarImovel?: (id: number) => void;
-   restaurarImovel?: (id: number) => void;
    width?: string;
 }
 
@@ -29,7 +28,7 @@ export default function CardImovel(props: HomeProps) {
    const router = useRouter();
    const [isBannerVisible] = useState(props.imovel.banner);
    const [isFavorited, setIsFavorited] = useState(props.imovel.favoritado);
-
+   
    // Força a renderização quando o estado de favorito mudar
    useEffect(() => {
       // Este efeito será executado sempre que isFavorited mudar
@@ -127,33 +126,18 @@ export default function CardImovel(props: HomeProps) {
                               : "Locação por"}
                         </p>
                         {cardEdicao ? (
-                           props.imovel.ativo ? (
-                              <Trash
-                                 className={`${
-                                    props.imovel.permitirDestaque
-                                       ? "text-brancoEscurecido"
-                                       : "text-havprincipal"
-                                 } cursor-pointer w-5 h-5`}
-                                 onClick={() => {
-                                    if (props.deletarImovel) {
-                                       props.deletarImovel(props.imovel.id);
-                                    }
-                                 }}
-                              />
-                           ) : (
-                              <RotateCcw
-                                 className={`${
-                                    props.imovel.permitirDestaque
-                                       ? "text-brancoEscurecido"
-                                       : "text-havprincipal"
-                                 } cursor-pointer w-5 h-5`}
-                                 onClick={() => {
-                                    if (props.restaurarImovel) {
-                                       props.restaurarImovel(props.imovel.id);
-                                    }
-                                 }}
-                              />
-                           )
+                           <Trash
+                              className={`${
+                                 props.imovel.permitirDestaque
+                                    ? "text-brancoEscurecido"
+                                    : "text-havprincipal"
+                              } cursor-pointer w-5 h-5`}
+                              onClick={() => {
+                                 if (props.deletarImovel) {
+                                    props.deletarImovel(props.imovel.id);
+                                 }
+                              }}
+                           />
                         ) : (
                            <SessionProvider>
                               <FavButton

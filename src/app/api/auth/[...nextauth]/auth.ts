@@ -12,20 +12,14 @@ export const authOptions: NextAuthOptions = {
          credentials: {
             email: { label: "Email", type: "email", placeholder: "jsmith" },
             password: { label: "Password", type: "password" },
-            codigo: { label: "Codigo", type: "codigo", required: false }
          },
          async authorize(credentials, req) {
             if (!credentials) {
                return null;
             }
             try {
-               let url = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`;
-               if(credentials.codigo){
-                url = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/2fa/verify`;
-               }
-                  
                const response = await fetch(
-                  url,
+                  "http://localhost:8082/auth/login",
                   {
                      method: "POST",
                      headers: {
@@ -34,7 +28,6 @@ export const authOptions: NextAuthOptions = {
                      body: JSON.stringify({
                         email: credentials.email,
                         senha: credentials.password,
-                        ...(credentials.codigo ? { codigo: credentials.codigo } : {})
                      }),
                   }
                );

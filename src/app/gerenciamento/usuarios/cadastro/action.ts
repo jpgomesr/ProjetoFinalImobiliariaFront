@@ -43,7 +43,8 @@ import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
       role: usuario.role === "" ? "USUARIO" : usuario.role,
       descricao: usuario.descricao === "" ? undefined : usuario.descricao,
    };
-      
+      try {
+         // Valida os dados de entrada
 
    
          const response = await UseFetchPostFormData(
@@ -64,12 +65,15 @@ import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
          }
 
    
-         const usuarioCriado: ModelUsuario = await data;
+         const usuario: ModelUsuario = await data;
          // Revalida o caminho após a criação do usuário
-         revalidatePath(`/gerenciamento/usuarios/edicao/${usuarioCriado.id}`);
+         revalidatePath(`/gerenciamento/usuarios/edicao/${usuario.id}`);
 
          return await data
 
-      
+      } catch (error) {
+         console.error("Erro ao salvar usuário:", error);
+         throw error; // Propaga o erro para o Client Component
+      }
    }
    

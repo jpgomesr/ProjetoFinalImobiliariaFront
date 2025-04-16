@@ -30,27 +30,24 @@ const page = async ({ params, searchParams }: PageProps) => {
    const searchParamsRenderizados = await searchParams;
    const currentPage = Number(searchParamsRenderizados?.page) || 0;
    const parametrosRenderizados = await searchParamsRenderizados;
-   const session = await getServerSession(authOptions);
+   const session = await getServerSession(authOptions)
 
-   if (!session) {
-      redirect("/api/auth/signin");
+   if(!session){
+      redirect("/api/auth/signin")
    }
-   if (session.user.id !== id) {
-      redirect("/");
+   if(session.user.id !== id){
+      redirect("/")
    }
-   if (
-      session.user.role !== Roles.USUARIO &&
-      session.user.role !== Roles.CORRETOR
-   ) {
-      redirect("/");
+   if(session.user.role !== Roles.USUARIO && session.user.role !== Roles.CORRETOR){
+      redirect("/")
    }
 
    const fetchAgendamentos = async (role: Roles) => {
       try {
          const response = await fetchComAutorizacao(
-            `http://localhost:8082/agendamentos/${
-               role === Roles.CORRETOR ? "corretor" : "usuario"
-            }/${id}?status=${parametrosRenderizados?.status || ""}&data=${
+            `http://localhost:8082/agendamentos/${role === Roles.CORRETOR ? "corretor" : "usuario"}/${id}?status=${
+               parametrosRenderizados?.status || ""
+            }&data=${
                parametrosRenderizados?.data || ""
             }&page=${currentPage}&size=9&sort=dataHora,desc`
          );
@@ -69,9 +66,7 @@ const page = async ({ params, searchParams }: PageProps) => {
       }
    };
 
-   const { content: agendamentos, totalPages } = await fetchAgendamentos(
-      session.user.role as Roles
-   );
+   const { content: agendamentos, totalPages } = await fetchAgendamentos(session.user.role as Roles);
 
    return (
       <Layout className="my-0">

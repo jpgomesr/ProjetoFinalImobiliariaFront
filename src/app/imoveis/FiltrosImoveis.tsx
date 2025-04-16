@@ -46,6 +46,7 @@ const FiltrosImoveis = (props: FiltrosImoveisProps) => {
                { id: "aluguel", label: "Aluguel" },
                { id: "", label: "Todos" },
             ]}
+            bordaPreta={true}
             nome="finalidade"
             value={params.finalidade}
             defaultPlaceholder="Todos"

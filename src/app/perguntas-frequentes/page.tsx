@@ -3,7 +3,7 @@ import Layout from "@/components/layout/LayoutPadrao";
 import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import PerguntasFrequentesClient from "./cliente";
 
-const page = () => {
+const Page = () => {
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
@@ -13,4 +13,4 @@ const page = () => {
    );
 };
 
-export default page;
+export default Page;

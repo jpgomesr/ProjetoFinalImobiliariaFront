@@ -4,9 +4,4 @@ export default interface ModelPergunta {
     telefone: string;
     nome: string;
     mensagem: string;
-    data: Date;
-    perguntaRespondida: boolean;
-    resposta?: string;
-    idAdministrador?: string;
-    idEditor?: string;
 }

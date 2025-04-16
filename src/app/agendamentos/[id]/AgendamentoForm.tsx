@@ -6,7 +6,7 @@ import Horario from "@/components/calendario/Horarios";
 import { CalendarDays } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import ModalAgendamento from "../../../components/agendamentos/ModalAgendamento";
+import ModalAgendamento from "./ModalAgendamento";
 import {
    buscarHorariosDisponiveis,
    HorarioDisponivel,
@@ -15,10 +15,9 @@ import {
 interface AgendamentoFormProps {
    id: string;
    idUsuario: number | undefined;
-   token: string;
 }
 
-const    AgendamentoForm = ({ id, idUsuario, token }: AgendamentoFormProps) => {
+const AgendamentoForm = ({ id, idUsuario }: AgendamentoFormProps) => {
    const [horarioSelecionado, setHorarioSelecionado] =
       useState<HorarioDisponivel | null>(null);
    const [mostrarModal, setMostrarModal] = useState(false);
@@ -38,7 +37,7 @@ const    AgendamentoForm = ({ id, idUsuario, token }: AgendamentoFormProps) => {
 
       try {
          const dataFormatada = format(data, "yyyy-MM-dd");
-         const horarios = await buscarHorariosDisponiveis(dataFormatada, id, token);
+         const horarios = await buscarHorariosDisponiveis(dataFormatada, id);
          setHorariosDisponiveis(horarios);
       } catch (error) {
          console.error("Erro ao buscar horários:", error);
@@ -112,7 +111,7 @@ const    AgendamentoForm = ({ id, idUsuario, token }: AgendamentoFormProps) => {
                         <button
                            className="bg-havprincipal/90 flex justify-center items-center h-7 w-24 rounded-md font-inter lg:w-32 lg:h-10 text-begepadrao"
                            onClick={handleAgendar}
-                        >  
+                        >
                            Agendar
                         </button>
                      </div>
@@ -129,7 +128,6 @@ const    AgendamentoForm = ({ id, idUsuario, token }: AgendamentoFormProps) => {
                dataFormatadaCapitalizada={dataFormatadaCapitalizada}
                horarioSelecionado={horarioSelecionado.dataHora}
                onClose={() => setMostrarModal(false)}
-               token={token}
             />
          )}
       </>

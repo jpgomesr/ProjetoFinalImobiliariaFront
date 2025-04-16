@@ -74,17 +74,7 @@ const Page = async ({ params, searchParams }: PageProps) => {
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao className="w-full" titulo="Imóveis Favoritos">
-               <FiltrosImoveis url={`/favoritos/${id}`} 
-                bairro={parametrosBusca.bairro}
-                cidade={parametrosBusca.cidade}
-                precoMaximo={parametrosBusca.precoMaximo}
-                precoMinimo={parametrosBusca.precoMinimo}
-                quantidadeDeQuartos={parametrosBusca.quantidadeDeQuartos}
-                quantidadeDeVagas={parametrosBusca.quantidadeDeVagas}
-                metrosQuadradosMaximo={parametrosBusca.metrosQuadradosMaximo}
-                metrosQuadradosMinimo={parametrosBusca.metrosQuadradosMinimo}
-                tipoImovel={parametrosBusca.tipoImovel}
-               />
+               <FiltrosImoveis url={`/favoritos/${id}`} />
                <div className="flex flex-col sm:flex-row justify-between items-center lg:my-4">
                   <p className="text-sm">
                      {quantidadeElementos} imóveis encontrados

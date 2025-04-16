@@ -1,6 +1,5 @@
-import { ModelAgendamentoPost, ModelAgendamentoPut } from "@/models/ModelAgendamentoRequisicoes";
+import { ModelAgendamentoPost } from "@/models/ModelAgendamentoPost";
 import { ErroResposta } from "@/models/ErroResposta";
-import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export interface HorarioDisponivel {
@@ -13,15 +12,14 @@ export interface HorarioDisponivel {
 
 export const buscarHorariosDisponiveis = async (
    data: string,
-   idImovel: string,
-   token: string
+   idImovel: string
 ): Promise<HorarioDisponivel[]> => {
    try {
       console.log("teste");
-      const response = await useFetchComAutorizacaoComToken(
+      const response = await fetch(
          `${BASE_URL}/corretores/horarios/${idImovel}?dia=${
             data.split("-")[2]
-         }&mes=${data.split("-")[1]}`,{}, token
+         }&mes=${data.split("-")[1]}`
       );
 
       if (!response.ok) {
@@ -36,17 +34,18 @@ export const buscarHorariosDisponiveis = async (
    }
 };
 
-export const salvarAgendamento = async (agendamento: ModelAgendamentoPost, token: string) => {
+export const salvarAgendamento = async (agendamento: ModelAgendamentoPost) => {
    try {
-      const response = await useFetchComAutorizacaoComToken(`${BASE_URL}/agendamentos`, {
+      const response = await fetch(`${BASE_URL}/agendamentos`, {
          method: "POST",
          headers: {
             "Content-Type": "application/json",
          },
          body: JSON.stringify(agendamento)
-      }, token);
+      });
 
       if(response.ok){
+         console.log(response.status);
          return { mensagem: "Agendamento concluído com sucesso", status: response.status };
       } else {
          const data: ErroResposta = await response.json();
@@ -56,24 +55,3 @@ export const salvarAgendamento = async (agendamento: ModelAgendamentoPost, token
       return { mensagem: "Ocorreu um erro durante o agendamento", status: 500 };
    }
 };
-export const atualizarAgendamento = async (agendamento: ModelAgendamentoPut, token: string) => {
-   try {
-      console.log(agendamento);
-      const response = await useFetchComAutorizacaoComToken(`${BASE_URL}/agendamentos`, {
-         method: "PUT",
-         headers: {
-            "Content-Type": "application/json",
-         },
-         body: JSON.stringify(agendamento)
-      }, token);
-
-      if(response.ok){
-         return { mensagem: "Agendamento concluído com sucesso", status: response.status };
-      } else {
-         const data: ErroResposta = await response.json();
-         return { mensagem: data.mensagem, status: response.status };
-      }
-   } catch (error) {
-      return { mensagem: "Ocorreu um erro durante o agendamento", status: 500 };
-   }
-}

@@ -22,7 +22,7 @@ export default interface Imovel {
    tipoBanner: TipoBanner;
    academia: boolean;
    permitirDestaque: boolean;
-   ativo: boolean;
+   visibilidade: boolean;
    imagens: {
       imagemPrincipal: File | null | string;
       imagensGaleria: (File | null | string)[];

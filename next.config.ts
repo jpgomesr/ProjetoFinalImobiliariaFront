@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { useLanguage } from "@/context/LanguageContext";
 
 const nextConfig: NextConfig = {
    images: {

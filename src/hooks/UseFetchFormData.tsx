@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { useFetchComAutorizacaoComToken } from "./FetchComAuthorization";
 
 export const UseFetchPostFormData = async (
@@ -21,13 +20,9 @@ export const UseFetchPostFormData = async (
       formData.append(nomeArquivo, arquivo);
    }
 
-   const response = await useFetchComAutorizacaoComToken(url, {
+   return await useFetchComAutorizacaoComToken(url, {
       method,
       body: formData,
      
    }, token);
-
- 
-
-   return response;
 };

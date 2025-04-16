@@ -53,7 +53,6 @@ interface ChatContextType {
    addNewMessage: (chatId: number, message: ChatMessage) => void;
    forceUpdateChats: () => void;
    resetConnection: () => void;
-   token: string;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -77,12 +76,6 @@ export function ChatProvider({
    const subscriptions = useRef<Record<string, any>>({});
    const isInitialFetch = useRef(true);
    const chatIdsRef = useRef<Set<number>>(new Set());
-   const clientRef = useRef<Client | null>(null);
-   const isFetchingChats = useRef(false);
-   const connectionAttempts = useRef(0);
-   const maxConnectionAttempts = 5;
-
-   const token = session?.accessToken;
 
    // Função para forçar uma atualização dos chats
    const forceUpdateChats = useCallback(() => {
@@ -135,66 +128,58 @@ export function ChatProvider({
 
    const fetchChats = useCallback(async () => {
       if (!userId) {
+         console.log("Não há usuário logado");
          return;
-      }
-
-      // Evitar chamadas simultâneas
-      if (isFetchingChats.current) {
-         return;
-      }
+      };
 
       try {
-         isFetchingChats.current = true;
-
+         console.log("Buscando lista de chats para o usuário:", userId);
          const response = await fetch(
             `${process.env.NEXT_PUBLIC_BASE_URL}/chat/list/${userId}`,
             {
                headers: {
                   "Content-type": "application/json",
-                  Authorization: `Bearer ${token}`,
                },
                method: "GET",
             }
          );
-
-         if (!response.ok) {
-            return;
-         }
-
          const data = await response.json();
          const newChats = Array.isArray(data) ? data : [];
-
-         // Verificar se algum chat é duplicado
-         const chatIds = new Set<number>();
-         const uniqueChats = newChats.filter((chat) => {
-            if (chatIds.has(chat.idChat)) {
-               return false;
-            }
-            chatIds.add(chat.idChat);
-            return true;
-         });
+         console.log("Chats recebidos:", newChats.length);
 
          // Atualizar a lista de chats
-         setChats(uniqueChats);
+         setChats(newChats);
 
          // Atualizar o conjunto de IDs de chat para referência
-         chatIdsRef.current = chatIds;
+         chatIdsRef.current = new Set(newChats.map((chat) => chat.idChat));
       } catch (error) {
          console.error("Erro ao carregar chats:", error);
          setChats([]);
-      } finally {
-         isFetchingChats.current = false;
       }
-   }, [userId, token]);
+   }, [userId]);
 
    const addNewMessage = useCallback(
       (chatId: number, message: ChatMessage) => {
+         console.log(`Adicionando nova mensagem ao chat ${chatId}:`, message);
+
+         // Verificar se é mensagem do próprio usuário
          const isMessageFromUser = message.remetente === userId;
          const isSelectedChat = selectedChat === chatId;
+
+         console.log("É mensagem do usuário:", isMessageFromUser);
+         console.log("É chat selecionado:", isSelectedChat);
+
+         // Determinar se o chat deve ser marcado como não lido
+         // Só marca como não lido se:
+         // 1. A mensagem NÃO for do usuário atual
+         // 2. E o chat NÃO estiver selecionado atualmente
          const shouldMarkAsUnread = !isMessageFromUser && !isSelectedChat;
+         console.log("Deve marcar como não lido:", shouldMarkAsUnread);
 
          // Verifica se o chat já existe
          if (chatIdsRef.current.has(chatId)) {
+            console.log(`Chat ${chatId} encontrado, atualizando...`);
+
             // Atualiza o chat existente com a nova mensagem
             updateChat(chatId, {
                ultimaMensagem: {
@@ -202,219 +187,105 @@ export function ChatProvider({
                   timeStamp: message.timeStamp || new Date().toISOString(),
                   remetente: message.remetente,
                },
+               // Define naoLido com base em quem enviou a mensagem e se o chat está selecionado
                naoLido: shouldMarkAsUnread,
             });
+
+            // Log para debug
+            if (shouldMarkAsUnread) {
+               console.log(`Chat ${chatId} marcado como não lido`);
+            }
+
+            // Se a mensagem não for do usuário atual e o chat não estiver selecionado,
+            // forçar uma atualização adicional para garantir que o chat seja marcado como não lido
+            if (shouldMarkAsUnread) {
+               setTimeout(() => {
+                  console.log(
+                     `Forçando atualização do chat ${chatId} como não lido`
+                  );
+                  forceUpdateChats();
+               }, 300);
+            }
          } else {
-            // Se o chat não existir, busca apenas o chat específico
-            fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/chat/${chatId}`, {
-               headers: {
-                  "Content-type": "application/json",
-                  Authorization: `Bearer ${token}`,
-               },
-               method: "GET",
-            })
-               .then((response) => response.json())
-               .then((newChat) => {
-                  chatIdsRef.current.add(chatId);
-                  setChats((prevChats) => {
-                     // Verifica se o chat já não foi adicionado enquanto buscava
-                     if (prevChats.some((chat) => chat.idChat === chatId)) {
-                        return prevChats;
-                     }
-                     return [
-                        ...prevChats,
-                        {
-                           ...newChat,
-                           ultimaMensagem: {
-                              conteudo: message.conteudo,
-                              timeStamp:
-                                 message.timeStamp || new Date().toISOString(),
-                              remetente: message.remetente,
-                           },
-                           naoLido: shouldMarkAsUnread,
-                        },
-                     ];
-                  });
-               })
-               .catch((error) => {
-                  console.error("Erro ao buscar chat específico:", error);
-               });
+            // Se o chat não existir, busca todos os chats novamente
+            console.log(
+               `Chat ${chatId} não encontrado, buscando todos novamente`
+            );
+            fetchChats();
          }
       },
-      [updateChat, userId, selectedChat, token]
+      [fetchChats, updateChat, userId, selectedChat, forceUpdateChats]
    );
 
    // Inicializar WebSocket uma vez
    useEffect(() => {
-      if (!userId || !userName || !token) {
-         console.log("Usuário não autenticado ou token não disponível");
-         return;
-      }
+      const socket = new SockJS(`${process.env.NEXT_PUBLIC_BASE_URL}/ws/chat`);
+      const client = new Client({
+         webSocketFactory: () => socket,
+         reconnectDelay: 5000,
+         heartbeatIncoming: 4000,
+         heartbeatOutgoing: 4000,
+         connectHeaders: {
+            userId: userId,
+            userName: userName,
+         },
+      });
 
-      // Função para criar e configurar o cliente STOMP
-      const setupStompClient = () => {
-         // Limpar cliente anterior se existir
-         if (clientRef.current?.connected) {
-            console.log("Desativando conexão STOMP existente");
-            clientRef.current.deactivate();
-            subscriptions.current = {};
-         }
+      client.onConnect = (frame) => {
+         console.log("Global WebSocket Connected:", frame);
+         setIsConnected(true);
 
-         console.log("Criando nova conexão STOMP");
-         const socket = new SockJS(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/ws/chat`
+         // Inscrever no tópico de notificações do usuário
+         const userNotificationSub = client.subscribe(
+            "/user/queue/messages",
+            (message) => {
+               const notification = JSON.parse(message.body);
+               console.log("Nova notificação recebida:", notification);
+
+               if (notification.type === "NEW_MESSAGE") {
+                  addNewMessage(notification.chatId, notification.message);
+               } else if (notification.type === "CHAT_UPDATED") {
+                  fetchChats();
+               }
+            }
          );
 
-         const client = new Client({
-            webSocketFactory: () => socket,
-            reconnectDelay: 2000,
-            heartbeatIncoming: 4000,
-            heartbeatOutgoing: 4000,
-            connectHeaders: {
-               userId: userId,
-               userName: userName,
-               Authorization: `Bearer ${token}`,
-            },
-            debug: function (str) {
-               console.log("STOMP Debug:", str);
-            },
-         });
-
-         client.onConnect = (frame) => {
-            console.log("STOMP conectado:", frame);
-            connectionAttempts.current = 0;
-            setIsConnected(true);
-            setStompClient(client);
-
-            // Inscrever no tópico de notificações do usuário
-            const userNotificationSub = client.subscribe(
-               "/user/queue/messages",
-               (message) => {
-                  try {
-                     const notification = JSON.parse(message.body);
-
-                     if (notification.type === "NEW_MESSAGE") {
-                        addNewMessage(
-                           notification.chatId,
-                           notification.message
-                        );
-                     } else if (notification.type === "CHAT_UPDATED") {
-                        fetchChats();
-                     }
-                  } catch (error) {
-                     console.error("Erro ao processar notificação:", error);
-                  }
-               }
-            );
-
-            // Salvar a inscrição
-            subscriptions.current["userNotification"] = userNotificationSub;
-
-            // Buscar chats quando conectar
-            fetchChats();
-         };
-
-         client.onWebSocketClose = (event) => {
-            console.log(`WebSocket fechado: ${event.code} - ${event.reason}`);
-            if (event.code === 1006) {
-               // Código 1006 indica fechamento anormal
-               console.log("Tentando reconectar após fechamento anormal");
-               setTimeout(() => {
-                  if (clientRef.current) {
-                     clientRef.current.activate();
-                  }
-               }, 3000);
-            }
-         };
-
-         client.onDisconnect = () => {
-            console.log("STOMP desconectado");
-            setIsConnected(false);
-         };
-
-         client.onStompError = (frame) => {
-            console.error("Erro STOMP:", frame.headers, frame.body);
-            setIsConnected(false);
-
-            // Tentar reconectar se não atingiu o número máximo de tentativas
-            if (connectionAttempts.current < maxConnectionAttempts) {
-               connectionAttempts.current++;
-
-               // Aumentar o tempo de espera a cada tentativa
-               const reconnectDelay = Math.min(
-                  1000 * connectionAttempts.current,
-                  5000
-               );
-
-               console.log(
-                  `Tentativa ${connectionAttempts.current} de reconexão em ${reconnectDelay}ms`
-               );
-
-               setTimeout(() => {
-                  if (clientRef.current) {
-                     clientRef.current.activate();
-                  }
-               }, reconnectDelay);
-            } else {
-               console.error(
-                  `Máximo de ${maxConnectionAttempts} tentativas de reconexão atingido`
-               );
-            }
-         };
-
-         console.log("Ativando conexão STOMP");
-         client.activate();
-         clientRef.current = client;
-
-         return client;
+         // Salvar a inscrição
+         subscriptions.current["userNotification"] = userNotificationSub;
       };
 
-      // Configurar o cliente inicial
-      const client = setupStompClient();
+      client.onDisconnect = () => {
+         console.log("Global WebSocket Desconectado");
+         setIsConnected(false);
+      };
 
-      // Verificar se a conexão foi estabelecida após um período
-      const connectionCheckTimer = setTimeout(() => {
-         if (!isConnected && clientRef.current) {
-            console.log(
-               "Conexão não estabelecida após timeout, tentando novamente"
-            );
-            clientRef.current.deactivate();
-            setupStompClient();
-         }
-      }, 5000);
+      client.onStompError = (frame) => {
+         console.error("Broker reported error:", frame.headers["message"]);
+         console.error("Additional details:", frame.body);
+         setIsConnected(false);
+      };
+
+      client.activate();
+      setStompClient(client);
 
       return () => {
-         clearTimeout(connectionCheckTimer);
-
          // Limpar todas as inscrições
          Object.values(subscriptions.current).forEach((sub: any) => {
             if (sub && typeof sub.unsubscribe === "function") {
-               try {
-                  sub.unsubscribe();
-               } catch (error) {
-                  console.error("Erro ao cancelar inscrição:", error);
-               }
+               sub.unsubscribe();
             }
          });
-         subscriptions.current = {};
 
          // Desativar cliente
-         if (client && client.connected) {
-            try {
-               client.deactivate();
-            } catch (error) {
-               console.error("Erro ao desativar cliente STOMP:", error);
-            }
+         if (client.connected) {
+            client.deactivate();
          }
       };
-   }, [userId, userName, token, addNewMessage, fetchChats]);
+   }, [userId, userName, addNewMessage, fetchChats]);
 
    // Inscrever em novos chats quando a lista é atualizada
    useEffect(() => {
-      if (!stompClient || !stompClient.connected) {
-         console.log("Cliente STOMP não conectado, não inscrevendo em chats");
-         return;
-      }
+      if (!stompClient || !stompClient.connected) return;
 
       console.log(
          "Atualizando inscrições para chats:",
@@ -486,15 +357,20 @@ export function ChatProvider({
 
    // Buscar chats iniciais apenas uma vez
    useEffect(() => {
-      if (isInitialFetch.current && userId) {
-         console.log("Realizando busca inicial de chats");
+      if (isInitialFetch.current) {
          fetchChats();
          isInitialFetch.current = false;
       }
-   }, [fetchChats, userId]);
+   }, [fetchChats]);
 
    // Atualizar chats periodicamente para garantir sincronização
    useEffect(() => {
+      /*
+       * TODO: Implementar no backend:
+       * 1. Criar um endpoint que emite mensagens para '/topic/chat/global'
+       * 2. Publicar nesse tópico sempre que qualquer mensagem for enviada
+       * 3. Substituir este intervalo pela inscrição no tópico global:
+       */
       if (stompClient && stompClient.connected) {
          const globalSubscription = stompClient.subscribe(
             "/topic/chat/global",
@@ -515,7 +391,7 @@ export function ChatProvider({
             }
          };
       }
-   }, [fetchChats, stompClient]);
+   }, [fetchChats]);
 
    // Efeito para forçar atualização quando necessário
    useEffect(() => {
@@ -529,89 +405,30 @@ export function ChatProvider({
    }, [forceUpdate, fetchChats]);
 
    const resetConnection = useCallback(() => {
-      console.log("Resetando conexão STOMP...");
-      setIsConnected(false);
+      console.log("Resetando conexão WebSocket");
 
       // Limpar todas as inscrições existentes
       Object.values(subscriptions.current).forEach((sub: any) => {
          if (sub && typeof sub.unsubscribe === "function") {
-            try {
-               sub.unsubscribe();
-            } catch (error) {
-               console.error("Erro ao cancelar inscrição:", error);
-            }
+            sub.unsubscribe();
          }
       });
       subscriptions.current = {};
 
       // Desativar cliente se estiver conectado
-      if (clientRef.current) {
-         try {
-            if (clientRef.current.connected) {
-               console.log("Desativando cliente WebSocket...");
-               clientRef.current.deactivate();
-            }
-         } catch (error) {
-            console.error("Erro ao desativar cliente:", error);
-         }
+      if (stompClient?.connected) {
+         console.log("Desativando cliente WebSocket");
+         stompClient.deactivate();
       }
 
-      connectionAttempts.current = 0;
-
-      // Criar nova conexão
+      // Reativar a conexão após um delay maior
       setTimeout(() => {
-         console.log("Criando nova conexão após reset...");
-
-         // Verificar se temos as informações necessárias
-         if (!userId || !userName || !token) {
-            console.error("Dados de usuário não disponíveis para reconexão");
-            return;
+         if (stompClient && !stompClient.connected) {
+            console.log("Reativando cliente WebSocket");
+            stompClient.activate();
          }
-
-         try {
-            // Criar novo socket e cliente
-            const socket = new SockJS(
-               `${process.env.NEXT_PUBLIC_BASE_URL}/ws/chat`
-            );
-
-            const client = new Client({
-               webSocketFactory: () => socket,
-               reconnectDelay: 2000,
-               heartbeatIncoming: 4000,
-               heartbeatOutgoing: 4000,
-               connectHeaders: {
-                  userId: userId,
-                  userName: userName,
-                  Authorization: `Bearer ${token}`,
-               },
-            });
-
-            client.onConnect = (frame) => {
-               console.log("Reconnected successfully:", frame);
-               connectionAttempts.current = 0;
-               setIsConnected(true);
-               setStompClient(client);
-               fetchChats();
-            };
-
-            client.onDisconnect = () => {
-               console.log("Disconnected after reset");
-               setIsConnected(false);
-            };
-
-            client.onStompError = (frame) => {
-               console.error("STOMP error after reset:", frame);
-               setIsConnected(false);
-            };
-
-            // Ativar o novo cliente
-            client.activate();
-            clientRef.current = client;
-         } catch (error) {
-            console.error("Erro ao criar nova conexão:", error);
-         }
-      }, 1000);
-   }, [userId, userName, token, fetchChats]);
+      }, 500); // Aumentado o delay para 500ms
+   }, [stompClient]);
 
    const contextValue = {
       chats,
@@ -627,7 +444,6 @@ export function ChatProvider({
       addNewMessage,
       forceUpdateChats,
       resetConnection,
-      token,
    };
 
    return (

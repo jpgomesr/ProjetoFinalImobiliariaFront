@@ -1,21 +1,19 @@
 import React from "react";
 
-interface BotaoProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface BotaoProps  extends React.ButtonHTMLAttributes<HTMLButtonElement>{
    texto: string | React.ReactElement;
    className?: string;
 }
 
-const BotaoPadrao = ({ texto, disabled, className, ...props }: BotaoProps) => {
+const BotaoPadrao = ({texto, disabled, ...props}: BotaoProps) => {
    return (
       <button
-         {...props}
-         className={`botao ${className ?? "bg-havprincipal text-white"} ${
-            disabled ? "opacity-40" : ""
-         }`}
-         disabled={disabled}
-      >
-         {texto}
-      </button>
+      {...props}
+      disabled={disabled} // Adicione esta linha
+      className={`botao ${props.className ?? "bg-havprincipal text-white"} ${disabled ? "opacity-40": ""}`}
+   >
+      {texto}
+   </button>
    );
 };
 

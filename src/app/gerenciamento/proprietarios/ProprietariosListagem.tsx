@@ -17,6 +17,7 @@ import ModelProprietarioListagem from "@/models/ModelProprietarioListagem";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface ProprietariosListagemProps {
    proprietariosIniciais: ModelProprietarioListagem[] | [];
@@ -37,15 +38,13 @@ const ProprietariosListagem = ({
    status,
    token,
 }: ProprietariosListagemProps) => {
+   const { t } = useLanguage();
    const [proprietarios, setProprietarios] = useState(proprietariosIniciais);
    const [modalConfirmacaoAberto, setModalConfirmacaoAberto] = useState(false);
    const [mostrarNotificacao, setMostrarNotificacao] = useState(false);
-   const [idItemParaDeletar, setIdItemParaDeletar] = useState<number | null>(
-      null
-   );
+   const [idItemParaDeletar, setIdItemParaDeletar] = useState<number | null>(null);
    const [itemDeletadoId, setItemDeletadoId] = useState<number | null>(null);
-   const [nomePesquisaTemporario, setNomePesquisaTemporario] =
-      useState<string>(nomePesquisa);
+   const [nomePesquisaTemporario, setNomePesquisaTemporario] = useState<string>(nomePesquisa);
 
    const router = useRouter();
    const searchParams = useSearchParams();
@@ -101,24 +100,25 @@ const ProprietariosListagem = ({
             <List
                mudandoValor={(valor) => atualizarFiltros(nomePesquisa, valor)}
                opcoes={[
-                  { id: "Ativo", label: "Ativo" },
-                  { id: "Desativado", label: "Desativado" },
+                  { id: "Ativo", label: t("OwnerManagement.buttonActive") },
+                  { id: "Desativado", label: t("OwnerManagement.buttonDesactive") },
                ]}
-               placeholder="Ativo"
+               placeholder={t("OwnerManagement.buttonActive")}
+               bordaPreta
                value={status}
             />
             <InputPadrao
                type="text"
                htmlFor="input-busca-nome"
                onChange={(e) => setNomePesquisaTemporario(e.target.value)}
-               placeholder="Digite o nome que deseja pesquisar"
+               placeholder={t("OwnerManagement.placeholderSearch")}
                search
                handlePesquisa={handlePesquisa}
                required={false}
             />
             <Link href={"/gerenciamento/proprietarios/cadastro"}>
                <button className="flex items-center justify-center bg-havprincipal rounded-md text-white h-full text-sm py-1 px-2 lg:text-base lg:py-2 lg:px-3 2xl:py-3 2xl:px-4">
-                  Adicionar <PlusIcon className="w-4" />
+                  {t("OwnerManagement.buttonAddOwner")} <PlusIcon className="w-4" />
                </button>
             </Link>
          </div>
@@ -127,9 +127,9 @@ const ProprietariosListagem = ({
                <CardUsuario
                   labelPrimeiroValor="E-mail:"
                   primeiroValor={proprietario.email}
-                  labelSegundoValor="Nome:"
+                  labelSegundoValor={t("perfil.name") + ":"}
                   segundoValor={proprietario.nome}
-                  labelTerceiroValor="Telefone"
+                  labelTerceiroValor={t("perfil.phone")}
                   terceiroValor={proprietario.telefone}
                   labelQuartoValor="CPF:"
                   quartoValor={proprietario.cpf}

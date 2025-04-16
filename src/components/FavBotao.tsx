@@ -15,7 +15,6 @@ interface HomeProps {
    favorited: boolean;
    dark: boolean;
    setIsFavorited: (favorited: boolean) => void;
-   className?: string;
 }
 
 export default function FavButton({
@@ -23,7 +22,6 @@ export default function FavButton({
    favorited,
    dark,
    setIsFavorited,
-   className
 }: HomeProps) {
    const [handleRemoveFav, setHandleRemoveFav] = useState(false);
    const { data: session } = useSession();
@@ -75,8 +73,8 @@ export default function FavButton({
             <Heart
                className={`text-havprincipal ${
                   !dark ? "text-havprincipal" : "text-white"
-               } ${className ?? "w-4 h-4"}`}
-               
+               }`}
+               size={15}
                fill={
                   
                   favorited ? "currentColor" : "none"}

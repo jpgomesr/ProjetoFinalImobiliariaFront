@@ -62,7 +62,6 @@ export const createUsuarioValidator = (isPasswordChangeEnabled = true) => {
          descricao: z
             .string()
             .max(500, { message: "A descrição deve conter até 500 caracteres" })
-            .nullable()
             .optional(),
          ativo: z.string().optional(),
          imagemPerfil: z
@@ -177,7 +176,7 @@ export const createImovelValidator = () => {
       valor: z.number({ message: "Campo obrigatório" }),
       valorPromo: z.number().optional(),
       iptu: z.number().optional(),
-      valorCondominio: z.number().optional().nullable(),
+      valorCondominio: z.number().optional(),
       codigo: z.number().optional(),
       rua: z.string().min(1, { message: "Campo obrigatório" }),
       bairro: z.string().min(1, { message: "Campo obrigatório" }),
@@ -193,7 +192,7 @@ export const createImovelValidator = () => {
       tipoBanner: z.string().optional(),
       academia: z.boolean(),
       destaque: z.boolean(),
-      visibilidade: z.boolean().optional().default(true),
+      visibilidade: z.boolean(),
       imagens: z.object({
          imagemPrincipal: z.union([
             z.instanceof(File, {
@@ -248,6 +247,5 @@ export const createImovelValidator = () => {
          })
          .min(1, { message: "Precisa ter pelo menos um corretor" }),
       id: z.string().optional(),
-      ativo: z.boolean().optional().default(true),
    });
 };

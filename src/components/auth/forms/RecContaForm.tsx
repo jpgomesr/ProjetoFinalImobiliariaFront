@@ -1,6 +1,5 @@
 "use client";
 
-import { useNotification } from "@/context/NotificationContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, Phone } from "lucide-react";
 import React, { useState } from "react";
@@ -33,7 +32,7 @@ const RecContaForm = () => {
       register,
       handleSubmit,
       watch,
-      formState: { errors, isSubmitting },
+      formState: { errors },
       clearErrors,
       setValue,
    } = useForm<RecContaFormData>({
@@ -45,27 +44,12 @@ const RecContaForm = () => {
    });
 
    const [isEmailForm, setIsEmailForm] = useState(true);
-   const [enviado, setEnviado] = useState(false);
-   const [error, setError] = useState(false);
-   const {showNotification} = useNotification();      
 
    const onSubmit = (data: RecContaFormData) => {
-      // if (data.telefone) {
-      //    data.telefone = data.telefone.replace(/\D/g, "");
-      // }
-      const fetchData = async () => {
-         const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/usuarios/token-redefinir-senha?email=${data.email}`);
-         if (response.ok) {
-            setEnviado(true);
-         }
-         else{
-            const data = await response.json();
-            showNotification(data.mensagem || "Ocorreu um erro ao enviar o código")
-         }
-      };
-      fetchData();
-      
-
+      if (data.telefone) {
+         data.telefone = data.telefone.replace(/\D/g, "");
+      }
+      console.log(data);
    };
 
    const handleTryAnotherForm = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -101,16 +85,9 @@ const RecContaForm = () => {
                   </span>
                </div>
             )}
-            {enviado ? (
-               <div className="flex justify-center items-center">
-                  <span className="text-white text-sm sm:text-base font-montserrat">
-                     Código enviado com sucesso
-                  </span>
-               </div>
-            ) : (
-               <form
-                  onSubmit={handleSubmit(onSubmit)}
-                  className="flex flex-col gap-3"
+            <form
+               onSubmit={handleSubmit(onSubmit)}
+               className="flex flex-col gap-3"
             >
                {isEmailForm ? (
                   <>
@@ -166,13 +143,11 @@ const RecContaForm = () => {
                   <button
                      type="submit"
                      className="bg-white text-havprincipal font-bold py-2 px-4 sm:py-2.5 sm:px-5 rounded-md text-sm sm:text-base mt-2"
-                     disabled={isSubmitting}
                   >
                      Enviar código
                   </button>
                </div>
-               </form>
-            )}
+            </form>
          </div>
       </div>
    );

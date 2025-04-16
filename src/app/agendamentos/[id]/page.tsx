@@ -35,7 +35,7 @@ const Page = async ({ params }: PageProps) => {
                <h1>Agendamento de Visitas com</h1>
                <h1 className="font-bold">HAV</h1>
             </div>
-            <AgendamentoForm id={id} idUsuario={idUsuario} token={session.accessToken || ""}/>
+            <AgendamentoForm id={id} idUsuario={idUsuario} />
          </SubLayoutPaginasCRUD>
       </Layout>
    );
