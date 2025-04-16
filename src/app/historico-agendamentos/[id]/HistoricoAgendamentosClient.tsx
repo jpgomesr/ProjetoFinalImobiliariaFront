@@ -31,7 +31,7 @@ const HistoricoAgendamentosClient = ({
    currentPage,
    agendamentos,
    totalPages,
-   token
+   token,
 }: HistoricoAgendamentosClientProps) => {
    const { t } = useLanguage();
 
@@ -65,23 +65,35 @@ const HistoricoAgendamentosClient = ({
                         id={agendamento.id}
                         key={key}
                         urlImagem={agendamento.referenciaImagemPrincipal}
-                        horario={agendamento.horario.split("T")[1].substring(0, 5)}
+                        horario={agendamento.horario
+                           .split("T")[1]
+                           .substring(0, 5)}
                         data={new Date(agendamento.horario).toLocaleDateString(
                            "pt-BR"
                         )}
-                        corretor={agendamento.nomeUsuario}
-                        usuario={agendamento.nomeCorretor}
+                        corretor={{
+                           id: agendamento.corretor?.id || 0,
+                           nome: agendamento.corretor?.nome || "",
+                        }}
+                        usuario={{
+                           id: agendamento.usuario?.id || 0,
+                           nome: agendamento.usuario?.nome || "",
+                        }}
                         status={agendamento.status}
                         localizacao={`${agendamento.endereco.cidade} - ${agendamento.endereco.bairro}`}
                         endereco={`${agendamento.endereco.rua}, ${agendamento.endereco.numeroCasaPredio}`}
                         token={token}
+                        idImovel={agendamento.idImovel}
                      />
                   ))}
             </section>
-            <PaginacaoHistorico totalPages={totalPages} currentPage={currentPage} />
+            <PaginacaoHistorico
+               totalPages={totalPages}
+               currentPage={currentPage}
+            />
          </Suspense>
       </FundoBrancoPadrao>
    );
 };
 
-export default HistoricoAgendamentosClient; 
+export default HistoricoAgendamentosClient;
