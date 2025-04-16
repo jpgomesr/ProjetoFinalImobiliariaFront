@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -22,6 +23,7 @@ const imovelSchema = z.object({
    valorPromo: z.number().optional().nullable(),
    destaque: z.boolean().optional().default(false),
    visibilidade: z.boolean().optional().default(true),
+   ativo: z.boolean().optional().default(true),
    banner: z.string().optional().nullable(),
    tipoBanner: z.string().optional().nullable(),
    iptu: z.number().optional().nullable(),
@@ -70,6 +72,7 @@ export const formatarDadosFormulario = async (
       valorPromo: data.valorPromo ? Number(data.valorPromo) : null,
       destaque: data.destaque || false,
       visibilidade: data.visibilidade || true,
+      ativo: data.ativo || true,
       banner: data.banner,
       tipoBanner: data.tipoBanner,
       iptu: data.iptu ? Number(data.iptu) : null,
@@ -98,7 +101,6 @@ export async function editarImovel(
    token: string,
    refImagensDeletadas?: string[]
 ) {
-   try {
       // Formatar os dados para garantir o formato correto
       const data = await formatarDadosFormulario(formData);
 
@@ -117,13 +119,13 @@ export async function editarImovel(
          preco: data.valor,
          precoPromocional: data.valorPromo,
          permitirDestaque: data.destaque,
-         habilitarVisibilidade: data.visibilidade,
+         visibilidade: data.visibilidade,
          banner: data.banner,
-         tipoBanner: data.tipoBanner,
+         tipoBanner: data.tipoBanner || "",
          iptu: data.iptu,
          valorCondominio: data.valorCondominio,
          idProprietario: data.proprietario.id,
-         ativo: data.visibilidade,
+         ativo: data.ativo,
          endereco: {
             rua: data.rua,
             bairro: data.bairro,
@@ -192,7 +194,10 @@ export async function editarImovel(
       revalidatePath(`/imovel/${data.id}`);
       revalidatePath(`/gerenciamento/imoveis`);
 
-      // Retorna o resultado para o cliente
+      if(response.status === 401 || response.status === 403){
+         redirect('/logout')
+      } 
+       
       if (!response.ok) {
          const errorData = await response.json();
          return {
@@ -208,12 +213,6 @@ export async function editarImovel(
          message: "Imóvel editado com sucesso",
          data: result,
       };
-   } catch (error) {
-      console.error("Erro ao editar imóvel:", error);
-      return {
-         success: false,
-         message: "Erro ao processar a requisição",
-         error: error instanceof Error ? error.message : String(error),
-      };
-   }
-}
+   } 
+   
+

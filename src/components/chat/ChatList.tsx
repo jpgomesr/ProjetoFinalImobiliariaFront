@@ -48,24 +48,17 @@ export default function ChatListServer(props: ChatListServerProps) {
 
    // Atualizar o estado local quando os chats do contexto mudarem
    useEffect(() => {
-      console.log("Atualizando lista local de chats:", chats.length);
       setLocalChats(chats);
    }, [chats]);
 
    const handleContactClick = useCallback(
       async (chatId: number) => {
-         // Não permitir cliques se já estiver carregando um chat
          if (isLoadingChat || chatId === selectedChat) {
-            console.log(
-               "Ignorando clique: chat já está carregando ou é o mesmo chat selecionado"
-            );
             return;
          }
 
          try {
             setIsLoadingChat(true);
-            console.log(`Iniciando carregamento do chat ${chatId}`);
-
             resetConnection();
             setSelectedChat(chatId);
 
@@ -80,25 +73,15 @@ export default function ChatListServer(props: ChatListServerProps) {
                }
             );
 
-            setLocalChats((prevChats) =>
-               prevChats.map((chat) =>
-                  chat.idChat === chatId ? { ...chat, naoLido: false } : chat
-               )
-            );
-
             await fetchChats();
-
-            // Navegação instantânea
             props.onOpenChat();
             router.replace(`/chat/?chat=${chatId}`);
          } catch (error) {
             console.error("Erro ao carregar chat:", error);
             router.replace(`/chat/?chat=${chatId}`);
          } finally {
-            // Adicionar um pequeno atraso antes de permitir cliques novamente
             setTimeout(() => {
                setIsLoadingChat(false);
-               console.log("Chat carregado, permitindo cliques novamente");
             }, 300);
          }
       },
@@ -147,9 +130,8 @@ export default function ChatListServer(props: ChatListServerProps) {
    useEffect(() => {
       const loadChats = async () => {
          try {
-            console.log("Iniciando carregamento de chats...");
-            await fetchChats();
-            console.log("Chats carregados com sucesso");
+            // Não fazemos fetchChats aqui para evitar chamadas duplicadas
+            // O fetchChats já é chamado no ChatContext
          } catch (error) {
             console.error("Erro ao carregar chats:", error);
          } finally {
@@ -158,24 +140,10 @@ export default function ChatListServer(props: ChatListServerProps) {
       };
 
       loadChats();
-
-      // Configurar intervalo para forçar a re-renderização da lista periodicamente
-      const intervalId = setInterval(() => {
-         console.log("Forçando atualização visual da lista de chats");
-         setLocalChats((prevChats) => [...prevChats]); // Força re-renderização
-      }, 5000);
-
-      return () => clearInterval(intervalId);
-   }, [fetchChats]);
+   }, []);
 
    // Filtrar e ordenar chats de forma otimizada
    const filteredChats = useMemo(() => {
-      console.log("Filtrando lista de chats com", localChats.length, "itens");
-      console.log(
-         "Chats não lidos:",
-         localChats.filter((c) => c.naoLido).length
-      );
-
       return Array.isArray(localChats)
          ? localChats
               .filter((chat) => {
@@ -241,7 +209,7 @@ export default function ChatListServer(props: ChatListServerProps) {
             {filteredChats.length > 0 ? (
                filteredChats.map((chat, index) => (
                   <div
-                     key={chat.id}
+                     key={`chat-${chat.idChat}`}
                      className={`flex items-center gap-3 p-3 hover:bg-gray-100 hover:rounded-lg
                                cursor-pointer ${
                                   selectedChat === chat.idChat

@@ -101,7 +101,7 @@ const Formulario = ({usuario, token} : FormProps) => {
          }
 
          setValue("nomeCompleto", usuario.nome);
-         setValue("descricao", usuario.descricao);
+         setValue("descricao", usuario.descricao || "");
          setValue("email", usuario.email);
          setValue("telefone", usuario.telefone);
          setValue("tipoUsuario", usuario.role);
