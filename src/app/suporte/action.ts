@@ -1,9 +1,10 @@
-"use client";
 
 import { TipoPergunta } from "@/models/Enum/TipoPerguntaEnum";
 import ModelPergunta from "@/models/ModelPergunta";
 import { z } from "zod";
-import { useSession } from "next-auth/react";
+import { authOptions } from "../api/auth/[...nextauth]/auth";
+import { getServerSession } from "next-auth";
+
 const perguntaSchema = z.object({
    tipoPergunta: z.string().min(1, "Selecione um assunto"),
    email: z.string().email("Email inválido"),
@@ -20,6 +21,7 @@ interface EnviarPerguntaProps {
    mensagem: string;
    email: string;
    titulo: string;
+   token: string;
 }
 
 export async function enviarPergunta({
@@ -27,17 +29,18 @@ export async function enviarPergunta({
    mensagem,
    email,
    titulo,
+   token,
 }: EnviarPerguntaProps) {
+   console.log("Tokeasdasdan:", token);
+
    try {
       const url = process.env.NEXT_PUBLIC_BASE_URL + "/perguntas";
-      const session = useSession();
-      const token = session.data?.accessToken;
-
+      console.log("Token:", token);
       const response = await fetch(url, {
          method: "POST",
          headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            "Authorization": `Bearer ${token}`,   
          },
          body: JSON.stringify({
             tipoPergunta,
@@ -50,7 +53,9 @@ export async function enviarPergunta({
       });
 
       if (!response.ok) {
+
          const errorData = await response.json();
+
          throw new Error(errorData.error || "Erro ao enviar pergunta");
       }
 
@@ -61,6 +66,7 @@ export async function enviarPergunta({
          data,
       };
    } catch (error) {
+
       console.error("Erro ao enviar pergunta:", error);
       return {
          success: false,
