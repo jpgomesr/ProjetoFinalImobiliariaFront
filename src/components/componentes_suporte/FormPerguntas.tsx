@@ -42,7 +42,6 @@ const FormPerguntas = () => {
       reset,
       setValue,
       watch,
-
    } = useForm<FormData>({
       resolver: zodResolver(schema),
       defaultValues: {
@@ -54,7 +53,7 @@ const FormPerguntas = () => {
    });
 
    useEffect(() => {
-      console.log(session?.user?.email)
+      console.log(session?.user?.email);
       console.log(errors);
    }, [errors]);
 
@@ -69,6 +68,9 @@ const FormPerguntas = () => {
                method: "POST",
                headers: {
                   "Content-Type": "application/json",
+                  ...(session?.accessToken
+                     ? { Authorization: `Bearer ${session.accessToken}` }
+                     : {}),
                },
                body: JSON.stringify({
                   tipoPergunta: data.tipoPergunta,
@@ -82,8 +84,11 @@ const FormPerguntas = () => {
          );
 
          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || "Erro ao enviar pergunta");
+            const errorText = await response.text();
+            console.error("Erro na resposta:", response.status, errorText);
+            throw new Error(
+               `Erro ao enviar pergunta: ${response.status} - ${errorText}`
+            );
          }
 
          showNotification("Pergunta enviada com sucesso!");

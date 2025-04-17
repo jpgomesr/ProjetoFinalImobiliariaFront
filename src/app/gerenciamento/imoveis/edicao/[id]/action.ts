@@ -200,6 +200,7 @@ export async function editarImovel(
        
       if (!response.ok) {
          const errorData = await response.json();
+         console.log(errorData);
          return {
             success: false,
             message: "Erro ao editar imóvel",

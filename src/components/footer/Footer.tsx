@@ -25,7 +25,7 @@ const Footer = () => {
          group: "Grupo 2",
          items: [
             { label: "HAV na sociedade", route: "/" },
-            { label: "Contato", route: "/" },
+            { label: "Suporte", route: "/suporte" },
             { label: "Conheça a HAV", route: "/" },
          ],
       },

@@ -7,7 +7,7 @@ import FormPerguntas from "@/components/componentes_suporte/FormPerguntas";
 const SuporteClient = () => {
    return (
       <SessionProvider>
-         <FormPerguntas />
+         <FormPerguntas  />
       </SessionProvider>
    );
 };
