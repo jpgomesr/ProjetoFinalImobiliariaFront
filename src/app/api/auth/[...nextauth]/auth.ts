@@ -1,4 +1,6 @@
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { NextAuthOptions } from "next-auth";
 
@@ -84,9 +86,50 @@ export const authOptions: NextAuthOptions = {
             }
          },
       }),
+      GoogleProvider({
+         clientId : process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "",
+         clientSecret :  process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET || ""
+      })
    ],
    callbacks: {
-      async jwt({ token, user }) {
+      async jwt({ token, user, account, profile }) {
+
+
+         if (account?.provider === "google" && profile?.email) {
+            try {
+              const response = await fetch(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/auth/google`,
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    email: profile.email,
+                    nome: profile.name,
+                    foto: profile.image,
+                  }),
+                }
+              );
+    
+              const data = await response.json();
+    
+              const backendToken =
+                data.accessToken || data.token || data.access_token || data.jwt;
+    
+              const decoded = jwt.decode(backendToken) as JwtPayload & {
+                id?: number;
+                role?: string;
+              };
+    
+              token.accessToken = backendToken;
+              token.id = decoded?.id?.toString() || "";
+              token.role = decoded?.role;
+    
+            } catch (err) {
+              console.error("Erro ao criar/pegar usuário do backend via Google:", err);
+            }
+          }
+
+
          if (user) {
             token.accessToken = user.accessToken;
             token.id = user.id;
