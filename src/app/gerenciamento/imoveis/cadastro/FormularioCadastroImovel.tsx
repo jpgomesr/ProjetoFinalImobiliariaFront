@@ -663,13 +663,16 @@ const FormularioCadastroImovel = (props: FormularioCadastroImovelProps) => {
                               />
                            </div>
                            <div className="w-full">
-                              {watch("tipo") === "apartamento" && (
+                              {watch("tipo") === "APARTAMENTO" && (
                                  <InputPadrao
                                     htmlFor="numero_apartamento"
                                     label={`Número do apartamento`}
                                     placeholder="Digite o número do apartamento"
                                     type="number"
-                                    {...register("numeroApto")}
+                                    {...register("numeroApto", {
+                                       setValueAs: (value) =>
+                                          parseInt(value, 10),
+                                    })}
                                     mensagemErro={errors.numeroApto?.message}
                                     onChange={() =>
                                        handleInputChange("numeroApto")

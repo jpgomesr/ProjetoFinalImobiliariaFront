@@ -110,7 +110,7 @@ const Page = async ({ searchParams }: PageProps) => {
                   >
                      <input
                         type="text"
-                        className="focus:outline-none min-w-1 bg-white placeholder:text-gray-500"
+                        className="focus:outline-none min-w-1 w-full bg-white placeholder:text-gray-500"
                         placeholder="Pesquise aqui"
                      />
                   </div>

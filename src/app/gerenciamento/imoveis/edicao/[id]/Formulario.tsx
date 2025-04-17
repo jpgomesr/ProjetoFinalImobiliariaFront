@@ -477,7 +477,6 @@ const Formulario = ({ imovel, token }: FormularioProps) => {
                                     mudandoValor={(value) =>
                                        field.onChange(value)
                                     }
-                                    
                                     divClassName="justify-end"
                                     differentSize="h-8"
                                  />
@@ -540,7 +539,6 @@ const Formulario = ({ imovel, token }: FormularioProps) => {
                      render={({ field }) => (
                         <List
                            opcoes={objImovel}
-                           
                            title="Objetivo"
                            value={field.value}
                            mudandoValor={(value) => field.onChange(value)}
@@ -555,7 +553,6 @@ const Formulario = ({ imovel, token }: FormularioProps) => {
                      render={({ field }) => (
                         <List
                            opcoes={tiposDeImovel}
-                           
                            title="Tipo"
                            value={field.value}
                            mudandoValor={(value) => field.onChange(value)}
@@ -713,7 +710,7 @@ const Formulario = ({ imovel, token }: FormularioProps) => {
                            />
                         </div>
                         <div className="w-full">
-                           {watch("tipo") === "apartamento" && (
+                           {watch("tipo") === "APARTAMENTO" && (
                               <InputPadrao
                                  htmlFor="numero_apartamento"
                                  label={`Número do apartamento`}
