@@ -6,6 +6,7 @@ import Link from "next/link";
 import { User, UserIcon } from "lucide-react";
 import { signOut } from "next-auth/react";
 import PerfilIcon from "@/svg/icons/header/PerfilIcon";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface PerfilDropdownProps {
    foto?: string;
@@ -16,6 +17,8 @@ interface PerfilDropdownProps {
 const PerfilDropdown = ({ foto, id, nome }: PerfilDropdownProps) => {
    const [isOpen, setIsOpen] = useState(false);
    const dropdownRef = useRef<HTMLDivElement>(null);
+   const { t } = useLanguage();
+
 
    useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
@@ -62,7 +65,7 @@ const PerfilDropdown = ({ foto, id, nome }: PerfilDropdownProps) => {
                   className="block px-4 py-2 text-sm text-havprincipal hover:bg-gray-100"
                   onClick={() => setIsOpen(false)}
                >
-                  Meu Perfil
+                  {t("PerfilOptions.option1")}
                </Link>
                <button
                   onClick={() => {
@@ -73,7 +76,7 @@ const PerfilDropdown = ({ foto, id, nome }: PerfilDropdownProps) => {
                   }}
                   className="block w-full text-left px-4 py-2 text-sm text-havprincipal hover:bg-gray-100"
                >
-                  Sair
+                  {t("PerfilOptions.option2")}
                </button>
             </div>
          )}
