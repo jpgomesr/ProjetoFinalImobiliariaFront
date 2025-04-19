@@ -46,6 +46,7 @@ export interface parametrosBuscaImovel {
    cache?: RequestCache;
    buscarIndependenteAtivo?: boolean;
    buscarArquivados?: boolean;
+   imovelDescTitulo?: string;
 }
 
 export const buscarTodosImoveis = async (
@@ -72,6 +73,7 @@ export const buscarTodosImoveis = async (
       idUsuario: parametros?.idUsuario || "",
       sort: parametros?.sort || "", 
       buscarArquivados: parametros?.buscarArquivados === true ? "true" : "false",
+      imovelDescTitulo: parametros?.imovelDescTitulo || "",
    });
 
    if (parametros?.buscarIndependenteAtivo) {

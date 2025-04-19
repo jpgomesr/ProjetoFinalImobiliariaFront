@@ -607,16 +607,7 @@ const FormularioCadastroImovel = (props: FormularioCadastroImovelProps) => {
                                  handleInputChange("cep");
                               }}
                            />
-                           <InputPadrao
-                              htmlFor="Bairro"
-                              label="Bairro"
-                              placeholder="Digite o bairro"
-                              type="text"
-                              {...register("bairro")}
-                              mensagemErro={errors.bairro?.message}
-                              onChange={() => handleInputChange("bairro")}
-                              disabled={camposDesabilitados.bairroDesabilitado}
-                           />
+                          
                            <InputPadrao
                               htmlFor="estado"
                               label="Estado"
@@ -636,6 +627,16 @@ const FormularioCadastroImovel = (props: FormularioCadastroImovelProps) => {
                               mensagemErro={errors.cidade?.message}
                               onChange={() => handleInputChange("cidade")}
                               disabled={camposDesabilitados.cidadeDesabilitada}
+                           />
+                            <InputPadrao
+                              htmlFor="Bairro"
+                              label="Bairro"
+                              placeholder="Digite o bairro"
+                              type="text"
+                              {...register("bairro")}
+                              mensagemErro={errors.bairro?.message}
+                              onChange={() => handleInputChange("bairro")}
+                              disabled={camposDesabilitados.bairroDesabilitado}
                            />
                            <InputPadrao
                               htmlFor="rua"
