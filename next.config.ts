@@ -9,19 +9,25 @@ const nextConfig: NextConfig = {
          },
          {
             protocol: "https",
-            hostname: "images.pexels.com", 
-          },
-          {
+            hostname: "images.pexels.com",
+         },
+         {
             protocol: "https",
             hostname: "lh3.googleusercontent.com",
-          },
+         },
       ],
+   },
+
+   experimental: {
+      serverActions: {
+         bodySizeLimit: "20mb",
+      },
    },
 
    env: {
       NEXT_PUBLIC_BASE_URL: "http://localhost:8082",
    },
-   
+
    async rewrites() {
       return [
          {
