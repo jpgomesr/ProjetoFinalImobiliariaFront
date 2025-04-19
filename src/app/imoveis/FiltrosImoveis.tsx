@@ -3,7 +3,7 @@ import ButtonFiltro from "@/components/componetes_filtro/filtro_pesquisa/ButtonF
 import FiltroList from "@/components/componetes_filtro/FiltroList";
 import InputPadrao from "@/components/InputPadrao";
 import ButtonMapa from "@/components/ButtonMapa";
-
+import InputPesquisaServerSide from "@/components/InputPesquisaServerSide";   
 
 interface FiltrosImoveisProps {
    precoMinimo?: string;
@@ -18,6 +18,7 @@ interface FiltrosImoveisProps {
    finalidade?: string;
    view?: string;
    url?: string;
+   imovelDescTitulo?: string;
 }
 
 
@@ -36,10 +37,11 @@ const FiltrosImoveis = (props: FiltrosImoveisProps) => {
       tipoImovel: props.tipoImovel ?? "",
       finalidade: props.finalidade ?? "",
       view: props.view ?? "cards",
+      imovelDescTitulo: props.imovelDescTitulo ?? "",
    };
 
    return (
-      <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-[1fr_7fr_1fr] xl:grid-cols-[1fr_6fr_1fr]">
+      <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-[1fr_7fr_1fr] xl:grid-cols-[1fr_10fr_1fr]">
          <FiltroList
             opcoes={[
                { id: "venda", label: "Venda" },
@@ -52,11 +54,11 @@ const FiltrosImoveis = (props: FiltrosImoveisProps) => {
             url={props.url ?? "/imoveis"}
          />
 
-         <InputPadrao
-            type="text"
+         <InputPesquisaServerSide
+            url={props.url ?? "/imoveis"}
+            nomeAributo="imovelDescTitulo"
             placeholder="Pesquise aqui"
-            search={true}
-            className="w-full"
+            value={params.imovelDescTitulo}
          />
 
          <div className="w-36 min-h-full place-self-end md:place-self-auto">

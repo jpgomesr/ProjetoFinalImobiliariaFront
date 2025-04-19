@@ -182,6 +182,7 @@ const LoginForm = ({ callbackUrl }: LoginFormProps) => {
                                     : ""
                               }`}
                      disabled={isLoading}
+                     onClick={() => signIn("google")}
                   >
                      <Image
                         src="/google.svg"

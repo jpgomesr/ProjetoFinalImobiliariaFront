@@ -79,13 +79,15 @@ const CardUsuario = (props: CardUsuarioProps) => {
 
          <div className="flex justify-center items-center">
             {props.imagem ? (
+               <div className="flex justify-center border-2 border-gray-500 items-center rounded-full h-16 w-16 lg:w-24 lg:h-24 2xl:w-28 2xl:h-28">
                <Image
                   src={props.imagem}
                   alt="Imagem usuario"
                   width={1920}
                   height={1080}
-                  className="flex justify-center border-2 border-gray-500 items-center rounded-full h-16 w-16 lg:w-20 lg:h-20 2xl:w-28 2xl:h-28"
+                  className="flex justify-center  border-gray-500 items-center rounded-full h-16 w-16 lg:w-24 lg:h-24 2xl:w-28 2xl:h-28"
                />
+               </div>
             ) : (
                <FotoUsuarioDeslogado />
             )}

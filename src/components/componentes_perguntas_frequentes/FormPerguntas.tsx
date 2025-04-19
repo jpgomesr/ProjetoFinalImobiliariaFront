@@ -7,6 +7,7 @@ import { enviarPergunta } from "@/app/suporte/action";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import InputPadrao from "@/components/InputPadrao";
 import TextAreaPadrao from "@/components/TextAreaPadrao";
+import { useSession } from "next-auth/react";
 
 const FormPerguntas = () => {
    const [opcaoSelecionada, setOpcaoSelecionada] =
@@ -15,6 +16,8 @@ const FormPerguntas = () => {
    const [email, setEmail] = useState("");
    const [isLoading, setIsLoading] = useState(false);
    const { showNotification } = useNotification();
+   const { data: session } = useSession();
+
 
    const opcoes = [
       {
@@ -40,6 +43,7 @@ const FormPerguntas = () => {
             mensagem,
             email,
             titulo: "Pergunta Frequentes",
+            token: session?.accessToken || "",
          });
 
          if (resultado?.success) {

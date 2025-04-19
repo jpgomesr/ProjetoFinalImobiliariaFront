@@ -654,16 +654,7 @@ const Formulario = ({ imovel, token }: FormularioProps) => {
                               handleInputChange("cep");
                            }}
                         />
-                        <InputPadrao
-                           htmlFor="bairro"
-                           label="Bairro"
-                           placeholder="Digite o bairro"
-                           type="text"
-                           {...register("bairro")}
-                           mensagemErro={errors.bairro?.message}
-                           onChange={() => handleInputChange("bairro")}
-                           disabled={camposDesabilitados.bairroDesabilitado}
-                        />
+                       
                         <InputPadrao
                            htmlFor="estado"
                            label="Estado"
@@ -683,6 +674,16 @@ const Formulario = ({ imovel, token }: FormularioProps) => {
                            mensagemErro={errors.cidade?.message}
                            onChange={() => handleInputChange("cidade")}
                            disabled={camposDesabilitados.cidadeDesabilitada}
+                        />
+                         <InputPadrao
+                           htmlFor="bairro"
+                           label="Bairro"
+                           placeholder="Digite o bairro"
+                           type="text"
+                           {...register("bairro")}
+                           mensagemErro={errors.bairro?.message}
+                           onChange={() => handleInputChange("bairro")}
+                           disabled={camposDesabilitados.bairroDesabilitado}
                         />
                         <InputPadrao
                            htmlFor="rua"
