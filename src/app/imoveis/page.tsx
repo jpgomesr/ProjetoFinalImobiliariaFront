@@ -8,6 +8,7 @@ import { getServerSession } from "next-auth";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 import FiltroList from "@/components/componetes_filtro/FiltroList";
 import { opcoesSort } from "@/data/opcoesSort";
+import ModalComparacaoImoveis from "@/components/pop-up/ModalComparacaoImoveis";
 interface PageProps {
    searchParams: Promise<{
       precoMinimo?: string;
@@ -99,7 +100,13 @@ const Page = async ({ searchParams }: PageProps) => {
                   quantidadeElementos={quantidadeElementos}
                   view={view}
                />
+               <ModalComparacaoImoveis 
+               isOpen={true}
+               imoveisIds={[1,2,3]}
+               />
+               
             </FundoBrancoPadrao>
+            
          </SubLayoutPaginasCRUD>
       </Layout>
    );
