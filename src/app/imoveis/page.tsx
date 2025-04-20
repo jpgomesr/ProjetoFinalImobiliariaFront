@@ -100,10 +100,6 @@ const Page = async ({ searchParams }: PageProps) => {
                   quantidadeElementos={quantidadeElementos}
                   view={view}
                />
-               <ModalComparacaoImoveis 
-               isOpen={true}
-               imoveisIds={[1,2,3]}
-               />
                
             </FundoBrancoPadrao>
             
