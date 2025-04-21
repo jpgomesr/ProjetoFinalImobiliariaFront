@@ -6,6 +6,7 @@ import FuncoesHeader from "./FuncoesHeader";
 import HamburguerButton from "./HamburguerButton";
 import PerfilDropdown from "./PerfilDropdown";
 import Notificacao from "@/components/notificacao/Notificacao";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import {
    User,
    MessageCircleQuestion,
@@ -18,9 +19,10 @@ interface HeaderVermelhoProps {
    id?: string;
    foto?: string | null;
    nome?: string;
+   t?: (key: string) => string;
 }
 
-const HeaderVermelho = ({ role, id, foto, nome }: HeaderVermelhoProps) => {
+const HeaderVermelho = ({ role, id, foto, nome, t }: HeaderVermelhoProps) => {
    return (
       <div
          className="bg-havprincipal px-6 py-1
@@ -38,31 +40,30 @@ const HeaderVermelho = ({ role, id, foto, nome }: HeaderVermelhoProps) => {
             </Link>
             <Link href={"/"} className="flex justify-center">
                <button className="hidden md:block text-white md:text-base 2xl:text-xl font-montserrat font-light">
-                  Página inicial
+               {t?.("navigation.home") || "Home"}
                </button>
             </Link>
             <Link href={"/sobre-nos"} className="flex justify-center">
                <button className="hidden md:block text-white md:text-base 2xl:text-xl font-montserrat font-light">
-                  Sobre nós
+               {t?.("navigation.about") || "Sobre Nós"}
                </button>
             </Link>
             <Link href={"/imoveis"} className="flex justify-center">
                <button className="hidden md:block text-white md:text-base 2xl:text-xl font-montserrat font-light">
-                  Imóveis
+               {t?.("navigation.properties") || "Imóveis"}
                </button>
             </Link>
-            {(role === Roles.USUARIO || role === Roles.CORRETOR) && (
-               <Link
-                  href={id ? `/historico-agendamentos/${id}` : "/api/auth/signin"}
-                  className="flex justify-center"
+            <Link
+               href={id ? `/historico-agendamentos/${id}` : "/api/auth/signin"}
+               className="flex justify-center"
             >
                <button className="hidden md:block text-white md:text-base 2xl:text-xl font-montserrat font-light">
-                  Agendamentos
+               {t?.("navigation.appointments") || "Agendamentos" }
                </button>
             </Link>
-            )}
          </div>
-         <div className="flex justify-center items-center gap-5  md:gap-7 lg:gap-10 2xl:gap-20">
+         <div className="flex justify-center items-center gap-5 md:gap-10 2xl:gap-20">
+            <LanguageSwitcher />
             <Notificacao />
             <Link href={id ? "/chat" : "/api/auth/signin"}>
                <button className="text-white">

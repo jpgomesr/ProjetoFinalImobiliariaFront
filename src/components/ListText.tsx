@@ -32,12 +32,14 @@ const ListText = (props: ListTextProps) => {
             <div
                className={
                   props.className == null
+
                      ? `${ "border-gray-300 border-2"
                        } rounded-md bg-white shadow-sm cursor-pointer h-full ${
                           aberto
                              ? "rounded-bl-none rounded-br-none border-b-0"
                              : null
                        }`
+
                      : props.className
                }
                onClick={() => setAberto(!aberto)}

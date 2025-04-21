@@ -1,9 +1,6 @@
-import React from "react";
-import { Trash } from "lucide-react";
-import FotoUsuarioDeslogado from "./FotoUsuarioDeslogado";
-import Image from "next/image";
-import Link from "next/link";
-import { obterNomeRole, Roles, RolesDisplay } from "@/models/Enum/Roles";
+"use client";
+import { useLanguage } from "@/context/LanguageContext";
+import CardUsuarioServer from "./CardUsuarioServer";
 
 interface CardUsuarioProps {
    id: number;
@@ -137,6 +134,8 @@ const CardUsuario = (props: CardUsuarioProps) => {
          </div>
       </div>
    );
+
+    
 };
 
 export default CardUsuario;
