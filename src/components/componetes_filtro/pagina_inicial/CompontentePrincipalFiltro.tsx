@@ -60,7 +60,7 @@ const CompontentePrincipalFiltro = ({
    const [cidade, setCidade] = useState<string>(initialCidade);
    const [bairro, setBairro] = useState<string>(initialBairro);
    const [tipoImovel, setTipoImovel] = useState<string>(initialTipoImovel);
-   const [termoBusca, setTermoBusca] = useState<string>("");
+   const [imovelDescTitulo, setimovelDescTitulo] = useState<string>("");
 
    // Estados de carregamento
    const [carregandoCidades, setCarregandoCidades] = useState(true);
@@ -224,7 +224,7 @@ const CompontentePrincipalFiltro = ({
       setTipoImovel("");
       setQuantidadeQuartos(null);
       setQuantidadeVagas(null);
-      setTermoBusca("");
+      setimovelDescTitulo("");
    }
 
    // Função para realizar a busca
@@ -246,7 +246,7 @@ const CompontentePrincipalFiltro = ({
       if (cidade) filtros.cidade = cidade;
       if (bairro) filtros.bairro = bairro;
       if (tipoImovel) filtros.tipoImovel = tipoImovel.toUpperCase();
-      if (termoBusca) filtros.termo = termoBusca;
+      if (imovelDescTitulo) filtros.imovelDescTitulo = imovelDescTitulo;
 
       // Se houver um callback de pesquisa externo, chame-o
       if (onSearch) {
@@ -302,8 +302,8 @@ const CompontentePrincipalFiltro = ({
                   className="ml-2 placeholder:text-mobilePadrao text-xs
                   md:p-1 w-full lg:p-2 lg:text-base focus:outline-none"
                   placeholder={t("property.filters.propertyDescription")}
-                  value={termoBusca}
-                  onChange={(e) => setTermoBusca(e.target.value)}
+                  value={imovelDescTitulo}
+                  onChange={(e) => setimovelDescTitulo(e.target.value)}
                />
             </div>
 

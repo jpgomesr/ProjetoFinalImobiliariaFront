@@ -82,10 +82,10 @@ const Formulario = ({usuario, token} : FormProps) => {
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const tiposDeUsuarios = [
-      { id: TipoUsuarioEnum.USUARIO, label: t("UserManagement.titleUser") },
-      { id: TipoUsuarioEnum.CORRETOR, label: t("UserManagement.titleBroker") },
-      { id: TipoUsuarioEnum.ADMINISTRADOR, label: t("UserManagement.titleAdmin") },
-      { id: TipoUsuarioEnum.EDITOR, label: t("UserManagement.titleEditor") },
+
+      { id: TipoUsuarioEnum.CORRETOR, label: "Corretor" },
+      { id: TipoUsuarioEnum.ADMINISTRADOR, label: "Administrador" },
+      { id: TipoUsuarioEnum.EDITOR, label: "Editor" },
    ];
    const opcoesStatus = [
       { id: "Ativo", label: t("UserManagement.buttonActive") },
@@ -216,47 +216,59 @@ const Formulario = ({usuario, token} : FormProps) => {
                {...register("telefone")}
                mensagemErro={errors.telefone?.message}
             />
-
-            <TextAreaPadrao
-               htmlFor="descricao"
-               label={t("property.description")}
-               {...register("descricao")}
-               mensagemErro={errors.descricao?.message}
-            />
-             <div className="flex flex-col">
-               <Controller
-                  name="tipoUsuario"
-                  control={control}
-                  render={({ field }) => (
-                     <List
-                        title={t("UserManagement.role")}
-                        opcoes={tiposDeUsuarios}
-                        mudandoValor={field.onChange}
-                        placeholder={t("UserManagement.role")}
-                        bordaPreta
-                        value={field.value || undefined}
-                     />
-                  )}
-               />
-            </div>
-
-            <div className="flex flex-col">
-               <Controller
-                  name="ativo"
-                  control={control}
-                  render={({ field }) => (
-                     <List
-                        title={t("UserManagement.status")}
-                        opcoes={opcoesStatus}
-                        mudandoValor={field.onChange}
-                        placeholder={t("UserManagement.buttonActive")}
-                        bordaPreta
-                        value={field.value}
-                     />
-                  )}
-               />
-            </div>
-
+         </div>
+         <InputPadrao
+            htmlFor="senha"
+            label="Senha"
+            type="password"
+            placeholder="Ex: 123C@31s$"
+            {...register("senha")}
+            mensagemErro={errors.senha?.message}
+            disabled={!alterarSenha}
+         />
+         <InputPadrao
+            htmlFor="confirmaSenha"
+            label="Confirmar senha"
+            type="password"
+            placeholder="Digite a senha novamente"
+            {...register("confirmaSenha")}
+            mensagemErro={errors.confirmaSenha?.message}
+            disabled={!alterarSenha}
+         />
+         <InputPadrao
+            htmlFor="telefone"
+            label="Telefone"
+            type="text"
+            placeholder="Ex: 47912312121"
+            {...register("telefone")}
+            mensagemErro={errors.telefone?.message}
+         />
+         <TextAreaPadrao
+            htmlFor="descricao"
+            label="Descricao"
+            {...register("descricao")}
+            mensagemErro={errors.descricao?.message}
+         />
+         {usuario.role !== TipoUsuarioEnum.USUARIO && (
+            <>
+               <div className="flex flex-col">
+                  <Controller
+                     name="tipoUsuario"
+               control={control}
+               render={({ field }) => (
+                  <List
+                     title="Tipo usuario"
+                     opcoes={tiposDeUsuarios}
+                     mudandoValor={field.onChange}
+                     placeholder="Tipo usuario"
+                     value={field.value || undefined}
+                  />
+               )}
+                  />
+               </div>
+            </>
+         )}
+         <div className="flex flex-col">
             <Controller
              name="imagemPerfil"
              control={control}

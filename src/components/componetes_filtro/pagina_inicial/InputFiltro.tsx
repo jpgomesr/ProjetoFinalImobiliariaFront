@@ -12,7 +12,7 @@ const InputFiltro = (props: inputFiltroProps) => {
       <input
          type={props.tipo}
          placeholder={props.placeholder}
-         className={`w-full`}
+         className={`w-full no-spinner`}
          value={props.valor}
          onChange={(e) => props.onChange(e.target.value)}
       />

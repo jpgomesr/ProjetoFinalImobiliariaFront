@@ -8,6 +8,7 @@ import { getServerSession } from "next-auth";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 import FiltroList from "@/components/componetes_filtro/FiltroList";
 import { opcoesSort } from "@/data/opcoesSort";
+import ModalComparacaoImoveis from "@/components/pop-up/ModalComparacaoImoveis";
 interface PageProps {
    searchParams: Promise<{
       precoMinimo?: string;
@@ -20,6 +21,7 @@ interface PageProps {
       bairro?: string;
       tipoImovel?: string;
       finalidade?: string;
+      imovelDescTitulo?: string;
       view?: string;
       sort?: string;
    }>;
@@ -40,6 +42,7 @@ const Page = async ({ searchParams }: PageProps) => {
       tipoImovel: parametrosResolvidos.tipoImovel ?? "",
       finalidade: parametrosResolvidos.finalidade ?? "",
       sort: parametrosResolvidos.sort ?? "",
+      imovelDescTitulo: parametrosResolvidos.imovelDescTitulo ?? "",
    };
    console.log(parametrosBusca)
    const view = parametrosResolvidos.view ?? "cards";
@@ -57,6 +60,7 @@ const Page = async ({ searchParams }: PageProps) => {
          tipoResidencia: parametrosBusca.tipoImovel,
          finalidade: parametrosBusca.finalidade,
          sort: parametrosBusca.sort,
+         imovelDescTitulo: parametrosBusca.imovelDescTitulo,
          revalidate: 30,
       });
    return (
@@ -73,6 +77,7 @@ const Page = async ({ searchParams }: PageProps) => {
                metrosQuadradosMaximo={parametrosBusca.metrosQuadradosMaximo}
                metrosQuadradosMinimo={parametrosBusca.metrosQuadradosMinimo}
                tipoImovel={parametrosBusca.tipoImovel}
+               imovelDescTitulo={parametrosBusca.imovelDescTitulo}
                />
                <div className="flex flex-col sm:flex-row justify-between items-center lg:my-4">
                   <p className="text-sm">
@@ -95,7 +100,9 @@ const Page = async ({ searchParams }: PageProps) => {
                   quantidadeElementos={quantidadeElementos}
                   view={view}
                />
+               
             </FundoBrancoPadrao>
+            
          </SubLayoutPaginasCRUD>
       </Layout>
    );
