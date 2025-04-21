@@ -5,6 +5,7 @@ export default class ModelProprietarioListagem {
     cpf : string;
     email : string;
     imagemUrl: string;
+    ativo : boolean;
  
  
     constructor(
@@ -13,7 +14,8 @@ export default class ModelProprietarioListagem {
         telefone : string,
         cpf : string,
         email : string,
-        imagemUrl: string
+        imagemUrl: string,
+        ativo : boolean
     ) {
        this.id = id;
        this.nome = nome;
@@ -21,6 +23,7 @@ export default class ModelProprietarioListagem {
        this.cpf = cpf;
        this.email = email;
        this.imagemUrl = imagemUrl;
+       this.ativo = ativo;
     }
  }
  

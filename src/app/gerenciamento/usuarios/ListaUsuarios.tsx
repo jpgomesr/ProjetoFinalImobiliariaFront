@@ -86,7 +86,9 @@ export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtu
                key={usuario.id}
                id={usuario.id}
                imagem={usuario.foto}
+               ativo={usuario.ativo}
                deletarUsuario={exibirModal}
+               restaurarUsuario={() => restaurarUsuario(usuario.id, token)}
                linkEdicao={`/gerenciamento/usuarios/edicao/${usuario.id}`}
             />
             ))}

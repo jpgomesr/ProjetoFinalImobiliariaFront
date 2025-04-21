@@ -77,6 +77,12 @@ const ProprietariosListagem = ({
       }, token);
       router.refresh();
    };
+   const restaurarUsuario = async (id: number) => {
+      await useFetchComAutorizacaoComToken(`${BASE_URL}/proprietarios/restaurar/${id}`, {
+         method: "POST",
+      }, token);
+      router.refresh();
+   };
 
    const exibirModal = (id: number) => {
       setIdItemParaDeletar(id);
@@ -98,7 +104,7 @@ const ProprietariosListagem = ({
       setProprietarios(proprietariosIniciais);
    }, [proprietariosIniciais]);
 
-   return (
+   return (          
       <>
          <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-[1fr_10fr_1fr] xl:grid-cols-[1fr_10fr_1fr]">
             <List
@@ -128,6 +134,8 @@ const ProprietariosListagem = ({
          <div className="grid grid-cols-1 gap-4 w-full md:mt-2 lg:place-content-center lg:self-center lg:grid-cols-2 lg:mt-4 2xl:mt-6">
             {proprietarios.map((proprietario) => (
                <CardUsuario
+                  ativo={proprietario.ativo}
+                  restaurarUsuario={() => restaurarUsuario(proprietario.id)}
                   labelPrimeiroValor="E-mail:"
                   primeiroValor={proprietario.email}
                   labelSegundoValor={t("perfil.name") + ":"}

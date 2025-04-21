@@ -4,7 +4,7 @@ import CardUsuarioServer from "./CardUsuarioServer";
 import { obterNomeRole, RolesDisplay } from "@/models/Enum/Roles";
 import { Roles } from "@/models/Enum/Roles";
 import FotoUsuarioDeslogado from "./FotoUsuarioDeslogado";
-import { Trash } from "lucide-react";
+import { RotateCcw, Trash } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
    
@@ -21,7 +21,9 @@ interface CardUsuarioProps {
    quartoValor: string | { [key: string]: string } | any;
    imagem?: string;
    linkEdicao: string;
+   ativo : boolean;
    deletarUsuario: (id: number) => void;
+   restaurarUsuario: (id: number) => void;
 }
 
 const CardUsuario = (props: CardUsuarioProps) => {
@@ -74,12 +76,21 @@ const CardUsuario = (props: CardUsuarioProps) => {
          lg:py-4 lg:px-4 lg:rounded-lg
          2xl:rounded-xl"
       >
-         <div
-            className="absolute top-[-10px] right-[-10px] bg-havprincipal  p-1 rounded-full cursor-pointer"
-            onClick={() => props.deletarUsuario(props.id)}
+         {props.ativo ? (
+            <div
+               className="absolute top-[-10px] right-[-10px] bg-havprincipal  p-1 rounded-full cursor-pointer"
+               onClick={() => props.deletarUsuario(props.id)}
          >
             <Trash className="text-white" />
          </div>
+         ) : (
+            <div
+               className="absolute top-[-10px] right-[-10px] bg-havprincipal  p-1 rounded-full cursor-pointer"
+               onClick={() => props.restaurarUsuario(props.id)}
+         >
+            <RotateCcw className="text-white" />
+         </div>   
+         )}
 
          <div className="flex justify-center items-center">
             {props.imagem ? (
