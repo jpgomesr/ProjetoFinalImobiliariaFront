@@ -13,6 +13,8 @@ import CorretoresIcon from "@/svg/icons/header/CorretoresIcon";
 import RelatoriosIcon from "@/svg/icons/header/RelatoriosIcon";
 import Link from "next/link";
 import { Roles } from "@/models/Enum/Roles";
+import { MessageSquareQuoteIcon } from "lucide-react";
+import { MailQuestionIcon } from "lucide-react";
 
 interface HamburguerProps {
    role?: Roles;
@@ -82,6 +84,16 @@ const Hamburguer = (props: HamburguerProps) => {
                route: "/",
                icone: <RelatoriosIcon className="h-5" />,
             },
+            {
+               label: "Responder Perguntas",
+               route: "/responder-perguntas",
+               icone: <MailQuestionIcon className="h-5 text-white" />,
+            },
+            {
+               label: "Perguntas Respondidas",
+               route: "/perguntas-respondidas",
+               icone: <MessageSquareQuoteIcon className="h-5 text-white" />,
+            },
          ],
       },
       {
@@ -97,6 +109,16 @@ const Hamburguer = (props: HamburguerProps) => {
                label: "Proprietários",
                route: "/gerenciamento/proprietarios",
                icone: <CorretoresIcon className="h-5" />,
+            },
+            {
+               label: "Responder Perguntas",
+               route: "/responder-perguntas",
+               icone: <MailQuestionIcon className="h-5 text-white" />,
+            },
+            {
+               label: "Perguntas Respondidas",
+               route: "/perguntas-respondidas",
+               icone: <MessageSquareQuoteIcon className="h-5 text-white" />,
             },
          ],
       },
