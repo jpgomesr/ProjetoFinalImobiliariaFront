@@ -19,7 +19,7 @@ const HamburguerButton = ({ role }: HamburguerButtonProps) => {
    };
 
    return (
-      <div className="cursor-pointer md:hidden" onClick={handleHamburguer}>
+      <div className="cursor-pointer 2md:hidden" onClick={handleHamburguer}>
          {!isHamburguerVisible ? (
             <MenuHamburguer width={23} height={15} />
          ) : (

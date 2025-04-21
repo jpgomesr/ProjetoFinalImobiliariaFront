@@ -1,6 +1,13 @@
 "use client";
 import { useLanguage } from "@/context/LanguageContext";
 import CardUsuarioServer from "./CardUsuarioServer";
+import { obterNomeRole, RolesDisplay } from "@/models/Enum/Roles";
+import { Roles } from "@/models/Enum/Roles";
+import FotoUsuarioDeslogado from "./FotoUsuarioDeslogado";
+import { Trash } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+   
 
 interface CardUsuarioProps {
    id: number;

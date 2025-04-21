@@ -216,7 +216,6 @@ const Formulario = ({usuario, token} : FormProps) => {
                {...register("telefone")}
                mensagemErro={errors.telefone?.message}
             />
-         </div>
          <InputPadrao
             htmlFor="senha"
             label="Senha"
@@ -268,7 +267,7 @@ const Formulario = ({usuario, token} : FormProps) => {
                </div>
             </>
          )}
-         <div className="flex flex-col">
+         <div className="flex justify-center gap-4">
             <Controller
              name="imagemPerfil"
              control={control}
@@ -279,6 +278,7 @@ const Formulario = ({usuario, token} : FormProps) => {
                   />
                )}
             />
+         </div>
                 <div className="flex justify-center gap-4">
                <Link href="/gerenciamento/usuarios">
                   <BotaoPadrao type="button" texto={t("common.cancel")} />

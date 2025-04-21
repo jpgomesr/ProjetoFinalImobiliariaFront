@@ -22,10 +22,10 @@ export default function LanguageSwitcher() {
       <div className="relative">
          <button
             onClick={() => setIsOpen(!isOpen)}
-            className="flex items-center gap-2 text-white hover:bg-white/10 px-3 py-2 rounded-md"
+            className="flex items-center gap-2 text-white hover:bg-white/10  rounded-md"
          >
             {currentLanguage?.flag}
-            <span className="text-sm font-medium">{currentLanguage?.name}</span>
+            <span className="text-sm font-medium hidden xl:block">{currentLanguage?.name}</span>
          </button>
 
          {isOpen && (
@@ -40,7 +40,7 @@ export default function LanguageSwitcher() {
                      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                      {lang.flag}
-                     <span>{lang.name}</span>
+                     <span className="">{lang.name}</span>
                   </button>
                ))}
             </div>
