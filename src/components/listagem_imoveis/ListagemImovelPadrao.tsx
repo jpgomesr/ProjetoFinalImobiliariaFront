@@ -81,7 +81,7 @@ export default function ListagemImovelPadrao({
             {imoveis.map((imovel) => (
                <div
                   key={imovel.id}
-                  className={`transition-opacity duration-200 cursor-pointer ${
+                  className={`transition-opacity duration-200 cursor-pointer w-full place-items-center ${
                      comparando && !imoveisSelecionados.includes(imovel.id)
                         ? "opacity-30"
                         : ""

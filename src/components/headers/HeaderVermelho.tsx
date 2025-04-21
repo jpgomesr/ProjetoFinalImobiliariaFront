@@ -53,14 +53,16 @@ const HeaderVermelho = ({ role, id, foto, nome, t }: HeaderVermelhoProps) => {
                {t?.("navigation.properties") || "Imóveis"}
                </button>
             </Link>
-            <Link
-               href={id ? `/historico-agendamentos/${id}` : "/api/auth/signin"}
-               className="hidden 2md:flex justify-center"
+            {(role === Roles.USUARIO || role === Roles.CORRETOR) && (
+               <Link
+                  href={id ? `/historico-agendamentos/${id}` : "/api/auth/signin"}
+                  className="hidden 2md:flex justify-center"
             >
                <button className="text-white md:text-base 2xl:text-xl font-montserrat font-light">
                {t?.("navigation.appointments") || "Agendamentos" }
                </button>
             </Link>
+            )}
          </div>
          <div className="flex justify-center items-center gap-5 md:gap-7 2xl:gap-16">
             <LanguageSwitcher />
