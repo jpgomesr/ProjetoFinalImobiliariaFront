@@ -36,11 +36,7 @@ const ListText = (props: ListTextProps) => {
                           props.bordaPreta
                              ? "border-black border-[1px]"
                              : "border-gray-300 border-2"
-                       } rounded-md bg-white shadow-sm cursor-pointer h-full ${
-                          aberto
-                             ? "rounded-bl-none rounded-br-none border-b-0"
-                             : null
-                       }`
+                       } rounded-md bg-white shadow-sm cursor-pointer w-full`
                      : props.className
                }
                onClick={() => setAberto(!aberto)}
@@ -51,7 +47,7 @@ const ListText = (props: ListTextProps) => {
                   </p>
                )}
                <div
-                  className={`flex items-center justify-between px-2 py-1 gap-2 h-full  ${
+                  className={`flex items-center justify-between px-2 py-1 gap-2 ${
                      props.bordaPreta ? "border" : "border-2"
                   } border-transparent ${props.differentSize}`}
                >
@@ -66,7 +62,7 @@ const ListText = (props: ListTextProps) => {
                </div>
                {aberto && (
                   <div
-                     className={`absolute left-0 right-0 z-10 bg-white rounded-b-md shadow-md p-4 ${
+                     className={`bg-white rounded-b-md shadow-md p-4 ${
                         props.bordaPreta
                            ? "border-black border-[1px] border-t-0"
                            : "border-gray-300 border-2 border-t-0"

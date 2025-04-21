@@ -19,7 +19,7 @@ interface HeaderVermelhoProps {
    id?: string;
    foto?: string | null;
    nome?: string;
-   t: (key: string) => string;
+   t?: (key: string) => string;
 }
 
 const HeaderVermelho = ({ role, id, foto, nome, t }: HeaderVermelhoProps) => {
@@ -40,17 +40,17 @@ const HeaderVermelho = ({ role, id, foto, nome, t }: HeaderVermelhoProps) => {
             </Link>
             <Link href={"/"} className="flex justify-center">
                <button className="hidden md:block text-white md:text-base 2xl:text-xl font-montserrat font-light">
-               {t("navigation.home")}
+               {t?.("navigation.home") || "Home"}
                </button>
             </Link>
             <Link href={"/sobre-nos"} className="flex justify-center">
                <button className="hidden md:block text-white md:text-base 2xl:text-xl font-montserrat font-light">
-               {t("navigation.about")}
+               {t?.("navigation.about") || "Sobre Nós"}
                </button>
             </Link>
             <Link href={"/imoveis"} className="flex justify-center">
                <button className="hidden md:block text-white md:text-base 2xl:text-xl font-montserrat font-light">
-               {t("navigation.properties")}
+               {t?.("navigation.properties") || "Imóveis"}
                </button>
             </Link>
             <Link
@@ -58,7 +58,7 @@ const HeaderVermelho = ({ role, id, foto, nome, t }: HeaderVermelhoProps) => {
                className="flex justify-center"
             >
                <button className="hidden md:block text-white md:text-base 2xl:text-xl font-montserrat font-light">
-               {t("navigation.appointments")}
+               {t?.("navigation.appointments") || "Agendamentos" }
                </button>
             </Link>
          </div>
