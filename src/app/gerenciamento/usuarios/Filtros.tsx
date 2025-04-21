@@ -7,6 +7,7 @@ import Link from "next/link";
 import { PlusIcon, SearchIcon } from "lucide-react"; // Importe o ícone de lupa
 import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
 import { useState } from "react"; // Adicione o useState para gerenciar o estado temporário
+import { useLanguage } from "@/context/LanguageContext";
 
 interface FiltrosProps {
    status: string;
@@ -14,28 +15,26 @@ interface FiltrosProps {
    nomePesquisa: string;
 }
 
-const opcoesStatus = [
-   { id: "Ativo", label: "Ativo" },
-   { id: "Desativado", label: "Desativado" },
-];
-
-const tiposDeUsuarios = [
-   { id: TipoUsuarioEnum.USUARIO, label: "Usuário" },
-   { id: TipoUsuarioEnum.CORRETOR, label: "Corretor" },
-   { id: TipoUsuarioEnum.ADMINISTRADOR, label: "Administrador" },
-   { id: TipoUsuarioEnum.EDITOR, label: "Editor" },
-];
-
 export default function Filtros({ status, tipoUsuario, nomePesquisa }: FiltrosProps) {
    const router = useRouter();
+   const { t } = useLanguage();
    const [pesquisaTemporaria, setPesquisaTemporaria] = useState(nomePesquisa); // Estado temporário para o campo de pesquisa
 
-   const atualizarURL = (novosFiltros: Record<string, string>) => {
-      const params = new URLSearchParams({
-         status,
-         tipoUsuario,
-         nomePesquisa: pesquisaTemporaria, // Usa o valor temporário da pesquisa
-         ...novosFiltros,
+   const opcoesStatus = [
+      { id: "Ativo", label: t("UserManagement.buttonActive") },
+      { id: "Desativado", label: t("UserManagement.buttonDesactive") },
+   ];
+
+   const tiposDeUsuarios = [
+      { id: "USUARIO", label: t("UserManagement.titleUser") },
+      { id: "ADMINISTRADOR", label: "Administrador" },
+      { id: "EDITOR", label: "Editor" },
+   ];
+
+   const atualizarURL = (novosParametros: { [key: string]: string }) => {
+      const params = new URLSearchParams(window.location.search);
+      Object.entries(novosParametros).forEach(([key, value]) => {
+         params.set(key, value);
       });
       router.push(`/gerenciamento/usuarios?${params.toString()}`);
    };
@@ -49,31 +48,31 @@ export default function Filtros({ status, tipoUsuario, nomePesquisa }: FiltrosPr
          <List
             mudandoValor={(value) => atualizarURL({ status: value })}
             opcoes={opcoesStatus}
-            placeholder="Ativo"
+            placeholder={t("UserManagement.buttonActive")}
             value={status}
          />
             <InputPadrao
-               type="text"
-               search
-               handlePesquisa={handlePesquisa}
-               htmlFor="input-busca-nome"
-               onChange={(e) => setPesquisaTemporaria(e.target.value)} // Atualiza o estado temporário
-               placeholder="Digite o nome que deseja pesquisar"
-               required={false}
-               value={pesquisaTemporaria} // Usa o estado temporário
-            />
+            type="text"
+            search
+            handlePesquisa={handlePesquisa}
+            htmlFor="input-busca-nome"
+            onChange={(e) => setPesquisaTemporaria(e.target.value)} // Atualiza o estado temporário
+            placeholder={t("UserManagement.placeholderSearch")}
+            required={false}
+            value={pesquisaTemporaria} // Usa o estado temporário
+         />
 
          <div className="flex h-full">
             <List
                opcoes={tiposDeUsuarios}
                mudandoValor={(value) => atualizarURL({ tipoUsuario: value })}
-               placeholder="USUARIO"
+               placeholder={t("UserManagement.titleUser")}
                value={tipoUsuario}
             />
          </div>
          <Link href="/gerenciamento/usuarios/cadastro">
             <button className="flex items-center justify-center bg-havprincipal rounded-md text-white h-full text-sm py-1 px-2 lg:text-base lg:py-2 lg:px-3 2xl:py-3 2xl:px-4">
-               Adicionar <PlusIcon className="w-4" />
+            {t("UserManagement.buttonAddUser")} <PlusIcon className="w-4" />
             </button>
          </Link>
       </div>

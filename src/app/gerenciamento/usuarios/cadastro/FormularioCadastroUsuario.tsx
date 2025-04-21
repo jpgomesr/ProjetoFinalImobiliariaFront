@@ -20,7 +20,7 @@ import { useNotification } from "@/context/NotificationContext";
 import ModelUsuario from "@/models/ModelUsuario";
 import { salvarUsuario } from "./action";
 import Link from "next/link";
-
+import { useLanguage } from "@/context/LanguageContext";
 interface FormularioCadastroUsuarioProps {
    token: string;
 }
@@ -29,6 +29,7 @@ const FormularioCadastroUsuario = (props: FormularioCadastroUsuarioProps) => {
    const router = useRouter();
    const { showNotification } = useNotification();
 
+   const { t } = useLanguage();
    const usuarioValidator = createUsuarioValidator();
    type usuarioValidatorSchema = z.infer<typeof usuarioValidator>;
 
@@ -118,7 +119,7 @@ const FormularioCadastroUsuario = (props: FormularioCadastroUsuarioProps) => {
 
    return (
       <FundoBrancoPadrao
-         titulo="Cadastro de usuário"
+      titulo="UserManagement.title"
          className={`w-full ${isSubmitting ? "opacity-40" : "opacity-100"}`}
       >
          <form
@@ -126,18 +127,18 @@ const FormularioCadastroUsuario = (props: FormularioCadastroUsuarioProps) => {
             className="flex flex-col gap-2 md:gap-3 lg:gap-4 xl:gap-5 2xl:gap-6"
          >
             <InputPadrao
-               htmlFor="nomeCompleto"
-               label="Nome completo"
+               htmlFor="nomeCompleto" 
+               label={t("perfil.name")}
                type="text"
-               placeholder="Ex: Carlos"
+               placeholder="Ex: João Silva"
                {...register("nomeCompleto")}
                mensagemErro={errors.nomeCompleto?.message}
             />
             <InputPadrao
                htmlFor="email"
-               label="E-mail"
+                  label={t("perfil.email")}
                type="email"
-               placeholder="Ex: Carlos@gmail.com"
+               placeholder="Ex: joao.silva@example.com"
                {...register("email")}
                mensagemErro={errors.email?.message}
             />
@@ -159,7 +160,7 @@ const FormularioCadastroUsuario = (props: FormularioCadastroUsuarioProps) => {
             />
             <InputPadrao
                htmlFor="telefone"
-               label="Telefone"
+               label={t("perfil.phone")}
                type="text"
                placeholder="Ex: 47912312121"
                {...register("telefone")}
@@ -167,7 +168,7 @@ const FormularioCadastroUsuario = (props: FormularioCadastroUsuarioProps) => {
             />
             <TextAreaPadrao
                htmlFor="descricao"
-               label="Descricao"
+               label={t("property.description")}
                {...register("descricao")}
                mensagemErro={errors.descricao?.message}
             />
@@ -177,10 +178,10 @@ const FormularioCadastroUsuario = (props: FormularioCadastroUsuarioProps) => {
                   control={control}
                   render={({ field }) => (
                      <List
-                        title="Tipo usuario"
+                     title={t("UserManagement.role")} 
                         opcoes={tiposDeUsuarios}
                         mudandoValor={field.onChange}
-                        placeholder="Tipo usuario"
+                        placeholder={t("UserManagement.titleUser")}
                      />
                   )}
                />
@@ -191,10 +192,10 @@ const FormularioCadastroUsuario = (props: FormularioCadastroUsuarioProps) => {
                   control={control}
                   render={({ field }) => (
                      <List
-                        title="status"
+                     title={t("UserManagement.status")}
                         opcoes={opcoesStatus}
                         mudandoValor={field.onChange}
-                        placeholder="Ativo"
+                        placeholder={t("UserManagement.buttonActive")}
                      />
                   )}
                />
@@ -211,13 +212,13 @@ const FormularioCadastroUsuario = (props: FormularioCadastroUsuarioProps) => {
             <div className="flex justify-center gap-2">
                <Link href="/gerenciamento/usuarios">
                <BotaoPadrao
-                  texto="Voltar"
-                  disabled={isSubmitting}
-                  type="button"
-               />
+                     texto={t("common.cancel")}
+                     disabled={isSubmitting}
+                     type="button"
+                  />
                </Link>
                <BotaoPadrao
-                  texto="Concluir"
+                  texto={t("common.save")}
                   disabled={isSubmitting}
                   type="submit"
                />

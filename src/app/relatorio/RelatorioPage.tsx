@@ -21,4 +21,4 @@ export default function RelatorioPage({ initialData, graficosData }: RelatorioPa
       />
     </FundoBrancoPadrao>
   );
-} 
+}
