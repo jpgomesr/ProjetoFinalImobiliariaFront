@@ -28,6 +28,7 @@ interface PageProps {
       sort?: string;
       ativo?: string;
       imovelDescTitulo?: string;
+      numeroPaginaAtual?: string;
    }>;
 }
 
@@ -60,6 +61,7 @@ const Page = async ({ searchParams }: PageProps) => {
       sort: parametrosResolvidos.sort ?? "",
       ativo: parametrosResolvidos.ativo ?? "",
       imovelDescTitulo: parametrosResolvidos.imovelDescTitulo ?? "",
+      numeroPaginaAtual: parametrosResolvidos.numeroPaginaAtual ?? "0",
    };
 
    const { imoveis, pageableInfo, quantidadeElementos } =
@@ -78,6 +80,7 @@ const Page = async ({ searchParams }: PageProps) => {
          ativo: params.ativo === "" ? undefined : params.ativo,
          cache: "no-store",
          imovelDescTitulo: params.imovelDescTitulo,
+         paginaAtual: params.numeroPaginaAtual,
          buscarIndependenteAtivo:
             params.ativo === "" ||
             params.ativo === undefined ||

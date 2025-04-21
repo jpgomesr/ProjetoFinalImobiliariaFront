@@ -15,6 +15,7 @@ interface ListarImoveisProps {
    pageableInfo: {
       totalPaginas: number;
       ultima: boolean;
+      paginaAtual: number;
    };
 }
 
@@ -27,6 +28,12 @@ const ListarImoveisSession = ({
    const [imovelParaExcluir, setImovelParaExcluir] = useState<number | null>(
       null
    );
+
+   const mudarPagina = (pagina: number) => {
+      const params = new URLSearchParams(window.location.search);
+      params.set("numeroPaginaAtual", pagina.toString());
+      router.push(`/gerenciamento/imoveis?${params.toString()}`);
+   };
    const [itemDeletadoId, setItemDeletadoId] = useState<number | null>(null);
    const router = useRouter();
 
@@ -99,8 +106,8 @@ const ListarImoveisSession = ({
          <ComponentePaginacao
             totalPaginas={pageableInfo.totalPaginas}
             ultimaPagina={pageableInfo.ultima}
-            setPaginaAtual={setPaginaAtual}
-            paginaAtual={paginaAtual}
+            setPaginaAtual={mudarPagina}
+            paginaAtual={pageableInfo.paginaAtual}
             maximoPaginasVisiveis={5}
          />
 

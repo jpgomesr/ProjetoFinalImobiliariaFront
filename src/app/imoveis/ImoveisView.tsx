@@ -27,6 +27,7 @@ interface ImoveisViewProps {
    pageableInfo: {
       totalPaginas: number;
       ultima: boolean;
+      paginaAtual: number;
    };
    quantidadeElementos: number;
    view?: string;

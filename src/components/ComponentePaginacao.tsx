@@ -23,6 +23,7 @@ const ComponentePaginacao = (props: ComponentePaginacaoProps) => {
    if (totalPaginas <= 1) {
       return null;
    }
+   console.log(paginaAtual);
 
    const [paginasVisiveis, setPaginasVisiveis] = useState<(number | string)[]>(
       []
