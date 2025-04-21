@@ -267,7 +267,7 @@ const Formulario = ({usuario, token} : FormProps) => {
                </div>
             </>
          )}
-         <div className="flex justify-center gap-4">
+         <div className="flex  gap-4">
             <Controller
              name="imagemPerfil"
              control={control}

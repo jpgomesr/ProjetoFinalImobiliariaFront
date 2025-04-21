@@ -44,7 +44,7 @@ export default function Filtros({ status, tipoUsuario, nomePesquisa }: FiltrosPr
    };
 
    return (
-      <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-[1fr_5fr_1fr_1fr] xl:grid-cols-[1fr_6fr_1fr_1fr]">
+      <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-[1fr_9fr_1fr_1fr] xl:grid-cols-[1fr_9fr_1fr_1fr]">
          <List
             mudandoValor={(value) => atualizarURL({ status: value })}
             opcoes={opcoesStatus}

@@ -16,7 +16,7 @@
     },
     "navigation": {
       "home": "Home",
-      "about": "About",
+      "about": "About", 
       "properties": "Properties",
       "contact": "Contact",
       "appointments": "Appointments"
@@ -45,6 +45,7 @@
         "garage": "Number of Parking Spaces",
         "search": "Search",
         "clear": "Clear Filters",
+        "finality": "Finality",
         "propertyDescription": "Property Description",
         "city": "City",
         "neighborhood": "Neighborhood",
@@ -208,7 +209,8 @@
       "form8": "House/Building Number",
       "form9": "Profile picture",
       "role": "Role",
-      "status": "Status"
+      "status": "Status",
+      "excludeUser": "Are you sure you want to delete this user?"
     },
     "PropertyManagement":{
       "title": "Property Manager",

@@ -42,7 +42,7 @@ const FiltroList = (props: FiltrosProps) => {
       <List
          opcoes={props.opcoes}
          value={valorMomento || "todos"}
-         buttonHolder={props.buttonHolder || t("Finalidade")}
+         buttonHolder={props.buttonHolder || t("property.filters.finality")}
          mudandoValor={(value) => {
             setValorMomento(value);
             atualizarURL(value);

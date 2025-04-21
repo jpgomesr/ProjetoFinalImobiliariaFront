@@ -43,6 +43,7 @@
           "minArea": "Área Mínima",
           "maxArea": "Área Máxima",
           "city": "Ciudad",
+          "finality": "Finalidad",
           "neighborhood": "Barrio",
           "propertyType": "Tipo de Propiedad",
           "propertyDescription": "Descripción de la Propiedad",
@@ -204,7 +205,8 @@
        "form8": "Número de Casa/Edificio",
        "form9": "Foto de perfil",
        "role": "Función",
-       "status": "Estado"
+       "status": "Estado",
+       "excludeUser": "¿Está seguro de que desea eliminar este usuario?"
     },
     "PropertyManagement":{
        "title": "Gestor de Propiedades",
