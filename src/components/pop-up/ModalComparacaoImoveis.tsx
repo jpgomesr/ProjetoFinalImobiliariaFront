@@ -44,7 +44,7 @@ const ModalComparacaoImoveis: React.FC<ModalComparacaoImoveisProps> = ({
 
       const valores = imoveis.map((imovel) => imovel[propriedade]);
       if (typeof valores[0] === "number") {
-         return Math.max(...(valores as number[]));
+         return Math.min(...(valores as number[]));
       }
       return null;
    };
