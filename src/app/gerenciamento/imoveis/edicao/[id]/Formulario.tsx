@@ -130,7 +130,8 @@ const Formulario = ({ imovel, token }: FormularioProps) => {
       setValue("banner", imovel.banner || false);
       setValue("tipoBanner", imovel.tipoBanner || tipoBanner[0].id);
       setValue("destaque", imovel.permitirDestaque || false);
-      setValue("visibilidade", imovel.habilitarVisibilidade || false);
+      setValue("visibilidade", imovel.visibilidade || false);
+      setValue("ativo", imovel.ativo || false);
       setValue("academia", imovel.academia || false);
       setValue("cep", Number(imovel.endereco.cep));
       setValue("bairro", imovel.endereco.bairro);
@@ -476,7 +477,6 @@ const Formulario = ({ imovel, token }: FormularioProps) => {
                                     mudandoValor={(value) =>
                                        field.onChange(value)
                                     }
-                                    
                                     divClassName="justify-end"
                                     differentSize="h-8"
                                  />
@@ -539,7 +539,6 @@ const Formulario = ({ imovel, token }: FormularioProps) => {
                      render={({ field }) => (
                         <List
                            opcoes={objImovel}
-                           
                            title="Objetivo"
                            value={field.value}
                            mudandoValor={(value) => field.onChange(value)}
@@ -554,7 +553,6 @@ const Formulario = ({ imovel, token }: FormularioProps) => {
                      render={({ field }) => (
                         <List
                            opcoes={tiposDeImovel}
-                           
                            title="Tipo"
                            value={field.value}
                            mudandoValor={(value) => field.onChange(value)}
@@ -656,16 +654,7 @@ const Formulario = ({ imovel, token }: FormularioProps) => {
                               handleInputChange("cep");
                            }}
                         />
-                        <InputPadrao
-                           htmlFor="bairro"
-                           label="Bairro"
-                           placeholder="Digite o bairro"
-                           type="text"
-                           {...register("bairro")}
-                           mensagemErro={errors.bairro?.message}
-                           onChange={() => handleInputChange("bairro")}
-                           disabled={camposDesabilitados.bairroDesabilitado}
-                        />
+                       
                         <InputPadrao
                            htmlFor="estado"
                            label="Estado"
@@ -685,6 +674,16 @@ const Formulario = ({ imovel, token }: FormularioProps) => {
                            mensagemErro={errors.cidade?.message}
                            onChange={() => handleInputChange("cidade")}
                            disabled={camposDesabilitados.cidadeDesabilitada}
+                        />
+                         <InputPadrao
+                           htmlFor="bairro"
+                           label="Bairro"
+                           placeholder="Digite o bairro"
+                           type="text"
+                           {...register("bairro")}
+                           mensagemErro={errors.bairro?.message}
+                           onChange={() => handleInputChange("bairro")}
+                           disabled={camposDesabilitados.bairroDesabilitado}
                         />
                         <InputPadrao
                            htmlFor="rua"
@@ -712,7 +711,7 @@ const Formulario = ({ imovel, token }: FormularioProps) => {
                            />
                         </div>
                         <div className="w-full">
-                           {watch("tipo") === "apartamento" && (
+                           {watch("tipo") === "APARTAMENTO" && (
                               <InputPadrao
                                  htmlFor="numero_apartamento"
                                  label={`Número do apartamento`}

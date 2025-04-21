@@ -7,6 +7,10 @@ import ModalCofirmacao from "../ComponentesCrud/ModalConfirmacao";
 import { Roles } from "@/models/Enum/Roles";
 import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
 import ModalHorariosAgendamento from "../agendamentos/ModalHorariosAgendamento";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import ModelExibirCorretor from "@/models/ModelExibirCorretor";
+import { MessageCircleMore } from "lucide-react";
 interface CardReservaProps {
    id: number;
    urlImagem: string;
@@ -55,6 +59,72 @@ export default function CardReserva({
       const agora = new Date();
       setAgendamentoPassado(dataHoraAgendamento < agora);
    }, [data, horario]);
+
+   const router = useRouter();
+   
+
+
+   const handleCreateChat = async () => {
+      
+      try {
+         const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+         let endpoint;
+         if(role === Roles.CORRETOR){
+             endpoint = `/chat/${corretor.id}/${usuario?.id}`;
+         }else{
+             endpoint = `/chat/${usuario?.id}/${corretor.id}`;
+         }
+         const headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+         };
+
+         // Tenta criar o chat primeiro
+         const response = await fetch(`${baseUrl}${endpoint}`, {
+            method: "POST",
+            headers,
+         });
+
+         let chatId;
+
+         // Se o chat já existe (código 422), busca o chat existente
+         if (response.status === 422) {
+            const chatResponse = await fetch(`${baseUrl}${endpoint}`, {
+               method: "GET",
+               headers,
+            });
+
+            if (!chatResponse.ok) {
+               throw new Error("Falha ao buscar chat existente");
+            }
+
+            const data = await chatResponse.json();
+            chatId = data.idChat;
+         } else if (!response.ok) {
+            throw new Error("Erro ao criar chat");
+         } else {
+            const data = await response.json();
+            chatId = data.idChat;
+         }
+
+         // Navegação simples e direta - resolver problemas de STOMP
+         // Vamos para a página de chat sem parâmetros primeiro, depois adicionamos
+         // o ID do chat como parte da URL após uma segunda navegação
+
+         // Usar replace em vez de push para evitar problemas de navegação com back button
+         router.replace("/chat");
+
+         // Aguardar um tempo maior para garantir que a página carregou completamente
+         // e a conexão STOMP foi estabelecida antes de adicionar o parâmetro
+         setTimeout(() => {
+            // Usar replace em vez de push para evitar problemas de histórico
+            router.replace(`/chat?chat=${chatId}`);
+         }, 500);
+      } catch (error) {
+         console.error("Erro na operação de chat:", error);
+         router.replace("/chat");
+      }
+   };
 
    const atualizarStatus = async (
       id: number,
@@ -220,6 +290,15 @@ export default function CardReserva({
                   <span className="font-semibold">Localização:</span>{" "}
                   {localizacao}, {endereco}
                </p>
+               {(status !== "CONCLUIDO" && status !== "CANCELADO") && (
+                  <button
+                     onClick={handleCreateChat}
+                     className="flex items-center gap-2 mt-2 text-havprincipal hover:text-[#662030] transition-colors duration-200"
+               >
+                  <MessageCircleMore className="w-5 h-5" />
+                  Entrar em contato
+               </button>
+               )}
             </div>
          </div>
 

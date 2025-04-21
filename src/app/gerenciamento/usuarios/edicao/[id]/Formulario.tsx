@@ -81,7 +81,6 @@ const Formulario = ({usuario, token} : FormProps) => {
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const tiposDeUsuarios = [
-      { id: TipoUsuarioEnum.USUARIO, label: "Usuário" },
       { id: TipoUsuarioEnum.CORRETOR, label: "Corretor" },
       { id: TipoUsuarioEnum.ADMINISTRADOR, label: "Administrador" },
       { id: TipoUsuarioEnum.EDITOR, label: "Editor" },
@@ -101,7 +100,7 @@ const Formulario = ({usuario, token} : FormProps) => {
          }
 
          setValue("nomeCompleto", usuario.nome);
-         setValue("descricao", usuario.descricao);
+         setValue("descricao", usuario.descricao || "");
          setValue("email", usuario.email);
          setValue("telefone", usuario.telefone);
          setValue("tipoUsuario", usuario.role);
@@ -246,9 +245,11 @@ const Formulario = ({usuario, token} : FormProps) => {
             {...register("descricao")}
             mensagemErro={errors.descricao?.message}
          />
-         <div className="flex flex-col">
-            <Controller
-               name="tipoUsuario"
+         {usuario.role !== TipoUsuarioEnum.USUARIO && (
+            <>
+               <div className="flex flex-col">
+                  <Controller
+                     name="tipoUsuario"
                control={control}
                render={({ field }) => (
                   <List
@@ -259,8 +260,10 @@ const Formulario = ({usuario, token} : FormProps) => {
                      value={field.value || undefined}
                   />
                )}
-            />
-         </div>
+                  />
+               </div>
+            </>
+         )}
          <div className="flex flex-col">
             <Controller
                name="ativo"

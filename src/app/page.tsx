@@ -9,17 +9,28 @@ import { Suspense } from "react";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 
 export default async function Home() {
-   const imoveisDestaque = await buscarTodosImoveis({ destaque: "true" });
+   const imoveisDestaque = await buscarTodosImoveis({
+      ativo: "true",
+      destaque: "true",
+      paginaAtual: "0",
+      revalidate: 0,
+      buscarArquivados: true,
+
+      
+   });
    const imoveisCondicoesEspeciais = await buscarTodosImoveis({
       ativo: "true",
       condicoesEspeciais: "true",
       revalidate: 60,
+      buscarArquivados: true,
+
    });
    const imoveisRecentes = await buscarTodosImoveis({
       ativo: "true",
       sort: "dataCadastro,desc",
       paginaAtual: "0",
       revalidate: 60,
+      buscarArquivados: true,
    });
 
    return (
@@ -27,11 +38,11 @@ export default async function Home() {
          <div className="lg:h-[80vh]">
             <div
                className="h-[30vh] overflow-hidden relative z-10
-                           md:h-[35vh]
+                           md:h-[35vh] 
                            lg:h-full"
             >
                <Image
-                  src="/image-paginaprincipal.png"
+                  src="/imagem_capa.svg"
                   alt="Imagem da pagina principal"
                   fill
                   quality={100}

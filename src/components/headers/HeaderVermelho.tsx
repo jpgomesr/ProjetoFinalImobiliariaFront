@@ -24,7 +24,7 @@ const HeaderVermelho = ({ role, id, foto, nome }: HeaderVermelhoProps) => {
    return (
       <div
          className="bg-havprincipal px-6 py-1
-                     md:px-10 md:py-3 
+                     md:px-6 md:py-3 
                      2xl:px-20 2xl:py-5 
                      flex justify-between"
       >
@@ -62,7 +62,7 @@ const HeaderVermelho = ({ role, id, foto, nome }: HeaderVermelhoProps) => {
             </Link>
             )}
          </div>
-         <div className="flex justify-center items-center gap-5 md:gap-10 2xl:gap-20">
+         <div className="flex justify-center items-center gap-5  md:gap-7 lg:gap-10 2xl:gap-20">
             <Notificacao />
             <Link href={id ? "/chat" : "/api/auth/signin"}>
                <button className="text-white">

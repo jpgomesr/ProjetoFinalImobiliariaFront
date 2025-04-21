@@ -44,7 +44,7 @@ const Filtro = (props: FiltroProps) => {
    const [carregandoCidades, setCarregandoCidades] = useState(true);
    const [carregandoBairros, setCarregandoBairros] = useState(false);
 
-   console.log(props.bairro)
+
    
 
    const [opcoesCidade, setOpcoesCidade] = useState([

@@ -2,7 +2,7 @@ import Layout from "@/components/layout/LayoutPadrao";
 
 const page = () => {
    return (
-      <Layout className="text-xl lg:text-2xl text-havprincipal py-8 flex flex-col gap-6 font-medium pl-4 sm:pl-8 md:pl-12 lg:px-16 xl:px-20 pr-7">
+      <Layout className="text-xl lg:text-2xl lg:my-4 text-havprincipal py-8 flex flex-col gap-6 font-medium pl-4 sm:pl-8 md:pl-12 lg:px-16 xl:px-20 pr-7">
          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
             Política e privacidade
          </h1>

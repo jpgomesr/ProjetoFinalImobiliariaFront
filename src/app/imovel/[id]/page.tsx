@@ -14,6 +14,9 @@ import Share from "@/components/Share";
 import MapboxMap from "@/components/Mapboxmap";
 import ExibirCorretores from "@/components/componentes_sobre_nos/ExibirCorretores";
 import IntermediarioBotaoFavorito from "./IntermediarioBotaoFavorito";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
+import { getServerSession } from "next-auth";
+import { Roles } from "@/models/Enum/Roles";
 interface PageProps {
    params: Promise<{
       id: string;
@@ -34,8 +37,7 @@ const Page = async ({ params }: PageProps) => {
 
    const { id } = paramsResolvidos;
    const imovel = await buscarImovelPorIdPaginaImovel(id, 60);
-   console.log(imovel)
-
+   const session = await getServerSession(authOptions);
 
       const imoveisSemelhantes : any  = await buscarImoveisSemelhantes(imovel, 60) ;
    
@@ -50,9 +52,12 @@ const Page = async ({ params }: PageProps) => {
          currency: "BRL",
       });
    };
+   const desabilitado = imovel.tipoBanner === "ALUGADO" || imovel.tipoBanner === "ADQUIRIDO"
+
+
 
    return (
-      <Layout className="bg-begeClaroPadrao py-8">
+      <Layout className={`bg-begeClaroPadrao py-8 ${desabilitado ? "opacity-50" : ""}`}>
          <div className="flex flex-col items-center w-full gap-1 md:flex-row md:px-8 md:items-start">
             <div className="w-11/12 lg:ml-24 md:ml-20">
                <GaleriaImagens imagens={imovel.imagens} />
@@ -90,22 +95,32 @@ const Page = async ({ params }: PageProps) => {
                      {valorFormatado(Number(imovel.condominio))}
                   </p>
                )}
+               {!desabilitado && (
                <div className="flex gap-5 mt-2">
-                  <button className="w-52 bg-havprincipal md:w-40 h-8 rounded-lg">
-                     <Link href={`/agendamentos/${imovel.id}`}>
-                        <p className="text-white text-center p-1 text-[15px]">
-                           Agendar visita
-                        </p>
-                     </Link>
-                  </button>
-                  <div className="mt-1 flex gap-3 relative">
-                     <Share />
-                     <IntermediarioBotaoFavorito
-                        favoritado={imovel.favoritado}
-                        idImovel={imovel.id}
-                     />       
-                  </div>
+                  {session?.user.role === Roles.USUARIO && (
+                     <button className="w-52 bg-havprincipal md:w-40 h-8 rounded-lg">
+                        <Link href={`/agendamentos/${imovel.id}`}>
+                           <p className="text-white text-center p-1 text-[15px]">
+                        Agendar visita
+                     </p>
+                  </Link>
+               </button>
+               )}
+               <div className="mt-1 flex gap-3 relative">
+                  <Share />
+                  <IntermediarioBotaoFavorito
+                     favoritado={imovel.favoritado}
+                     idImovel={imovel.id}
+                  />       
                </div>
+            </div>
+               
+               )}
+               {(session?.user.role === Roles.ADMINISTRADOR || session?.user.role === Roles.CORRETOR || session?.user.role === Roles.EDITOR)  && (
+                  <p className="mt-2">
+                     Proprietário : {imovel.proprietario?.nome}
+                  </p>
+               )}
             </div>
          </div>
          <div className="w-full">

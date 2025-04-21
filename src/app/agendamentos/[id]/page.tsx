@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { Roles } from "@/models/Enum/Roles";
+import { buscarImovelPorId } from "@/Functions/imovel/buscaImovel";
 interface PageProps {
    params: Promise<{
       id: string;
@@ -15,6 +16,11 @@ const Page = async ({ params }: PageProps) => {
 
    const session = await getServerSession(authOptions)
    const { id } = await params;
+   const imovel = await buscarImovelPorId(id)
+
+   if(imovel.tipoBanner === "ALUGADO" || imovel.tipoBanner === "ADQUIRIDO"){
+      redirect("/")
+   }
    let idUsuario : number | undefined = undefined
    if(!session){
       redirect("/api/auth/signin")

@@ -3,8 +3,13 @@ import SubLayoutPaginasCRUD from "@/components/layout/SubLayoutPaginasCRUD";
 import Layout from "@/components/layout/LayoutPadrao";
 import React from "react";
 import SuporteClient from "./cliente";
+import { authOptions } from "../api/auth/[...nextauth]/auth";
+import { getServerSession } from "next-auth";
 
-const page = () => {
+const page = async () => {
+
+      const session = await getServerSession(authOptions);  
+
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>

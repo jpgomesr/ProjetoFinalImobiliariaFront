@@ -178,13 +178,13 @@ const FormularioCadastroImovel = (props: FormularioCadastroImovelProps) => {
             preco: data.valor.toString(),
             precoPromocional: data.valorPromo?.toString() || "",
             permitirDestaque: data.destaque,
-            habilitarVisibilidade: data.visibilidade,
+            visibilidade: data.visibilidade,
             banner: data.banner,
             tipoBanner: data.tipoBanner || "",
             iptu: data.iptu?.toString() || "",
             valorCondominio: data.valorCondominio?.toString() || "",
             idProprietario: data.proprietario.id,
-            ativo: data.visibilidade,
+            ativo: true,
             endereco: {
                rua: data.rua,
                bairro: data.bairro,
@@ -607,16 +607,7 @@ const FormularioCadastroImovel = (props: FormularioCadastroImovelProps) => {
                                  handleInputChange("cep");
                               }}
                            />
-                           <InputPadrao
-                              htmlFor="Bairro"
-                              label="Bairro"
-                              placeholder="Digite o bairro"
-                              type="text"
-                              {...register("bairro")}
-                              mensagemErro={errors.bairro?.message}
-                              onChange={() => handleInputChange("bairro")}
-                              disabled={camposDesabilitados.bairroDesabilitado}
-                           />
+                          
                            <InputPadrao
                               htmlFor="estado"
                               label="Estado"
@@ -636,6 +627,16 @@ const FormularioCadastroImovel = (props: FormularioCadastroImovelProps) => {
                               mensagemErro={errors.cidade?.message}
                               onChange={() => handleInputChange("cidade")}
                               disabled={camposDesabilitados.cidadeDesabilitada}
+                           />
+                            <InputPadrao
+                              htmlFor="Bairro"
+                              label="Bairro"
+                              placeholder="Digite o bairro"
+                              type="text"
+                              {...register("bairro")}
+                              mensagemErro={errors.bairro?.message}
+                              onChange={() => handleInputChange("bairro")}
+                              disabled={camposDesabilitados.bairroDesabilitado}
                            />
                            <InputPadrao
                               htmlFor="rua"
@@ -663,13 +664,16 @@ const FormularioCadastroImovel = (props: FormularioCadastroImovelProps) => {
                               />
                            </div>
                            <div className="w-full">
-                              {watch("tipo") === "apartamento" && (
+                              {watch("tipo") === "APARTAMENTO" && (
                                  <InputPadrao
                                     htmlFor="numero_apartamento"
                                     label={`Número do apartamento`}
                                     placeholder="Digite o número do apartamento"
                                     type="number"
-                                    {...register("numeroApto")}
+                                    {...register("numeroApto", {
+                                       setValueAs: (value) =>
+                                          parseInt(value, 10),
+                                    })}
                                     mensagemErro={errors.numeroApto?.message}
                                     onChange={() =>
                                        handleInputChange("numeroApto")

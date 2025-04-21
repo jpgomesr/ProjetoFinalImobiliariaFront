@@ -2,13 +2,14 @@
 
 import React from "react";
 import { useState } from "react";
-import { LayoutGrid, X } from "lucide-react";
+import { LayoutGrid, MailQuestionIcon, MessageSquareQuoteIcon, X } from "lucide-react";
 import Link from "next/link";
 import { Roles } from "@/models/Enum/Roles";
 import CasaIcon from "@/svg/icons/header/CasaIcon";
 import PerfilIcon from "@/svg/icons/header/PerfilIcon";
 import CorretoresIcon from "@/svg/icons/header/CorretoresIcon";
 import RelatoriosIcon from "@/svg/icons/header/RelatoriosIcon";
+
 
 interface FuncoesHeaderProps {
    role?: Roles;
@@ -42,6 +43,16 @@ const FuncoesHeader = (props: FuncoesHeaderProps) => {
                route: "/relatorio",
                icone: <RelatoriosIcon className="h-5" />,
             },
+            {
+               label: "Responder Perguntas",
+               route: "/responder-perguntas",
+               icone: <MailQuestionIcon className="h-5 text-white" />,
+            },
+            {
+               label: "Perguntas Respondidas",
+               route: "/perguntas-respondidas",
+               icone: <MessageSquareQuoteIcon className="h-5 text-white" />,
+            },
          ],
       },
       {
@@ -57,6 +68,16 @@ const FuncoesHeader = (props: FuncoesHeaderProps) => {
                label: "Proprietários",
                route: "/gerenciamento/proprietarios",
                icone: <CorretoresIcon className="h-5" />,
+            },
+            {
+               label: "Responder Perguntas",
+               route: "/responder-perguntas",
+               icone: <MailQuestionIcon className="h-5 text-white" />,
+            },
+            {
+               label: "Perguntas Respondidas",
+               route: "/perguntas-respondidas",
+               icone: <MessageSquareQuoteIcon className="h-5 text-white" />,
             },
          ],
       },

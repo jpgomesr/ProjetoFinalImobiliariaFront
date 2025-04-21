@@ -1,7 +1,9 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import BotaoPadrao from "@/components/BotaoPadrao";
 import TextAreaPadrao from "@/components/TextAreaPadrao";
-
+import { useSession } from "next-auth/react";
 interface CardPerguntaProps {
    id: string;
    tipoPergunta: string;
@@ -27,12 +29,21 @@ const CardPergunta = ({
    idAdministrador,
    idEditor,
 }: CardPerguntaProps) => {
+   const { data: session, status } = useSession();
+   const token = session?.accessToken;
    const [isResponding, setIsResponding] = useState(false);
    const [respostaTexto, setRespostaTexto] = useState("");
    const [isLoading, setIsLoading] = useState(false);
    const [respostaAtual, setRespostaAtual] = useState(resposta || "");
    const [perguntaRespondidaAtual, setPerguntaRespondidaAtual] =
       useState(perguntaRespondida);
+
+   // Log para depuração
+   useEffect(() => {
+      console.log("Status da sessão:", status);
+      console.log("Session:", session);
+      console.log("Token disponível:", !!token);
+   }, [session, status, token]);
 
    // Carrega os dados da pergunta quando o componente é montado
    useEffect(() => {
@@ -42,8 +53,14 @@ const CardPergunta = ({
             const url = `${BASE_URL}/perguntas/${id}`;
 
             console.log("Carregando dados da pergunta:", url);
+            console.log("Token para carregar dados:", !!token);
 
-            const response = await fetch(url);
+            const response = await fetch(url, {
+               headers: {
+                  "Content-Type": "application/json",
+                  ...(token ? { Authorization: `Bearer ${token}` } : {}),
+               },
+            });
 
             if (!response.ok) {
                console.error(`Erro ao carregar dados: ${response.status}`);
@@ -63,8 +80,10 @@ const CardPergunta = ({
          }
       };
 
-      carregarDadosPergunta();
-   }, [id]);
+      if (status === "authenticated") {
+         carregarDadosPergunta();
+      }
+   }, [id, token, status]);
 
    const formatarData = (data: string | Date) => {
       if (!data) return "Data não informada";
@@ -85,24 +104,33 @@ const CardPergunta = ({
 
    const handleSubmit = async () => {
       if (!respostaTexto.trim()) return;
+      if (!token) {
+         console.error("Token não disponível para enviar resposta");
+         alert("Erro: Você precisa estar autenticado para enviar uma resposta");
+         return;
+      }
 
       setIsLoading(true);
       try {
          const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-         const response = await fetch(
-            `${BASE_URL}/perguntas/${id}?resposta=${encodeURIComponent(
-               respostaTexto
-            )}&perguntaRespondida=true`,
-            {
-               method: "PATCH",
-               headers: {
-                  "Content-Type": "application/json",
-               },
-            }
-         );
+         const url = `${BASE_URL}/perguntas/${id}?resposta=${respostaTexto}`;
+         console.log("Enviando resposta para:", url);
+         console.log("Token:", token);
+
+         const response = await fetch(url, {
+            method: "PATCH",
+            headers: {
+               "Content-Type": "application/json",
+               Authorization: `Bearer ${token}`,
+            },
+         });
 
          if (!response.ok) {
-            throw new Error("Erro ao enviar resposta");
+            const errorText = await response.text();
+            console.error("Erro na resposta:", response.status, errorText);
+            throw new Error(
+               `Erro ao enviar resposta: ${response.status} - ${errorText}`
+            );
          }
 
          // Atualiza o estado local
@@ -175,7 +203,7 @@ const CardPergunta = ({
                      <BotaoPadrao
                         texto={isLoading ? "Enviando..." : "Enviar"}
                         onClick={handleSubmit}
-                        disabled={isLoading || !respostaTexto.trim()}
+                        disabled={isLoading || !respostaTexto.trim() || !token}
                         className="bg-havprincipal text-white px-4 py-2 text-sm"
                      />
                   </div>
@@ -191,6 +219,7 @@ const CardPergunta = ({
                         texto="Responder"
                         onClick={() => setIsResponding(true)}
                         className="bg-havprincipal text-white px-4 py-2 text-sm"
+                        disabled={!token}
                      />
                   </div>
                </div>

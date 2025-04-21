@@ -7,11 +7,12 @@ import { PlusIcon } from "lucide-react";
 import ListarImoveis from "./ListarImoveis";
 import { buscarTodosImoveis } from "@/Functions/imovel/buscaImovel";
 import FiltroList from "@/components/componetes_filtro/FiltroList";
-import { opcoesSort } from "@/data/opcoesSort"; 
+import { opcoesSort } from "@/data/opcoesSort";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { redirect } from "next/navigation";
 import { Roles } from "@/models/Enum/Roles";
+import InputPesquisaServerSide from "@/components/InputPesquisaServerSide";
 interface PageProps {
    searchParams: Promise<{
       precoMinimo?: string;
@@ -26,6 +27,7 @@ interface PageProps {
       finalidade?: string;
       sort?: string;
       ativo?: string;
+      imovelDescTitulo?: string;
    }>;
 }
 
@@ -35,7 +37,10 @@ const Page = async ({ searchParams }: PageProps) => {
    if (!session) {
       redirect("/login");
    }
-   if (session.user?.role !== Roles.ADMINISTRADOR && session.user?.role !== Roles.EDITOR) {
+   if (
+      session.user?.role !== Roles.ADMINISTRADOR &&
+      session.user?.role !== Roles.EDITOR
+   ) {
       redirect("/");
    }
 
@@ -54,6 +59,7 @@ const Page = async ({ searchParams }: PageProps) => {
       finalidade: parametrosResolvidos.finalidade ?? "",
       sort: parametrosResolvidos.sort ?? "",
       ativo: parametrosResolvidos.ativo ?? "",
+      imovelDescTitulo: parametrosResolvidos.imovelDescTitulo ?? "",
    };
 
    const { imoveis, pageableInfo, quantidadeElementos } =
@@ -69,11 +75,18 @@ const Page = async ({ searchParams }: PageProps) => {
          tipoResidencia: params.tipoImovel,
          finalidade: params.finalidade,
          sort: params.sort,
-         ativo: params.ativo,
-         cache: "no-store" 
+         ativo: params.ativo === "" ? undefined : params.ativo,
+         cache: "no-store",
+         imovelDescTitulo: params.imovelDescTitulo,
+         buscarIndependenteAtivo:
+            params.ativo === "" ||
+            params.ativo === undefined ||
+            params.ativo === null,
       });
 
-   
+   console.log(
+      params.ativo === "" || params.ativo === undefined || params.ativo === null
+   );
 
    return (
       <Layout className="py-0">
@@ -94,16 +107,12 @@ const Page = async ({ searchParams }: PageProps) => {
                      defaultPlaceholder="Todas"
                      value={params.finalidade}
                   />
-                   
-
-                  <div
-                     className="flex flex-row items-center px-2 py-1 gap-2 rounded-md border-2 border-gray-300 
-                              bg-white w-full min-w-1"
-                  >
-                     <input
-                        type="text"
-                        className="focus:outline-none min-w-1 bg-white placeholder:text-gray-500"
-                        placeholder="Pesquise aqui"
+                  <div className="w-full">
+                     <InputPesquisaServerSide
+                        url={"/gerenciamento/imoveis"}
+                        nomeAributo="imovelDescTitulo"
+                        placeholder="Pesquisar por titulo"
+                        value={params.imovelDescTitulo}
                      />
                   </div>
                   <div className="flex flex-row-reverse md:flex-row justify-between gap-2">
