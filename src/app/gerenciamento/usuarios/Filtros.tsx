@@ -28,6 +28,7 @@ export default function Filtros({ status, tipoUsuario, nomePesquisa }: FiltrosPr
    const tiposDeUsuarios = [
       { id: "USUARIO", label: t("UserManagement.titleUser") },
       { id: "ADMINISTRADOR", label: "Administrador" },
+      { id: "CORRETOR", label: "Corretor" },
       { id: "EDITOR", label: "Editor" },
    ];
 
