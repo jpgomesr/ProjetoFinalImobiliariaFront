@@ -100,7 +100,7 @@ const ProprietariosListagem = ({
 
    return (
       <>
-         <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-[1fr_7fr_1fr] xl:grid-cols-[1fr_7fr_1fr]">
+         <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-[1fr_10fr_1fr] xl:grid-cols-[1fr_10fr_1fr]">
             <List
                mudandoValor={(valor) => atualizarFiltros(nomePesquisa, valor)}
                opcoes={[

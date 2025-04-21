@@ -84,6 +84,8 @@ const RegisterForm = () => {
          },
          imagemPerfil: null,
       });
+
+      console.log("Resposta do cadastro:", response);
       if (response.erros) {
          const errosFormatados = UseErros(response);
          Object.keys(errosFormatados).forEach((campo) => {
@@ -105,6 +107,7 @@ const RegisterForm = () => {
          router.push("/api/auth/signin");
       }
       } catch (error) {
+         console.error("Erro ao realizar o cadastro:", error);
          showNotification("Erro ao realizar o cadastro. Tente novamente.");
       }
    };

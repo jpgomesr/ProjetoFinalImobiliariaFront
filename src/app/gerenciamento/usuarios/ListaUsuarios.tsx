@@ -107,7 +107,7 @@ export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtu
             isOpen={modalConfirmacaoAberto}
             onClose={fecharModal}
             onConfirm={confirmarDelecao}
-            message={t("UserManagement.editUser")}
+            message={t("UserManagement.excludeUser")}
          />
           <NotificacaoCrud
                                           message="Desfazer"
