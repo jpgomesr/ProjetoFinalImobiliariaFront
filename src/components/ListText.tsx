@@ -32,10 +32,7 @@ const ListText = (props: ListTextProps) => {
             <div
                className={
                   props.className == null
-                     ? `${
-                          props.bordaPreta
-                             ? "border-black border-[1px]"
-                             : "border-gray-300 border-2"
+                     ? `${ "border-gray-300 border-2"
                        } rounded-md bg-white shadow-sm cursor-pointer h-full ${
                           aberto
                              ? "rounded-bl-none rounded-br-none border-b-0"
@@ -52,7 +49,7 @@ const ListText = (props: ListTextProps) => {
                )}
                <div
                   className={`flex items-center justify-between px-2 py-1 gap-2 h-full  ${
-                     props.bordaPreta ? "border" : "border-2"
+                     "border-gray-300 border-2"
                   } border-transparent ${props.differentSize}`}
                >
                   <span className="text-xs sm:text-sm truncate xl:text-base">
@@ -67,9 +64,8 @@ const ListText = (props: ListTextProps) => {
                {aberto && (
                   <div
                      className={`absolute left-0 right-0 z-10 bg-white rounded-b-md shadow-md p-4 ${
-                        props.bordaPreta
-                           ? "border-black border-[1px] border-t-0"
-                           : "border-gray-300 border-2 border-t-0"
+
+                           "border-gray-300 border-2 border-t-0"
                      }`}
                   >
                      <p className="text-sm md:text-base">{props.texto}</p>

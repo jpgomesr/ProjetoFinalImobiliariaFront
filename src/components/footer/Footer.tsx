@@ -18,7 +18,7 @@ const Footer = () => {
          items: [
             { label: "Termos de serviço", route: "/" },
             { label: "Corretores", route: "/" },
-            { label: "Política de privacidade", route: "/" },
+            { label: "Política de privacidade", route: "/politica-privacidade" },
          ],
       },
       {
