@@ -32,9 +32,9 @@ const HeaderVermelho = ({ role, id, foto, nome, t }: HeaderVermelhoProps) => {
       >
          <div className="flex flex-row md:gap-8  2xl:gap-16">
             <FuncoesHeader role={role as Roles} />
-            <Link href={"/"} className="md:hidden lg:block">
+            <Link href={"/"} className="">
                <LogoHavClaro
-                  className="w-14 h-14 2xl:w-20 2xl:h-20  lg:block"
+                  className="w-14 h-14 2xl:w-20 2xl:h-20"
                   visible={true}
                />
             </Link>

@@ -114,7 +114,8 @@ const NotificacaoContent = () => {
          {isOpen && (
             <>
                <div className="fixed inset-0 z-40 bg-black opacity-50 cursor-default" />
-               <div className="absolute top-full right-0 mt-2 w-72 bg-white rounded-md shadow-lg z-50 max-h-96 overflow-y-auto hide-scrollbar">
+               <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 max-h-96 overflow-y-auto hide-scrollbar 
+               md:w-72">
                   <div className="p-2 border-b border-gray-200 sticky top-0 bg-white z-50">
                      <h2 className="text-lg font-semibold text-gray-800">
                         Notificações
