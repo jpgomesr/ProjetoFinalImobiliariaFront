@@ -9,8 +9,14 @@ export interface ModelAgendamento {
         rua: string;
         numeroCasaPredio: string;
     }
-    nomeCorretor: string;
-    nomeUsuario: string;
+    corretor: {
+        id: number;
+        nome: string;
+    }
+    usuario: {
+        id: number;
+        nome: string;
+    }
     idImovel: number;
     referenciaImagemPrincipal: string;
     status : "PENDENTE" | "CONFIRMADO" | "CANCELADO";

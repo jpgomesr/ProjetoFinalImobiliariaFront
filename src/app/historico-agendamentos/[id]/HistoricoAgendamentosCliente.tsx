@@ -34,7 +34,7 @@ const HistoricoAgendamentosClient = ({
    token
 }: HistoricoAgendamentosClientProps) => {
    const { t } = useLanguage();
-
+   console.log(agendamentos);
    return (
       <FundoBrancoPadrao
          titulo={t("SchedulingHistory.title")}
@@ -70,17 +70,18 @@ const HistoricoAgendamentosClient = ({
                               "pt-BR"
                           )}
                           corretor={{
-                              id: agendamento.idUsuario,
-                              nome: agendamento.nomeUsuario
+                              id: agendamento.corretor.id,
+                              nome: agendamento.corretor.nome
                           }}
                           usuario={{
-                              id: agendamento.idCorretor,
-                              nome: agendamento.nomeCorretor
+                              id: agendamento.usuario.id,
+                              nome: agendamento.usuario.nome
                           }}
                           status={agendamento.status}
                           localizacao={`${agendamento.endereco.cidade} - ${agendamento.endereco.bairro}`}
                           endereco={`${agendamento.endereco.rua}, ${agendamento.endereco.numeroCasaPredio}`}
-                          token={token} idImovel={0}                     />
+                          token={token} 
+                          idImovel={agendamento.idImovel}                     />
                   ))}
             </section>
             <PaginacaoHistorico totalPages={totalPages} currentPage={currentPage} />
