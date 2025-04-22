@@ -173,7 +173,7 @@ export default function FormularioHorarios({
          {Object.entries(horariosAgrupados).map(([data, horarios]) => (
             <div key={data} className="flex flex-col gap-4">
                <h3 className="text-lg font-semibold text-havprincipal">
-               {t("Schedules.Day")} {new Date(data).toLocaleDateString("pt-BR")}
+               {t("Schedules.Day")} {new Date(data + "T00:00:00").toLocaleDateString("pt-BR", { timeZone: 'America/Sao_Paulo' })}
                </h3>
                <div className="flex flex-wrap gap-3">
                   {horarios.map((horario) => (
