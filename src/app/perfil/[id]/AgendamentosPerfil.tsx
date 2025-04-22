@@ -77,11 +77,11 @@ export default function AgendamentosPerfil({ id, role, token }: AgendamentosPerf
                     )}
                     corretor={{
                       id: agendamento.idUsuario,
-                      nome: agendamento.nomeUsuario
+                      nome: agendamento.usuario.nome
                     }}
                     usuario={{
                       id: agendamento.idCorretor,
-                      nome: agendamento.nomeCorretor
+                      nome: agendamento.corretor.nome
                     }}
                     status={agendamento.status}
                     localizacao={`${agendamento.endereco.cidade} - ${agendamento.endereco.bairro}`}

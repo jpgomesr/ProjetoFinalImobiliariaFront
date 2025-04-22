@@ -65,8 +65,11 @@ const Page = async ({ searchParams }: PageProps) => {
          sort: parametrosBusca.sort,
          imovelDescTitulo: parametrosBusca.imovelDescTitulo,
          paginaAtual: parametrosBusca.numeroPaginaAtual,
+         size: view === "cards" ? "9" : "400",
          revalidate: 30,
       });
+
+   console.log(imoveis)
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>

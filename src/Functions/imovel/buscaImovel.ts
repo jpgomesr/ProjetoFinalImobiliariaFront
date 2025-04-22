@@ -33,6 +33,7 @@ export interface parametrosBuscaImovel {
    qtdQuartos?: string;
    qtdBanheiros?: string;
    qtdGaragens?: string;
+   size?: string;
    precoMinimo?: string;
    precoMaximo?: string;
    finalidade?: string;
@@ -63,6 +64,7 @@ export const buscarTodosImoveis = async (
       qtdQuartos: parametros?.qtdQuartos?.toString() || "",
       qtdBanheiros: parametros?.qtdBanheiros?.toString() || "",
       qtdGaragens: parametros?.qtdGaragens?.toString() || "",
+      size: parametros?.size?.toString() || "",
       precoMinimo: parametros?.precoMinimo?.toString() || "",
       precoMaximo: parametros?.precoMaximo?.toString() || "",
       finalidade: parametros?.finalidade?.toUpperCase() || "",
