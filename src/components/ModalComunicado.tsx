@@ -11,9 +11,11 @@ interface ModalComunicadoProps {
    onClose: () => void;
    userId: number;
    token?: string;
+   email: string;
+   nome: string;
 }
 
-const ModalComunicado = ({ isOpen, onClose, userId, token }: ModalComunicadoProps) => {
+const ModalComunicado = ({ isOpen, onClose, userId, token, email, nome }: ModalComunicadoProps) => {
    const [mensagem, setMensagem] = useState("");
 
    const { showNotification } = useNotification();
@@ -22,9 +24,17 @@ const ModalComunicado = ({ isOpen, onClose, userId, token }: ModalComunicadoProp
    const handleSubmit = async () => {
       try {
          await useFetchComAutorizacaoComToken(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/usuarios/comunicado/${userId}?mensagem=${mensagem}`,
+            `${process.env.NEXT_PUBLIC_BASE_URL}/usuarios/comunicado`,
             {
                 method: "POST",
+                headers: {
+                   'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    mensagem: mensagem,
+                    email: email,
+                    nome: nome
+                })
             },
             token ?? ""
          );

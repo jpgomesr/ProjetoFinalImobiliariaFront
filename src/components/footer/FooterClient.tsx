@@ -20,32 +20,32 @@ const FooterClient = () => {
       {
          group: "Grupo 1",
          items: [
-            { label: t("footer.terms"), route: "/" },
-            { label: t("footer.brokers"), route: "/" },
-            { label: t("footer.privacy"), route: "/" },
+            { label: t("footer.terms"), route: "/politica-privacidade" },
+            { label: t("footer.brokers"), route: "/sobre-nos" },
+            { label: t("footer.privacy"), route: "/politica-privacidade" },
          ],
       },
       {
          group: "Grupo 2",
          items: [
-            { label: t("footer.social"), route: "/" },
-            { label: t("footer.contact"), route: "/" },
-            { label: t("footer.about"), route: "/" },
+            { label: t("footer.social"), route: "/sobre-nos"},
+            { label: t("footer.contact"), route: "/suporte" },
+            { label: t("footer.about"), route: "/sobre-nos" },
          ],
       },
       {
          group: "Grupo 3",
          items: [
-            { label: t("footer.feedback"), route: "/" },
-            { label: t("footer.signup"), route: "/" },
-            { label: t("footer.house"), route: "/" },
+            { label: t("footer.feedback"), route: "" },
+            { label: t("footer.signup"), route: "/autenticacao/cadastro" },
+            { label: t("footer.house"), route: "/imoveis?tipoImovel=CASA" },
          ],
       },
       {
          group: "Grupo 4",
          items: [
-            { label: t("footer.apartment"), route: "/" },
-            { label: t("footer.doubts"), route: "/" },
+            { label: t("footer.apartment"), route: "/imoveis?tipoImovel=APARTAMENTO" },
+            { label: t("footer.doubts"), route: "/perguntas-frequentes" },
             { label: t("footer.chat"), route: "/" },
          ],
       },

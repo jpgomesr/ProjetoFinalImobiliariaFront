@@ -26,6 +26,8 @@ interface CardUsuarioProps {
    deletarUsuario: (id: number) => void;
    restaurarUsuario: (id: number) => void;
    token: string;
+   email: string;
+   nome: string;
 }
 
 const CardUsuario = (props: CardUsuarioProps) => {
@@ -165,6 +167,8 @@ const CardUsuario = (props: CardUsuarioProps) => {
             onClose={() => setIsModalOpen(false)}
             userId={props.id}
             token={props.token}
+            email={props.email}
+            nome={props.nome}
          />
       </>
    );

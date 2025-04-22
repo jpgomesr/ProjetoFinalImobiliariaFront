@@ -75,6 +75,7 @@ export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtu
          <div className="grid grid-cols-1 gap-4 w-full md:mt-2 lg:place-content-center lg:self-center lg:grid-cols-2 lg:mt-4 2xl:mt-6">
             {usuarios?.map((usuario) => (
                <CardUsuario
+               nome={usuario.nome}
                labelPrimeiroValor={t("perfil.email") + ":"}
                primeiroValor={usuario.email}
                labelSegundoValor={t("perfil.name") + ":"}
@@ -91,6 +92,7 @@ export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtu
                restaurarUsuario={() => restaurarUsuario(usuario.id, token)}
                linkEdicao={`/gerenciamento/usuarios/edicao/${usuario.id}`}
                token={token}
+               email={usuario.email}
             />
             ))}
          </div>
