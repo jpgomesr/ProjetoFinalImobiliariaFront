@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import MenuHamburguer from "@/svg/icons/header/MenuHamburguer";
-import XIcon from "@/svg/icons/header/XIcon";
 import Hamburguer from "./Hamburguer";
 import { Roles } from "@/models/Enum/Roles";
+import { Menu, X, XIcon } from "lucide-react";
+
 
 interface HamburguerButtonProps {
    role?: Roles;
@@ -21,10 +21,10 @@ const HamburguerButton = ({ role }: HamburguerButtonProps) => {
    return (
       <div className="cursor-pointer 2md:hidden" onClick={handleHamburguer}>
          {!isHamburguerVisible ? (
-            <MenuHamburguer width={23} height={15} />
+            <Menu width={23} height={23}  className="text-white"/>
          ) : (
             <div>
-               <XIcon width={23} height={23} />
+               <XIcon width={23} height={23} className="text-white"  />
                {role && <Hamburguer role={role} />}
             </div>
          )}

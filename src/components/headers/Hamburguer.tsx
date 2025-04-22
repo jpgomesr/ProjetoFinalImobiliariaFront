@@ -1,20 +1,9 @@
 "use client";
 
 import React from "react";
-import CasaIcon from "@/svg/icons/header/CasaIcon";
-import FaqIcon from "@/svg/icons/header/FaqIcon";
-import FavIcon from "@/svg/icons/header/FavIcon";
-import ChatIcon from "@/svg/icons/header/ChatIcon";
-import SobreNosIcon from "@/svg/icons/header/SobreNosIcon";
-import ImoveisIcon from "@/svg/icons/header/ImoveisIcon";
-import AgendamentoIcon from "@/svg/icons/header/AgendamentoIcon";
-import PerfilIcon from "@/svg/icons/header/PerfilIcon";
-import CorretoresIcon from "@/svg/icons/header/CorretoresIcon";
-import RelatoriosIcon from "@/svg/icons/header/RelatoriosIcon";
 import Link from "next/link";
 import { Roles } from "@/models/Enum/Roles";
-import { MessageSquareQuoteIcon } from "lucide-react";
-import { MailQuestionIcon } from "lucide-react";
+import { MessageSquareQuote, House, Heart, MessageCircleQuestion, MessageCircleMore, Info, MailQuestion, Calendar, User, UserRoundCheck, BarChart } from "lucide-react";
 
 interface HamburguerProps {
    role?: Roles;
@@ -24,37 +13,37 @@ const Hamburguer = (props: HamburguerProps) => {
    const opcoesHamburguer = [
       {
          label: "Página inicial",
-         icone: <CasaIcon className="w-5" />,
+         icone: <House className="w-5 text-white" />,
          route: "/",
       },
       {
          label: "Perguntas frequêntes",
-         icone: <FaqIcon className="w-5" />,
+         icone: <MessageCircleQuestion className="w-5 text-white" />,
          route: "/perguntas-frequentes",
       },
       {
          label: "Favoritos",
-         icone: <FavIcon className="w-5" />,
+         icone: <Heart className="w-5 text-white" />,
          route: "/favoritos",
       },
       {
          label: "Chat",
-         icone: <ChatIcon className="w-5" />,
+         icone: <MessageCircleMore className="w-5 text-white" />,
          route: "/chat",
       },
       {
          label: "Sobre nós",
-         icone: <SobreNosIcon className="w-5" />,
+         icone: <Info className="w-5 text-white" />,
          route: "/sobre-nos",
       },
       {
          label: "Imóveis",
-         icone: <ImoveisIcon className="w-5" />,
+         icone: <House className="w-5 text-white" />,
          route: "/",
       },
       {
          label: "Agendamentos",
-         icone: <AgendamentoIcon className="w-5" />,
+         icone: <Calendar className="w-5 text-white" />,
          route: "/agendamentos",
       },
    ];
@@ -67,32 +56,32 @@ const Hamburguer = (props: HamburguerProps) => {
             {
                label: "Gerenciar imóveis",
                route: "/gerenciamento/imoveis",
-               icone: <CasaIcon className="h-5" />,
+               icone: <House className="h-5 text-white" />,
             },
             {
                label: "Usuários",
                route: "/gerenciamento/usuarios",
-               icone: <PerfilIcon className="h-5" />,
+               icone: <User className="h-5 text-white" />,
             },
             {
                label: "Proprietários",
                route: "/gerenciamento/proprietarios",
-               icone: <CorretoresIcon className="h-5" />,
+               icone: <UserRoundCheck className="h-5 text-white" />,
             },
             {
                label: "Relatórios",
                route: "/relatorio",
-               icone: <RelatoriosIcon className="h-5" />,
+               icone: <BarChart className="h-5 text-white" />,
             },
             {
                label: "Responder Perguntas",
                route: "/responder-perguntas",
-               icone: <MailQuestionIcon className="h-5 text-white" />,
+               icone: <MailQuestion className="h-5 text-white" />,
             },
             {
                label: "Perguntas Respondidas",
                route: "/perguntas-respondidas",
-               icone: <MessageSquareQuoteIcon className="h-5 text-white" />,
+               icone: <MessageSquareQuote className="h-5 text-white" />,
             },
          ],
       },
@@ -103,22 +92,22 @@ const Hamburguer = (props: HamburguerProps) => {
             {
                label: "Gerenciar imóveis",
                route: "/gerenciamento/imoveis",
-               icone: <CasaIcon className="h-5" />,
+               icone: <House className="h-5 text-white" />,
             },
             {
                label: "Proprietários",
                route: "/gerenciamento/proprietarios",
-               icone: <CorretoresIcon className="h-5" />,
+               icone: <UserRoundCheck className="h-5 text-white" />,
             },
             {
                label: "Responder Perguntas",
                route: "/responder-perguntas",
-               icone: <MailQuestionIcon className="h-5 text-white" />,
+               icone: <MailQuestion className="h-5 text-white" />,
             },
             {
                label: "Perguntas Respondidas",
                route: "/perguntas-respondidas",
-               icone: <MessageSquareQuoteIcon className="h-5 text-white" />,
+               icone: <MessageSquareQuote className="h-5 text-white" />,
             },
          ],
       },

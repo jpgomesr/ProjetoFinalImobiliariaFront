@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { User, UserIcon } from "lucide-react";
 import { signOut } from "next-auth/react";
-import PerfilIcon from "@/svg/icons/header/PerfilIcon";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface PerfilDropdownProps {

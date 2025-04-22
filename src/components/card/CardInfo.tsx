@@ -1,7 +1,4 @@
-import Shower from "../../svg/icons/card/BenheirosIcon";
-import Bedroom from "../../svg/icons/card/QuartoIcon";
-import Car from "../../svg/icons/card/VagasIcon";
-import Ruler from "../../svg/icons/card/MetragemIcon";
+import { ShowerHead, Bed, Car, Ruler } from "lucide-react";          
 
 interface HomeProps {
    qtdBanheiros: number;
@@ -25,7 +22,7 @@ export default function CardInfo({
          }`}
       >
          <div className="flex flex-row items-center justify-center gap-1 mr-3">
-            <Shower width={18} height={18} dark={dark} />
+            <ShowerHead width={18} height={18} />
             <p className="text-xs">{qtdBanheiros}</p>
          </div>
          <div
@@ -34,7 +31,7 @@ export default function CardInfo({
             }`}
          ></div>
          <div className="flex flex-row items-center justify-center gap-1 mr-2 ml-3">
-            <Bedroom width={18} height={18} dark={dark} />
+            <Bed width={18} height={18} />
             <p className="text-xs">{qtdQuartos}</p>
          </div>
          <div
@@ -43,7 +40,7 @@ export default function CardInfo({
             }`}
          ></div>
          <div className="flex flex-row items-center justify-center gap-1 mr-2 ml-3">
-            <Car width={20} height={18} dark={dark} />
+            <Car width={20} height={20} />
             <p className="text-xs">{qtdVagas}</p>
          </div>
          <div
@@ -52,7 +49,7 @@ export default function CardInfo({
             }`}
          ></div>
          <div className="flex flex-row items-center justify-center gap-1 ml-3">
-            <Ruler width={18} height={18} dark={dark} />
+            <Ruler width={18} height={18} />
             <p className="text-xs">{metragem}m²</p>
          </div>
       </div>
