@@ -119,7 +119,7 @@ const FormularioCadastroUsuario = (props: FormularioCadastroUsuarioProps) => {
 
    return (
       <FundoBrancoPadrao
-      titulo="UserManagement.title"
+         titulo="Cadastro de usuário"
          className={`w-full ${isSubmitting ? "opacity-40" : "opacity-100"}`}
       >
          <form
