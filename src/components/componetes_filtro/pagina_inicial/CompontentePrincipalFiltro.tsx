@@ -76,8 +76,8 @@ const CompontentePrincipalFiltro = ({
    ]);
 
    const tipoImovelExemplo = [
-      { id: "CASA", label: t("property.type") },
-      { id: "APARTAMENTO", label: t("property.type") },
+      { id: "CASA", label: "Casa" },
+      { id: "APARTAMENTO", label: "Apartamento" },
    ];
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;

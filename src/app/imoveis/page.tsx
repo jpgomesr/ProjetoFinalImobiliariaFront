@@ -47,7 +47,6 @@ const Page = async ({ searchParams }: PageProps) => {
       numeroPaginaAtual: parametrosResolvidos.numeroPaginaAtual ?? "0",
    };
 
-   console.log(parametrosBusca.numeroPaginaAtual)
    const view = parametrosResolvidos.view ?? "cards";
 
    const { imoveis, pageableInfo, quantidadeElementos } =

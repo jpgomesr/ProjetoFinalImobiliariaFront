@@ -23,6 +23,8 @@ interface FiltroProps {
 }
 
 const Filtro = (props: FiltroProps) => {
+
+
    const router = useRouter();
    const searchParams = useSearchParams();
    const [precoMinimo, setPrecoMinimo] = useState(props.precoMinimo);
@@ -44,7 +46,6 @@ const Filtro = (props: FiltroProps) => {
    const [tipoImovel, setTipoImovel] = useState(props.tipoImovel);
    const [carregandoCidades, setCarregandoCidades] = useState(true);
    const [carregandoBairros, setCarregandoBairros] = useState(false);
-
 
    
 
@@ -268,6 +269,7 @@ const Filtro = (props: FiltroProps) => {
                   opcoes={tipoImovelExemplo}
                   buttonHolder="Tipo"
                   mudandoValor={setTipoImovel}
+                  value={props.tipoImovel}
                />
             </div>
          </div>

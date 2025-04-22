@@ -25,6 +25,7 @@ interface FiltrosImoveisProps {
 const FiltrosImoveis = (props: FiltrosImoveisProps) => {
 
 
+
    const params = {  
       precoMinimo: props.precoMinimo ?? "0",
       precoMaximo: props.precoMaximo ?? "0",
@@ -39,6 +40,7 @@ const FiltrosImoveis = (props: FiltrosImoveisProps) => {
       view: props.view ?? "cards",
       imovelDescTitulo: props.imovelDescTitulo ?? "",
    };
+
 
    return (
       <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-[1fr_7fr_1fr] xl:grid-cols-[1fr_10fr_1fr]">
