@@ -76,12 +76,12 @@ export default function AgendamentosPerfil({ id, role, token }: AgendamentosPerf
                        "pt-BR"
                     )}
                     corretor={{
-                      id: agendamento.idUsuario,
-                      nome: agendamento.usuario.nome
+                      id: agendamento.corretor.id,
+                      nome: agendamento.corretor.nome
                     }}
                     usuario={{
-                      id: agendamento.idCorretor,
-                      nome: agendamento.corretor.nome
+                      id: agendamento.usuario.id,
+                      nome: agendamento.usuario.nome
                     }}
                     status={agendamento.status}
                     localizacao={`${agendamento.endereco.cidade} - ${agendamento.endereco.bairro}`}
