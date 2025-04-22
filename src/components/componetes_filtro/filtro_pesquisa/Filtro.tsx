@@ -183,7 +183,9 @@ const Filtro = (props: FiltroProps) => {
       setTipoImovel("");
       setQuantidadeQuartos("");
       setQuantidadeVagas("");
-      atualizarURL();
+      
+      router.push(props.url);
+
    };
 
    return (
