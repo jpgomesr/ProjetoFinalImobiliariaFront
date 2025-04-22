@@ -280,12 +280,10 @@ export const buscarImoveisSemelhantes = async (
          precoMinimo: (imovel.preco * 0.8).toString(),
          qtdBanheiros: imovel.qtdBanheiros.toString(),
          qtdQuartos: imovel.qtdQuartos.toString(),
-         cidade: imovel.endereco.cidade,
-         bairro: imovel.endereco.bairro,
          revalidate: revalidate,
          noUseSession: "true",
-         cache: "force-cache",
       });
+
       if (imoveis.length === 0) {
          return [];
       }

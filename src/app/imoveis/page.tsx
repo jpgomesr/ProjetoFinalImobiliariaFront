@@ -69,12 +69,12 @@ const Page = async ({ searchParams }: PageProps) => {
          revalidate: 30,
       });
 
-   console.log(imoveis)
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao className="w-full" titulo="Imóveis Disponíveis">
-               <FiltrosImoveis view={view} 
+               <FiltrosImoveis 
+               view={view} 
                bairro={parametrosBusca.bairro}
                cidade={parametrosBusca.cidade}
                precoMaximo={parametrosBusca.precoMaximo}

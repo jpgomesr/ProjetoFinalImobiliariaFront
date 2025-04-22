@@ -64,7 +64,7 @@ export default function AgendamentosPerfil({ id, role, token }: AgendamentosPerf
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-havprincipal"></div>
            </div>
         ) : agendamentos.length > 0 ? (
-         <div className="grid grid-cols-1 gap-4 px-4 sm:px-0 max-w-[400px] mx-auto sm:max-w-[450px]">
+         <div className="grid grid-cols-1 gap-4 px-4 sm:px-0 place-content-center place-items-center  lg:grid-cols-2  mx-auto ">
               {agendamentos.map((agendamento) => (
                  <CardReserva
                     key={agendamento.id}

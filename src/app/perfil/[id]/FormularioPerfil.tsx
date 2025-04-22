@@ -43,7 +43,7 @@ const FormularioPerfil = ({
    const { t } = useLanguage();
    const [preview, setPreview] = useState<string>(dadosIniciais?.foto || "");
    const [selectedContact, setSelectedContact] = useState("");
-   const [selected2FA, setSelected2FA] = useState<"email" | "sms" | null>(null);
+   const [autenticacaoDoisFatoresHabilitado, setAutenticacaoDoisFatoresHabilitado] = useState(dadosIniciais?.autenticacaoDoisFatoresHabilitado || false);
    const fileInputRef = useRef<HTMLInputElement>(null);
 
    const usuarioValidator = createUsuarioValidator(false);
@@ -97,7 +97,8 @@ const FormularioPerfil = ({
                email: data.email,
                telefone: data.telefone?.trim() === "" ? null : data.telefone,
                descricao: data.descricao,
-               role: data.tipoUsuario
+               role: data.tipoUsuario,
+               autenticacaoDoisFatoresHabilitado: autenticacaoDoisFatoresHabilitado,
             },
             "usuario",
             "novaImagem",
@@ -241,13 +242,13 @@ const FormularioPerfil = ({
                   <div className="col-span-2 sm:w-[300px] md:w-[500px] xl:w-[980px]">
                      <TextAreaPadrao
                         htmlFor="descricao"
-                        label={t("perfil.phone")}
+                        label={t("perfil.bio")}
                         className="text-sm sm:text-base h-24 sm:h-28 md:h-32"
                         {...register("descricao")}
                         mensagemErro={errors.descricao?.message}
                      />
                   </div>
-
+{/* 
                   <div className="col-span-2">
                      <div className="relative">
                         <label
@@ -282,7 +283,7 @@ const FormularioPerfil = ({
                            </svg>
                         </div>
                      </div>
-                  </div>
+                  </div> */}
 
                   <div className="col-span-2 flex flex-col gap-2">
                      <h2 className="text-xs sm:text-sm font-medium text-gray-700">
@@ -305,17 +306,17 @@ const FormularioPerfil = ({
                         <button
                            type="button"
                            onClick={() =>
-                              setSelected2FA(
-                                 selected2FA === "email" ? null : "email"
+                              setAutenticacaoDoisFatoresHabilitado(
+                                 !autenticacaoDoisFatoresHabilitado
                               )
                            }
                            className={`mt-3 sm:mt-4 px-4 sm:px-6 py-1 sm:py-2 text-xs sm:text-sm font-medium rounded-md transition-colors relative z-20 ${
-                               selected2FA === "email"
+                               autenticacaoDoisFatoresHabilitado
                                  ? "bg-havprincipal text-white"
                                  : "border border-gray-300 hover:bg-gray-50"
                            }`}
                         >
-                            {selected2FA === "email" ? t("perfil.selected") : t("perfil.selection")}
+                            {autenticacaoDoisFatoresHabilitado ? t("perfil.selected") : t("perfil.selection")}
                         </button>
                      </div>
                   </div>

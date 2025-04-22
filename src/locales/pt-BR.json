@@ -181,7 +181,7 @@
       "password": "Senha",
       "forgotPassword": "Esqueceu a senha?",
       "rememberMe": "Lembrar-me"
-   },
+   }, 
    "UserManagement": {
       "title": "Gerenciamento de Usuários",
       "buttonActive": "Ativo",
