@@ -15,14 +15,15 @@ export async function fetchRelatorioData(token: string) {
       resultCorretores,
     ] = await Promise.all([
       buscarTodosImoveis(),
-      listarUsuarios(0, "CORRETOR", true, "", 1000), // Usuários ativos
-      listarUsuarios(0, "CORRETOR", false, "", 1000), // Usuários bloqueados
-      renderizarUsuariosApi(),
+      listarUsuarios(0,  "",true, "", 1000), // Usuários ativos
+      listarUsuarios(0, "", false, "", 1000), // Usuários bloqueados
+      listarUsuarios(0,  "CORRETOR", true, "", 1000), // Usuários ativos
     ]);
 
+    console.log("resultCorretores", resultCorretores);
     // Buscar agendamentos para cada corretor
     const agendamentos: { [key: string]: number } = {};
-    for (const corretor of resultUsuariosAtivos.usuariosRenderizados || []) {
+    for (const corretor of resultCorretores.usuariosRenderizados || []) {
       try {
         const response = await useFetchComAutorizacaoComToken(
           `${process.env.NEXT_PUBLIC_BASE_URL}/agendamentos/corretor/${corretor.id}?status=&data=&page=0&size=1000&sort=dataHora,desc`,
@@ -53,7 +54,7 @@ export async function fetchRelatorioData(token: string) {
       imoveis: resultImoveis.imoveis,
       usuariosAtivos: resultUsuariosAtivos.usuariosRenderizados || [],
       usuariosBloqueados: resultUsuariosBloqueados.usuariosRenderizados || [],
-      corretores: resultCorretores || [],
+      corretores: resultCorretores.usuariosRenderizados || [],
       agendamentosPorCorretor: agendamentos
     };
   } catch (error) {

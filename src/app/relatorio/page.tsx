@@ -25,7 +25,7 @@ export default async function Page() {
     return (
       <Layout className="py-0">
         <SubLayoutPaginasCRUD>
-          <RelatorioPage 
+          <RelatorioPage  
             initialData={initialData} 
             graficosData={graficosData}
           />

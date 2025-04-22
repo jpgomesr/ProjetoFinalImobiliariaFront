@@ -370,7 +370,7 @@ export default function RelatorioClient({
          doc.text("Corretores e Agendamentos", margin, yPos);
          yPos += titleGap;
 
-         const dadosCorretores = initialData.usuariosAtivos.map((corretor) => [
+         const dadosCorretores = initialData.corretores.map((corretor) => [
             corretor.nome,
             initialData.agendamentosPorCorretor[corretor.nome] || 0,
          ]);
@@ -462,7 +462,7 @@ export default function RelatorioClient({
          // Planilha de Corretores e Agendamentos
          const corretoresData = [
             ["Nome do Corretor", "Quantidade de Agendamentos"],
-            ...initialData.usuariosAtivos.map((corretor) => [
+            ...initialData.corretores.map((corretor) => [
                corretor.nome,
                initialData.agendamentosPorCorretor[corretor.nome] || 0,
             ]),
@@ -630,7 +630,7 @@ export default function RelatorioClient({
             Corretores
          </h2>
          <div className="bg-white rounded-lg shadow overflow-hidden max-w-3xl mx-auto">
-            {initialData.usuariosAtivos.map((corretor, index) => (
+            {initialData.corretores.map((corretor, index) => (
                <div
                   key={index}
                   className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50"

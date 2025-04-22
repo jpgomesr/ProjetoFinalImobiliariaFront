@@ -42,7 +42,7 @@ async function ConteudoPrincipal({ searchParams }: PageProps) {
    // Busca os dados no servidor
    const { usuariosRenderizados, conteudoCompleto } = await listarUsuarios(
       numeroPaginaAtual,
-      tipoUsuario,
+      tipoUsuario,   
       statusBooleano,
       nomePesquisa,
       10,
