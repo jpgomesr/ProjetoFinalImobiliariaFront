@@ -134,6 +134,7 @@ const ProprietariosListagem = ({
          <div className="grid grid-cols-1 gap-4 w-full md:mt-2 lg:place-content-center lg:self-center lg:grid-cols-2 lg:mt-4 2xl:mt-6">
             {proprietarios.map((proprietario) => (
                <CardUsuario
+                  token={token}
                   ativo={proprietario.ativo}
                   restaurarUsuario={() => restaurarUsuario(proprietario.id)}
                   labelPrimeiroValor="E-mail:"

@@ -90,6 +90,7 @@ export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtu
                deletarUsuario={exibirModal}
                restaurarUsuario={() => restaurarUsuario(usuario.id, token)}
                linkEdicao={`/gerenciamento/usuarios/edicao/${usuario.id}`}
+               token={token}
             />
             ))}
          </div>
