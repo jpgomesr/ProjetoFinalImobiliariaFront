@@ -19,7 +19,7 @@ export default async function Page() {
       redirect("/");
     }
 
-    const initialData = await fetchRelatorioData();
+    const initialData = await fetchRelatorioData(session.accessToken ?? "");
     const graficosData = prepararDadosParaGraficos(initialData.imoveis);
 
     return (

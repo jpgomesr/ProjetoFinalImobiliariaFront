@@ -4,8 +4,9 @@ import { renderizarUsuariosApi } from "@/app/sobre-nos/action";
 import { ModelImovelGet } from "@/models/ModelImovelGet";
 import ModelUsuarioListagem from "@/models/ModelUsuarioListagem";
 import ModelExibirCorretor from "@/models/ModelExibirCorretor";
+import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
 
-export async function fetchRelatorioData() {
+export async function fetchRelatorioData(token: string) {
   try {
     const [
       resultImoveis,
@@ -23,8 +24,15 @@ export async function fetchRelatorioData() {
     const agendamentos: { [key: string]: number } = {};
     for (const corretor of resultUsuariosAtivos.usuariosRenderizados || []) {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/agendamentos/corretor/${corretor.id}?status=&data=&page=0&size=1000&sort=dataHora,desc`
+        const response = await useFetchComAutorizacaoComToken(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/agendamentos/corretor/${corretor.id}?status=&data=&page=0&size=1000&sort=dataHora,desc`,
+          {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${token}`
+            }
+          },
+          token
         );
 
         if (response.ok) {
@@ -32,6 +40,7 @@ export async function fetchRelatorioData() {
           // Usar o totalElements da resposta paginada
           agendamentos[corretor.nome] = data.totalElements || 0;
         } else {
+          console.log("Erro ao buscar agendamentos para", await response.json());
           agendamentos[corretor.nome] = 0;
         }
       } catch (error) {
