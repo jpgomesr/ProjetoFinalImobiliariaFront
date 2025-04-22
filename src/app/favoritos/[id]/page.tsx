@@ -61,7 +61,9 @@ const Page = async ({ params, searchParams }: PageProps) => {
          finalidade: parametrosBusca.finalidade,
          idUsuario: session?.user?.id,
          sort: parametrosBusca.sort,
+         size: view === "cards" ? "9" : "400",
       });
+
 
    if (!session) {      
       redirect("/login");
@@ -84,6 +86,7 @@ const Page = async ({ params, searchParams }: PageProps) => {
                 metrosQuadradosMaximo={parametrosBusca.metrosQuadradosMaximo}
                 metrosQuadradosMinimo={parametrosBusca.metrosQuadradosMinimo}
                 tipoImovel={parametrosBusca.tipoImovel}
+                view={view}
                />
                <div className="flex flex-col sm:flex-row justify-between items-center lg:my-4">
                   <p className="text-sm">

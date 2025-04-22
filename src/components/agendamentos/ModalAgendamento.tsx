@@ -34,6 +34,7 @@ const ModalAgendamento = ({
 }: ModalAgendamentoProps) => {
    const { showNotification } = useNotification();
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+   console.log(idImovel, "aq");
    const confirmarAgendamento = async () => {
       if(method === "POST"){
          const response = await salvarAgendamento({

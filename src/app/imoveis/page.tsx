@@ -24,6 +24,7 @@ interface PageProps {
       imovelDescTitulo?: string;
       view?: string;
       sort?: string;
+      numeroPaginaAtual?: string;
    }>;
 }
 
@@ -43,8 +44,10 @@ const Page = async ({ searchParams }: PageProps) => {
       finalidade: parametrosResolvidos.finalidade ?? "",
       sort: parametrosResolvidos.sort ?? "",
       imovelDescTitulo: parametrosResolvidos.imovelDescTitulo ?? "",
+      numeroPaginaAtual: parametrosResolvidos.numeroPaginaAtual ?? "0",
    };
-   console.log(parametrosBusca)
+
+   console.log(parametrosBusca.numeroPaginaAtual)
    const view = parametrosResolvidos.view ?? "cards";
 
    const { imoveis, pageableInfo, quantidadeElementos } =
@@ -61,13 +64,17 @@ const Page = async ({ searchParams }: PageProps) => {
          finalidade: parametrosBusca.finalidade,
          sort: parametrosBusca.sort,
          imovelDescTitulo: parametrosBusca.imovelDescTitulo,
+         paginaAtual: parametrosBusca.numeroPaginaAtual,
+         size: view === "cards" ? "9" : "400",
          revalidate: 30,
       });
+
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao className="w-full" titulo="Imóveis Disponíveis">
-               <FiltrosImoveis view={view} 
+               <FiltrosImoveis 
+               view={view} 
                bairro={parametrosBusca.bairro}
                cidade={parametrosBusca.cidade}
                precoMaximo={parametrosBusca.precoMaximo}

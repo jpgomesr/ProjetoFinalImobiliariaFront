@@ -6,7 +6,8 @@ import BotaoPadrao from "@/components/BotaoPadrao";
 import Link from "next/link";
 
 
-const page = () => {
+
+const Page = () => {
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
@@ -26,4 +27,4 @@ const page = () => {
    );
 };
 
-export default page;
+export default Page;

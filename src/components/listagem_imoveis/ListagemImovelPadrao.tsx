@@ -13,6 +13,7 @@ interface ListarImoveisProps {
    pageableInfo: {
       totalPaginas: number;
       ultima: boolean;
+      paginaAtual: number;
    };
 }
 
@@ -20,7 +21,6 @@ export default function ListagemImovelPadrao({
    imoveis,
    pageableInfo,
 }: ListarImoveisProps) {
-   const [paginaAtual, setPaginaAtual] = useState(0);
    const [comparando, setComparando] = useState(false);
    const [imoveisSelecionados, setImoveisSelecionados] = useState<number[]>([]);
    const [modalAberto, setModalAberto] = useState(false);
@@ -81,7 +81,7 @@ export default function ListagemImovelPadrao({
             {imoveis.map((imovel) => (
                <div
                   key={imovel.id}
-                  className={`transition-opacity duration-200 cursor-pointer ${
+                  className={`transition-opacity duration-200 cursor-pointer w-full place-items-center ${
                      comparando && !imoveisSelecionados.includes(imovel.id)
                         ? "opacity-30"
                         : ""
@@ -96,8 +96,8 @@ export default function ListagemImovelPadrao({
          <ComponentePaginacao
             totalPaginas={pageableInfo.totalPaginas}
             ultimaPagina={pageableInfo.ultima}
-            setPaginaAtual={setPaginaAtual}
-            paginaAtual={paginaAtual}
+            setPaginaAtual={mudarPagina}
+            paginaAtual={pageableInfo.paginaAtual}
             maximoPaginasVisiveis={5}
          />
 

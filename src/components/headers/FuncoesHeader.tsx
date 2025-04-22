@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import React from "react";
 import { useState } from "react";
@@ -9,6 +9,7 @@ import CasaIcon from "@/svg/icons/header/CasaIcon";
 import PerfilIcon from "@/svg/icons/header/PerfilIcon";
 import CorretoresIcon from "@/svg/icons/header/CorretoresIcon";
 import RelatoriosIcon from "@/svg/icons/header/RelatoriosIcon";
+import { useLanguage } from "@/context/LanguageContext";
 
 
 interface FuncoesHeaderProps {
@@ -17,29 +18,29 @@ interface FuncoesHeaderProps {
 
 const FuncoesHeader = (props: FuncoesHeaderProps) => {
    const [isFuncVisible, setIsFuncVisible] = useState(false);
-
+   const { t } = useLanguage();
    const opcoesRole = [
       {
          role: Roles.ADMINISTRADOR,
          title: "Admin",
          items: [
             {
-               label: "Gerenciar imóveis",
+               label: t("functionsHeader.properties"),
                route: "/gerenciamento/imoveis",
                icone: <CasaIcon className="h-5" />,
             },
             {
-               label: "Usuários",
+               label: t("functionsHeader.users"),
                route: "/gerenciamento/usuarios",
                icone: <PerfilIcon className="h-5" />,
             },
             {
-               label: "Proprietários",
+               label: t("functionsHeader.owners"),
                route: "/gerenciamento/proprietarios",
                icone: <CorretoresIcon className="h-5" />,
             },
             {
-               label: "Relatórios",
+               label: t("functionsHeader.reports"),
                route: "/relatorio",
                icone: <RelatoriosIcon className="h-5" />,
             },
@@ -60,12 +61,12 @@ const FuncoesHeader = (props: FuncoesHeaderProps) => {
          title: "Editor",
          items: [
             {
-               label: "Gerenciar imóveis",
+               label: t("functionsHeader.reports"),
                route: "/gerenciamento/imoveis",
                icone: <CasaIcon className="h-5" />,
             },
             {
-               label: "Proprietários",
+               label: t("functionsHeader.owners"),
                route: "/gerenciamento/proprietarios",
                icone: <CorretoresIcon className="h-5" />,
             },
@@ -99,7 +100,7 @@ const FuncoesHeader = (props: FuncoesHeaderProps) => {
                   className="text-center w-full text-white text-base font-semibold font-inter
                             2xl:text-xl"
                >
-                  Funções {group.title}
+                    {t("functionsHeader.title")} {group.title}
                </p>
                {group.items.map((item, idx) => (
                   <div

@@ -17,6 +17,7 @@ interface retornoGetImovel {
    pageableInfo: {
       totalPaginas: number;
       ultima: boolean;
+      paginaAtual: number;
    };
 }
 
@@ -32,6 +33,7 @@ export interface parametrosBuscaImovel {
    qtdQuartos?: string;
    qtdBanheiros?: string;
    qtdGaragens?: string;
+   size?: string;
    precoMinimo?: string;
    precoMaximo?: string;
    finalidade?: string;
@@ -62,6 +64,7 @@ export const buscarTodosImoveis = async (
       qtdQuartos: parametros?.qtdQuartos?.toString() || "",
       qtdBanheiros: parametros?.qtdBanheiros?.toString() || "",
       qtdGaragens: parametros?.qtdGaragens?.toString() || "",
+      size: parametros?.size?.toString() || "",
       precoMinimo: parametros?.precoMinimo?.toString() || "",
       precoMaximo: parametros?.precoMaximo?.toString() || "",
       finalidade: parametros?.finalidade?.toUpperCase() || "",
@@ -120,6 +123,7 @@ export const buscarTodosImoveis = async (
          const pageableInfo = {
             totalPaginas: dataImovel.totalPages,
             ultima: dataImovel.last,
+            paginaAtual: dataImovel.pageable.pageNumber,
          };
          const quantidadeElementos = dataImovel.totalElements;
 
@@ -134,76 +138,80 @@ export const buscarTodosImoveis = async (
             pageableInfo: {
                totalPaginas: 0,
                ultima: true,
+               paginaAtual: 0,
             },
             quantidadeElementos: 0,
          };
       }
 };
 
-export const buscarImoveisFavoritos = async (
-   userId: string,
-   parametros?: parametrosBuscaImovel
-): Promise<retornoGetImovel> => {
-   const params = new URLSearchParams({
-      page: parametros?.paginaAtual?.toString() || "",
-      ativo: parametros?.ativo?.toString() || "true",
-      descricao: parametros?.descricao || "",
-      tamanhoMinimo: parametros?.tamanhoMin?.toString() || "",
-      tamanhoMaximo: parametros?.tamanhoMax?.toString() || "",
-      tipoResidencia: parametros?.tipoResidencia?.toString() || "",
-      qtdQuartos: parametros?.qtdQuartos?.toString() || "",
-      qtdBanheiros: parametros?.qtdBanheiros?.toString() || "",
-      qtdGaragens: parametros?.qtdGaragens?.toString() || "",
-      precoMinimo: parametros?.precoMinimo?.toString() || "",
-      precoMaximo: parametros?.precoMaximo?.toString() || "",
-      finalidade: parametros?.finalidade?.toUpperCase() || "",
-      cidade: parametros?.cidade || "",
-      bairro: parametros?.bairro || "",
-      condicoesEspeciais:
-         parametros?.condicoesEspeciais === "true" ? "true" : "false",
-      destaque: parametros?.destaque === "true" ? "true" : "false",
-      idUsuario: parametros?.idUsuario || "",
-      sort: parametros?.sort || "",
-   });
+// export const buscarImoveisFavoritos = async (
+//    userId: string,
+//    parametros?: parametrosBuscaImovel
+// ): Promise<retornoGetImovel> => {
+//    const params = new URLSearchParams({
+//       page: parametros?.paginaAtual?.toString() || "",
+//       ativo: parametros?.ativo?.toString() || "true",
+//       descricao: parametros?.descricao || "",
+//       tamanhoMinimo: parametros?.tamanhoMin?.toString() || "",
+//       tamanhoMaximo: parametros?.tamanhoMax?.toString() || "",
+//       tipoResidencia: parametros?.tipoResidencia?.toString() || "",
+//       qtdQuartos: parametros?.qtdQuartos?.toString() || "",
+//       qtdBanheiros: parametros?.qtdBanheiros?.toString() || "",
+//       qtdGaragens: parametros?.qtdGaragens?.toString() || "",
+//       precoMinimo: parametros?.precoMinimo?.toString() || "",
+//       precoMaximo: parametros?.precoMaximo?.toString() || "",
+//       finalidade: parametros?.finalidade?.toUpperCase() || "",
+//       cidade: parametros?.cidade || "",
+//       bairro: parametros?.bairro || "",
+//       condicoesEspeciais:
+//          parametros?.condicoesEspeciais === "true" ? "true" : "false",
+//       destaque: parametros?.destaque === "true" ? "true" : "false",
+//       idUsuario: parametros?.idUsuario || "",
+//       sort: parametros?.sort || "",
+//    });
 
-   try {
-      const response = await fetch(
-         `${BASE_URL}/usuarios/${userId}/favoritos?${params.toString()}`,
-         {
-            next: parametros?.revalidate
-               ? { revalidate: parametros.revalidate }
-               : undefined,
-         }
-      );
-      if (response.ok) {
-         const data = await response.json();
+//    try {
+//       const response = await fetch(
+//          `${BASE_URL}/usuarios/${userId}/favoritos?${params.toString()}`,
+//          {
+//             next: parametros?.revalidate
+//                ? { revalidate: parametros.revalidate }
+//                : undefined,
+//          }
+//       );
+//       if (response.ok) {
+//          const data = await response.json();
 
-         const imoveis: ModelImovelGet[] = data.content;
+//          const imoveis: ModelImovelGet[] = data.content;
 
-         const pageableInfo = {
-            totalPaginas: data.totalPages,
-            ultima: data.last,
-         };
-         const quantidadeElementos = data.totalElements;
+//          const pageableInfo = {
+//             totalPaginas: data.totalPages,
+//             ultima: data.last,
+//          };
+//          const quantidadeElementos = data.totalElements;
 
-         console.log("Imóveis favoritos encontrados:", imoveis);
-         console.log("Quantidade de imóveis favoritos:", quantidadeElementos);
+//          console.log("Imóveis favoritos encontrados:", imoveis);
+//          console.log("Quantidade de imóveis favoritos:", quantidadeElementos);
 
-         return {
-            imoveis,
-            pageableInfo,
-            quantidadeElementos,
-         };
-      } else {
-         console.error(
-            "Erro ao buscar os imóveis favoritos: " + response.status
-         );
-      }
-   } catch (error) {
-      console.error("Erro ao buscar os imóveis favoritos:", error);
-   }
-   throw new Error("Erro ao buscar imóveis favoritos");
-};
+//          return {
+//             imoveis,
+//             pageableInfo: {
+//                ...pageableInfo,
+//                paginaAtual: parseInt(params.paginaAtual),
+//             },
+//             quantidadeElementos,
+//          };
+//       } else {
+//          console.error(
+//             "Erro ao buscar os imóveis favoritos: " + response.status
+//          );
+//       }
+//    } catch (error) {
+//       console.error("Erro ao buscar os imóveis favoritos:", error);
+//    }
+//    throw new Error("Erro ao buscar imóveis favoritos");
+// };
 
 export const buscarImovelPorId = async (
    id: string | number
@@ -272,12 +280,10 @@ export const buscarImoveisSemelhantes = async (
          precoMinimo: (imovel.preco * 0.8).toString(),
          qtdBanheiros: imovel.qtdBanheiros.toString(),
          qtdQuartos: imovel.qtdQuartos.toString(),
-         cidade: imovel.endereco.cidade,
-         bairro: imovel.endereco.bairro,
          revalidate: revalidate,
          noUseSession: "true",
-         cache: "force-cache",
       });
+
       if (imoveis.length === 0) {
          return [];
       }

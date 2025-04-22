@@ -7,6 +7,7 @@ import ComponenteRadioFiltro from "./ComponenteRadioFiltro";
 import List from "@/components/List";
 import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface ComponentePrincipalFiltroProps {
    initialFinalidade?: string;
@@ -37,7 +38,7 @@ const CompontentePrincipalFiltro = ({
 }: ComponentePrincipalFiltroProps) => {
    const router = useRouter();
    const searchParams = useSearchParams();
-
+   const { t } = useLanguage();
    const [tipoVenda, setTipoVenda] = useState<"venda" | "aluguel">(
       initialFinalidade === "aluguel" ? "aluguel" : "venda"
    );
@@ -67,16 +68,16 @@ const CompontentePrincipalFiltro = ({
 
    // Estados para opções
    const [opcoesCidade, setOpcoesCidade] = useState([
-      { id: "", label: "Selecione uma cidade" },
+      { id: "", label: t("property.filters.selectCity") },
    ]);
 
    const [opcoesBairro, setOpcoesBairro] = useState([
-      { id: "", label: "Selecione um bairro" },
+      { id: "", label: t("property.filters.selectNeighborhood") },
    ]);
 
    const tipoImovelExemplo = [
-      { id: "CASA", label: "Casa" },
-      { id: "APARTAMENTO", label: "Apartamento" },
+      { id: "CASA", label: t("property.type") },
+      { id: "APARTAMENTO", label: t("property.type") },
    ];
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -224,8 +225,6 @@ const CompontentePrincipalFiltro = ({
       setQuantidadeQuartos(null);
       setQuantidadeVagas(null);
       setimovelDescTitulo("");
-
-
    }
 
    // Função para realizar a busca
@@ -276,7 +275,7 @@ const CompontentePrincipalFiltro = ({
                }`}
                   onClick={() => setTipoVenda("venda")}
                >
-                  Venda
+                   {t("property.forSale")}
                </p>
                <p
                   className={`hover:cursor-pointer text-mobilePadrao md:text-1xl xl:text-2xl ${
@@ -286,7 +285,7 @@ const CompontentePrincipalFiltro = ({
                   }`}
                   onClick={() => setTipoVenda("aluguel")}
                >
-                  Aluguel
+                  {t("property.forRent")}
                </p>
             </div>
 
@@ -302,7 +301,7 @@ const CompontentePrincipalFiltro = ({
                   type="text"
                   className="ml-2 placeholder:text-mobilePadrao text-xs
                   md:p-1 w-full lg:p-2 lg:text-base focus:outline-none"
-                  placeholder="Fale um pouco sobre o imóvel"
+                  placeholder={t("property.filters.propertyDescription")}
                   value={imovelDescTitulo}
                   onChange={(e) => setimovelDescTitulo(e.target.value)}
                />
@@ -315,14 +314,14 @@ const CompontentePrincipalFiltro = ({
                >
                   <div>
                      <p className="mb-2 text-sm text-center xl:text-xl">
-                        Preço
+                     {t("property.price")}
                      </p>
                      <div className="flex justify-center gap-6 w-full">
                         <ComponenteInputFiltro
                            tipoInput="number"
                            onChange={setPrecoMinimo}
                            valor={precoMinimo}
-                           placeholder="mínimo"
+                           placeholder={t("property.filters.minPrice")}
                            htmlFor="preco-minimo"
                            label="R$"
                         />
@@ -330,18 +329,19 @@ const CompontentePrincipalFiltro = ({
                            tipoInput="number"
                            onChange={setPrecoMaximo}
                            valor={precoMaximo}
-                           placeholder="máximo"
+                           placeholder={t("property.filters.maxPrice")}
                            htmlFor="preco-maximo"
                            label="R$"
                         />
                      </div>
                   </div>
+
                   <div>
                      <p
                         className="mb-2 text-sm text-center
                      xl:text-xl"
                      >
-                        Área
+                        {t("property.area")}
                      </p>
 
                      <div className="flex justify-center gap-6 mb-3 w-full">
@@ -349,7 +349,7 @@ const CompontentePrincipalFiltro = ({
                            tipoInput="number"
                            onChange={setMetrosQuadradosMinimo}
                            valor={metrosQuadradosMinimo}
-                           placeholder="mínimo"
+                           placeholder={t("property.filters.minArea")}
                            htmlFor="metros-minimo"
                            label="m²"
                         />
@@ -357,7 +357,7 @@ const CompontentePrincipalFiltro = ({
                            tipoInput="number"
                            onChange={setMetrosQuadradosMaximo}
                            valor={metrosQuadradosMaximo}
-                           placeholder="máximo"
+                           placeholder={t("property.filters.maxArea")}
                            htmlFor="metros-maximo"
                            label="m²"
                         />
@@ -368,12 +368,12 @@ const CompontentePrincipalFiltro = ({
                   md:max-w-96 w-72 lg:max-w-fit"
                   >
                      <ComponenteRadioFiltro
-                        titulo="Vagas"
+                         titulo={t("property.garage")}
                         onChange={setQuantidadeVagas}
                         selecionado={quantidadeDeVagas}
                      />
                      <ComponenteRadioFiltro
-                        titulo="Dormitório"
+                        titulo={t("property.bedrooms")}
                         onChange={setQuantidadeQuartos}
                         selecionado={quantidadeDeQuartos}
                      />
@@ -391,9 +391,9 @@ const CompontentePrincipalFiltro = ({
                            }}
                            opcoes={opcoesCidade}
                            buttonHolder={
-                              carregandoCidades ? "Carregando..." : "Cidade"
+                              carregandoCidades ? t("property.filters.loading") : t("property.filters.city")
                            }
-                           placeholder="Cidade"
+                           placeholder={t("property.filters.city")}
                            value={cidade}
                            disabled={carregandoCidades}
                         />
@@ -401,17 +401,17 @@ const CompontentePrincipalFiltro = ({
                            mudandoValor={setBairro}
                            opcoes={opcoesBairro}
                            buttonHolder={
-                              carregandoBairros ? "Carregando..." : "Bairro"
+                              carregandoBairros ? t("property.filters.loading") : t("property.filters.neighborhood")
                            }
-                           placeholder="Bairro"
+                           placeholder={t("property.filters.neighborhood")}
                            value={bairro}
                            disabled={carregandoBairros || !cidade}
                         />
                         <List
                            mudandoValor={(value) => setTipoImovel(value.toUpperCase())}
                            opcoes={tipoImovelExemplo}
-                           buttonHolder="Tipo imóvel"
-                           placeholder="Casa"
+                           buttonHolder={t("property.filters.propertyType")}
+                           placeholder={t("property.type")}
                            
                            value={tipoImovel}
                         />
@@ -421,12 +421,12 @@ const CompontentePrincipalFiltro = ({
             )}
 
             <div className="flex items-center justify-center gap-4 mt-3 lg:mt-4">
-               <BotaoPadrao texto="BUSCAR" onClick={handleBusca} />
+            <BotaoPadrao texto={t("property.filters.search")} onClick={handleBusca} />
                <div
                   className="botao bg-gray-100 text-black drop-shadow-xl flex items-center justify-center"
                   onClick={() => setFiltroAberto(!filtroAberto)}
                >
-                  <p>FILTROS</p>
+                     <p>{t("property.filters.title")}</p>
                </div>
             </div>
          </div>
@@ -437,7 +437,7 @@ const CompontentePrincipalFiltro = ({
                   className="cursor-pointer lg:text-xl 2xl:text-2xl"
                   onClick={limparFiltro}
                >
-                  Limpar filtros
+                    {t("property.filters.clear")}
                </p>
             </div>
          )}

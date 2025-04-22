@@ -17,6 +17,7 @@ import ModelProprietarioListagem from "@/models/ModelProprietarioListagem";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface ProprietariosListagemProps {
    proprietariosIniciais: ModelProprietarioListagem[] | [];
@@ -37,6 +38,8 @@ const ProprietariosListagem = ({
    status,
    token,
 }: ProprietariosListagemProps) => {
+   
+   const { t } = useLanguage();
    const [proprietarios, setProprietarios] = useState(proprietariosIniciais);
    const [modalConfirmacaoAberto, setModalConfirmacaoAberto] = useState(false);
    const [mostrarNotificacao, setMostrarNotificacao] = useState(false);
@@ -74,6 +77,12 @@ const ProprietariosListagem = ({
       }, token);
       router.refresh();
    };
+   const restaurarUsuario = async (id: number) => {
+      await useFetchComAutorizacaoComToken(`${BASE_URL}/proprietarios/restaurar/${id}`, {
+         method: "POST",
+      }, token);
+      router.refresh();
+   };
 
    const exibirModal = (id: number) => {
       setIdItemParaDeletar(id);
@@ -95,41 +104,44 @@ const ProprietariosListagem = ({
       setProprietarios(proprietariosIniciais);
    }, [proprietariosIniciais]);
 
-   return (
+   return (          
       <>
-         <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-[1fr_7fr_1fr] xl:grid-cols-[1fr_7fr_1fr]">
+         <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-[1fr_10fr_1fr] xl:grid-cols-[1fr_10fr_1fr]">
             <List
                mudandoValor={(valor) => atualizarFiltros(nomePesquisa, valor)}
                opcoes={[
-                  { id: "Ativo", label: "Ativo" },
-                  { id: "Desativado", label: "Desativado" },
+                  { id: "Ativo", label: t("OwnerManagement.buttonActive") },
+                  { id: "Desativado", label: t("OwnerManagement.buttonDesactive") },   
                ]}
-               placeholder="Ativo"
+               placeholder={t("OwnerManagement.buttonActive")}
                value={status}
             />
             <InputPadrao
                type="text"
                htmlFor="input-busca-nome"
                onChange={(e) => setNomePesquisaTemporario(e.target.value)}
-               placeholder="Digite o nome que deseja pesquisar"
+               placeholder={t("OwnerManagement.placeholderSearch")}
                search
                handlePesquisa={handlePesquisa}
                required={false}
             />
             <Link href={"/gerenciamento/proprietarios/cadastro"}>
                <button className="flex items-center justify-center bg-havprincipal rounded-md text-white h-full text-sm py-1 px-2 lg:text-base lg:py-2 lg:px-3 2xl:py-3 2xl:px-4">
-                  Adicionar <PlusIcon className="w-4" />
+               {t("OwnerManagement.buttonAddOwner")} <PlusIcon className="w-4" />
                </button>
             </Link>
          </div>
          <div className="grid grid-cols-1 gap-4 w-full md:mt-2 lg:place-content-center lg:self-center lg:grid-cols-2 lg:mt-4 2xl:mt-6">
             {proprietarios.map((proprietario) => (
                <CardUsuario
+                  token={token}
+                  ativo={proprietario.ativo}
+                  restaurarUsuario={() => restaurarUsuario(proprietario.id)}
                   labelPrimeiroValor="E-mail:"
                   primeiroValor={proprietario.email}
-                  labelSegundoValor="Nome:"
+                  labelSegundoValor={t("perfil.name") + ":"}
                   segundoValor={proprietario.nome}
-                  labelTerceiroValor="Telefone"
+                  labelTerceiroValor={t("perfil.phone")}
                   terceiroValor={proprietario.telefone}
                   labelQuartoValor="CPF:"
                   quartoValor={proprietario.cpf}

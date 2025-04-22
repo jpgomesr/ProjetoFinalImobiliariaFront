@@ -25,6 +25,7 @@ import { TipoUsuarioEnum } from "@/models/Enum/TipoUsuarioEnum";
 import { useNotification } from "@/context/NotificationContext";
 import Erro404 from "@/components/Erro404";
 import Link from "next/link";
+import { useLanguage } from "@/context/LanguageContext";
 
 // Interface para os valores do formulário
 
@@ -36,7 +37,7 @@ interface FormProps {
 const Formulario = ({usuario, token} : FormProps) => {
    const { showNotification } = useNotification();
    const router = useRouter();
-
+   const { t } = useLanguage();
    const [preview, setPreview] = useState<string>();
    const [alterarSenha, setAlterarSenha] = useState(false);
 
@@ -81,13 +82,14 @@ const Formulario = ({usuario, token} : FormProps) => {
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const tiposDeUsuarios = [
+
       { id: TipoUsuarioEnum.CORRETOR, label: "Corretor" },
       { id: TipoUsuarioEnum.ADMINISTRADOR, label: "Administrador" },
       { id: TipoUsuarioEnum.EDITOR, label: "Editor" },
    ];
    const opcoesStatus = [
-      { id: "Ativo", label: "Ativo" },
-      { id: "Desativado", label: "Desativado" },
+      { id: "Ativo", label: t("UserManagement.buttonActive") },
+      { id: "Desativado", label: t("UserManagement.buttonDesactive") },
    ];
 
    const preencherInformacoesAtuaisDoUsuario = async () => {
@@ -182,37 +184,38 @@ const Formulario = ({usuario, token} : FormProps) => {
    };
 
    return (
-      <form
-         onSubmit={handleSubmit(onSubmit)}
-         className={`flex flex-col gap-2 md:gap-3 lg:gap-4 xl:gap-5 2xl:gap-6 ${isSubmitting ? "opacity-40" : "opacity-100"}`}
+   
+      <FundoBrancoPadrao
+         titulo="UserManagement.title"
+         className={`w-full ${isSubmitting ? "opacity-40" : "opacity-100"}`}
+         isTranslationKey={true}
       >
-         <InputPadrao
-            htmlFor="nomeCompleto"
-            label="Nome completo"
-            type="text"
-            placeholder="Ex: Carlos"
-            {...register("nomeCompleto")}
-            mensagemErro={errors.nomeCompleto?.message}
-         />
-         <InputPadrao
-            htmlFor="email"
-            label="E-mail"
-            type="email"
-            placeholder="Ex: Carlos@gmail.com"
-            {...register("email")}
-            mensagemErro={errors.email?.message}
-         />
-         <div>
-            <p className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl">
-               Alterar Senha?
-            </p>
-
-            <Switch
-               onChange={(e) => handleTrocaDeSenha(e.target.checked)}
-               className="w-8 h-4 sm:w-12 sm:h-6 md:w-14 md:h-7 lg:w-16 lg:h-8"
-               checked={alterarSenha}
+         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <InputPadrao
+               htmlFor="nomeCompleto"
+               label={t("perfil.name")}
+               type="text"
+               placeholder="Ex: João Silva"
+               {...register("nomeCompleto")}
+               mensagemErro={errors.nomeCompleto?.message}
             />
-         </div>
+ <InputPadrao
+               htmlFor="email"
+               label={t("perfil.email")}
+               type="email"
+               placeholder="Ex: joao.silva@example.com"
+               {...register("email")}
+               mensagemErro={errors.email?.message}
+            />
+
+<InputPadrao
+               htmlFor="telefone"
+               label={t("perfil.phone")}
+               type="text"
+               placeholder="Ex: 47912345678"
+               {...register("telefone")}
+               mensagemErro={errors.telefone?.message}
+            />
          <InputPadrao
             htmlFor="senha"
             label="Senha"
@@ -264,45 +267,26 @@ const Formulario = ({usuario, token} : FormProps) => {
                </div>
             </>
          )}
-         <div className="flex flex-col">
+         <div className="flex  gap-4">
             <Controller
-               name="ativo"
-               control={control}
-               render={({ field }) => (
-                  <List
-                     title="Status"
-                     opcoes={opcoesStatus}
-                     mudandoValor={field.onChange}
-                     value={field.value}
+             name="imagemPerfil"
+             control={control}
+             render={({ field }) => (
+               <UploadImagem
+                     onChange={(file: File | null) => field.onChange(file)}
+                     preview={preview}
                   />
                )}
             />
          </div>
-         <Controller
-            name="imagemPerfil"
-            control={control}
-            render={({ field }) => (
-               <UploadImagem
-                  onChange={(file: File | null) => field.onChange(file)}
-                  preview={preview}
-               />
-            )}
-         />
-         <div className="flex justify-center gap-2">
-            <Link href="/gerenciamento/usuarios">
-            <BotaoPadrao
-               texto="Voltar"
-               disabled={isSubmitting}
-               type="button"
-            />
-            </Link>
-            <BotaoPadrao
-               texto="Concluir"
-               disabled={isSubmitting}
-               type="submit"
-            />
-         </div>
-      </form>
+                <div className="flex justify-center gap-4">
+               <Link href="/gerenciamento/usuarios">
+                  <BotaoPadrao type="button" texto={t("common.cancel")} />
+               </Link>
+               <BotaoPadrao type="submit" texto={t("common.save")} />
+            </div>
+         </form>
+      </FundoBrancoPadrao>
    );
 };
 

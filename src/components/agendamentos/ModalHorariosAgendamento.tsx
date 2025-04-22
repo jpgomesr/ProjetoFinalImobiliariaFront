@@ -25,6 +25,8 @@ export default function ModalHorariosCorretores({
    idUsuario,
    idAgendamento
 }: ModalHorariosCorretoresProps) {
+
+   console.log(idUsuario, "teste");
    const [horarios, setHorarios] = useState<HorarioDisponivel[]>([]);
    const [horarioSelecionado, setHorarioSelecionado] = useState<HorarioDisponivel | null>(null);
    const [loading, setLoading] = useState(true);
@@ -39,7 +41,6 @@ export default function ModalHorariosCorretores({
             const response = await useFetchComAutorizacaoComToken(`${BASE_URL}/corretores/horarios/${idImovel}`, {
                method: "GET",
             }, token);
-            
             if (!response.ok) {
                throw new Error("Erro ao buscar horários");
             }
@@ -53,9 +54,9 @@ export default function ModalHorariosCorretores({
          }
       };
 
-      if (isOpen && idImovel) {
+
          buscarHorarios();
-      }
+      
    }, [idImovel, isOpen]);
 
    const handleSelecionarHorario = (horario: HorarioDisponivel) => {

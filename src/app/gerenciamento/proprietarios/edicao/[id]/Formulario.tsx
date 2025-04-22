@@ -22,6 +22,7 @@ import List from "@/components/List";
 import { useNotification } from "@/context/NotificationContext";
 import Erro404 from "@/components/Erro404";
 import Link from "next/link";
+import { useLanguage } from "@/context/LanguageContext";
 interface FormProps {
    proprietario: ModelProprietario;
    token: string;
@@ -30,6 +31,7 @@ interface FormProps {
 const Formulario = ({ proprietario, token }: FormProps) => {
    const { showNotification } = useNotification();
    const router = useRouter();
+   const { t } = useLanguage();
 
    const [camposDesabilitados, setCamposDesabilitados] = useState({
       cidadeDesabilitada: true,
@@ -215,7 +217,7 @@ const Formulario = ({ proprietario, token }: FormProps) => {
          {/* Campo Nome */}
          <InputPadrao
             htmlFor="nome"
-            label="Nome"
+            label={t("perfil.name")}
             type="text"
             placeholder="Ex: João Silva"
             {...register("nome")}
@@ -225,7 +227,7 @@ const Formulario = ({ proprietario, token }: FormProps) => {
          {/* Campo Celular */}
          <InputPadrao
             htmlFor="celular"
-            label="Celular"
+            label={t("perfil.phone")}
             type="text"
             placeholder="Ex: 47912345678"
             {...register("celular")}
@@ -235,7 +237,7 @@ const Formulario = ({ proprietario, token }: FormProps) => {
          {/* Campo Telefone */}
          <InputPadrao
             htmlFor="telefone"
-            label="Telefone"
+            label={t("perfil.phone")}
             type="text"
             placeholder="Ex: 47912312121"
             {...register("telefone")}
@@ -245,7 +247,7 @@ const Formulario = ({ proprietario, token }: FormProps) => {
          {/* Campo Email */}
          <InputPadrao
             htmlFor="email"
-            label="Email"
+            label={t("perfil.email")}
             type="email"
             placeholder="Ex: joao.silva@example.com"
             {...register("email")}
@@ -391,17 +393,9 @@ const Formulario = ({ proprietario, token }: FormProps) => {
          {/* Botão de Envio */}
          <div className="flex justify-center gap-2">
             <Link href="/gerenciamento/proprietarios">
-               <BotaoPadrao
-                  texto="Voltar"
-                  disabled={isSubmitting}
-                  type="button"
-               />
+            <BotaoPadrao type="button" texto={t("common.cancel")} />
             </Link>
-            <BotaoPadrao
-               texto={isSubmitting ? "Concluindo..." : "Concluir"}
-               disabled={isSubmitting}
-               type="submit"
-            />
+            <BotaoPadrao type="submit" texto={t("common.save")} />
          </div>
       </form>
    );

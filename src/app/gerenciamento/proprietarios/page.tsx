@@ -38,6 +38,8 @@ export default async function Page({ searchParams }: PageProps) {
    const { conteudoCompleto, proprietariosRenderizados } =
       await buscarProprietarios(paginaAtual, nomePesquisa, status === "Ativo");
 
+   console.log(proprietariosRenderizados);
+
    return (
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>

@@ -80,7 +80,7 @@ const FiltrosImoveis = (props: FiltrosImoveisProps) => {
          <div className="flex justify-center gap-4 mt-4 col-span-full">
             <ButtonMapa
                texto="Cards"
-               href={`${props.url ?? "/imoveis"}?view=cards`}
+               href={`${props.url ?? "/imoveis"}?${new URLSearchParams({...params, view: "cards"}).toString()}`}
                className={`w-32 h-10 ${
                   params.view === "cards"
                      ? "bg-havprincipal text-white"
@@ -89,7 +89,7 @@ const FiltrosImoveis = (props: FiltrosImoveisProps) => {
             />
             <ButtonMapa
                texto="Mapa"
-               href={`${props.url ?? "/imoveis"}?view=map`}
+               href={`${props.url ?? "/imoveis"}?${new URLSearchParams({...params, view: "map"}).toString()}`}
                className={`w-32 h-10  ${
                   params.view === "map"
                      ? "bg-havprincipal text-white"

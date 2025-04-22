@@ -256,10 +256,10 @@ export default function CardImovel(props: HomeProps) {
                         : "text-brancoEscurecido"
                   }`}
                >
-                  <p>
+                  {/* <p>
                      Código:{" "}
                      {"codigo" in props.imovel ? props.imovel.codigo : "N/A"}
-                  </p>
+                  </p> */}
                   <div className="flex flex-col gap-1">
                      <p>
                         {props.imovel.endereco.rua},{" "}

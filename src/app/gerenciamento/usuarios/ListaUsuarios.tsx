@@ -9,6 +9,7 @@ import { useState } from "react";
 import { deletarUsuario, restaurarUsuario } from "./actions";
 import NotificacaoCrud from "@/components/ComponentesCrud/NotificacaoCrud";
 import { useFetchComAutorizacaoComToken } from "@/hooks/FetchComAuthorization";
+import { useLanguage } from "@/context/LanguageContext";
 interface ListaUsuariosProps {
    usuarios: ModelUsuarioListagem[] | undefined;
    peageableinfo: {
@@ -23,6 +24,8 @@ interface ListaUsuariosProps {
 export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtual, token }: ListaUsuariosProps) {
    const router = useRouter();
    
+   const { t } = useLanguage();
+
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
    const [mostrarNotificacao, setMostrarNotificacao] = useState(false);
@@ -72,24 +75,27 @@ export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtu
          <div className="grid grid-cols-1 gap-4 w-full md:mt-2 lg:place-content-center lg:self-center lg:grid-cols-2 lg:mt-4 2xl:mt-6">
             {usuarios?.map((usuario) => (
                <CardUsuario
-               labelPrimeiroValor="E-mail:"
+               labelPrimeiroValor={t("perfil.email") + ":"}
                primeiroValor={usuario.email}
-               labelSegundoValor="Nome:"
+               labelSegundoValor={t("perfil.name") + ":"}
                segundoValor={usuario.nome}
-               labelTerceiroValor="Status:"
-               terceiroValor={usuario.ativo ? "Ativo" : "Desativado"}
-               labelQuartoValor="Tipo usuario:"
+               labelTerceiroValor={t("UserManagement.status") + ":"}
+               terceiroValor={usuario.ativo ? t("UserManagement.buttonActive") : t("UserManagement.buttonDesactive")}
+               labelQuartoValor={t("UserManagement.role") + ":"}
                quartoValor={usuario.role}
                key={usuario.id}
                id={usuario.id}
                imagem={usuario.foto}
+               ativo={usuario.ativo}
                deletarUsuario={exibirModal}
+               restaurarUsuario={() => restaurarUsuario(usuario.id, token)}
                linkEdicao={`/gerenciamento/usuarios/edicao/${usuario.id}`}
+               token={token}
             />
             ))}
          </div>
          {usuarios?.length === 0 && (
-            <div className="text-center w-full col-span-2">Nenhum usuário encontrado...</div>
+            <div className="text-center w-full col-span-2">{t("common.loading")}</div>
          )}
          {peageableinfo.totalPaginas > 0 && (
             <ComponentePaginacao
@@ -104,7 +110,7 @@ export default function ListaUsuarios({ usuarios, peageableinfo, numeroPaginaAtu
             isOpen={modalConfirmacaoAberto}
             onClose={fecharModal}
             onConfirm={confirmarDelecao}
-            message="Você realmente deseja remover este usuário?"
+            message={t("UserManagement.excludeUser")}
          />
           <NotificacaoCrud
                                           message="Desfazer"

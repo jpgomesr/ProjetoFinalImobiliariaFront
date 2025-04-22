@@ -42,7 +42,7 @@ const Page = async  ({params }  : PageProps) => {
       <Layout className="py-0">
          <SubLayoutPaginasCRUD>
             <FundoBrancoPadrao
-               titulo="Edição de proprietário"
+               titulo="Edição de proprietario"
                className={`w-full`}
                >
                <Formulario proprietario={proprietario} token={session.accessToken || ""}/>

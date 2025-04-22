@@ -48,6 +48,8 @@ export default function CardReserva({
    usuario,
    token,
 } : CardReservaProps) {
+
+   console.log(idImovel, "teaaste");
   
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const [modalConfirmacao, setModalConfirmacao] = useState(false);

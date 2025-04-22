@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import ComponenteInputFiltro from "../pagina_inicial/ComponenteInputFiltro";
 import ComponenteRadioFiltro from "../pagina_inicial/ComponenteRadioFiltro";
 import List from "@/components/List";
+import { useSearchParams } from "next/navigation";
 
 interface FiltroProps {
    precoMinimo: string;
@@ -23,7 +24,7 @@ interface FiltroProps {
 
 const Filtro = (props: FiltroProps) => {
    const router = useRouter();
-
+   const searchParams = useSearchParams();
    const [precoMinimo, setPrecoMinimo] = useState(props.precoMinimo);
    const [precoMaximo, setPrecoMaximo] = useState(props.precoMaximo);
    const [metrosQuadradosMinimo, setMetrosQuadradosMinimo] = useState(
@@ -151,19 +152,20 @@ const Filtro = (props: FiltroProps) => {
    }, [cidade]);
 
    const atualizarURL = () => {
-      const params = new URLSearchParams({
-         precoMinimo,
-         precoMaximo,
-         metrosQuadradosMinimo,
-         metrosQuadradosMaximo,
-         quantidadeDeQuartos: quantidadeDeQuartos.toString(),
-         quantidadeDeVagas: quantidadeDeVagas.toString(),
-         cidade,
-         bairro,
-         tipoImovel,
-         finalidade: props.finalidade,
-      });
-      router.push(`${props.url}?${params.toString()}`);
+      const searchParams = new URLSearchParams(window.location.search);
+      
+      searchParams.set('precoMinimo', precoMinimo);
+      searchParams.set('precoMaximo', precoMaximo);
+      searchParams.set('metrosQuadradosMinimo', metrosQuadradosMinimo);
+      searchParams.set('metrosQuadradosMaximo', metrosQuadradosMaximo);
+      searchParams.set('quantidadeDeQuartos', quantidadeDeQuartos.toString());
+      searchParams.set('quantidadeDeVagas', quantidadeDeVagas.toString());
+      searchParams.set('cidade', cidade);
+      searchParams.set('bairro', bairro);
+      searchParams.set('tipoImovel', tipoImovel);
+      searchParams.set('finalidade', props.finalidade);
+
+      router.push(`${props.url}?${searchParams.toString()}`);
    };
 
    const handlePesquisa = () => {

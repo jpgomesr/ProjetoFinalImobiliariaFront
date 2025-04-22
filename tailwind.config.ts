@@ -24,6 +24,9 @@ export default {
             inter: "Inter",
             montserrat: "Montserrat",
          },
+         screens: {
+            '2md': '920px',
+         },
       },
    },
    plugins: [],

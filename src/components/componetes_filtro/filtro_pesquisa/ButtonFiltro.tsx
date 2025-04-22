@@ -22,7 +22,8 @@ interface ButtonFiltroProps {
 
 const ButtonFiltro = (props: ButtonFiltroProps) => {
    const [qtdFiltros, setQtdFiltros] = useState(0);
-   const [filtroAberto, setFiltroAberto] = useState<boolean>(false);
+  
+   const [filtroAberto, setFiltroAberto] = useState<boolean>(false)
 
    return (
       <div className="relative w-full h-full">
@@ -67,7 +68,7 @@ const ButtonFiltro = (props: ButtonFiltroProps) => {
             </div>
          )}
       </div>
-   );
-};
+   )
+}
 
 export default ButtonFiltro;
