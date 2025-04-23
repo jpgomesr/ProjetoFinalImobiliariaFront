@@ -39,8 +39,8 @@ const CompontentePrincipalFiltro = ({
    const router = useRouter();
    const searchParams = useSearchParams();
    const { t } = useLanguage();
-   const [tipoVenda, setTipoVenda] = useState<"venda" | "aluguel">(
-      initialFinalidade === "aluguel" ? "aluguel" : "venda"
+   const [tipoVenda, setTipoVenda] = useState<"VENDA" | "ALUGUEL" | "">(
+      ""
    );
    const [filtroAberto, setFiltroAberto] = useState<boolean>(false);
    const [precoMinimo, setPrecoMinimo] = useState<string>(initialPrecoMinimo);
@@ -181,8 +181,9 @@ const CompontentePrincipalFiltro = ({
    useEffect(() => {
       if (searchParams) {
          const finalidade = searchParams.get("finalidade");
-         if (finalidade === "Aluguel") setTipoVenda("aluguel");
-         else if (finalidade === "Venda") setTipoVenda("venda");
+         if (finalidade === "Aluguel") setTipoVenda("ALUGUEL");
+         else if (finalidade === "Venda") setTipoVenda("VENDA");
+            else if (finalidade === "Todos") setTipoVenda("");
 
          const precoMin = searchParams.get("precoMinimo");
          if (precoMin) setPrecoMinimo(precoMin);
@@ -265,27 +266,37 @@ const CompontentePrincipalFiltro = ({
    return (
       <div className={`bg-white w-3/4 rounded-2xl`}>
          <div className={`flex flex-col items-center p-4 2xl:p-8`}>
-            <div className="flex items-center justify-center gap-16">
+            <div className="flex items-center justify-evenly w-full">
                <p
                   className={`hover:cursor-pointer text-mobilePadrao md:text-1xl xl:text-2xl
                ${
-                  tipoVenda === "venda"
+                  tipoVenda === "VENDA"
                      ? "text-havprincipal"
                      : "text-cinzaNeutro"
                }`}
-                  onClick={() => setTipoVenda("venda")}
+                  onClick={() => setTipoVenda("VENDA")}
                >
                    {t("property.forSale")}
                </p>
                <p
                   className={`hover:cursor-pointer text-mobilePadrao md:text-1xl xl:text-2xl ${
-                     tipoVenda === "aluguel"
+                     tipoVenda === "ALUGUEL"
                         ? "text-havprincipal"
                         : "text-cinzaNeutro"
                   }`}
-                  onClick={() => setTipoVenda("aluguel")}
+                  onClick={() => setTipoVenda("ALUGUEL")}
                >
                   {t("property.forRent")}
+               </p>
+               <p
+                  className={`hover:cursor-pointer text-mobilePadrao md:text-1xl xl:text-2xl ${
+                     tipoVenda === ""
+                        ? "text-havprincipal"
+                        : "text-cinzaNeutro"
+                  }`}
+                  onClick={() => setTipoVenda("")}
+               >
+                  {t("property.forAll")}
                </p>
             </div>
 

@@ -156,6 +156,7 @@
       "status": "Status",
       "forSale": "Comprar",
       "forRent": "Alugar",
+      "forAll": "Todos",
       "specifically": "Finalidade",
       "filters": {
          "title": "Filtros",
