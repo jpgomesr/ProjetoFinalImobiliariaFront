@@ -37,7 +37,6 @@ export const authOptions: NextAuthOptions = {
                });
 
                if (!response.ok) {
-                  console.error("Erro na resposta:", await response.text());
                   return null;
                }
 
