@@ -202,6 +202,19 @@ const Formulario = ({ usuario, token }: FormProps) => {
                {...register("email")}
                mensagemErro={errors.email?.message}
             />
+
+            <div>
+               <p className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl">
+                  Alterar Senha?
+               </p>
+
+               <Switch
+                  onChange={(e) => handleTrocaDeSenha(e.target.checked)}
+                  className="w-8 h-4 sm:w-12 sm:h-6 md:w-14 md:h-7 lg:w-16 lg:h-8"
+                  checked={alterarSenha}
+               />
+            </div>
+
             <InputPadrao
                htmlFor="senha"
                label="Senha"
