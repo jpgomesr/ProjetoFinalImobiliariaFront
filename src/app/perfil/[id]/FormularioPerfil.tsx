@@ -16,6 +16,7 @@ import { Mail, MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
 import AgendamentosPerfil from "./AgendamentosPerfil";
 import { useLanguage } from "@/context/LanguageContext";
+import { Roles } from "@/models/Enum/Roles";
 
 interface FormularioPerfilProps {
    id: string;
@@ -361,10 +362,14 @@ const FormularioPerfil = ({
                </div>
 
                {/* Seção de Agendamentos */}
-              
-               <div className="mt-8 w-full sm:w-[90%] md:w-[95%] xl:w-[980px]">
-               <AgendamentosPerfil id={id} role={dadosIniciais?.role || ""} token={token} />
-               </div>
+               {
+                  (dadosIniciais?.role === Roles.CORRETOR || dadosIniciais?.role === Roles.USUARIO) && (
+                     <div className="mt-8 w-full sm:w-[90%] md:w-[95%] xl:w-[980px]">
+                        <AgendamentosPerfil id={id} role={dadosIniciais?.role || ""} token={token} />
+                     </div>
+                  )
+               }
+            
 
                <div className="flex justify-center gap-4 mt-4 xl:ml-96">
                   <BotaoPadrao
