@@ -39,7 +39,7 @@ const CompontentePrincipalFiltro = ({
    const router = useRouter();
    const searchParams = useSearchParams();
    const { t } = useLanguage();
-   const [tipoVenda, setTipoVenda] = useState<"VENDA" | "ALUGUEL" | "">(
+   const [tipoVenda, setTipoVenda] = useState<"venda" | "aluguel" | "">(
       ""
    );
    const [filtroAberto, setFiltroAberto] = useState<boolean>(false);
@@ -181,8 +181,8 @@ const CompontentePrincipalFiltro = ({
    useEffect(() => {
       if (searchParams) {
          const finalidade = searchParams.get("finalidade");
-         if (finalidade === "Aluguel") setTipoVenda("ALUGUEL");
-         else if (finalidade === "Venda") setTipoVenda("VENDA");
+         if (finalidade === "Aluguel") setTipoVenda("aluguel");
+         else if (finalidade === "Venda") setTipoVenda("venda");
             else if (finalidade === "Todos") setTipoVenda("");
 
          const precoMin = searchParams.get("precoMinimo");
@@ -270,21 +270,21 @@ const CompontentePrincipalFiltro = ({
                <p
                   className={`hover:cursor-pointer text-mobilePadrao md:text-1xl xl:text-2xl
                ${
-                  tipoVenda === "VENDA"
+                  tipoVenda === "venda"
                      ? "text-havprincipal"
                      : "text-cinzaNeutro"
                }`}
-                  onClick={() => setTipoVenda("VENDA")}
+                  onClick={() => setTipoVenda("venda")}
                >
                    {t("property.forSale")}
                </p>
                <p
                   className={`hover:cursor-pointer text-mobilePadrao md:text-1xl xl:text-2xl ${
-                     tipoVenda === "ALUGUEL"
+                     tipoVenda === "aluguel"
                         ? "text-havprincipal"
                         : "text-cinzaNeutro"
                   }`}
-                  onClick={() => setTipoVenda("ALUGUEL")}
+                  onClick={() => setTipoVenda("aluguel")}
                >
                   {t("property.forRent")}
                </p>
@@ -321,7 +321,7 @@ const CompontentePrincipalFiltro = ({
             {filtroAberto && (
                <div
                   className="flex flex-wrap justify-center max-w-full md:justify-center md:gap-3 mt-3 
-               md:mt-5 md:w-10/12 "
+               md:mt-5 md:w-10/12 animate-slideDown"
                >
                   <div>
                      <p className="mb-2 text-sm text-center xl:text-xl">
@@ -457,4 +457,3 @@ const CompontentePrincipalFiltro = ({
 };
 
 export default CompontentePrincipalFiltro;
-   

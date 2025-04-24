@@ -75,6 +75,7 @@ const Page = async ({ searchParams }: PageProps) => {
                <FiltrosImoveis 
                view={view} 
                bairro={parametrosBusca.bairro}
+               finalidade={parametrosBusca.finalidade}
                cidade={parametrosBusca.cidade}
                precoMaximo={parametrosBusca.precoMaximo}
                precoMinimo={parametrosBusca.precoMinimo}
