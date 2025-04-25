@@ -81,7 +81,7 @@ const NotificacaoContent = () => {
       setIsOpen(!isOpen);
    };
 
-   const handleLerNotificacao = async () => {
+   const handleLerNotificacao = async (id: number) => {
       try {
          const response = await fetch(
             `${process.env.NEXT_PUBLIC_BASE_URL}/notificacao/ler/${id}`,
@@ -104,18 +104,16 @@ const NotificacaoContent = () => {
 
    return (
       <button onClick={handleClick} className="relative">
-         <Bell
-            className="md:w-7 md:h-7 2xl:w-8 2xl:h-8 text-white relative z-50"
-            onClick={handleLerNotificacao}
-         />
+         <Bell className="md:w-7 md:h-7 2xl:w-8 2xl:h-8 text-white relative z-50" />
          {notificacoes.some((notificacao) => !notificacao.lido) && (
             <span className="absolute -top-[2px] -right-[2px] bg-red-500 rounded-full w-3 h-3"></span>
          )}
          {isOpen && (
             <>
-               <div className="fixed inset-0 z-40 bg-black opacity-50 cursor-default" />
-               <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 max-h-96 overflow-y-auto hide-scrollbar 
-               md:w-72">
+               <div
+                  className="absolute top-full right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 max-h-96 
+                  overflow-y-auto hide-scrollbar md:w-72"
+               >
                   <div className="p-2 border-b border-gray-200 sticky top-0 bg-white z-50">
                      <h2 className="text-lg font-semibold text-gray-800">
                         Notificações
@@ -133,6 +131,9 @@ const NotificacaoContent = () => {
                               <div
                                  key={key}
                                  className="p-3 hover:bg-gray-50 transition-colors relative text-left"
+                                 onClick={() => {
+                                    handleLerNotificacao(notificacao.id);
+                                 }}
                               >
                                  <h3 className="text-sm font-medium text-gray-800 truncate">
                                     {notificacao.titulo}
@@ -145,7 +146,10 @@ const NotificacaoContent = () => {
                                  ) : (
                                     <X
                                        className="w-4 h-4 text-black absolute top-1 right-1"
-                                       onClick={handleLerNotificacao}
+                                       onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleLerNotificacao(notificacao.id);
+                                       }}
                                     />
                                  )}
                                  <p className="text-xs text-gray-400 mt-1 text-right italic text-[10px]">

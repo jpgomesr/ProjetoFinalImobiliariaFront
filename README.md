@@ -1,54 +1,81 @@
-# Utilização de Prefixos no GitHub
+# Projeto Final Imobiliária Front
 
-Este repositório utiliza uma convenção de prefixos para organizar e categorizar issues, pull requests e commits. A adoção desses prefixos ajuda a manter o projeto organizado, facilita a identificação do tipo de tarefa e melhora a clareza durante o desenvolvimento.
+Este é o frontend do projeto final de imobiliária, desenvolvido com Next.js.
 
-## Prefixos Comuns
+## Pré-requisitos
 
-Aqui estão os prefixos mais utilizados e seus significados:
+-  Node.js (versão 18 ou superior)
+-  npm ou yarn
 
-- **feat**: Indica a adição de uma nova funcionalidade ao projeto.
-  - Exemplo: `feat: adiciona suporte a autenticação via OAuth`
+## Instalação
 
-- **fix**: Corrige um bug ou problema no código.
-  - Exemplo: `fix: resolve erro de validação no formulário`
+1. Clone o repositório:
 
-- **docs**: Atualizações ou adições na documentação.
-  - Exemplo: `docs: atualiza guia de instalação`
+```bash
+git clone https://github.com/jpgomesr/ProjetoFinalImobiliariaFront.git
+```
 
-- **style**: Alterações relacionadas à formatação do código (espaçamento, indentação, etc.) que não afetam a funcionalidade.
-  - Exemplo: `style: ajusta indentação no arquivo principal`
+2. Navegue até o diretório do projeto:
 
-- **refactor**: Refatoração de código que não adiciona novas funcionalidades nem corrige bugs.
-  - Exemplo: `refactor: melhora estrutura do módulo de autenticação`
+```bash
+cd ProjetoFinalImobiliariaFront
+```
 
-- **test**: Adição ou modificação de testes.
-  - Exemplo: `test: adiciona testes para o módulo de usuários`
+3. Instale as dependências:
 
-- **chore**: Tarefas de manutenção, como atualizações de dependências ou configurações.
-  - Exemplo: `chore: atualiza dependências do projeto`
+```bash
+npm install
+# ou
+yarn install
+```
 
-- **ci**: Alterações relacionadas à integração contínua (CI).
-  - Exemplo: `ci: configura GitHub Actions para testes automatizados`
+## Configuração do Ambiente
 
-- **perf**: Melhorias de desempenho.
-  - Exemplo: `perf: otimiza consultas ao banco de dados`
+1. Crie um arquivo `.env.local` na raiz do projeto com as seguintes variáveis:
 
-- **build**: Alterações que afetam o sistema de build ou dependências externas.
-  - Exemplo: `build: atualiza configuração do Webpack`
+```env
+NEXT_PUBLIC_BASE_URL=http://localhost:8082
+NEXT_AUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=
+NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=
+NEXT_PUBLIC_GOOGLE_CLIENT_SECRET=
+```
 
-## Como Usar
+## Execução
 
-1. Ao criar uma **issue**, utilize o prefixo correspondente ao tipo de tarefa.
-   - Exemplo: `[feat] Adicionar suporte a temas escuros`
+Para iniciar o projeto em modo de desenvolvimento:
 
-2. Ao abrir um **pull request**, utilize o prefixo no título.
-   - Exemplo: `fix: corrige erro de cálculo na função de desconto`
+```bash
+npm run dev
+# ou
+yarn dev
+```
 
-3. Ao fazer um **commit**, utilize o prefixo na mensagem.
-   - Exemplo: `docs: atualiza README com instruções de instalação`
+O projeto estará disponível em [http://localhost:3000](http://localhost:3000)
 
-## Benefícios
+## Build para Produção
 
-- **Organização**: Facilita a categorização e filtragem de tarefas.
-- **Clareza**: Torna o propósito de cada alteração mais evidente.
-- **Consistência**: Mantém um padrão em todo o projeto.
+Para criar uma build otimizada para produção:
+
+```bash
+npm run build
+# ou
+yarn build
+```
+
+Para iniciar o servidor de produção:
+
+```bash
+npm start
+# ou
+yarn start
+```
+
+## Tecnologias Utilizadas
+
+-  Next.js
+-  TypeScript
+-  Tailwind CSS
+-  Lucide Icons
+-  NextAuth.js
