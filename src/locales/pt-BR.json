@@ -215,7 +215,7 @@
    },
    "SchedulingHistory": {
       "title": "Histórico de Agendamentos",
-      "mySchedules": "Meus Agendamentos",
+      "mySchedules": "Meus horarios",
       "status1": "Cancelado",
       "status2": "Confirmado",
       "status3": "Pendente",
