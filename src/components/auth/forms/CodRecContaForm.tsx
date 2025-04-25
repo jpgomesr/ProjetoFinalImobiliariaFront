@@ -5,6 +5,8 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useNotification } from "@/context/NotificationContext";
 
 const codRecContaSchema = z.object({
    codigo: z.string().length(6, { message: "Código inválido" }),
@@ -14,18 +16,26 @@ type CodRecContaFormData = z.infer<typeof codRecContaSchema>;
 
 interface CodRecContaFormProps {
    email: string;
-   senha : string;
+   senha: string;
    callbackUrl?: string;
 }
 
-const CodRecContaForm = ({ email, senha, callbackUrl }: CodRecContaFormProps) => {
+const CodRecContaForm = ({
+   email,
+   senha,
+   callbackUrl,
+}: CodRecContaFormProps) => {
    const [codigo, setCodigo] = useState<string[]>(["", "", "", "", "", ""]);
+   const [isLoading, setIsLoading] = useState(false);
+   const router = useRouter();
+   const { showNotification } = useNotification();
 
    const {
       handleSubmit,
       formState: { errors },
       clearErrors,
       setValue,
+      setError,
    } = useForm<CodRecContaFormData>({
       resolver: zodResolver(codRecContaSchema),
       defaultValues: {
@@ -34,13 +44,72 @@ const CodRecContaForm = ({ email, senha, callbackUrl }: CodRecContaFormProps) =>
    });
 
    const onSubmit = async (data: CodRecContaFormData) => {
-      const response = await signIn("credentials", {
-         email: email,
-         password: senha,
-         codigo: data.codigo,
-         callbackUrl: callbackUrl || "/",
-         redirect: true,
-      });
+      try {
+         setIsLoading(true);
+         const finalCallbackUrl = callbackUrl || "/";
+
+         // Primeiro, tenta verificar diretamente com o backend
+         const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/auth/2fa/verify`,
+            {
+               method: "POST",
+               headers: { "Content-Type": "application/json" },
+               body: JSON.stringify({
+                  email: email,
+                  senha: senha,
+                  codigo: data.codigo,
+               }),
+            }
+         );
+
+         if (!response.ok) {
+            // Se o backend retornar erro, extraímos a mensagem e a mostramos
+            let mensagemErro = "Código de verificação inválido";
+            try {
+               const errorData = await response.json();
+               mensagemErro = errorData.mensagem || mensagemErro;
+            } catch (error) {
+               console.error("Erro ao processar resposta do servidor:", error);
+            }
+
+            showNotification(mensagemErro);
+
+            setError("codigo", {
+               message: "Código inválido",
+               type: "manual",
+            });
+            setIsLoading(false);
+            return;
+         }
+
+         // Se a verificação foi bem-sucedida, faz login com o NextAuth
+         const signInResponse = await signIn("credentials", {
+            email: email,
+            password: senha,
+            codigo: data.codigo,
+            callbackUrl: finalCallbackUrl,
+            redirect: false,
+         });
+
+         if (signInResponse?.error) {
+            showNotification(
+               "Erro ao iniciar sessão. Tente novamente mais tarde."
+            );
+            setError("codigo", {
+               message: "Erro ao verificar o código",
+               type: "manual",
+            });
+         } else {
+            router.push(finalCallbackUrl);
+         }
+      } catch (error) {
+         showNotification(
+            "Erro ao verificar o código. Código inválido ou servidor indisponível."
+         );
+         console.error("Erro ao verificar código:", error);
+      } finally {
+         setIsLoading(false);
+      }
    };
 
    const handleChange = (index: number, value: string) => {
@@ -86,7 +155,10 @@ const CodRecContaForm = ({ email, senha, callbackUrl }: CodRecContaFormProps) =>
                </div>
             )}
             <form
-               onSubmit={handleSubmit(onSubmit)}
+               onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSubmit(onSubmit)();
+               }}
                className="flex flex-col gap-3"
             >
                <div className="flex items-center text-black p-2 sm:p-2.5 rounded-md min-w-0 justify-between">
@@ -105,15 +177,19 @@ const CodRecContaForm = ({ email, senha, callbackUrl }: CodRecContaFormProps) =>
                            clearErrors();
                         }}
                         onKeyDown={(e) => handleKeyDown(index, e)}
+                        disabled={isLoading}
                      />
                   ))}
                </div>
                <div className="flex justify-center items-center">
                   <button
                      type="submit"
-                     className="bg-white text-havprincipal font-bold py-2 px-4 sm:py-2.5 sm:px-5 rounded-md text-sm sm:text-base mt-2"
+                     className={`bg-white text-havprincipal font-bold py-2 px-4 sm:py-2.5 sm:px-5 rounded-md text-sm sm:text-base mt-2 ${
+                        isLoading ? "opacity-70 cursor-not-allowed" : ""
+                     }`}
+                     disabled={isLoading}
                   >
-                     Enviar código
+                     {isLoading ? "Verificando..." : "Enviar código"}
                   </button>
                </div>
             </form>
