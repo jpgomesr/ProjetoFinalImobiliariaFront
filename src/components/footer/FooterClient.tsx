@@ -1,12 +1,10 @@
 "use client";
 
-import LogoHav from "@/svg/icons/logo/LogoHavClaro";
-import FacebookIcon from "@/svg/icons/footer/FacebookIcon";
-import InstagramIcon from "@/svg/icons/footer/InstagramIcon";
-import TwitterIcon from "@/svg/icons/footer/TwitterIcon";
+import LogoHav from "@/svg/icons/logo/LogoHavClaro";;
 import React from "react";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
+import { FacebookIcon, TwitterIcon, InstagramIcon, Instagram } from "lucide-react";
 
 const FooterClient = () => {
    const { t } = useLanguage();
@@ -125,7 +123,7 @@ const FooterClient = () => {
                      </Link>
                      <Link href={"/"}>
                         <button>
-                           <InstagramIcon
+                           <Instagram
                               className="w-5 h-5 
                                     sm:w-6 sm:h-6
                                     lg:w-7 lg:h-7"

@@ -29,12 +29,12 @@ import { useLanguage } from "@/context/LanguageContext";
 
 // Interface para os valores do formulário
 
-interface FormProps { 
-    usuario: ModelUsuario,
-    token: string
+interface FormProps {
+   usuario: ModelUsuario;
+   token: string;
 }
 
-const Formulario = ({usuario, token} : FormProps) => {
+const Formulario = ({ usuario, token }: FormProps) => {
    const { showNotification } = useNotification();
    const router = useRouter();
    const { t } = useLanguage();
@@ -82,7 +82,6 @@ const Formulario = ({usuario, token} : FormProps) => {
 
    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
    const tiposDeUsuarios = [
-
       { id: TipoUsuarioEnum.CORRETOR, label: "Corretor" },
       { id: TipoUsuarioEnum.ADMINISTRADOR, label: "Administrador" },
       { id: TipoUsuarioEnum.EDITOR, label: "Editor" },
@@ -93,9 +92,7 @@ const Formulario = ({usuario, token} : FormProps) => {
    ];
 
    const preencherInformacoesAtuaisDoUsuario = async () => {
-     
       try {
-
          if (!usuario.id) {
             setErro404(true);
             return;
@@ -171,7 +168,7 @@ const Formulario = ({usuario, token} : FormProps) => {
                   setFocus(primeiroCampoComErro);
                }
             }
-            console.log(responseData)
+            console.log(responseData);
             throw new Error(responseData.mensagem || "Erro ao editar usuário.");
          }
 
@@ -184,11 +181,9 @@ const Formulario = ({usuario, token} : FormProps) => {
    };
 
    return (
-   
       <FundoBrancoPadrao
-         titulo="UserManagement.title"
+         titulo="Edição de usuário"
          className={`w-full ${isSubmitting ? "opacity-40" : "opacity-100"}`}
-         isTranslationKey={true}
       >
          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <InputPadrao
@@ -199,7 +194,7 @@ const Formulario = ({usuario, token} : FormProps) => {
                {...register("nomeCompleto")}
                mensagemErro={errors.nomeCompleto?.message}
             />
- <InputPadrao
+            <InputPadrao
                htmlFor="email"
                label={t("perfil.email")}
                type="email"
@@ -208,78 +203,82 @@ const Formulario = ({usuario, token} : FormProps) => {
                mensagemErro={errors.email?.message}
             />
 
-<InputPadrao
+            <div>
+               <p className="opacity-90 text-xs font-montserrat md:text-sm lg:text-base lg:rounded-lg 2xl:text-xl 2xl:rounded-xl">
+                  Alterar Senha?
+               </p>
+
+               <Switch
+                  onChange={(e) => handleTrocaDeSenha(e.target.checked)}
+                  className="w-8 h-4 sm:w-12 sm:h-6 md:w-14 md:h-7 lg:w-16 lg:h-8"
+                  checked={alterarSenha}
+               />
+            </div>
+
+            <InputPadrao
+               htmlFor="senha"
+               label="Senha"
+               type="password"
+               placeholder="Ex: 123C@31s$"
+               {...register("senha")}
+               mensagemErro={errors.senha?.message}
+               disabled={!alterarSenha}
+            />
+            <InputPadrao
+               htmlFor="confirmaSenha"
+               label="Confirmar senha"
+               type="password"
+               placeholder="Digite a senha novamente"
+               {...register("confirmaSenha")}
+               mensagemErro={errors.confirmaSenha?.message}
+               disabled={!alterarSenha}
+            />
+            <InputPadrao
                htmlFor="telefone"
-               label={t("perfil.phone")}
+               label="Telefone"
                type="text"
-               placeholder="Ex: 47912345678"
+               placeholder="Ex: 47912312121"
                {...register("telefone")}
                mensagemErro={errors.telefone?.message}
             />
-         <InputPadrao
-            htmlFor="senha"
-            label="Senha"
-            type="password"
-            placeholder="Ex: 123C@31s$"
-            {...register("senha")}
-            mensagemErro={errors.senha?.message}
-            disabled={!alterarSenha}
-         />
-         <InputPadrao
-            htmlFor="confirmaSenha"
-            label="Confirmar senha"
-            type="password"
-            placeholder="Digite a senha novamente"
-            {...register("confirmaSenha")}
-            mensagemErro={errors.confirmaSenha?.message}
-            disabled={!alterarSenha}
-         />
-         <InputPadrao
-            htmlFor="telefone"
-            label="Telefone"
-            type="text"
-            placeholder="Ex: 47912312121"
-            {...register("telefone")}
-            mensagemErro={errors.telefone?.message}
-         />
-         <TextAreaPadrao
-            htmlFor="descricao"
-            label="Descricao"
-            {...register("descricao")}
-            mensagemErro={errors.descricao?.message}
-         />
-         {usuario.role !== TipoUsuarioEnum.USUARIO && (
-            <>
-               <div className="flex flex-col">
-                  <Controller
-                     name="tipoUsuario"
-               control={control}
-               render={({ field }) => (
-                  <List
-                     title="Tipo usuario"
-                     opcoes={tiposDeUsuarios}
-                     mudandoValor={field.onChange}
-                     placeholder="Tipo usuario"
-                     value={field.value || undefined}
-                  />
-               )}
-                  />
-               </div>
-            </>
-         )}
-         <div className="flex  gap-4">
-            <Controller
-             name="imagemPerfil"
-             control={control}
-             render={({ field }) => (
-               <UploadImagem
-                     onChange={(file: File | null) => field.onChange(file)}
-                     preview={preview}
-                  />
-               )}
+            <TextAreaPadrao
+               htmlFor="descricao"
+               label="Descricao"
+               {...register("descricao")}
+               mensagemErro={errors.descricao?.message}
             />
-         </div>
-                <div className="flex justify-center gap-4">
+            {usuario.role !== TipoUsuarioEnum.USUARIO && (
+               <>
+                  <div className="flex flex-col">
+                     <Controller
+                        name="tipoUsuario"
+                        control={control}
+                        render={({ field }) => (
+                           <List
+                              title="Tipo usuario"
+                              opcoes={tiposDeUsuarios}
+                              mudandoValor={field.onChange}
+                              placeholder="Tipo usuario"
+                              value={field.value || undefined}
+                           />
+                        )}
+                     />
+                  </div>
+               </>
+            )}
+            <div className="flex  gap-4">
+               <Controller
+                  name="imagemPerfil"
+                  control={control}
+                  render={({ field }) => (
+                     <UploadImagem
+                        onChange={(file: File | null) => field.onChange(file)}
+                        preview={preview}
+                     />
+                  )}
+               />
+            </div>
+            <div className="flex justify-center gap-4">
                <Link href="/gerenciamento/usuarios">
                   <BotaoPadrao type="button" texto={t("common.cancel")} />
                </Link>

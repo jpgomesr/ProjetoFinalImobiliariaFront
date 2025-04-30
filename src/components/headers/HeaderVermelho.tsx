@@ -69,7 +69,7 @@ const HeaderVermelho = ({ role, id, foto, nome, t }: HeaderVermelhoProps) => {
             <Notificacao />
             <Link href={id ? "/chat" : "/api/auth/signin"} className="hidden 2md:block">
                <button className="text-white">
-                  <MessageCircleMore className="md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
+                  <MessageCircleMore className="md:w-7 md:h-7 2xl:w-8 2xl:h-8"/>
                </button>
             </Link>
             <Link href="/perguntas-frequentes" className="hidden 2md:block">
@@ -79,7 +79,7 @@ const HeaderVermelho = ({ role, id, foto, nome, t }: HeaderVermelhoProps) => {
             </Link>
             <Link href={id ? `/favoritos/${id}` : "/api/auth/signin"} className="hidden 2md:block">
                <button className="text-white">
-                  <Heart className="md:w-7 md:h-7 2xl:w-8 2xl:h-8" />
+                  <Heart className="md:w-7 md:h-7 2xl:w-8 2xl:h-8 " />
                </button>
             </Link>
             {id ? (

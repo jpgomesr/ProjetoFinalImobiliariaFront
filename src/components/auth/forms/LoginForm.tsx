@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import CodRecContaForm from "./CodRecContaForm";
+import { useNotification } from "@/context/NotificationContext";
 const loginSchema = z.object({
    login: z.string().min(1, { message: "Login é obrigatório" }),
    password: z.string().min(1, { message: "Senha é obrigatória" }),
@@ -29,6 +30,7 @@ const LoginForm = ({ callbackUrl }: LoginFormProps) => {
    const [email, setEmail] = useState("");
    const [senha, setSenha] = useState("");
    const router = useRouter();
+   const { showNotification } = useNotification();
    const {
       register,
       handleSubmit,
@@ -45,28 +47,64 @@ const LoginForm = ({ callbackUrl }: LoginFormProps) => {
 
    const onSubmit = async (data: LoginFormData) => {
       try {
-         
-         const verificaDoisFatores = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/verificar-2fa-habilitado/${data.login}`) 
-         const dataVerificaDoisFatores = await verificaDoisFatores.json()
-         if(dataVerificaDoisFatores.habilitado){
-            setEmail(data.login)
-            setSenha(data.password)
-            setFormCodigo(true)
+         setIsLoading(true);
+
+         // Verificação de autenticação de dois fatores
+         const verificaDoisFatores = await fetch(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/auth/verificar-2fa-habilitado/${data.login}`
+         );
+
+         if (!verificaDoisFatores.ok) {
+            let mensagemErro = "Erro ao verificar autenticação de dois fatores";
+            try {
+               const errorData = await verificaDoisFatores.json();
+               mensagemErro = errorData.mensagem || mensagemErro;
+            } catch (error) {
+               console.error("Erro ao processar resposta do servidor:", error);
+            }
+
+            showNotification(mensagemErro);
+            setIsLoading(false);
             return;
          }
-         
-         setIsLoading(true);
+
+         const dataVerificaDoisFatores = await verificaDoisFatores.json();
+         if (dataVerificaDoisFatores.habilitado) {
+            setEmail(data.login);
+            setSenha(data.password);
+            setFormCodigo(true);
+            setIsLoading(false);
+            return;
+         }
+
          const finalCallbackUrl = callbackUrl || "/";
 
-         const response = await signIn("credentials", {
-            email: data.login,
-            password: data.password,
-            callbackUrl: finalCallbackUrl,
-            redirect: false,
-         });
+         // Tentativa de login direta com o backend para obter mensagens de erro detalhadas
+         const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`,
+            {
+               method: "POST",
+               headers: { "Content-Type": "application/json" },
+               body: JSON.stringify({
+                  email: data.login,
+                  senha: data.password,
+               }),
+            }
+         );
 
-         if (response?.error) {
+         if (!response.ok) {
+            // Se o backend retornar erro, extraímos a mensagem e a mostramos
+            let mensagemErro = "Usuário ou senha inválidos";
+            try {
+               const errorData = await response.json();
+               mensagemErro = errorData.mensagem || mensagemErro;
+            } catch (error) {
+               console.error("Erro ao processar resposta do servidor:", error);
+            }
+
             setLoginError(true);
+            showNotification(mensagemErro);
+
             setError("login", {
                message: "Login ou senha incorretos",
                type: "manual",
@@ -75,13 +113,41 @@ const LoginForm = ({ callbackUrl }: LoginFormProps) => {
                message: "Login ou senha incorretos",
                type: "manual",
             });
-            console.log(errors);
+            setIsLoading(false);
+            return;
+         }
+
+         // Se o login foi bem-sucedido no backend, agora fazemos o login com o NextAuth
+         const signInResponse = await signIn("credentials", {
+            email: data.login,
+            password: data.password,
+            callbackUrl: finalCallbackUrl,
+            redirect: false,
+         });
+
+         if (signInResponse?.error) {
+            setLoginError(true);
+            showNotification(
+               "Erro ao iniciar sessão. Tente novamente mais tarde."
+            );
+
+            setError("login", {
+               message: "Erro ao iniciar sessão",
+               type: "manual",
+            });
+            setError("password", {
+               message: "Erro ao iniciar sessão",
+               type: "manual",
+            });
          } else {
             setLoginError(false);
             router.push(finalCallbackUrl);
          }
       } catch (error) {
          setLoginError(true);
+         showNotification(
+            "Erro ao fazer login. Usuário ou senha inválidos ou servidor indisponível."
+         );
          console.error("Erro ao fazer login:", error);
       } finally {
          setIsLoading(false);
@@ -94,13 +160,6 @@ const LoginForm = ({ callbackUrl }: LoginFormProps) => {
             <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center">
                Login
             </h1>
-            {loginError && (
-               <div className="w-full flex justify-center">
-                  <span className="text-havprincipal bg-white px-2 py-1 rounded-lg text-sm sm:text-base font-montserrat">
-                     Login ou senha incorretos
-                  </span>
-               </div>
-            )}
             <form
                onSubmit={(e) => {
                   e.preventDefault();
@@ -207,10 +266,10 @@ const LoginForm = ({ callbackUrl }: LoginFormProps) => {
                </div>
             </form>
          </div>
-         </div>
+      </div>
    ) : (
-      <CodRecContaForm email={email} senha={senha} callbackUrl={callbackUrl}/>
+      <CodRecContaForm email={email} senha={senha} callbackUrl={callbackUrl} />
    );
 };
 
-export default LoginForm;  
+export default LoginForm;

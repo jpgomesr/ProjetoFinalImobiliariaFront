@@ -1,16 +1,20 @@
-"use client"
+"use client";
 
 import React from "react";
 import { useState } from "react";
-import { LayoutGrid, MailQuestionIcon, MessageSquareQuoteIcon, X } from "lucide-react";
+import {
+   LayoutGrid,
+   MailQuestion,
+   MessageSquareQuote,
+   X,
+   House,
+   User,
+   UserRoundCheck,
+   BarChart,
+} from "lucide-react";
 import Link from "next/link";
 import { Roles } from "@/models/Enum/Roles";
-import CasaIcon from "@/svg/icons/header/CasaIcon";
-import PerfilIcon from "@/svg/icons/header/PerfilIcon";
-import CorretoresIcon from "@/svg/icons/header/CorretoresIcon";
-import RelatoriosIcon from "@/svg/icons/header/RelatoriosIcon";
 import { useLanguage } from "@/context/LanguageContext";
-
 
 interface FuncoesHeaderProps {
    role?: Roles;
@@ -27,32 +31,32 @@ const FuncoesHeader = (props: FuncoesHeaderProps) => {
             {
                label: t("functionsHeader.properties"),
                route: "/gerenciamento/imoveis",
-               icone: <CasaIcon className="h-5" />,
+               icone: <House className="h-5 text-white" />,
             },
             {
                label: t("functionsHeader.users"),
                route: "/gerenciamento/usuarios",
-               icone: <PerfilIcon className="h-5" />,
+               icone: <User className="h-5 text-white" />,
             },
             {
                label: t("functionsHeader.owners"),
                route: "/gerenciamento/proprietarios",
-               icone: <CorretoresIcon className="h-5" />,
+               icone: <UserRoundCheck className="h-5 text-white" />,
             },
             {
                label: t("functionsHeader.reports"),
                route: "/relatorio",
-               icone: <RelatoriosIcon className="h-5" />,
+               icone: <BarChart className="h-5 text-white" />,
             },
             {
                label: "Responder Perguntas",
                route: "/responder-perguntas",
-               icone: <MailQuestionIcon className="h-5 text-white" />,
+               icone: <MailQuestion className="h-5 text-white" />,
             },
             {
                label: "Perguntas Respondidas",
                route: "/perguntas-respondidas",
-               icone: <MessageSquareQuoteIcon className="h-5 text-white" />,
+               icone: <MessageSquareQuote className="h-5 text-white" />,
             },
          ],
       },
@@ -63,22 +67,22 @@ const FuncoesHeader = (props: FuncoesHeaderProps) => {
             {
                label: t("functionsHeader.reports"),
                route: "/gerenciamento/imoveis",
-               icone: <CasaIcon className="h-5" />,
+               icone: <House className="h-5 text-white" />,
             },
             {
                label: t("functionsHeader.owners"),
                route: "/gerenciamento/proprietarios",
-               icone: <CorretoresIcon className="h-5" />,
+               icone: <UserRoundCheck className="h-5 text-white" />,
             },
             {
                label: "Responder Perguntas",
                route: "/responder-perguntas",
-               icone: <MailQuestionIcon className="h-5 text-white" />,
+               icone: <MailQuestion className="h-5 text-white" />,
             },
             {
                label: "Perguntas Respondidas",
                route: "/perguntas-respondidas",
-               icone: <MessageSquareQuoteIcon className="h-5 text-white" />,
+               icone: <MessageSquareQuote className="h-5 text-white" />,
             },
          ],
       },
@@ -100,7 +104,7 @@ const FuncoesHeader = (props: FuncoesHeaderProps) => {
                   className="text-center w-full text-white text-base font-semibold font-inter
                             2xl:text-xl"
                >
-                    {t("functionsHeader.title")} {group.title}
+                  {t("functionsHeader.title")} {group.title}
                </p>
                {group.items.map((item, idx) => (
                   <div
